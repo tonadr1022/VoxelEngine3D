@@ -7,6 +7,14 @@
 
 
 class Application {
+public:
+    Application();
+
+    void run();
+private:
+    bool m_running{};
+    void init_opengl();
+    void init_glfw();
 
 };
 
