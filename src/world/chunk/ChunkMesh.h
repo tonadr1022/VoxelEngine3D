@@ -35,7 +35,7 @@ public:
 private:
     void addFace(glm::ivec3& blockPosInChunk, Block block, BlockFace face);
 
-    static bool shouldAddFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face);
+    static bool shouldAddFace(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk &chunk);
 
 };
 

@@ -14,6 +14,13 @@ constexpr int CHUNKLET_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_WIDTH;
 constexpr int CHUNKLET_HEIGHT = CHUNK_WIDTH;
 constexpr int CHUNK_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
 
+enum class HorizontalDirection {
+    LEFT = 0,
+    RIGHT,
+    FRONT,
+    BACK,
+    COUNT
+};
 
 
 #endif //VOXEL_ENGINE_CONSTANTS_H

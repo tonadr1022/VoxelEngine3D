@@ -25,6 +25,7 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
             }
         }
     }
+    chunk.chunkState = ChunkState::GENERATED;
 }
 
 TerrainGenerator::TerrainGenerator() = default;

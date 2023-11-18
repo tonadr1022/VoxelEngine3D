@@ -46,7 +46,7 @@ private:
 
     float fov = 45.0f;
     float mouseSensitivity = 0.1f;
-    float farPlane = 400.0f;
+    float farPlane = 800.0f;
 
     constexpr static float aspectRatio = 800.0f / 600.0f;
     constexpr static float nearPlane = 0.1f;

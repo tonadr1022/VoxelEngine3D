@@ -14,7 +14,7 @@ class Chunk;
 class Chunklet {
 public:
     Chunklet() = default;
-    Chunklet(glm::vec3 location, Chunk &chunk);
+    explicit Chunklet(glm::vec3 location);
     void setBlock(int x, int y, int z, Block block);
     Block getBlock(int x, int y, int z);
     glm::vec3 location;

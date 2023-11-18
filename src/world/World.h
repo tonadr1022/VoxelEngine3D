@@ -12,11 +12,13 @@
 #include "chunk/ChunkRenderer.h"
 
 
+
 class World {
 public:
     World(GLFWwindow *window, Player &player, Shader &chunkShader);
     void update();
     void render();
+    Chunk &getChunk(int x, int y);
 
 private:
     GLFWwindow *window;
