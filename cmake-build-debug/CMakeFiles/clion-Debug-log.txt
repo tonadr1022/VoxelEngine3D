@@ -1,6 +1,4 @@
 /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja -S /Users/tony/CLionProjects/voxel_engine -B /Users/tony/CLionProjects/voxel_engine/cmake-build-debug
--- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
--- Using Cocoa for window creation
--- Configuring done (0.0s)
+-- Configuring done (0.1s)
 -- Generating done (0.0s)
 -- Build files have been written to: /Users/tony/CLionProjects/voxel_engine/cmake-build-debug

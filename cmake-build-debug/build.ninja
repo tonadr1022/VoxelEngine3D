@@ -47,35 +47,175 @@ cmake_ninja_workdir = /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/
 #############################################
 # Order-only phony target for voxel_engine
 
-build cmake_object_order_depends_target_voxel_engine: phony || cmake_object_order_depends_target_glfw
+build cmake_object_order_depends_target_voxel_engine: phony || CMakeFiles/voxel_engine.dir
 
 build CMakeFiles/voxel_engine.dir/src/main.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/main.cpp || cmake_object_order_depends_target_voxel_engine
   DEP_FILE = CMakeFiles/voxel_engine.dir/src/main.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
   OBJECT_DIR = CMakeFiles/voxel_engine.dir
   OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src
 
 build CMakeFiles/voxel_engine.dir/src/Application.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/Application.cpp || cmake_object_order_depends_target_voxel_engine
   DEP_FILE = CMakeFiles/voxel_engine.dir/src/Application.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
   OBJECT_DIR = CMakeFiles/voxel_engine.dir
   OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src
 
 build CMakeFiles/voxel_engine.dir/src/glad.c.o: C_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/glad.c || cmake_object_order_depends_target_voxel_engine
   DEP_FILE = CMakeFiles/voxel_engine.dir/src/glad.c.o.d
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
   OBJECT_DIR = CMakeFiles/voxel_engine.dir
   OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src
 
-build CMakeFiles/voxel_engine.dir/src/config.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/config.cpp || cmake_object_order_depends_target_voxel_engine
-  DEP_FILE = CMakeFiles/voxel_engine.dir/src/config.cpp.o.d
+build CMakeFiles/voxel_engine.dir/src/Config.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/Config.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/Config.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
   OBJECT_DIR = CMakeFiles/voxel_engine.dir
   OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src
+
+build CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/vendor/imgui
+
+build CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_demo.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_demo.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_demo.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/vendor/imgui
+
+build CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_draw.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_draw.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_draw.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/vendor/imgui
+
+build CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_widgets.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_widgets.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_widgets.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/vendor/imgui
+
+build CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_glfw.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_impl_glfw.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_glfw.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/vendor/imgui
+
+build CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_opengl3.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_impl_opengl3.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_opengl3.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/vendor/imgui
+
+build CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_tables.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_tables.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_tables.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/vendor/imgui
+
+build CMakeFiles/voxel_engine.dir/src/camera/Camera.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/camera/Camera.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/camera/Camera.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/camera
+
+build CMakeFiles/voxel_engine.dir/src/shaders/Shader.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/shaders/Shader.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/shaders/Shader.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/shaders
+
+build CMakeFiles/voxel_engine.dir/src/world/block/Block.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/world/block/Block.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/world/block/Block.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/world/block
+
+build CMakeFiles/voxel_engine.dir/src/world/chunk/Chunk.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/world/chunk/Chunk.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/world/chunk/Chunk.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/world/chunk
+
+build CMakeFiles/voxel_engine.dir/src/player/Player.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/player/Player.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/player/Player.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/player
+
+build CMakeFiles/voxel_engine.dir/src/world/World.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/world/World.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/world/World.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/world
+
+build CMakeFiles/voxel_engine.dir/src/renderer/Renderer.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/renderer/Renderer.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/renderer/Renderer.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/renderer
+
+build CMakeFiles/voxel_engine.dir/src/shaders/ShaderManager.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/shaders/ShaderManager.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/shaders/ShaderManager.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/shaders
+
+build CMakeFiles/voxel_engine.dir/src/world/chunklet/Chunklet.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/world/chunklet/Chunklet.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/world/chunklet/Chunklet.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/world/chunklet
+
+build CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkMesh.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/world/chunk/ChunkMesh.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkMesh.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/world/chunk
+
+build CMakeFiles/voxel_engine.dir/src/world/generation/TerrainGenerator.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/world/generation/TerrainGenerator.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/world/generation/TerrainGenerator.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/world/generation
+
+build CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkRenderer.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/world/chunk/ChunkRenderer.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkRenderer.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/world/chunk
+
+build CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/resources/ResourceManager.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/resources
 
 
 # =============================================================================
@@ -85,9 +225,9 @@ build CMakeFiles/voxel_engine.dir/src/config.cpp.o: CXX_COMPILER__voxel_engine_u
 #############################################
 # Link the executable voxel_engine
 
-build voxel_engine: CXX_EXECUTABLE_LINKER__voxel_engine_Debug CMakeFiles/voxel_engine.dir/src/main.cpp.o CMakeFiles/voxel_engine.dir/src/Application.cpp.o CMakeFiles/voxel_engine.dir/src/glad.c.o CMakeFiles/voxel_engine.dir/src/config.cpp.o | dependencies/GLFW/src/libglfw3.a /opt/homebrew/lib/libglfw.dylib /opt/homebrew/lib/libglfw.dylib || dependencies/GLFW/src/libglfw3.a
+build voxel_engine: CXX_EXECUTABLE_LINKER__voxel_engine_Debug CMakeFiles/voxel_engine.dir/src/main.cpp.o CMakeFiles/voxel_engine.dir/src/Application.cpp.o CMakeFiles/voxel_engine.dir/src/glad.c.o CMakeFiles/voxel_engine.dir/src/Config.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_demo.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_draw.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_widgets.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_glfw.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_opengl3.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_tables.cpp.o CMakeFiles/voxel_engine.dir/src/camera/Camera.cpp.o CMakeFiles/voxel_engine.dir/src/shaders/Shader.cpp.o CMakeFiles/voxel_engine.dir/src/world/block/Block.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunk/Chunk.cpp.o CMakeFiles/voxel_engine.dir/src/player/Player.cpp.o CMakeFiles/voxel_engine.dir/src/world/World.cpp.o CMakeFiles/voxel_engine.dir/src/renderer/Renderer.cpp.o CMakeFiles/voxel_engine.dir/src/shaders/ShaderManager.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunklet/Chunklet.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkMesh.cpp.o CMakeFiles/voxel_engine.dir/src/world/generation/TerrainGenerator.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkRenderer.cpp.o CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.o | /opt/homebrew/lib/libglfw.3.3.dylib /opt/homebrew/Cellar/glew/2.2.0_1/lib/libGLEW.dylib
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk
-  LINK_LIBRARIES = dependencies/GLFW/src/libglfw3.a  -Xlinker -framework -Xlinker OpenGL  /opt/homebrew/lib/libglfw.dylib  -Xlinker -framework -Xlinker OpenGL  -framework Cocoa  -framework IOKit  -framework CoreFoundation  /opt/homebrew/lib/libglfw.dylib
+  LINK_LIBRARIES = -Wl,-rpath,/opt/homebrew/lib  -Xlinker -framework -Xlinker OpenGL  -Xlinker -framework -Xlinker OpenGL  /opt/homebrew/lib/libglfw.3.3.dylib  /opt/homebrew/Cellar/glew/2.2.0_1/lib/libGLEW.dylib
   OBJECT_DIR = CMakeFiles/voxel_engine.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -117,371 +257,8 @@ build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
 
 build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 
-
-#############################################
-# Utility command for list_install_components
-
-build list_install_components: phony
-
-
-#############################################
-# Utility command for install
-
-build CMakeFiles/install.util: CUSTOM_COMMAND all
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -P cmake_install.cmake
-  DESC = Install the project...
-  pool = console
-  restat = 1
-
-build install: phony CMakeFiles/install.util
-
-
-#############################################
-# Utility command for install/local
-
-build CMakeFiles/install/local.util: CUSTOM_COMMAND all
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-  DESC = Installing only the local directory...
-  pool = console
-  restat = 1
-
-build install/local: phony CMakeFiles/install/local.util
-
-
-#############################################
-# Utility command for install/strip
-
-build CMakeFiles/install/strip.util: CUSTOM_COMMAND all
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-  DESC = Installing the project stripped...
-  pool = console
-  restat = 1
-
-build install/strip: phony CMakeFiles/install/strip.util
-
-# =============================================================================
-# Write statements declared in CMakeLists.txt:
-# /Users/tony/CLionProjects/voxel_engine/CMakeLists.txt
-# =============================================================================
-
-
-#############################################
-# Utility command for uninstall
-
-build dependencies/GLFW/uninstall: phony dependencies/GLFW/CMakeFiles/uninstall
-
-
-#############################################
-# Utility command for edit_cache
-
-build dependencies/GLFW/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-  DESC = No interactive CMake dialog available...
-  restat = 1
-
-build dependencies/GLFW/edit_cache: phony dependencies/GLFW/CMakeFiles/edit_cache.util
-
-
-#############################################
-# Utility command for rebuild_cache
-
-build dependencies/GLFW/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake --regenerate-during-build -S/Users/tony/CLionProjects/voxel_engine -B/Users/tony/CLionProjects/voxel_engine/cmake-build-debug
-  DESC = Running CMake to regenerate build system...
-  pool = console
-  restat = 1
-
-build dependencies/GLFW/rebuild_cache: phony dependencies/GLFW/CMakeFiles/rebuild_cache.util
-
-
-#############################################
-# Utility command for list_install_components
-
-build dependencies/GLFW/list_install_components: phony
-
-
-#############################################
-# Utility command for install
-
-build dependencies/GLFW/CMakeFiles/install.util: CUSTOM_COMMAND dependencies/GLFW/all
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -P cmake_install.cmake
-  DESC = Install the project...
-  pool = console
-  restat = 1
-
-build dependencies/GLFW/install: phony dependencies/GLFW/CMakeFiles/install.util
-
-
-#############################################
-# Utility command for install/local
-
-build dependencies/GLFW/CMakeFiles/install/local.util: CUSTOM_COMMAND dependencies/GLFW/all
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-  DESC = Installing only the local directory...
-  pool = console
-  restat = 1
-
-build dependencies/GLFW/install/local: phony dependencies/GLFW/CMakeFiles/install/local.util
-
-
-#############################################
-# Utility command for install/strip
-
-build dependencies/GLFW/CMakeFiles/install/strip.util: CUSTOM_COMMAND dependencies/GLFW/all
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-  DESC = Installing the project stripped...
-  pool = console
-  restat = 1
-
-build dependencies/GLFW/install/strip: phony dependencies/GLFW/CMakeFiles/install/strip.util
-
-
-#############################################
-# Custom command for dependencies/GLFW/CMakeFiles/uninstall
-
-build dependencies/GLFW/CMakeFiles/uninstall | ${cmake_ninja_workdir}dependencies/GLFW/CMakeFiles/uninstall: CUSTOM_COMMAND
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -P /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/cmake_uninstall.cmake
-
-# =============================================================================
-# Write statements declared in CMakeLists.txt:
-# /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/CMakeLists.txt
-# =============================================================================
-
-
-#############################################
-# Utility command for update_mappings
-
-build dependencies/GLFW/src/update_mappings: phony dependencies/GLFW/src/CMakeFiles/update_mappings
-
-# =============================================================================
-# Object build statements for STATIC_LIBRARY target glfw
-
-
-#############################################
-# Order-only phony target for glfw
-
-build cmake_object_order_depends_target_glfw: phony || dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/context.c.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/context.c || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/context.c.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/init.c.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/init.c || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/init.c.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/input.c.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/input.c || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/input.c.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/monitor.c.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/monitor.c || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/monitor.c.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/vulkan.c.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/vulkan.c || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/vulkan.c.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/window.c.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/window.c || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/window.c.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_init.m.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/cocoa_init.m || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_init.m.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_joystick.m.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/cocoa_joystick.m || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_joystick.m.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_monitor.m.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/cocoa_monitor.m || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_monitor.m.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_window.m.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/cocoa_window.m || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_window.m.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_time.c.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/cocoa_time.c || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_time.c.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/posix_thread.c.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/posix_thread.c || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/posix_thread.c.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/nsgl_context.m.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/nsgl_context.m || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/nsgl_context.m.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/egl_context.c.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/egl_context.c || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/egl_context.c.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-build dependencies/GLFW/src/CMakeFiles/glfw.dir/osmesa_context.c.o: C_COMPILER__glfw_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/osmesa_context.c || cmake_object_order_depends_target_glfw
-  DEFINES = -D_GLFW_USE_CONFIG_H
-  DEP_FILE = dependencies/GLFW/src/CMakeFiles/glfw.dir/osmesa_context.c.o.d
-  FLAGS = -g -std=gnu99 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fPIC -fcolor-diagnostics -Wall
-  INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src -I/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  OBJECT_FILE_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-
-
-# =============================================================================
-# Link build statements for STATIC_LIBRARY target glfw
-
-
-#############################################
-# Link the static library dependencies/GLFW/src/libglfw3.a
-
-build dependencies/GLFW/src/libglfw3.a: C_STATIC_LIBRARY_LINKER__glfw_Debug dependencies/GLFW/src/CMakeFiles/glfw.dir/context.c.o dependencies/GLFW/src/CMakeFiles/glfw.dir/init.c.o dependencies/GLFW/src/CMakeFiles/glfw.dir/input.c.o dependencies/GLFW/src/CMakeFiles/glfw.dir/monitor.c.o dependencies/GLFW/src/CMakeFiles/glfw.dir/vulkan.c.o dependencies/GLFW/src/CMakeFiles/glfw.dir/window.c.o dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_init.m.o dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_joystick.m.o dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_monitor.m.o dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_window.m.o dependencies/GLFW/src/CMakeFiles/glfw.dir/cocoa_time.c.o dependencies/GLFW/src/CMakeFiles/glfw.dir/posix_thread.c.o dependencies/GLFW/src/CMakeFiles/glfw.dir/nsgl_context.m.o dependencies/GLFW/src/CMakeFiles/glfw.dir/egl_context.c.o dependencies/GLFW/src/CMakeFiles/glfw.dir/osmesa_context.c.o
-  ARCH_FLAGS = -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk
-  LANGUAGE_COMPILE_FLAGS = -g
-  OBJECT_DIR = dependencies/GLFW/src/CMakeFiles/glfw.dir
-  POST_BUILD = :
-  PRE_LINK = :
-  TARGET_FILE = dependencies/GLFW/src/libglfw3.a
-  TARGET_PDB = glfw3.a.dbg
-
-
-#############################################
-# Utility command for edit_cache
-
-build dependencies/GLFW/src/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-  DESC = No interactive CMake dialog available...
-  restat = 1
-
-build dependencies/GLFW/src/edit_cache: phony dependencies/GLFW/src/CMakeFiles/edit_cache.util
-
-
-#############################################
-# Utility command for rebuild_cache
-
-build dependencies/GLFW/src/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake --regenerate-during-build -S/Users/tony/CLionProjects/voxel_engine -B/Users/tony/CLionProjects/voxel_engine/cmake-build-debug
-  DESC = Running CMake to regenerate build system...
-  pool = console
-  restat = 1
-
-build dependencies/GLFW/src/rebuild_cache: phony dependencies/GLFW/src/CMakeFiles/rebuild_cache.util
-
-
-#############################################
-# Utility command for list_install_components
-
-build dependencies/GLFW/src/list_install_components: phony
-
-
-#############################################
-# Utility command for install
-
-build dependencies/GLFW/src/CMakeFiles/install.util: CUSTOM_COMMAND dependencies/GLFW/src/all
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -P cmake_install.cmake
-  DESC = Install the project...
-  pool = console
-  restat = 1
-
-build dependencies/GLFW/src/install: phony dependencies/GLFW/src/CMakeFiles/install.util
-
-
-#############################################
-# Utility command for install/local
-
-build dependencies/GLFW/src/CMakeFiles/install/local.util: CUSTOM_COMMAND dependencies/GLFW/src/all
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-  DESC = Installing only the local directory...
-  pool = console
-  restat = 1
-
-build dependencies/GLFW/src/install/local: phony dependencies/GLFW/src/CMakeFiles/install/local.util
-
-
-#############################################
-# Utility command for install/strip
-
-build dependencies/GLFW/src/CMakeFiles/install/strip.util: CUSTOM_COMMAND dependencies/GLFW/src/all
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-  DESC = Installing the project stripped...
-  pool = console
-  restat = 1
-
-build dependencies/GLFW/src/install/strip: phony dependencies/GLFW/src/CMakeFiles/install/strip.util
-
-
-#############################################
-# Custom command for dependencies/GLFW/src/CMakeFiles/update_mappings
-
-build dependencies/GLFW/src/CMakeFiles/update_mappings | ${cmake_ninja_workdir}dependencies/GLFW/src/CMakeFiles/update_mappings: CUSTOM_COMMAND
-  COMMAND = cd /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -P /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/CMake/GenerateMappings.cmake mappings.h.in mappings.h
-  DESC = Updating gamepad mappings from upstream repository
-
 # =============================================================================
 # Target aliases.
-
-build glfw: phony dependencies/GLFW/src/libglfw3.a
-
-build libglfw3.a: phony dependencies/GLFW/src/libglfw3.a
-
-build uninstall: phony dependencies/GLFW/uninstall
-
-build update_mappings: phony dependencies/GLFW/src/update_mappings
 
 # =============================================================================
 # Folder targets.
@@ -491,21 +268,7 @@ build update_mappings: phony dependencies/GLFW/src/update_mappings
 #############################################
 # Folder: /Users/tony/CLionProjects/voxel_engine/cmake-build-debug
 
-build all: phony voxel_engine dependencies/GLFW/all
-
-# =============================================================================
-
-#############################################
-# Folder: /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW
-
-build dependencies/GLFW/all: phony dependencies/GLFW/src/all
-
-# =============================================================================
-
-#############################################
-# Folder: /Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/GLFW/src
-
-build dependencies/GLFW/src/all: phony dependencies/GLFW/src/libglfw3.a
+build all: phony voxel_engine
 
 # =============================================================================
 # Built-in targets
@@ -514,14 +277,14 @@ build dependencies/GLFW/src/all: phony dependencies/GLFW/src/libglfw3.a
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/BasicConfigVersion-SameMajorVersion.cmake.in /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeDependentOption.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakePackageConfigHelpers.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CheckCSourceCompiles.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CheckIncludeFile.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CheckLibraryExists.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindDoxygen.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindOpenGL.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindThreads.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/GNUInstallDirs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Internal/CheckSourceCompiles.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/WriteBasicConfigVersionFile.cmake /Users/tony/CLionProjects/voxel_engine/CMakeLists.txt /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/CMakeLists.txt /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/cmake_uninstall.cmake.in /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/CMakeLists.txt /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/glfw3.pc.in /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/glfw3Config.cmake.in /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/glfw_config.h.in CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindOpenGL.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Users/tony/CLionProjects/voxel_engine/CMakeLists.txt /opt/homebrew/lib/cmake/glfw3/GLFW3Config.cmake /opt/homebrew/lib/cmake/glfw3/GLFW3ConfigVersion.cmake /opt/homebrew/lib/cmake/glfw3/glfw3Targets-release.cmake /opt/homebrew/lib/cmake/glfw3/glfw3Targets.cmake /opt/homebrew/lib/cmake/glm/glmConfig-version.cmake /opt/homebrew/lib/cmake/glm/glmConfig.cmake CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/BasicConfigVersion-SameMajorVersion.cmake.in /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeDependentOption.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakePackageConfigHelpers.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CheckCSourceCompiles.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CheckIncludeFile.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CheckLibraryExists.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindDoxygen.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindOpenGL.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindThreads.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/GNUInstallDirs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Internal/CheckSourceCompiles.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/WriteBasicConfigVersionFile.cmake /Users/tony/CLionProjects/voxel_engine/CMakeLists.txt /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/CMakeLists.txt /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/cmake_uninstall.cmake.in /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/CMakeLists.txt /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/glfw3.pc.in /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/glfw3Config.cmake.in /Users/tony/CLionProjects/voxel_engine/dependencies/GLFW/src/glfw_config.h.in CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake: phony
+build /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindOpenGL.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Users/tony/CLionProjects/voxel_engine/CMakeLists.txt /opt/homebrew/lib/cmake/glfw3/GLFW3Config.cmake /opt/homebrew/lib/cmake/glfw3/GLFW3ConfigVersion.cmake /opt/homebrew/lib/cmake/glfw3/glfw3Targets-release.cmake /opt/homebrew/lib/cmake/glfw3/glfw3Targets.cmake /opt/homebrew/lib/cmake/glm/glmConfig-version.cmake /opt/homebrew/lib/cmake/glm/glmConfig.cmake CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake: phony
 
 
 #############################################

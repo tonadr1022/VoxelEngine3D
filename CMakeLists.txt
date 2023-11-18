@@ -1,32 +1,70 @@
-cmake_minimum_required(VERSION 3.5.0)
-project(voxel_engine VERSION 1.0.0)
+cmake_minimum_required(VERSION 3.7)
+project(voxel_engine)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED On)
 
-find_package(OpenGL REQUIRED)
+set(GLEW_ROOT_DIR /opt/homebrew/Cellar/glew/2.2.0_1)
 
+include_directories(${GLEW_ROOT_DIR})
 include_directories(src/vendor)
 
-add_subdirectory(dependencies/GLFW)
+set(SOURCE_FILES
+                src/main.cpp
+                src/Application.cpp
+                src/Application.h
+                src/glad.c
+        src/Config.cpp
+        src/Config.h
+        src/vendor/imgui/imgui.cpp
+        src/vendor/imgui/imgui_demo.cpp
+        src/vendor/imgui/imgui_draw.cpp
+        src/vendor/imgui/imgui_widgets.cpp
+        src/vendor/imgui/imgui_impl_glfw.cpp
+        src/vendor/imgui/imgui_impl_opengl3.cpp
+        src/vendor/imgui/imgui_tables.cpp
+        src/vendor/imgui/imgui_widgets.cpp
+        src/Constants.h
+        src/camera/Camera.cpp
+        src/camera/Camera.h
+        src/shaders/Shader.cpp
+        src/shaders/Shader.h
+        src/shaders/Shader.cpp
+        src/world/block/Block.cpp
+        src/world/block/Block.h
+        src/world/chunk/Chunk.cpp
+        src/world/chunk/Chunk.h
+        src/player/Player.cpp
+        src/player/Player.h
+        src/world/World.cpp
+        src/world/World.h
+        src/world/World.h
+        src/renderer/Renderer.cpp
+        src/renderer/Renderer.h
+        src/shaders/ShaderManager.cpp
+        src/shaders/ShaderManager.h
+        src/world/chunklet/Chunklet.cpp
+        src/world/chunklet/Chunklet.h
+        src/world/chunk/ChunkMesh.cpp
+        src/world/chunk/ChunkMesh.h
+        src/world/generation/TerrainGenerator.cpp
+        src/world/generation/TerrainGenerator.h
+        src/world/chunk/ChunkRenderer.cpp
+        src/world/chunk/ChunkRenderer.h
+        src/resources/ResourceManager.cpp
+        src/resources/ResourceManager.h
+
+)
 
 
-add_executable(voxel_engine
-        src/main.cpp
-        src/Application.cpp
-        src/Application.h
-        src/glad.c
-        src/config.cpp
-        src/config.h)
+include_directories("dependencies")
+include_directories("shaders")
+include_directories("resources")
 
-file (COPY resources DESTINATION ${CMAKE_BINARY_DIR})
-file (COPY shaders DESTINATION ${CMAKE_BINARY_DIR})
+find_package(OpenGL REQUIRED)
+find_package(GLFW3 REQUIRED)
+find_package(glm REQUIRED)
 
-target_include_directories(voxel_engine PRIVATE dependencies)
+add_executable(voxel_engine ${SOURCE_FILES})
 
-target_link_libraries(voxel_engine glfw ${OPENGL_gl_LIBRARY})
-
-find_library(GLFW_LIBRARY glfw)
-
-target_link_libraries(voxel_engine ${GLFW_LIBRARY} ${OPENGL_gl_LIBRARY})
-
+target_link_libraries(voxel_engine ${OPENGL_LIBRARIES}
+        glfw ${GLEW_ROOT_DIR}/lib/libGLEW.dylib)

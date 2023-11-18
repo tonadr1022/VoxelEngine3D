@@ -1,0 +1,19 @@
+//
+// Created by Tony Adriansen on 11/16/23.
+//
+
+#ifndef VOXEL_ENGINE_CONSTANTS_H
+#define VOXEL_ENGINE_CONSTANTS_H
+
+constexpr int WINDOW_HEIGHT = 600;
+constexpr int WINDOW_WIDTH = 800;
+constexpr int CHUNK_WIDTH = 16;
+constexpr int CHUNK_HEIGHT = 128;
+constexpr int CHUNK_AREA = CHUNK_WIDTH * CHUNK_WIDTH;
+constexpr int CHUNKLET_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_WIDTH;
+constexpr int CHUNKLET_HEIGHT = CHUNK_WIDTH;
+constexpr int CHUNK_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
+
+
+
+#endif //VOXEL_ENGINE_CONSTANTS_H

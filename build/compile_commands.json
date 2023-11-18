@@ -1,0 +1,146 @@
+[
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/main.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/main.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/main.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/main.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/Application.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/Application.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/Application.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/Application.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/glad.c.o -c /Users/tony/CLionProjects/voxel_engine/src/glad.c",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/glad.c",
+  "output": "CMakeFiles/voxel_engine.dir/src/glad.c.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/Config.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/Config.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/Config.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/Config.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_demo.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_demo.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_demo.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_demo.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_draw.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_draw.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_draw.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_draw.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_widgets.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_widgets.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_widgets.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_widgets.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_glfw.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_impl_glfw.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_impl_glfw.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_glfw.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_opengl3.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_impl_opengl3.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_impl_opengl3.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_opengl3.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_tables.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_tables.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/vendor/imgui/imgui_tables.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_tables.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/camera/Camera.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/camera/Camera.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/camera/Camera.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/camera/Camera.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/shaders/Shader.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/shaders/Shader.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/shaders/Shader.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/shaders/Shader.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/world/block/Block.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/world/block/Block.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/world/block/Block.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/world/block/Block.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/world/chunk/Chunk.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/world/chunk/Chunk.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/world/chunk/Chunk.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/world/chunk/Chunk.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/player/Player.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/player/Player.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/player/Player.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/player/Player.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/world/World.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/world/World.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/world/World.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/world/World.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/renderer/Renderer.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/renderer/Renderer.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/renderer/Renderer.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/renderer/Renderer.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/shaders/ShaderManager.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/shaders/ShaderManager.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/shaders/ShaderManager.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/shaders/ShaderManager.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/world/chunklet/Chunklet.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/world/chunklet/Chunklet.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/world/chunklet/Chunklet.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/world/chunklet/Chunklet.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkMesh.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/world/chunk/ChunkMesh.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/world/chunk/ChunkMesh.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkMesh.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/world/generation/TerrainGenerator.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/world/generation/TerrainGenerator.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/world/generation/TerrainGenerator.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/world/generation/TerrainGenerator.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkRenderer.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/world/chunk/ChunkRenderer.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/world/chunk/ChunkRenderer.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkRenderer.cpp.o"
+},
+{
+  "directory": "/Users/tony/CLionProjects/voxel_engine/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -o CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/resources/ResourceManager.cpp",
+  "file": "/Users/tony/CLionProjects/voxel_engine/src/resources/ResourceManager.cpp",
+  "output": "CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.o"
+}
+]
