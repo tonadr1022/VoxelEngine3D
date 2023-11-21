@@ -52,7 +52,6 @@ namespace {
 
 struct AdjacentBlockPositions {
     glm::ivec3 positions[static_cast<int>(BlockFace::COUNT)];
-
     void update(int x, int y, int z) {
         positions[static_cast<int>(BlockFace::TOP)] = {x, y, z + 1};
         positions[static_cast<int>(BlockFace::BOTTOM)] = {x, y, z - 1};
@@ -64,6 +63,7 @@ struct AdjacentBlockPositions {
 };
 
 ChunkMesh::ChunkMesh() : VAO(0), VBO(0), EBO(0) {
+
 }
 
 
@@ -125,34 +125,49 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, BlockFace face, Ch
 
 
 void ChunkMesh::construct(Chunk &chunk) {
+    auto start = std::chrono::high_resolution_clock::now();
     AdjacentBlockPositions adjacentBlockPositions{};
-    for (Chunklet &chunklet: chunk.chunklets) {
-        for (int chunkletX = 0; chunkletX < CHUNK_WIDTH; chunkletX++) {
-            for (int chunkletY = 0; chunkletY < CHUNK_WIDTH; chunkletY++) {
+    for (int x = 0; x < CHUNK_WIDTH; x++) {
+        for (int y = 0; y < CHUNK_WIDTH; y++) {
+            // get max block height z for this xy pos in the chunk
+            int maxBlockHeight = chunk.getMaxBlockHeightAt(x, y);
+            for (Chunklet &chunklet: chunk.chunklets) {
                 for (int chunkletZ = 0; chunkletZ < CHUNKLET_HEIGHT; chunkletZ++) {
-                    Block block = chunklet.getBlock(chunkletX, chunkletY, chunkletZ);
+                    // continue past chunklet
+                    if (chunklet.location.z + chunkletZ > maxBlockHeight) {
+                        goto chunkletBreak;
+                    }
+                    Block block = chunklet.getBlock(x, y, chunkletZ);
                     if (block.id == Block::AIR) {
                         continue;
                     }
+
                     int chunkZ = static_cast<int>(chunklet.location.z) + chunkletZ;
+                    if (chunk.getIsBlockBuried(x, y, chunkZ)) {
+                        continue;
+                    }
                     // block pos in chunk
-                    glm::ivec3 blockPosInChunk = {chunkletX, chunkletY, chunkZ};
-                    adjacentBlockPositions.update(chunkletX, chunkletY, chunkZ);
+                    glm::ivec3 blockPosInChunk = {x, y, chunkZ};
+
+                    adjacentBlockPositions.update(x, y, chunkZ);
                     for (int i = 0; i < static_cast<int>(BlockFace::COUNT); i++) {
                         auto face = static_cast<BlockFace>(i);
                         glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[static_cast<int>(face)];
-
-//                        if (face != BlockFace::LEFT) continue;
-//                        addFace(blockPosInChunk, block, face);
                         if (shouldAddFace(adjacentBlockPos, face, chunk)) {
                             addFace(blockPosInChunk, block, face);
                         }
                     }
                 }
             }
+            chunkletBreak:;
         }
     }
     chunk.chunkMeshState = ChunkMeshState::BUILT;
+        auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    if (duration.count() > 0.5)
+        std::cout << "Chunk generation took: " << duration.count() << "microseconds"
+                  << std::endl;
 }
 
 void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face) {
@@ -193,7 +208,6 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face
 }
 
 void ChunkMesh::destruct() {
-    std::cout << "destructing chunk mesh data" << std::endl;
     vertices.clear();
     indices.clear();
     if (VAO != 0) {

@@ -16,7 +16,7 @@ public:
 
     ~ChunkRenderer();
 
-    void createGPUResources(Chunk &chunk);
+    static void createGPUResources(Chunk &chunk);
 
     void destroyGPUResources(Chunk &chunk);
 

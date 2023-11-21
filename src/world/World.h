@@ -12,20 +12,26 @@
 #include "chunk/ChunkRenderer.h"
 
 
-
 class World {
 public:
     World(GLFWwindow *window, Player &player, Shader &chunkShader);
+
     void update();
+
     void render();
+
     Chunk &getChunk(int x, int y);
 
 private:
+
+    void unloadChunks();
+
     GLFWwindow *window;
     std::map<std::pair<int, int>, Chunk> chunkMap;
     Player &player;
     ChunkRenderer chunkRenderer;
-    TerrainGenerator terrainGenerator;
+//    TerrainGenerator terrainGenerator;
+//    std::vector<std::thread> chunkLoadThreads;
 
 
 };

@@ -14,10 +14,10 @@ class Chunk;
 class Chunklet {
 public:
     Chunklet() = default;
-    explicit Chunklet(glm::vec3 location);
+    explicit Chunklet(glm::ivec3 location);
     void setBlock(int x, int y, int z, Block block);
     Block getBlock(int x, int y, int z);
-    glm::vec3 location;
+    glm::ivec3 location;
 private:
     std::array<Block, CHUNKLET_VOLUME> blocks;
     static int getIndex(int x, int y, int z);

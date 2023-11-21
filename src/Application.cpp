@@ -12,6 +12,9 @@ void Application::run() {
     ResourceManager::makeTexture("../resources/textures/dirt.jpg", "texture_atlas");
     Shader chunkShader("../shaders/vertex.glsl", "../shaders/fragment.glsl");
     World world(window, player, chunkShader);
+    double time = 0.0;
+    const double dt = 1 / 60.0;
+    double currentTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(window)) {
         // Start the Dear ImGui frame
@@ -28,11 +31,24 @@ void Application::run() {
                         cameraPos.x, cameraPos.y, cameraPos.z);
             ImGui::End();
         }
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        player.update(window);
+
         world.update();
         world.render();
+        double newTime = glfwGetTime();
+        double frameTime = newTime - currentTime;
+        currentTime = newTime;
+
+        while (frameTime > 0.0) {
+            float deltaTime = std::min(frameTime, dt);
+            frameTime -= deltaTime;
+            time += deltaTime;
+            player.update(window, deltaTime);
+        }
+
+//        player.update(window, deltaTime);
+//        world.update();
+
 
         // Rendering
         ImGui::Render();
@@ -86,7 +102,7 @@ void Application::initGlfwImGui() {
 
     window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Learning OpenGL", nullptr, nullptr);
     glfwMakeContextCurrent(window);
-//    glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(1); // Enable vsync
 
     glfwSetFramebufferSizeCallback(window, [](GLFWwindow *windowArg, int width, int height) {
         glViewport(0, 0, width, height);
@@ -139,3 +155,5 @@ Application::Application() : player() {
 //    Application &app = getInstance();
 //    app.player.update(window);
 //}
+
+

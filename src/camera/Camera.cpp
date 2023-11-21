@@ -7,7 +7,7 @@
 
 //Camera::Camera(GLFWwindow *window) : window(window) {}
 
-void Camera::processMouseMovement(GLFWwindow *window) {
+void Camera::processMouseMovement(GLFWwindow *window, float deltaTime) {
     double xPos, yPos;
     glfwGetCursorPos(window, &xPos, &yPos);
     glfwSetCursorPos(window, WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f);
@@ -20,10 +20,10 @@ void Camera::processMouseMovement(GLFWwindow *window) {
     eulers.y = glm::clamp(eulers.y, -89.0f, 89.0f);
     eulers.z = glm::mod(eulers.z, 360.0f);
 
-    updateCameraVectors();
+    updateCameraVectors(deltaTime);
 }
 
-void Camera::updateCameraVectors() {
+void Camera::updateCameraVectors(float deltaTime) {
     float theta = glm::radians(eulers.z);
     float phi = glm::radians(eulers.y);
 
@@ -37,8 +37,8 @@ void Camera::updateCameraVectors() {
     viewMatrix = glm::lookAt(position, position + front, up);
 }
 
-void Camera::update() {
-    updateCameraVectors();
+void Camera::update(float deltaTime) {
+    updateCameraVectors(deltaTime);
 }
 
 void Camera::setPosition(glm::vec3 newPosition) {

@@ -12,7 +12,7 @@ public:
 
     explicit Camera();
 
-    void processMouseMovement(GLFWwindow *window);
+    void processMouseMovement(GLFWwindow *window, float deltaTime);
 
     void setPosition(glm::vec3 position);
 
@@ -34,7 +34,7 @@ public:
 //    void setFarPlane(float farPlane);
 
 
-    void update();
+    void update(float deltaTime);
 
     void setFarPlane(float farPlane);
 
@@ -42,7 +42,7 @@ public:
 
 
 private:
-    void updateCameraVectors();
+    void updateCameraVectors(float deltaTime);
 
     float fov = 45.0f;
     float mouseSensitivity = 0.1f;

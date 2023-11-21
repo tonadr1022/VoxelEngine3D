@@ -14,6 +14,7 @@ public:
     static void generateTerrainFor(Chunk &chunk);
 
 private:
+    static void setBuriedBlockStates(Chunk &chunk);
 
 };
 

@@ -7,42 +7,28 @@
 
 
 void World::render() {
-//     iterate through the chunks and render them
-//    auto playerPos = glm::vec3(0.0f);
-    auto playerPos = player.getPosition();
-    int playerChunkXPos = playerPos.x / CHUNK_WIDTH;
-    int playerChunkYPos = playerPos.y / CHUNK_WIDTH;
-    int renderDistanceChunks = 12;
 
-    for (int chunkX = playerChunkXPos - renderDistanceChunks;
-         chunkX < playerChunkXPos + renderDistanceChunks; chunkX++) {
-        for (int chunkY = playerChunkYPos - renderDistanceChunks;
-             chunkY < playerChunkYPos + renderDistanceChunks; chunkY++) {
+    auto playerChunkKeyPos = player.getChunkKeyPos();
+    int renderDistanceChunks = 14;
+    for (int chunkX = playerChunkKeyPos.first - renderDistanceChunks;
+         chunkX < playerChunkKeyPos.first + renderDistanceChunks; chunkX++) {
+        for (int chunkY = playerChunkKeyPos.second - renderDistanceChunks;
+             chunkY < playerChunkKeyPos.second + renderDistanceChunks; chunkY++) {
             std::pair<int, int> chunkKey = {chunkX, chunkY};
             if (chunkMap.find(chunkKey) != chunkMap.end()) {
                 chunkRenderer.render(chunkMap.at(chunkKey));
             }
         }
     }
-
-
-//    for (auto &chunk: chunkMap) {
-//        chunkRenderer.render(chunk.second);
-//    }
-//    chunkRenderer.render(chunkMap.at({0, 0}));
 }
 
 void World::update() {
-    player.update(window);
-    auto playerPos = player.getPosition();
-    int playerChunkXPos = playerPos.x / CHUNK_WIDTH;
-    int playerChunkYPos = playerPos.y / CHUNK_WIDTH;
-    int loadDistanceChunks = static_cast<int>(14);
-
-    for (int chunkX = playerChunkXPos - loadDistanceChunks;
-         chunkX < playerChunkXPos + loadDistanceChunks; chunkX++) {
-        for (int chunkY = playerChunkYPos - loadDistanceChunks;
-             chunkY < playerChunkYPos + loadDistanceChunks; chunkY ++) {
+    std::pair<int, int> playerChunkKeyPos = player.getChunkKeyPos();
+    int loadDistanceChunks = static_cast<int>(16);
+    for (int chunkX = playerChunkKeyPos.first - loadDistanceChunks;
+         chunkX < playerChunkKeyPos.first + loadDistanceChunks; chunkX++) {
+        for (int chunkY = playerChunkKeyPos.second - loadDistanceChunks;
+             chunkY < playerChunkKeyPos.second + loadDistanceChunks; chunkY++) {
             std::pair<int, int> chunkKey = {chunkX, chunkY};
             if (chunkMap.find(chunkKey) == chunkMap.end()) {
                 Chunk chunk(glm::vec2(chunkX * CHUNK_WIDTH, chunkY * CHUNK_WIDTH), *this);
@@ -51,11 +37,14 @@ void World::update() {
             }
         }
     }
+    unloadChunks();
 }
 
 World::World(GLFWwindow *window, Player &player, Shader &chunkShader) : window(
         window), player(player), chunkRenderer(player.camera, chunkShader,
-                                               ResourceManager::getTexture("texture_atlas")) {
+                                               ResourceManager::getTexture("texture_atlas"))  {
+
+
 }
 
 Chunk &World::getChunk(int x, int y) {
@@ -63,7 +52,27 @@ Chunk &World::getChunk(int x, int y) {
     auto it = chunkMap.find(chunkKey);
     if (it == chunkMap.end()) {
         throw std::runtime_error(
-                "Chunk not found at: " + std::to_string(x / CHUNK_WIDTH) + ", " + std::to_string(y / CHUNK_WIDTH) + "\n");
+                "Chunk not found at: " + std::to_string(x / CHUNK_WIDTH) + ", " +
+                std::to_string(y / CHUNK_WIDTH) + "\n");
     }
     return it->second;
 }
+
+void World::unloadChunks() {
+    std::pair<int, int> playerChunkKeyPos = player.getChunkKeyPos();
+    int unloadDistanceChunks = 16;
+    for (auto it = chunkMap.begin(); it != chunkMap.end();) {
+        std::pair<int, int> chunkKey = it->first;
+        Chunk &chunk = it->second;
+        if (chunkKey.first < playerChunkKeyPos.first - unloadDistanceChunks ||
+            chunkKey.first > playerChunkKeyPos.first + unloadDistanceChunks ||
+            chunkKey.second < playerChunkKeyPos.second - unloadDistanceChunks ||
+            chunkKey.second > playerChunkKeyPos.second + unloadDistanceChunks) {
+            chunk.unload();
+            it = chunkMap.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+

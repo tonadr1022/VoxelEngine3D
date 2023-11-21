@@ -4,7 +4,7 @@
 
 #include "Chunklet.h"
 
-Chunklet::Chunklet(glm::vec3 location) : location(location) {
+Chunklet::Chunklet(glm::ivec3 location) : location(location) {
 
 }
 

@@ -28,6 +28,7 @@ void Chunk::buildMesh() {
     if (!backNeighborChunk) {
         backNeighborChunk = &world.getChunk(location.x - CHUNK_WIDTH, location.y);
     }
+
     mesh.construct(*this);
 }
 
@@ -37,6 +38,7 @@ void Chunk::load() {
 
 void Chunk::unload() {
     mesh.destruct();
+    chunkMeshState = ChunkMeshState::UNBUILT;
 }
 
 void Chunk::setBlock(int x, int y, int z, Block block) {
@@ -46,6 +48,9 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 }
 
 Block Chunk::getBlock(int x, int y, int z) {
+    if (x < 0 || x >= CHUNK_WIDTH || y < 0 || y >= CHUNK_WIDTH || z < 0 || z >= CHUNK_HEIGHT) {
+        return Block(Block::UNDEFINED);
+    }
     int chunkletIndex = z / CHUNKLET_HEIGHT;
     int chunkletZ = z % CHUNKLET_HEIGHT;
     Chunklet &chunklet = chunklets[chunkletIndex];
@@ -78,3 +83,21 @@ Chunk *Chunk::getAdjacentChunk(HorizontalDirection direction) {
             throw std::runtime_error("Invalid direction");
     }
 }
+
+int Chunk::getMaxBlockHeightAt(int x, int y) {
+    return maxBlockHeights[x + y * CHUNK_WIDTH];
+}
+
+void Chunk::setMaxBlockHeightAt(int x, int y, int z) {
+    maxBlockHeights[x + y * CHUNK_WIDTH] = z;
+}
+
+void Chunk::setIsBlockBuried(int x, int y, int z, bool isBuried) {
+    blocksBuried[z * CHUNK_AREA + y * CHUNK_WIDTH + x] = isBuried;
+}
+
+int Chunk::getIsBlockBuried(int x, int y, int z) {
+    return blocksBuried[z * CHUNK_AREA + y * CHUNK_WIDTH + x]; // 0 - 65,535
+}
+
+

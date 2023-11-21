@@ -45,20 +45,32 @@ public:
     ChunkMeshState chunkMeshState = ChunkMeshState::UNBUILT;
     ChunkState chunkState = ChunkState::UNDEFINED;
 
+
     glm::vec2 &getLocation();
 
     ChunkMesh &getMesh();
 
 //    glm::vec3 getBlockWorldLocation(int x, int y, int z) const;
-    std::array<Chunklet, 8> chunklets;
+    std::array<Chunklet, NUM_CHUNKLETS> chunklets;
 
     Chunk *getAdjacentChunk(HorizontalDirection direction);
+
+    int getMaxBlockHeightAt(int x, int y);
+
+    void setMaxBlockHeightAt(int x, int y, int z);
+
+    int getIsBlockBuried(int x, int y, int z);
+
+    void setIsBlockBuried(int x, int y, int z, bool isBuried);
 
 private:
     Chunk *leftNeighborChunk = nullptr;
     Chunk *rightNeighborChunk = nullptr;
     Chunk *frontNeighborChunk = nullptr;
     Chunk *backNeighborChunk = nullptr;
+
+    std::array<int, CHUNK_AREA> maxBlockHeights;
+    std::array<bool, CHUNK_VOLUME> blocksBuried;
 
     World &world;
     ChunkMesh mesh;

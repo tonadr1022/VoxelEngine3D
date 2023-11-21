@@ -8,11 +8,12 @@
 constexpr int WINDOW_HEIGHT = 600;
 constexpr int WINDOW_WIDTH = 800;
 constexpr int CHUNK_WIDTH = 16;
-constexpr int CHUNK_HEIGHT = 128;
+constexpr int CHUNK_HEIGHT = 256;
 constexpr int CHUNK_AREA = CHUNK_WIDTH * CHUNK_WIDTH;
 constexpr int CHUNKLET_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_WIDTH;
 constexpr int CHUNKLET_HEIGHT = CHUNK_WIDTH;
 constexpr int CHUNK_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
+constexpr int NUM_CHUNKLETS = CHUNK_HEIGHT / CHUNKLET_HEIGHT;
 
 enum class HorizontalDirection {
     LEFT = 0,

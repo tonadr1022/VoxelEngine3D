@@ -10,7 +10,6 @@ ChunkRenderer::ChunkRenderer(Camera &camera, Shader &shader, unsigned int textur
                                                                                                     textureAtlasID) {
 }
 
-
 void ChunkRenderer::render(Chunk &chunk) {
     if (chunk.chunkMeshState == ChunkMeshState::UNBUILT) {
         chunk.buildMesh();
@@ -20,15 +19,17 @@ void ChunkRenderer::render(Chunk &chunk) {
         std::cout << "Chunk mesh failed to build, cant render" << std::endl;
         return;
     }
-    // model matrix for rendering chunk
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(chunk.getLocation(), 0.0f));
 
     shader.use();
     shader.setInt("u_Texture", 0);
-    shader.setMat4("u_Model", model);
     shader.setMat4("u_Projection", camera.getProjectionMatrix());
     shader.setMat4("u_View", camera.getViewMatrix());
+
+    // model matrix for rendering chunk
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(chunk.getLocation(), 0.0f));
+    shader.setMat4("u_Model", model);
+
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureAtlasID);
