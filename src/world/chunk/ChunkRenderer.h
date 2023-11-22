@@ -18,7 +18,7 @@ public:
 
     static void createGPUResources(Chunk &chunk);
 
-    void destroyGPUResources(Chunk &chunk);
+    static void destroyGPUResources(Chunk &chunk);
 
     void render(Chunk &chunk);
 

@@ -11,10 +11,6 @@ ChunkRenderer::ChunkRenderer(Camera &camera, Shader &shader, unsigned int textur
 }
 
 void ChunkRenderer::render(Chunk &chunk) {
-    if (chunk.chunkMeshState == ChunkMeshState::UNBUILT) {
-        chunk.buildMesh();
-        createGPUResources(chunk);
-    }
     if (chunk.chunkMeshState == ChunkMeshState::FAILED) {
         std::cout << "Chunk mesh failed to build, cant render" << std::endl;
         return;

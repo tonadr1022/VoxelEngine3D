@@ -10,6 +10,7 @@
 #include "../camera/Camera.h"
 #include "generation/TerrainGenerator.h"
 #include "chunk/ChunkRenderer.h"
+#include "chunk/ChunkManager.h"
 
 
 class World {
@@ -20,18 +21,13 @@ public:
 
     void render();
 
-    Chunk &getChunk(int x, int y);
-
 private:
-
+    std::deque<Chunk> chunkLoadQueue;
     void unloadChunks();
-
     GLFWwindow *window;
-    std::map<std::pair<int, int>, Chunk> chunkMap;
     Player &player;
     ChunkRenderer chunkRenderer;
-//    TerrainGenerator terrainGenerator;
-//    std::vector<std::thread> chunkLoadThreads;
+    ChunkManager chunkManager;
 
 
 };

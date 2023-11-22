@@ -52,6 +52,7 @@ namespace {
 
 struct AdjacentBlockPositions {
     glm::ivec3 positions[static_cast<int>(BlockFace::COUNT)];
+
     void update(int x, int y, int z) {
         positions[static_cast<int>(BlockFace::TOP)] = {x, y, z + 1};
         positions[static_cast<int>(BlockFace::BOTTOM)] = {x, y, z - 1};
@@ -68,7 +69,10 @@ ChunkMesh::ChunkMesh() : VAO(0), VBO(0), EBO(0) {
 
 
 bool
-ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, BlockFace face, Chunk &chunk) {
+ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, BlockFace face, Chunk &chunk,
+                         Chunk &leftNeighborChunk,
+                         Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
+                         Chunk &backNeighborChunk) {
     // below min height
     if (adjacentBlockPosInChunk.z < 0) return false;
     // check if adjacent block is vertically out of bounds, if so add face
@@ -78,37 +82,26 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, BlockFace face, Ch
 
     if (adjacentBlockPosInChunk.x < 0) {
         // get back neighbor chunk
-        if (chunk.getAdjacentChunk(HorizontalDirection::BACK)->getBlock(CHUNK_WIDTH - 1,
-                                                                        adjacentBlockPosInChunk.y,
-                                                                        adjacentBlockPosInChunk.z).id ==
-            Block::AIR) {
+        if (backNeighborChunk.getBlock(CHUNK_WIDTH - 1, adjacentBlockPosInChunk.y,
+                                       adjacentBlockPosInChunk.z).id == Block::AIR) {
             return true;
         }
     } else if (adjacentBlockPosInChunk.x >= CHUNK_WIDTH) {
         // get front neighbor chunk
-        if (chunk.getAdjacentChunk(HorizontalDirection::FRONT)->getBlock(0,
-                                                                         adjacentBlockPosInChunk.y,
-                                                                         adjacentBlockPosInChunk.z).id ==
-            Block::AIR) {
+        if (frontNeighborChunk.getBlock(0, adjacentBlockPosInChunk.y,
+                                        adjacentBlockPosInChunk.z).id == Block::AIR) {
             return true;
         }
     } else if (adjacentBlockPosInChunk.y < 0) {
         // get left neighbor chunk
-        if (!chunk.getAdjacentChunk(HorizontalDirection::LEFT)) {
-            std::cout << "left neighbor chunk is null" << std::endl;
-        }
-        if (chunk.getAdjacentChunk(HorizontalDirection::LEFT)->getBlock(adjacentBlockPosInChunk.x,
-                                                                        CHUNK_WIDTH - 1,
-                                                                        adjacentBlockPosInChunk.z).id ==
-            Block::AIR) {
+        if (leftNeighborChunk.getBlock(adjacentBlockPosInChunk.x, CHUNK_WIDTH - 1,
+                                       adjacentBlockPosInChunk.z).id == Block::AIR) {
             return true;
         }
     } else if (adjacentBlockPosInChunk.y >= CHUNK_WIDTH) {
         // get right neighbor chunk
-        if (chunk.getAdjacentChunk(HorizontalDirection::RIGHT)->getBlock(adjacentBlockPosInChunk.x,
-                                                                         0,
-                                                                         adjacentBlockPosInChunk.z).id ==
-            Block::AIR) {
+        if (rightNeighborChunk.getBlock(adjacentBlockPosInChunk.x, 0,
+                                        adjacentBlockPosInChunk.z).id == Block::AIR) {
             return true;
         }
     } else {
@@ -119,12 +112,13 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, BlockFace face, Ch
             return true;
         }
     }
-
     return false;
 }
 
 
-void ChunkMesh::construct(Chunk &chunk) {
+void ChunkMesh::construct(Chunk &chunk, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
+                          Chunk &frontNeighborChunk,
+                          Chunk &backNeighborChunk) {
     auto start = std::chrono::high_resolution_clock::now();
     AdjacentBlockPositions adjacentBlockPositions{};
     for (int x = 0; x < CHUNK_WIDTH; x++) {
@@ -153,7 +147,9 @@ void ChunkMesh::construct(Chunk &chunk) {
                     for (int i = 0; i < static_cast<int>(BlockFace::COUNT); i++) {
                         auto face = static_cast<BlockFace>(i);
                         glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[static_cast<int>(face)];
-                        if (shouldAddFace(adjacentBlockPos, face, chunk)) {
+                        if (shouldAddFace(adjacentBlockPos, face, chunk, leftNeighborChunk,
+                                          rightNeighborChunk, frontNeighborChunk,
+                                          backNeighborChunk)) {
                             addFace(blockPosInChunk, block, face);
                         }
                     }
@@ -162,8 +158,7 @@ void ChunkMesh::construct(Chunk &chunk) {
             chunkletBreak:;
         }
     }
-    chunk.chunkMeshState = ChunkMeshState::BUILT;
-        auto end = std::chrono::high_resolution_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     if (duration.count() > 0.5)
         std::cout << "Chunk generation took: " << duration.count() << "microseconds"
@@ -208,6 +203,7 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face
 }
 
 void ChunkMesh::destruct() {
+
     vertices.clear();
     indices.clear();
     if (VAO != 0) {

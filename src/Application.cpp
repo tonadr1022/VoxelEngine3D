@@ -102,7 +102,7 @@ void Application::initGlfwImGui() {
 
     window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Learning OpenGL", nullptr, nullptr);
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable vsync
+//    glfwSwapInterval(1); // Enable vsync
 
     glfwSetFramebufferSizeCallback(window, [](GLFWwindow *windowArg, int width, int height) {
         glViewport(0, 0, width, height);

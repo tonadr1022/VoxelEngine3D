@@ -7,13 +7,16 @@
 
 #include "../Config.h"
 #include "../camera/Camera.h"
+#include "../world/chunk/ChunkKey.h"
+
+
 
 class Player {
 public:
     Player();
 
     glm::vec3 &getPosition();
-    [[nodiscard]] std::pair<int, int> getChunkKeyPos() const;
+    [[nodiscard]] ChunkKey getChunkKeyPos() const;
 
 
 //    void processKeyInput(int key, int scancode, int action, int mods);

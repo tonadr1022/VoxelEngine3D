@@ -24,7 +24,9 @@ class ChunkMesh {
 public:
     ChunkMesh();
 
-    void construct(Chunk &chunk);
+    void construct(Chunk &chunk, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
+                   Chunk &frontNeighborChunk,
+                   Chunk &backNeighborChunk);
 
     void destruct();
 
@@ -33,9 +35,11 @@ public:
     unsigned int VAO, VBO, EBO;
 
 private:
-    void addFace(glm::ivec3& blockPosInChunk, Block block, BlockFace face);
-
-    static bool shouldAddFace(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk &chunk);
+    void addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face);
+    static bool shouldAddFace(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk &chunk,
+                              Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
+                              Chunk &frontNeighborChunk,
+                              Chunk &backNeighborChunk);
 
 };
 

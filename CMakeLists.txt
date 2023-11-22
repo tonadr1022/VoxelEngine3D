@@ -3,6 +3,8 @@ project(voxel_engine)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set_property(TARGET PROPERTY CXX_STANDARD 17)
+
 set(GLEW_ROOT_DIR /opt/homebrew/Cellar/glew/2.2.0_1)
 
 include_directories(${GLEW_ROOT_DIR})
@@ -52,6 +54,9 @@ set(SOURCE_FILES
         src/world/chunk/ChunkRenderer.h
         src/resources/ResourceManager.cpp
         src/resources/ResourceManager.h
+        src/world/chunk/ChunkManager.cpp
+        src/world/chunk/ChunkManager.h
+        src/world/chunk/ChunkKey.h
 
 )
 

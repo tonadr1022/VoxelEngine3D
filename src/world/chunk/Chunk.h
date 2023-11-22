@@ -9,6 +9,7 @@
 #include "ChunkMesh.h"
 #include "../chunklet/Chunklet.h"
 
+
 enum class ChunkMeshState {
     BUILT = 0,
     UNBUILT,
@@ -23,16 +24,16 @@ enum class ChunkState {
     FAILED
 };
 
-class Chunklet;
+class ChunkManager;
 
-class World;
+class Chunklet;
 
 class Chunk {
 public:
     Chunk() = delete;
-    explicit Chunk(glm::vec2 location, World &world);
+    explicit Chunk(glm::vec2 location);
 
-    void buildMesh();
+    void buildMesh(Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk, Chunk &backNeighborChunk);
 
     void load();
 
@@ -50,10 +51,7 @@ public:
 
     ChunkMesh &getMesh();
 
-//    glm::vec3 getBlockWorldLocation(int x, int y, int z) const;
     std::array<Chunklet, NUM_CHUNKLETS> chunklets;
-
-    Chunk *getAdjacentChunk(HorizontalDirection direction);
 
     int getMaxBlockHeightAt(int x, int y);
 
@@ -64,15 +62,8 @@ public:
     void setIsBlockBuried(int x, int y, int z, bool isBuried);
 
 private:
-    Chunk *leftNeighborChunk = nullptr;
-    Chunk *rightNeighborChunk = nullptr;
-    Chunk *frontNeighborChunk = nullptr;
-    Chunk *backNeighborChunk = nullptr;
-
     std::array<int, CHUNK_AREA> maxBlockHeights;
     std::array<bool, CHUNK_VOLUME> blocksBuried;
-
-    World &world;
     ChunkMesh mesh;
     glm::vec2 location;
 };

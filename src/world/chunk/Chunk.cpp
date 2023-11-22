@@ -3,33 +3,23 @@
 //
 
 #include "Chunk.h"
-#include "../world/World.h"
+#include "ChunkManager.h"
+#include "ChunkRenderer.h"
 
 
-Chunk::Chunk(glm::vec2 location, World &world) : location(location), chunkMeshState(ChunkMeshState::UNBUILT),
-                                   chunkState(ChunkState::UNDEFINED), world(world) {
-
+Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshState::UNBUILT),
+                                   chunkState(ChunkState::UNDEFINED) {
     for (int chunkZ = 0; chunkZ < CHUNK_HEIGHT; chunkZ += CHUNKLET_HEIGHT) {
         Chunklet chunklet(glm::vec3(location, chunkZ));
         chunklets[chunkZ / CHUNKLET_HEIGHT] = chunklet;
     }
 }
 
-void Chunk::buildMesh() {
-    if (!leftNeighborChunk) {
-        leftNeighborChunk = &world.getChunk(location.x, location.y - CHUNK_WIDTH);
-    }
-    if (!rightNeighborChunk) {
-        rightNeighborChunk = &world.getChunk(location.x, location.y + CHUNK_WIDTH);
-    }
-    if (!frontNeighborChunk) {
-        frontNeighborChunk = &world.getChunk(location.x + CHUNK_WIDTH, location.y);
-    }
-    if (!backNeighborChunk) {
-        backNeighborChunk = &world.getChunk(location.x - CHUNK_WIDTH, location.y);
-    }
+void Chunk::buildMesh(Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
+                      Chunk &backNeighborChunk) {
 
-    mesh.construct(*this);
+    mesh.construct(*this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk, backNeighborChunk);
+    chunkMeshState = ChunkMeshState::BUILT;
 }
 
 void Chunk::load() {
@@ -38,6 +28,7 @@ void Chunk::load() {
 
 void Chunk::unload() {
     mesh.destruct();
+    ChunkRenderer::destroyGPUResources(*this);
     chunkMeshState = ChunkMeshState::UNBUILT;
 }
 
@@ -67,21 +58,6 @@ glm::vec2 &Chunk::getLocation() {
 
 ChunkMesh &Chunk::getMesh() {
     return mesh;
-}
-
-Chunk *Chunk::getAdjacentChunk(HorizontalDirection direction) {
-    switch (direction) {
-        case HorizontalDirection::LEFT:
-            return leftNeighborChunk;
-        case HorizontalDirection::RIGHT:
-            return rightNeighborChunk;
-        case HorizontalDirection::FRONT:
-            return frontNeighborChunk;
-        case HorizontalDirection::BACK:
-            return backNeighborChunk;
-        default:
-            throw std::runtime_error("Invalid direction");
-    }
 }
 
 int Chunk::getMaxBlockHeightAt(int x, int y) {

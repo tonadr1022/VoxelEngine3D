@@ -3,6 +3,7 @@
 //
 
 #include "Player.h"
+#include "../world/chunk/ChunkKey.h"
 
 Player::Player() = default;
 
@@ -10,7 +11,7 @@ glm::vec3& Player::getPosition() {
     return position;
 }
 
-std::pair<int, int> Player::getChunkKeyPos() const {
+ChunkKey Player::getChunkKeyPos() const {
     return {static_cast<int>(position.x / CHUNK_WIDTH), static_cast<int>(position.y / CHUNK_WIDTH)};
 }
 void Player::processKeyInput(GLFWwindow *window, float deltaTime) {
