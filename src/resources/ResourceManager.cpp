@@ -7,10 +7,13 @@
 
 std::unordered_map<std::string, unsigned int> ResourceManager::textures;
 
-void ResourceManager::makeTexture(const std::string &texturePath, const std::string &textureName) {
+void ResourceManager::makeTexture(const std::string &texturePath, const std::string &textureName,
+                                  bool flipVertically) {
     int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
+    if (!flipVertically)
+        stbi_set_flip_vertically_on_load(true);
+    unsigned char *data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels,
+                                    STBI_rgb_alpha);
     if (!data) {
         throw std::runtime_error("Failed to load texture: " + texturePath);
     }
@@ -33,7 +36,9 @@ void ResourceManager::makeTexture(const std::string &texturePath, const std::str
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glGenerateMipmap(GL_TEXTURE_2D);
+
 }
+
 unsigned int ResourceManager::getTexture(const std::string &textureName) {
     auto it = textures.find(textureName);
     if (it != textures.end()) {

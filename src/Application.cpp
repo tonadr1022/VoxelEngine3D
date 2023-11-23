@@ -6,12 +6,14 @@
 #include "shaders/Shader.h"
 #include "world/World.h"
 #include "resources/ResourceManager.h"
+#include "world/block/BlockDB.h"
 
 
 void Application::run() {
-    ResourceManager::makeTexture("../resources/textures/dirt.jpg", "texture_atlas");
+    BlockDB::loadData("../resources/blocks/");
+    ResourceManager::makeTexture("../resources/textures/default_texture.png", "texture_atlas", true);
     Shader chunkShader("../shaders/vertex.glsl", "../shaders/fragment.glsl");
-    World world(window, player, chunkShader);
+    World world(player, chunkShader);
     double time = 0.0;
     const double dt = 1 / 60.0;
     double currentTime = glfwGetTime();
@@ -102,7 +104,7 @@ void Application::initGlfwImGui() {
 
     window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Learning OpenGL", nullptr, nullptr);
     glfwMakeContextCurrent(window);
-//    glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(1); // Enable vsync
 
     glfwSetFramebufferSizeCallback(window, [](GLFWwindow *windowArg, int width, int height) {
         glViewport(0, 0, width, height);

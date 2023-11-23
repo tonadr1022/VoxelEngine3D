@@ -57,6 +57,8 @@ set(SOURCE_FILES
         src/world/chunk/ChunkManager.cpp
         src/world/chunk/ChunkManager.h
         src/world/chunk/ChunkKey.h
+        src/world/block/BlockDB.cpp
+        src/world/block/BlockDB.h
 
 )
 

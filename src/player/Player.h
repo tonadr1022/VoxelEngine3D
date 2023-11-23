@@ -18,9 +18,6 @@ public:
     glm::vec3 &getPosition();
     [[nodiscard]] ChunkKey getChunkKeyPos() const;
 
-
-//    void processKeyInput(int key, int scancode, int action, int mods);
-
     void update(GLFWwindow *window, float deltaTime);
 
     Camera camera;
@@ -29,7 +26,7 @@ private:
     void processMouseInput(GLFWwindow *window, float deltaTime);
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 1.0f);
 
-    float movementSpeed = 20.0f;
+    float movementSpeed = 40.0f;
 
 
 };

@@ -11,25 +11,30 @@
 #include "generation/TerrainGenerator.h"
 #include "chunk/ChunkRenderer.h"
 #include "chunk/ChunkManager.h"
-
+#include <set>
+#include <future>
 
 class World {
 public:
-    World(GLFWwindow *window, Player &player, Shader &chunkShader);
+    World(Player &player, Shader &chunkShader);
 
     void update();
 
+
     void render();
 
+
 private:
-    std::deque<Chunk> chunkLoadQueue;
+    int chunksToLoadPerFrame = 1;
+    int chunksLoadedThisFrame = 0;
+
+    void loadChunks(ChunkKey &playerChunkKeyPos, bool shouldLoadAll = false);
+    void updateChunkMeshes(ChunkKey &playerChunkKeyPos, bool shouldUpdateAll = false);
+
     void unloadChunks();
-    GLFWwindow *window;
     Player &player;
     ChunkRenderer chunkRenderer;
     ChunkManager chunkManager;
-
-
 };
 
 

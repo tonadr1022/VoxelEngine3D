@@ -14,6 +14,7 @@ constexpr int CHUNKLET_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_WIDTH;
 constexpr int CHUNKLET_HEIGHT = CHUNK_WIDTH;
 constexpr int CHUNK_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
 constexpr int NUM_CHUNKLETS = CHUNK_HEIGHT / CHUNKLET_HEIGHT;
+constexpr int TEXTURE_ATLAS_WIDTH = 16;
 
 enum class HorizontalDirection {
     LEFT = 0,

@@ -12,7 +12,6 @@ const vec3 sunDirection = normalize(vec3(-1.0, 1.0, 1.0));
 const vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
 void main() {
-    // ambient
     float ambientStrength = 0.2;
     vec3 ambient = ambientStrength * lightColor;
 
@@ -20,5 +19,4 @@ void main() {
     vec3 diffuseColor = lightColor * diffuse;
 
     o_Color = vec4(diffuseColor + ambient, 1.0) * texture(u_Texture, v_TexCoord);
-//    o_Color = vec4(texture(u_Texture, v_TexCoord).rgb, 1.0);
 }

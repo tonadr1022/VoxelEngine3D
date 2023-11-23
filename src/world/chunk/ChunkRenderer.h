@@ -22,6 +22,8 @@ public:
 
     void render(Chunk &chunk);
 
+    void startChunkRender();
+
 private:
     unsigned int textureAtlasID;
     Camera &camera;

@@ -11,28 +11,12 @@ ChunkRenderer::ChunkRenderer(Camera &camera, Shader &shader, unsigned int textur
 }
 
 void ChunkRenderer::render(Chunk &chunk) {
-    if (chunk.chunkMeshState == ChunkMeshState::FAILED) {
-        std::cout << "Chunk mesh failed to build, cant render" << std::endl;
-        return;
-    }
-
-    shader.use();
-    shader.setInt("u_Texture", 0);
-    shader.setMat4("u_Projection", camera.getProjectionMatrix());
-    shader.setMat4("u_View", camera.getViewMatrix());
-
-    // model matrix for rendering chunk
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(chunk.getLocation(), 0.0f));
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(chunk.getLocation(), 0.0f));
     shader.setMat4("u_Model", model);
-
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureAtlasID);
-    glBindVertexArray(chunk.getMesh().VAO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.getMesh().EBO);
-
-    glDrawElements(GL_TRIANGLES, static_cast<GLint>(chunk.getMesh().indices.size()), GL_UNSIGNED_INT, nullptr);
+    ChunkMesh &mesh = chunk.getMesh();
+    glBindVertexArray(mesh.VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
+    glDrawElements(GL_TRIANGLES, static_cast<GLint>(mesh.indices.size()), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
@@ -51,16 +35,9 @@ void ChunkRenderer::createGPUResources(Chunk &chunk) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int), &mesh.indices[0], GL_STATIC_DRAW);
 
-    // set vertex attributes pointers
-    // position vector
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, (void *) nullptr);
+    glVertexAttribPointer(0, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(uint32_t), (void *) nullptr);
     glEnableVertexAttribArray(0);
-    // texture coords
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 32, (void *) 12);
-    glEnableVertexAttribArray(1);
-    // normal vector
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, (void *) 20);
-    glEnableVertexAttribArray(2);
+
 }
 
 void ChunkRenderer::destroyGPUResources(Chunk &chunk) {
@@ -68,6 +45,15 @@ void ChunkRenderer::destroyGPUResources(Chunk &chunk) {
     glDeleteVertexArrays(1, &mesh.VAO);
     glDeleteBuffers(1, &mesh.VBO);
     glDeleteBuffers(1, &mesh.EBO);
+}
+
+void ChunkRenderer::startChunkRender() {
+    shader.use();
+    shader.setInt("u_Texture", 0);
+    shader.setMat4("u_Projection", camera.getProjectionMatrix());
+    shader.setMat4("u_View", camera.getViewMatrix());
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureAtlasID);
 }
 
 

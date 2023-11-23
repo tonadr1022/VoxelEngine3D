@@ -31,7 +31,6 @@ struct Block {
     }
     Block() : id(UNDEFINED) {}
     explicit Block(ID id) : id(id) {}
-
 };
 
 #endif //VOXEL_ENGINE_BLOCK_H

@@ -1,0 +1,20 @@
+Name
+Wood
+
+Id
+6
+
+TexSide
+11 14
+
+TexTop
+10 14
+
+TexBottom
+10 14
+
+Transparent
+0
+
+Collidable
+1

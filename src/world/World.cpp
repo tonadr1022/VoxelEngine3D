@@ -5,10 +5,9 @@
 #include "World.h"
 #include "../resources/ResourceManager.h"
 #include "chunk/ChunkKey.h"
-#include <thread>
-
 
 void World::render() {
+    chunkRenderer.startChunkRender();
     ChunkMap &chunkMap = chunkManager.getChunkMap();
     for (auto &chunk: chunkMap) {
         if (chunk.second.chunkMeshState == ChunkMeshState::BUILT) {
@@ -19,27 +18,44 @@ void World::render() {
 
 void World::update() {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-    int loadDistanceChunks = 16;
-    int renderDistanceChunks = 14;
-    ChunkMap &chunkMap = chunkManager.getChunkMap();
+    loadChunks(playerChunkKeyPos);
+    updateChunkMeshes(playerChunkKeyPos);
+    unloadChunks();
+}
 
+
+
+void World::loadChunks(ChunkKey &playerChunkKeyPos, bool shouldLoadAll) {
+    int loadDistanceChunks = 10;
+    int loadedChunks = 0;
+    ChunkMap &chunkMap = chunkManager.getChunkMap();
     for (int chunkX = playerChunkKeyPos.x - loadDistanceChunks;
          chunkX < playerChunkKeyPos.x + loadDistanceChunks; chunkX++) {
         for (int chunkY = playerChunkKeyPos.y - loadDistanceChunks;
              chunkY < playerChunkKeyPos.y + loadDistanceChunks; chunkY++) {
             ChunkKey chunkKey = {chunkX, chunkY};
-            if (!chunkManager.chunkExists(chunkKey)) {
-                std::cout << "Generating chunk at: " << chunkKey.x << ", " << chunkKey.y
-                          << std::endl;
+            if (chunkMap.find(chunkKey) == chunkMap.end()) {
                 Chunk chunk(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
                 TerrainGenerator::generateTerrainFor(chunk);
                 chunk.chunkState = ChunkState::GENERATED;
                 chunkMap.emplace(chunkKey, chunk);
+                if (!shouldLoadAll) return;
+                loadedChunks++;
             }
+//            }if (!chunkManager.chunkExists(chunkKey)) {
+//                Chunk chunk(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
+//                TerrainGenerator::generateTerrainFor(chunk);
+//                chunk.chunkState = ChunkState::GENERATED;
+//                chunkMap.emplace(chunkKey, chunk);
+//                if (!shouldLoadAll && loadedChunks > 3) return;
+//                loadedChunks++;
+//            }
         }
     }
-    unloadChunks();
+}
 
+void World::updateChunkMeshes(ChunkKey &playerChunkKeyPos, bool shouldUpdateAll) {
+    int renderDistanceChunks = 8;
     for (int chunkX = playerChunkKeyPos.x - renderDistanceChunks;
          chunkX < playerChunkKeyPos.x + renderDistanceChunks; chunkX++) {
         for (int chunkY = playerChunkKeyPos.y - renderDistanceChunks;
@@ -53,6 +69,13 @@ void World::update() {
                     ChunkKey rightNeighborChunkKey = {chunkKey.x, chunkKey.y + 1};
                     ChunkKey frontNeighborChunkKey = {chunkKey.x + 1, chunkKey.y};
                     ChunkKey backNeighborChunkKey = {chunkKey.x - 1, chunkKey.y};
+                    // if any neighbor doesn't exist, don't build mesh
+                    if (!chunkManager.chunkExists(leftNeighborChunkKey) ||
+                        !chunkManager.chunkExists(rightNeighborChunkKey) ||
+                        !chunkManager.chunkExists(frontNeighborChunkKey) ||
+                        !chunkManager.chunkExists(backNeighborChunkKey)) {
+                        continue;
+                    }
                     Chunk leftNeighborChunk = chunkManager.getChunk(leftNeighborChunkKey);
                     Chunk rightNeighborChunk = chunkManager.getChunk(rightNeighborChunkKey);
                     Chunk frontNeighborChunk = chunkManager.getChunk(frontNeighborChunkKey);
@@ -60,22 +83,34 @@ void World::update() {
                     chunk.buildMesh(leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
                                     backNeighborChunk);
                     ChunkRenderer::createGPUResources(chunk);
+                    if (!shouldUpdateAll) return;
+
                 }
             }
         }
     }
 }
 
-World::World(GLFWwindow *window, Player &player, Shader &chunkShader) : window(
-        window), player(player), chunkRenderer(player.camera, chunkShader,
+
+World::World(Player &player, Shader &chunkShader) : player(player), chunkRenderer(player.camera, chunkShader,
                                                ResourceManager::getTexture("texture_atlas")) {
+    ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
 
+    auto start = std::chrono::high_resolution_clock::now();
+
+    loadChunks(playerChunkKeyPos, true);
+    updateChunkMeshes(playerChunkKeyPos, true);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    if (duration.count() > 0.5)
+        std::cout << "Chunk generation took: " << duration.count() << "milliseconds"
+                  << std::endl;
 }
-
 
 void World::unloadChunks() {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-    int unloadDistanceChunks = 16;
+    int unloadDistanceChunks = 10;
     ChunkMap &chunkMap = chunkManager.getChunkMap();
 
     for (auto it = chunkMap.begin(); it != chunkMap.end();) {

@@ -10,6 +10,7 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
 
     for (int xPosInChunk = 0; xPosInChunk < CHUNK_WIDTH; xPosInChunk++) {
         for (int yPosInChunk = 0; yPosInChunk < CHUNK_WIDTH; yPosInChunk++) {
+
             int worldX = chunkLocation.x + xPosInChunk;
             int worldY = chunkLocation.y + yPosInChunk;
             float noiseVal = glm::simplex(glm::vec2(worldX, worldY) / 64.0f);
@@ -18,10 +19,19 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
             chunk.setMaxBlockHeightAt(xPosInChunk, yPosInChunk, height);
 
             for (int zPosInChunk = 0; zPosInChunk < CHUNK_HEIGHT; zPosInChunk++) {
-                if (zPosInChunk <= height) {
+                if (zPosInChunk < height) {
                     chunk.setBlock(xPosInChunk, yPosInChunk, zPosInChunk, Block(Block::DIRT));
+                } else if (zPosInChunk == height) {
+                    chunk.setBlock(xPosInChunk, yPosInChunk, zPosInChunk, Block(Block::GRASS));
                 } else {
                     chunk.setBlock(xPosInChunk, yPosInChunk, zPosInChunk, Block(Block::AIR));
+                }
+            }
+
+            if (xPosInChunk == 8 && yPosInChunk == 8) {
+                for (int i = 0; i < 10; i++) {
+                    chunk.setBlock(xPosInChunk, yPosInChunk, i + height, Block(Block::WOOD));
+                    chunk.setMaxBlockHeightAt(xPosInChunk, yPosInChunk, height + 10);
                 }
             }
         }

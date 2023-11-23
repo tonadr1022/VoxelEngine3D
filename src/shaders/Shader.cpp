@@ -38,8 +38,6 @@ GLint Shader::makeModule(const std::string &filepath, GLint module_type) {
         std::cout << "ERROR::SHADER::" << (module_type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT")
                   << "::COMPILATION_FAILED\n" << infoLog << std::endl;
         return -1;
-    } else {
-        std::cout << "Shader module compiled successfully" << std::endl;
     }
     return shaderModule;
 

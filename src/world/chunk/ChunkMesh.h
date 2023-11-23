@@ -30,12 +30,13 @@ public:
 
     void destruct();
 
-    std::vector<float> vertices;
+    std::vector<uint32_t> vertices;
     std::vector<unsigned int> indices;
     unsigned int VAO, VBO, EBO;
 
+
 private:
-    void addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face);
+    void addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace face);
     static bool shouldAddFace(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk &chunk,
                               Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
                               Chunk &frontNeighborChunk,

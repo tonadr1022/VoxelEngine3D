@@ -4,48 +4,49 @@
 
 #include "ChunkMesh.h"
 #include "Chunk.h"
+#include "../block/BlockDB.h"
 
 namespace {
-    const std::array<GLfloat, 32> frontFace{
-            1, 0, 0, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            1, 1, 0, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            1, 0, 1, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-            1, 1, 1, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+    const std::array<int, 20> frontFace{
+            1, 0, 0, 0, 0,
+            1, 1, 0, 1, 0,
+            1, 0, 1, 0, 1,
+            1, 1, 1, 1, 1,
     };
 
-    const std::array<GLfloat, 32> backFace{
-            0, 0, 0, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-            0, 0, 1, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f,
-            0, 1, 0, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-            0, 1, 1, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+    const std::array<int, 20> backFace{
+            0, 0, 0, 0, 0,
+            0, 0, 1, 0, 1,
+            0, 1, 0, 1, 0,
+            0, 1, 1, 1, 1,
     };
 
-    const std::array<GLfloat, 32> leftFace{
-            0, 0, 0, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
-            1, 0, 0, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f,
-            0, 0, 1, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
-            1, 0, 1, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+    const std::array<int, 20> leftFace{
+            0, 0, 0, 0, 0,
+            1, 0, 0, 1, 0,
+            0, 0, 1, 0, 1,
+            1, 0, 1, 1, 1,
     };
 
-    const std::array<GLfloat, 32> rightFace{
-            0, 1, 0, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            0, 1, 1, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-            1, 1, 0, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            1, 1, 1, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+    const std::array<int, 20> rightFace{
+            0, 1, 0, 0, 0,
+            0, 1, 1, 0, 1,
+            1, 1, 0, 1, 0,
+            1, 1, 1, 1, 1,
     };
 
-    const std::array<GLfloat, 32> topFace{
-            0, 0, 1, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-            1, 0, 1, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-            0, 1, 1, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-            1, 1, 1, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+    const std::array<int, 20> topFace{
+            0, 0, 1, 0, 0,
+            1, 0, 1, 1, 0,
+            0, 1, 1, 0, 1,
+            1, 1, 1, 1, 1,
     };
 
-    const std::array<GLfloat, 32> bottomFace{
-            0, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
-            0, 1, 0, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f,
-            1, 0, 0, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f,
-            1, 1, 0, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+    const std::array<int, 20> bottomFace{
+            0, 0, 0, 0, 0,
+            0, 1, 0, 0, 1,
+            1, 0, 0, 1, 0,
+            1, 1, 0, 1, 1,
     };
 } // namespace
 
@@ -119,7 +120,6 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, BlockFace face, Ch
 void ChunkMesh::construct(Chunk &chunk, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
                           Chunk &frontNeighborChunk,
                           Chunk &backNeighborChunk) {
-    auto start = std::chrono::high_resolution_clock::now();
     AdjacentBlockPositions adjacentBlockPositions{};
     for (int x = 0; x < CHUNK_WIDTH; x++) {
         for (int y = 0; y < CHUNK_WIDTH; y++) {
@@ -158,48 +158,82 @@ void ChunkMesh::construct(Chunk &chunk, Chunk &leftNeighborChunk, Chunk &rightNe
             chunkletBreak:;
         }
     }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-    if (duration.count() > 0.5)
-        std::cout << "Chunk generation took: " << duration.count() << "microseconds"
-                  << std::endl;
 }
 
-void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face) {
-    std::array<GLfloat, 32> faceVertices{};
+void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace face) {
+    BlockData &blockData = BlockDB::getBlockData(block.id);
+    int textureX = 0;
+    int textureY = 0;
+    std::array<int, 20> faceVertices{};
+    int faceNum;
     switch (face) {
         case BlockFace::FRONT:
+            faceNum = 0;
             faceVertices = frontFace;
+            textureX = blockData.frontTexCoords.x;
+            textureY = blockData.frontTexCoords.y;
             break;
         case BlockFace::BACK:
+            faceNum = 1;
             faceVertices = backFace;
+            textureX = blockData.backTexCoords.x;
+            textureY = blockData.backTexCoords.y;
             break;
         case BlockFace::LEFT:
+            faceNum = 2;
             faceVertices = leftFace;
+            textureX = blockData.leftTexCoords.x;
+            textureY = blockData.leftTexCoords.y;
             break;
         case BlockFace::RIGHT:
+            faceNum = 3;
             faceVertices = rightFace;
+            textureX = blockData.rightTexCoords.x;
+            textureY = blockData.rightTexCoords.y;
             break;
         case BlockFace::TOP:
+            faceNum = 4;
             faceVertices = topFace;
+            textureX = blockData.topTexCoords.x;
+            textureY = blockData.topTexCoords.y;
             break;
         case BlockFace::BOTTOM:
+            faceNum = 5;
             faceVertices = bottomFace;
+            textureX = blockData.bottomTexCoords.x;
+            textureY = blockData.bottomTexCoords.y;
             break;
         default:
             break;
     }
-    for (int i = 0; i < 32; i += 8) {
-        faceVertices[i] += static_cast<float>(blockPosInChunk.x);
-        faceVertices[i + 1] += static_cast<float>(blockPosInChunk.y);
-        faceVertices[i + 2] += static_cast<float>(blockPosInChunk.z);
+    auto baseVertexIndex = vertices.size();
+    int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
+    for (int i = 0; i < 20; i += 5) {
+        std::bitset<5> xPosBits(faceVertices[i] + blockPosInChunk.x);
+        std::bitset<5> yPosBits(faceVertices[i + 1] + blockPosInChunk.y);
+        std::bitset<9> zPosBits(faceVertices[i + 2] + blockPosInChunk.z);
+        std::bitset<3> faceBits(faceNum);
+        std::bitset<1> uBit(faceVertices[i + 3]);
+        std::bitset<1> vBit(faceVertices[i + 4]);
+        std::bitset<8> textureIndexBits(textureIndex);
+
+        uint32_t encodedValue =
+                (xPosBits.to_ulong() << 27) |
+                (yPosBits.to_ulong() << 22) |
+                (zPosBits.to_ulong() << 13) |
+                (faceBits.to_ulong() << 10) |
+                (uBit.to_ulong() << 9) |
+                (vBit.to_ulong() << 8) |
+                (textureIndexBits.to_ulong() << 0);
+
+        vertices.push_back(encodedValue);
     }
-    vertices.insert(vertices.end(), faceVertices.begin(), faceVertices.end());
-    unsigned int offset = static_cast<int>(vertices.size() / 8 - 4);
-    indices.insert(indices.end(), {
-            offset, offset + 1, offset + 2,
-            offset + 2, offset + 1, offset + 3
-    });
+    indices.push_back(baseVertexIndex);
+    indices.push_back(baseVertexIndex + 1);
+    indices.push_back(baseVertexIndex + 2);
+    indices.push_back(baseVertexIndex + 2);
+    indices.push_back(baseVertexIndex + 1);
+    indices.push_back(baseVertexIndex + 3);
 }
 
 void ChunkMesh::destruct() {

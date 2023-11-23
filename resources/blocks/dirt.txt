@@ -1,0 +1,14 @@
+Name
+Dirt
+
+Id
+1
+
+TexAll
+13 15
+
+Transparent
+0
+
+Collidable
+1
