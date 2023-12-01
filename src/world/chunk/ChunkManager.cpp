@@ -82,6 +82,7 @@ void ChunkManager::setBlockAndHandleChunkUpdates(glm::ivec3 position, Block bloc
     chunk.setBlock(chunkX, chunkY, position.z, block);
 
     chunksToReload.push_back(chunkKey);
+
     chunk.markDirty();
 
     // need to update adjacent chunks if block is on border

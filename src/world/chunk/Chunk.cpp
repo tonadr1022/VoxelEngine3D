@@ -17,9 +17,7 @@ Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshS
 
 void Chunk::buildMesh(Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
                       Chunk &backNeighborChunk) {
-    if (chunkState == ChunkState::CHANGED) {
         ChunkRenderer::destroyGPUResources(*this);
-    }
     mesh.construct(*this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk, backNeighborChunk);
     chunkMeshState = ChunkMeshState::BUILT;
 }
@@ -37,6 +35,9 @@ void Chunk::unload() {
 void Chunk::setBlock(int x, int y, int z, Block block) {
     if (block.id != Block::AIR)
         numSolidBlocksInLayers[z]++;
+    if (z > getMaxBlockHeightAt(x, y)) {
+        setMaxBlockHeightAt(x, y, z);
+    }
     int chunkletIndex = z / CHUNKLET_HEIGHT;
     int chunkletZ = z % CHUNKLET_HEIGHT;
     chunklets[chunkletIndex].setBlock(x, y, chunkletZ, block);
