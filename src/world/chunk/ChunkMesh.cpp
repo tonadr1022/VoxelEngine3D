@@ -65,9 +65,7 @@ struct AdjacentBlockPositions {
 };
 
 ChunkMesh::ChunkMesh() : VAO(0), VBO(0), EBO(0) {
-
 }
-
 
 bool
 ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, BlockFace face, Chunk &chunk,
@@ -106,7 +104,7 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, BlockFace face, Ch
             return true;
         }
     } else {
-//     check adjacent block (in chunk at this point), if it's air or transparent, add face
+        // check adjacent block (in chunk at this point), if it's air or transparent, add face
         Block adjacentBlock = chunk.getBlock(adjacentBlockPosInChunk.x, adjacentBlockPosInChunk.y,
                                              adjacentBlockPosInChunk.z);
         if (adjacentBlock.isTransparent()) {
@@ -121,28 +119,24 @@ void ChunkMesh::construct(Chunk &chunk, Chunk &leftNeighborChunk, Chunk &rightNe
                           Chunk &frontNeighborChunk,
                           Chunk &backNeighborChunk) {
     AdjacentBlockPositions adjacentBlockPositions{};
-    for (int x = 0; x < CHUNK_WIDTH; x++) {
-        for (int y = 0; y < CHUNK_WIDTH; y++) {
-            // get max block height z for this xy pos in the chunk
-            int maxBlockHeight = chunk.getMaxBlockHeightAt(x, y);
-            for (Chunklet &chunklet: chunk.chunklets) {
-                for (int chunkletZ = 0; chunkletZ < CHUNKLET_HEIGHT; chunkletZ++) {
-                    // continue past chunklet
-                    if (chunklet.location.z + chunkletZ > maxBlockHeight) {
-                        goto chunkletBreak;
+     for (Chunklet &chunklet: chunk.chunklets) {
+        for (int chunkletZ = 0; chunkletZ < CHUNKLET_HEIGHT; chunkletZ++) {
+            int chunkZ = static_cast<int>(chunklet.location.z) + chunkletZ;
+            if (chunk.numSolidBlocksInLayers[chunkZ] == 0) {
+                continue;
+            }
+            for (int x = 0; x < CHUNK_WIDTH; x++) {
+                for (int y = 0; y < CHUNK_WIDTH; y++) {
+                    int maxBlockHeight = chunk.getMaxBlockHeightAt(x, y);
+                    if (chunkZ > maxBlockHeight) {
+                        continue;
                     }
                     Block block = chunklet.getBlock(x, y, chunkletZ);
                     if (block.id == Block::AIR) {
                         continue;
                     }
-
-                    int chunkZ = static_cast<int>(chunklet.location.z) + chunkletZ;
-                    if (chunk.getIsBlockBuried(x, y, chunkZ)) {
-                        continue;
-                    }
                     // block pos in chunk
                     glm::ivec3 blockPosInChunk = {x, y, chunkZ};
-
                     adjacentBlockPositions.update(x, y, chunkZ);
                     for (int i = 0; i < static_cast<int>(BlockFace::COUNT); i++) {
                         auto face = static_cast<BlockFace>(i);
@@ -155,10 +149,10 @@ void ChunkMesh::construct(Chunk &chunk, Chunk &leftNeighborChunk, Chunk &rightNe
                     }
                 }
             }
-            chunkletBreak:;
         }
     }
 }
+
 
 void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace face) {
     BlockData &blockData = BlockDB::getBlockData(block.id);
@@ -237,7 +231,6 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace fac
 }
 
 void ChunkMesh::destruct() {
-
     vertices.clear();
     indices.clear();
     if (VAO != 0) {

@@ -4,18 +4,28 @@
 
 #include "ShaderManager.h"
 
-ShaderManager::ShaderManager() = default;
+#include <utility>
+std::unordered_map<std::string, std::shared_ptr<Shader>> ShaderManager::shaders;
 
-void ShaderManager::addShader(const Shader &shader, const std::string &name) {
-    shaders.emplace(name, shader);
-//    shaders.insert(std::make_pair(name, shader));
+
+void ShaderManager::addShader(std::shared_ptr<Shader> shader, const std::string &name) {
+    shaders[name] = std::move(shader);
 }
 
 void ShaderManager::useShader(const std::string &name) {
     auto shader = shaders.find(name);
     if (shader != shaders.end()) {
-        shader->second.use();
+        shader->second->use();
     } else {
-        std::cout << "Shader " << name << " not found" << std::endl;
+        throw std::runtime_error("Shader " + name + " not found");
+    }
+}
+
+std::shared_ptr<Shader> ShaderManager::getShader(const std::string &name) {
+    auto shader = shaders.find(name);
+    if (shader != shaders.end()) {
+        return shader->second;
+    } else {
+        throw std::runtime_error("Shader " + name + " not found");
     }
 }

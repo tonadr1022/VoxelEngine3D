@@ -21,7 +21,6 @@ enum class HorizontalDirection {
     RIGHT,
     FRONT,
     BACK,
-    COUNT
 };
 
 

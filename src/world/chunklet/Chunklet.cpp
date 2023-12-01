@@ -5,13 +5,9 @@
 #include "Chunklet.h"
 
 Chunklet::Chunklet(glm::ivec3 location) : location(location) {
-
 }
 
 void Chunklet::setBlock(int x, int y, int z, Block block) {
-//    if (x == 0 && y == 15 && z == 0) {
-//        std::cout << "here" << std::endl;
-//    }
     blocks[getIndex(x, y, z)] = block;
 }
 

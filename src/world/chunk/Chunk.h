@@ -31,9 +31,11 @@ class Chunklet;
 class Chunk {
 public:
     Chunk() = delete;
+
     explicit Chunk(glm::vec2 location);
 
-    void buildMesh(Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk, Chunk &backNeighborChunk);
+    void buildMesh(Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
+                   Chunk &backNeighborChunk);
 
     void load();
 
@@ -57,11 +59,13 @@ public:
 
     void setMaxBlockHeightAt(int x, int y, int z);
 
-    int getIsBlockBuried(int x, int y, int z);
+    void markDirty();
 
     void setIsBlockBuried(int x, int y, int z, bool isBuried);
 
+    std::array<int, CHUNK_HEIGHT> numSolidBlocksInLayers;
 private:
+
     std::array<int, CHUNK_AREA> maxBlockHeights;
     std::array<bool, CHUNK_VOLUME> blocksBuried;
     ChunkMesh mesh;

@@ -12,7 +12,7 @@
 
 class ChunkRenderer {
 public:
-    ChunkRenderer(Camera &camera, Shader &shader, unsigned int textureAtlasID);
+    ChunkRenderer(Camera &camera, unsigned int textureAtlasID);
 
     ~ChunkRenderer();
 
@@ -27,7 +27,7 @@ public:
 private:
     unsigned int textureAtlasID;
     Camera &camera;
-    Shader &shader;
+    std::shared_ptr<Shader> shader;
 
 
 };

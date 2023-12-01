@@ -59,6 +59,14 @@ set(SOURCE_FILES
         src/world/chunk/ChunkKey.h
         src/world/block/BlockDB.cpp
         src/world/block/BlockDB.h
+        src/physics/Ray.h
+        src/world/events/DigEvent.cpp
+        src/world/events/DigEvent.h
+        src/world/events/IEvent.h
+        src/utils/Utils.h
+        src/utils/Utils.cpp
+        src/gui/CrossHair.cpp
+        src/gui/CrossHair.h
 
 )
 

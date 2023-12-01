@@ -7,13 +7,29 @@
 #include "world/World.h"
 #include "resources/ResourceManager.h"
 #include "world/block/BlockDB.h"
+#include "shaders/ShaderManager.h"
+#include "renderer/Renderer.h"
 
 
 void Application::run() {
     BlockDB::loadData("../resources/blocks/");
     ResourceManager::makeTexture("../resources/textures/default_texture.png", "texture_atlas", true);
-    Shader chunkShader("../shaders/vertex.glsl", "../shaders/fragment.glsl");
-    World world(player, chunkShader);
+    std::shared_ptr<Shader> chunkShader = std::make_shared<Shader>("../shaders/vertex.glsl", "../shaders/fragment.glsl");
+    std::shared_ptr<Shader> highlightShader = std::make_shared<Shader>("../shaders/HighlightVert.glsl", "../shaders/HighlightFrag.glsl");
+    ShaderManager::addShader(chunkShader, "chunk");
+    ShaderManager::addShader(highlightShader, "highlight");
+    World world(window, player);
+    Renderer renderer(window, player.camera);
+
+    std::shared_ptr<Shader> crossHairShader = std::make_shared<Shader>("../shaders/CrossHairVert.glsl", "../shaders/CrossHairFrag.glsl");
+    ShaderManager::addShader(crossHairShader, "crosshair");
+    glm::mat4 crossHairModel = glm::mat4(1.0f);
+    crossHairModel = glm::scale(crossHairModel, glm::vec3(0.03f));
+    glm::vec3 crossHairColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    ShaderManager::getShader("crosshair")->use();
+    ShaderManager::getShader("crosshair")->setMat4("u_Model", crossHairModel);
+    ShaderManager::getShader("crosshair")->setVec3("u_Color", crossHairColor);
+
     double time = 0.0;
     const double dt = 1 / 60.0;
     double currentTime = glfwGetTime();
@@ -31,12 +47,15 @@ void Application::run() {
             glm::vec3& cameraPos = player.getPosition();
             ImGui::Text("Camera Position  %.2f x  %.2f y %.2f z",
                         cameraPos.x, cameraPos.y, cameraPos.z);
+            ImGui::SliderInt("Render Distance", &world.renderDistance, 1, 32);
             ImGui::End();
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         world.update();
         world.render();
+        renderer.renderCrossHair();
+
         double newTime = glfwGetTime();
         double frameTime = newTime - currentTime;
         currentTime = newTime;

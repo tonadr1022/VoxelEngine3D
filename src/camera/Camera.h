@@ -6,6 +6,7 @@
 #define VOXEL_ENGINE_CAMERA_H
 
 #include "../Config.h"
+#include "../physics/Ray.h"
 
 class Camera {
 public:
@@ -44,7 +45,7 @@ public:
 private:
     void updateCameraVectors(float deltaTime);
 
-    float fov = 45.0f;
+    float fov = 70.0f;
     float mouseSensitivity = 0.1f;
     float farPlane = 800.0f;
 
@@ -56,7 +57,7 @@ private:
 //    float pitch = 0.0f;
 
 
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f);
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 eulers = glm::vec3(0.0f, 0.0f, 0.0f);
 
     glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);

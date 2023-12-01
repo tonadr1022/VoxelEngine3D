@@ -10,14 +10,15 @@
 
 class ShaderManager {
 public:
-    ShaderManager();
 
-    void addShader(const Shader &shader, const std::string &name);
+    static void addShader(std::shared_ptr<Shader> shader, const std::string &name);
 
-    void useShader(const std::string &name);
+    static void useShader(const std::string &name);
+
+    static std::shared_ptr<Shader> getShader(const std::string &name);
 
 private:
-    std::unordered_map<std::string, Shader> shaders;
+    static std::unordered_map<std::string, std::shared_ptr<Shader>> shaders;
 
 
 };

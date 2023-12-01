@@ -15,6 +15,8 @@
 #include <map>
 #include <chrono>
 #include <deque>
+#include <memory>
+#include <unordered_map>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

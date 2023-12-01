@@ -3,16 +3,20 @@
 //
 
 #include "ChunkRenderer.h"
+#include "../../shaders/ShaderManager.h"
 
-ChunkRenderer::ChunkRenderer(Camera &camera, Shader &shader, unsigned int textureAtlasID) : camera(camera),
-                                                                                            shader(shader),
+
+ChunkRenderer::ChunkRenderer(Camera &camera, unsigned int textureAtlasID) : camera(camera),
+                                                                                            shader(
+                                                                                                    ShaderManager::getShader(
+                                                                                                            "chunk")),
                                                                                             textureAtlasID(
                                                                                                     textureAtlasID) {
 }
 
 void ChunkRenderer::render(Chunk &chunk) {
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(chunk.getLocation(), 0.0f));
-    shader.setMat4("u_Model", model);
+    shader->setMat4("u_Model", model);
     ChunkMesh &mesh = chunk.getMesh();
     glBindVertexArray(mesh.VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
@@ -37,21 +41,18 @@ void ChunkRenderer::createGPUResources(Chunk &chunk) {
 
     glVertexAttribPointer(0, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(uint32_t), (void *) nullptr);
     glEnableVertexAttribArray(0);
-
 }
 
 void ChunkRenderer::destroyGPUResources(Chunk &chunk) {
     ChunkMesh &mesh = chunk.getMesh();
-    glDeleteVertexArrays(1, &mesh.VAO);
-    glDeleteBuffers(1, &mesh.VBO);
-    glDeleteBuffers(1, &mesh.EBO);
+    mesh.destruct();
 }
 
 void ChunkRenderer::startChunkRender() {
-    shader.use();
-    shader.setInt("u_Texture", 0);
-    shader.setMat4("u_Projection", camera.getProjectionMatrix());
-    shader.setMat4("u_View", camera.getViewMatrix());
+    shader->use();
+    shader->setInt("u_Texture", 0);
+    shader->setMat4("u_Projection", camera.getProjectionMatrix());
+    shader->setMat4("u_View", camera.getViewMatrix());
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureAtlasID);
 }

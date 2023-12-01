@@ -10,7 +10,6 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
 
     for (int xPosInChunk = 0; xPosInChunk < CHUNK_WIDTH; xPosInChunk++) {
         for (int yPosInChunk = 0; yPosInChunk < CHUNK_WIDTH; yPosInChunk++) {
-
             int worldX = chunkLocation.x + xPosInChunk;
             int worldY = chunkLocation.y + yPosInChunk;
             float noiseVal = glm::simplex(glm::vec2(worldX, worldY) / 64.0f);
@@ -31,14 +30,23 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
             if (xPosInChunk == 8 && yPosInChunk == 8) {
                 for (int i = 0; i < 10; i++) {
                     chunk.setBlock(xPosInChunk, yPosInChunk, i + height, Block(Block::WOOD));
-                    chunk.setMaxBlockHeightAt(xPosInChunk, yPosInChunk, height + 10);
                 }
+                chunk.setMaxBlockHeightAt(xPosInChunk, yPosInChunk, height + 10);
             }
         }
     }
-    setBuriedBlockStates(chunk);
+//    std::cout << chunk.numTransparentBlocksInLayers[10] << std::endl;
+//    auto start = std::chrono::high_resolution_clock::now();
+//    setBuriedBlockStates(chunk);
+//    auto end = std::chrono::high_resolution_clock::now();
+//    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+//
+//        std::cout << "init transparency array: " << duration.count() << "microseconds"
+//                  << std::endl;
+
     chunk.chunkState = ChunkState::GENERATED;
 }
+
 
 void TerrainGenerator::setBuriedBlockStates(Chunk &chunk) {
     glm::ivec2 chunkLocation = chunk.getLocation();
@@ -95,7 +103,6 @@ void TerrainGenerator::setBuriedBlockStates(Chunk &chunk) {
                 if (backNeighbor.id == Block::AIR || backNeighbor.id == Block::UNDEFINED) {
                     isBuried = false;
                 }
-
 
                 if (isBuried) {
                     chunk.setIsBlockBuried(xPosInChunk, yPosInChunk, zPosInChunk, true);

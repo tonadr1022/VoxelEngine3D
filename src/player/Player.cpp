@@ -41,17 +41,19 @@ void Player::processKeyInput(GLFWwindow *window, float deltaTime) {
         position -= globalUp * multiplier;
     }
     camera.setPosition(position);
+
 }
 
 
 void Player::processMouseInput(GLFWwindow *window, float deltaTime) {
     bool ImGuiWantMouse = ImGui::GetIO().WantCaptureMouse;
-    if (!ImGuiWantMouse && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+//    if (!ImGuiWantMouse && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         camera.processMouseMovement(window, deltaTime);
-    } else {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
+//    } else {
+//        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+//    }
+
 
 }
 
@@ -60,6 +62,3 @@ void Player::update(GLFWwindow *window, float deltaTime) {
     processKeyInput(window, deltaTime);
     camera.update(deltaTime);
 }
-
-//void Player::update() {
-//}
