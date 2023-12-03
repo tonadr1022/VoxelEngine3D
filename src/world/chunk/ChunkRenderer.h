@@ -22,7 +22,7 @@ public:
 
     void render(Chunk &chunk);
 
-    void startChunkRender();
+    void start();
 
 private:
     unsigned int textureAtlasID;

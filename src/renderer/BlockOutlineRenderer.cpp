@@ -46,6 +46,7 @@ void BlockOutlineRenderer::render(glm::vec3 blockPosition, Camera &camera) const
     outlineShader->setMat4("u_Model", model);
     outlineShader->setMat4("u_View", camera.getViewMatrix());
     outlineShader->setMat4("u_Projection", camera.getProjectionMatrix());
+    outlineShader->setFloat("u_LineWidth", 0.02f);
     // set width using opengl command
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

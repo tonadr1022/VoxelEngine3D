@@ -7,11 +7,11 @@
 
 
 ChunkRenderer::ChunkRenderer(Camera &camera, unsigned int textureAtlasID) : camera(camera),
-                                                                                            shader(
-                                                                                                    ShaderManager::getShader(
-                                                                                                            "chunk")),
-                                                                                            textureAtlasID(
-                                                                                                    textureAtlasID) {
+                                                                            shader(
+                                                                                    ShaderManager::getShader(
+                                                                                            "chunk")),
+                                                                            textureAtlasID(
+                                                                                    textureAtlasID) {
 }
 
 void ChunkRenderer::render(Chunk &chunk) {
@@ -33,11 +33,13 @@ void ChunkRenderer::createGPUResources(Chunk &chunk) {
 
     glGenBuffers(1, &mesh.VBO);
     glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
-    glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(float), &mesh.vertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(float), &mesh.vertices[0],
+                 GL_STATIC_DRAW);
 
     glGenBuffers(1, &mesh.EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int), &mesh.indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int),
+                 &mesh.indices[0], GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(uint32_t), (void *) nullptr);
     glEnableVertexAttribArray(0);
@@ -48,7 +50,7 @@ void ChunkRenderer::destroyGPUResources(Chunk &chunk) {
     mesh.destruct();
 }
 
-void ChunkRenderer::startChunkRender() {
+void ChunkRenderer::start() {
     shader->use();
     shader->setInt("u_Texture", 0);
     shader->setMat4("u_Projection", camera.getProjectionMatrix());
