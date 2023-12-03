@@ -19,6 +19,7 @@ void World::render() {
     // render block outline if aiming at a block
     if (static_cast<const glm::vec3>(lastRayCastBlockPos) != NULL_VECTOR) {
         renderer.renderBlockOutline(lastRayCastBlockPos);
+        renderer.renderBlockBreak(lastRayCastBlockPos, player.blockBreakStage);
     }
 }
 
@@ -28,6 +29,7 @@ void World::update() {
     loadChunks(playerChunkKeyPos);
     chunkManager.updateChunkMeshes(playerChunkKeyPos, renderDistance);
     unloadChunks();
+
 }
 
 
@@ -53,11 +55,11 @@ void World::loadChunks(ChunkKey &playerChunkKeyPos, bool shouldLoadAll) {
 }
 
 World::World(GLFWwindow *window, Player &player, Renderer &renderer) : window(window),
-                                                   player(player),
-                                                   renderer(renderer),
-                                                   chunkRenderer(player.camera,
-                                                                 ResourceManager::getTexture(
-                                                                         "texture_atlas")) {
+                                                                       player(player),
+                                                                       renderer(renderer),
+                                                                       chunkRenderer(player.camera,
+                                                                                     ResourceManager::getTexture(
+                                                                                             "texture_atlas")) {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -96,12 +98,13 @@ void World::castRay(Ray ray) {
     glm::ivec3 lastAirBlockPos = NULL_VECTOR;
     glm::vec3 rayStart = ray.origin;
     glm::vec3 rayEnd = ray.origin;
-    glm::vec3 direction = glm::normalize(ray.direction) * 0.05f;
+    glm::vec3 directionIncrement = glm::normalize(ray.direction) * 0.05f;
     static std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
     static bool isFirstAction = true;
-    int steps = 0;
+
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE &&
         glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
+        player.blockBreakStage = 0;
         isFirstAction = true;
     }
     while (glm::distance(rayStart, rayEnd) < 10.0f) {
@@ -109,20 +112,29 @@ void World::castRay(Ray ray) {
         lastRayCastBlockPos = blockPos;
         Block block = chunkManager.getBlock(blockPos);
         if (block.id != Block::AIR) {
+            // calculate block break stage. 10 stages. 0 is no break, 10 is fully broken
+            auto duration = std::chrono::steady_clock::now() - lastTime;
+            long durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+            int breakStage = durationMS / (MINING_DELAY_MS / 10);
+            if (breakStage > 10) breakStage = 10;
+
             // breaking block
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-                if (!isFirstAction && std::chrono::steady_clock::now() - lastTime < std::chrono::milliseconds(MINING_DELAY_MS)) {
+                if (std::chrono::steady_clock::now() - lastTime <
+                                      std::chrono::milliseconds(MINING_DELAY_MS)) {
+                    player.blockBreakStage = breakStage;
                     return;
                 }
-                chunkManager.setBlockAndHandleChunkUpdates({blockPos.x, blockPos.y, blockPos.z}, Block(Block::AIR));
+                chunkManager.setBlockAndHandleChunkUpdates({blockPos.x, blockPos.y, blockPos.z},
+                                                           Block(Block::AIR));
                 isFirstAction = false;
             }
-            // placing block
+                // placing block
             else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-                if (!isFirstAction && std::chrono::steady_clock::now() - lastTime < std::chrono::milliseconds(PLACING_DELAY_MS)) {
+                if (!isFirstAction && std::chrono::steady_clock::now() - lastTime <
+                                      std::chrono::milliseconds(PLACING_DELAY_MS)) {
                     return;
                 }
-                std::cout << "last air block pos: " << lastAirBlockPos.x << ", " << lastAirBlockPos.y << ", " << lastAirBlockPos.z << std::endl;
                 chunkManager.setBlockAndHandleChunkUpdates(lastAirBlockPos, Block(Block::STONE));
                 isFirstAction = false;
             }
@@ -131,9 +143,9 @@ void World::castRay(Ray ray) {
         } else {
             lastAirBlockPos = blockPos;
         }
-        rayEnd += direction;
-        steps++;
+        rayEnd += directionIncrement;
     }
+    player.blockBreakStage = 0;
     lastRayCastBlockPos = NULL_VECTOR;
 }
 

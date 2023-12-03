@@ -20,7 +20,7 @@ public:
     void updateChunkMeshes(ChunkKey &playerChunkKeyPos, int renderDistance,
                            bool shouldUpdateAll = false);
 
-    void unload(Chunk &chunk);
+
 
     Chunk &getChunk(ChunkKey chunkKey);
 
@@ -40,8 +40,8 @@ public:
 
     static ChunkKey getNeighborChunkKey(HorizontalDirection direction, ChunkKey &chunkKey);
 
-
 private:
+
     std::map<ChunkKey, Chunk> chunkMap;
     std::vector<ChunkKey> chunksToReload;
 

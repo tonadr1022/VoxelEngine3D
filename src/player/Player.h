@@ -21,6 +21,8 @@ public:
     void update(GLFWwindow *window, float deltaTime);
 
     Camera camera;
+
+    int blockBreakStage = 0;
 private:
     void processKeyInput(GLFWwindow *window, float deltaTime);
     void processMouseInput(GLFWwindow *window, float deltaTime);

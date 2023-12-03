@@ -5,13 +5,13 @@ Id
 6
 
 TexSide
-11 14
+5 15
 
 TexTop
-10 14
+4 15
 
 TexBottom
-10 14
+4 15
 
 Transparent
 0

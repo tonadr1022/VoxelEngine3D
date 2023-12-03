@@ -5,7 +5,7 @@ Id
 2
 
 TexSide
-12 15
+14 15
 
 TexTop
 15 15

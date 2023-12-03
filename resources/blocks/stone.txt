@@ -5,7 +5,7 @@ Id
 3
 
 TexAll
-14 15
+12 15
 
 Transparent
 0

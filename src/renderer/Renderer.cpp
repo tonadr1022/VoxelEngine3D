@@ -18,6 +18,10 @@ void Renderer::renderBlockOutline(glm::ivec3 blockPosition) {
     blockOutlineRenderer.render(blockPosition, camera);
 }
 
+void Renderer::renderBlockBreak(glm::ivec3 blockPosition, float breakPercentage) {
+    blockBreakRenderer.render(blockPosition, camera, breakPercentage);
+}
+
 void Renderer::startRender(const std::shared_ptr<Shader> &shader) {
     shader->use();
     shader->setMat4("u_View", camera.getViewMatrix());
@@ -32,5 +36,6 @@ void Renderer::renderCrossHair() const {
     glDrawArrays(GL_LINES, 0, 4); // 4 vertices for crosshair
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_DEPTH_TEST);
-
 }
+
+

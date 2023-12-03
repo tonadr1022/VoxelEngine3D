@@ -12,18 +12,21 @@
 
 void Application::run() {
     BlockDB::loadData("../resources/blocks/");
-    ResourceManager::makeTexture("../resources/textures/default_texture.png", "texture_atlas",
+    ResourceManager::makeTexture("../resources/textures/default_pack.png", "texture_atlas",
                                  true);
     std::shared_ptr<Shader> chunkShader = std::make_shared<Shader>("../shaders/vertex.glsl",
                                                                    "../shaders/fragment.glsl");
     std::shared_ptr<Shader> outlineShader = std::make_shared<Shader>("../shaders/OutlineVert.glsl",
-                                                                     "../shaders/OutlineFrag.glsl",
-                                                                     "../shaders/OutlineGeom.glsl");
+                                                                     "../shaders/OutlineFrag.glsl", "../shaders/OutlineGeom.glsl");
+    std::shared_ptr<Shader> blockBreakShader = std::make_shared<Shader>(
+            "../shaders/BlockBreakVert.glsl", "../shaders/BlockBreakFrag.glsl");
+
     ShaderManager::addShader(chunkShader, "chunk");
     ShaderManager::addShader(outlineShader, "outline");
+    ShaderManager::addShader(blockBreakShader, "blockBreak");
+
     Renderer renderer(window, player.camera);
     World world(window, player, renderer);
-
 
     std::shared_ptr<Shader> crossHairShader = std::make_shared<Shader>(
             "../shaders/CrossHairVert.glsl", "../shaders/CrossHairFrag.glsl");
@@ -71,10 +74,6 @@ void Application::run() {
             time += deltaTime;
             player.update(window, deltaTime);
         }
-
-//        player.update(window, deltaTime);
-//        world.update();
-
 
         // Rendering
         ImGui::Render();

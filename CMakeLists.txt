@@ -69,6 +69,8 @@ set(SOURCE_FILES
         src/gui/CrossHair.h
         src/renderer/BlockOutlineRenderer.cpp
         src/renderer/BlockOutlineRenderer.h
+        src/renderer/BlockBreakRenderer.cpp
+        src/renderer/BlockBreakRenderer.h
 
 )
 

@@ -10,6 +10,7 @@
 #include "../shaders/Shader.h"
 #include "../gui/CrossHair.h"
 #include "BlockOutlineRenderer.h"
+#include "BlockBreakRenderer.h"
 
 class Renderer {
 public:
@@ -21,12 +22,15 @@ public:
 
     void renderCrossHair() const;
     void renderBlockOutline(glm::ivec3 blockPosition);
+    void renderBlockBreak(glm::ivec3 blockPosition, float breakPercentage);
 
     void startRender(const std::shared_ptr<Shader>& shader);
 
 private:
     std::shared_ptr<Shader> highlightShader;
     BlockOutlineRenderer blockOutlineRenderer;
+    BlockBreakRenderer blockBreakRenderer;
+
     GLFWwindow *window;
     Camera &camera;
     CrossHair crossHair;
