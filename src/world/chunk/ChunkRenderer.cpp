@@ -34,9 +34,6 @@ void ChunkRenderer::createGPUResources(Chunk &chunk) {
     glGenBuffers(1, &mesh.VBO);
     glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
     glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(float), &mesh.vertices[0], GL_STATIC_DRAW);
-    if (mesh.vertices.size() * sizeof(float) != 13008) {
-        std::cout << "Chunk VBO size: " << mesh.vertices.size() * sizeof(float) << std::endl;
-    }
 
     glGenBuffers(1, &mesh.EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);

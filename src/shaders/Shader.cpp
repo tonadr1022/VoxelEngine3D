@@ -35,7 +35,11 @@ GLint Shader::makeModule(const std::string &filepath, GLint module_type) {
     if (!success) {
         char infoLog[512];
         glGetShaderInfoLog(shaderModule, 512, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::" << (module_type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT")
+        std::cout << "ERROR::SHADER::"
+                  << (module_type == GL_VERTEX_SHADER ?
+                      "VERTEX" : module_type == GL_FRAGMENT_SHADER ?
+                                 "FRAGMENT" : module_type == GL_GEOMETRY_SHADER
+                                              ? "GEOMETRY" : "UNKNOWN")
                   << "::COMPILATION_FAILED\n" << infoLog << std::endl;
         return -1;
     }
@@ -44,13 +48,20 @@ GLint Shader::makeModule(const std::string &filepath, GLint module_type) {
 
 }
 
-Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
-    GLint vertexShaderModule = makeModule(vertexPath, GL_VERTEX_SHADER);
-    GLint fragmentShaderModule = makeModule(fragmentPath, GL_FRAGMENT_SHADER);
-
+Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath, const std::string &geometryPath) {
     std::vector<GLint> shaderModules;
+
+    GLint vertexShaderModule = makeModule(vertexPath, GL_VERTEX_SHADER);
     shaderModules.push_back(vertexShaderModule);
+
+    GLint fragmentShaderModule = makeModule(fragmentPath, GL_FRAGMENT_SHADER);
     shaderModules.push_back(fragmentShaderModule);
+
+    if (!geometryPath.empty()) {
+        GLint geometryShaderModule = makeModule(geometryPath, GL_GEOMETRY_SHADER);
+        shaderModules.push_back(geometryShaderModule);
+    }
+
 
     shaderProgram = glCreateProgram();
     for (GLint shaderModule: shaderModules) {

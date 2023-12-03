@@ -13,11 +13,12 @@
 #include "chunk/ChunkManager.h"
 #include "../physics/Ray.h"
 #include "events/IEvent.h"
+#include "../renderer/Renderer.h"
 
 
 class World {
 public:
-    World(GLFWwindow *window, Player &player);
+    World(GLFWwindow *window, Player &player, Renderer &renderer);
 
     void update();
 
@@ -33,7 +34,7 @@ private:
     GLFWwindow *window;
     int chunksToLoadPerFrame = 1;
     int chunksLoadedThisFrame = 0;
-    glm::ivec3 lastRayCastBlockPos = glm::ivec3(0, 0, 0);
+    glm::ivec3 lastRayCastBlockPos = glm::ivec3(-1, -1, -1);
     std::vector<std::unique_ptr<IEvent>> events;
 
     void loadChunks(ChunkKey &playerChunkKeyPos, bool shouldLoadAll = false);
@@ -43,6 +44,7 @@ private:
     Player &player;
     ChunkRenderer chunkRenderer;
     ChunkManager chunkManager;
+    Renderer renderer;
 };
 
 

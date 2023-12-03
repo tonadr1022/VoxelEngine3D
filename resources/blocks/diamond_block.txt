@@ -1,0 +1,14 @@
+Name
+DiamondBlock
+
+Id
+12
+
+TexAll
+7 14
+
+Transparent
+0
+
+Collidable
+1

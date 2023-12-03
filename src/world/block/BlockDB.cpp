@@ -5,7 +5,7 @@
 #include "BlockDB.h"
 #include <fstream>
 
-const std::array<std::string, 5> blockFileNames{
+const std::array<std::string, 6> blockFileNames{
         "air",
         "dirt",
         "grass",
@@ -13,6 +13,7 @@ const std::array<std::string, 5> blockFileNames{
 //        "water",
 //        "sand",
         "wood",
+        "diamond_block",
 //        "leaves",
 //        "cactus",
 //        "snow",

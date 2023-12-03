@@ -9,24 +9,28 @@
 #include "../camera/Camera.h"
 #include "../shaders/Shader.h"
 #include "../gui/CrossHair.h"
+#include "BlockOutlineRenderer.h"
 
 class Renderer {
 public:
     explicit Renderer(GLFWwindow *window, Camera &camera);
 
-    void highlightRender(glm::ivec3 blockPosition);
+
 
     void render();
 
-    void renderCrossHair();
+    void renderCrossHair() const;
+    void renderBlockOutline(glm::ivec3 blockPosition);
 
     void startRender(const std::shared_ptr<Shader>& shader);
 
 private:
     std::shared_ptr<Shader> highlightShader;
+    BlockOutlineRenderer blockOutlineRenderer;
     GLFWwindow *window;
     Camera &camera;
     CrossHair crossHair;
+
 
 
 };

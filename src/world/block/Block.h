@@ -14,13 +14,14 @@ struct Block {
         GRASS,
         STONE,
         WATER,
-        SAND,
+        SAND,  // 5
         WOOD,
         LEAVES,
         CACTUS,
         SNOW,
-        ICE,
+        ICE,    // 10
         BEDROCK,
+        DIAMOND_BLOCK,
         UNDEFINED
     };
 

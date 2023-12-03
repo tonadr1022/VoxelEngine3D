@@ -14,6 +14,9 @@ void World::render() {
             chunkRenderer.render(chunk.second);
         }
     }
+    if (lastRayCastBlockPos != glm::ivec3(-1, -1, -1)) {
+        renderer.renderBlockOutline(lastRayCastBlockPos);
+    }
 }
 
 void World::update() {
@@ -46,20 +49,13 @@ void World::loadChunks(ChunkKey &playerChunkKeyPos, bool shouldLoadAll) {
                 if (!shouldLoadAll) return;
                 loadedChunks++;
             }
-//            }if (!chunkManager.chunkExists(chunkKey)) {
-//                Chunk chunk(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
-//                TerrainGenerator::generateTerrainFor(chunk);
-//                chunk.chunkState = ChunkState::GENERATED;
-//                chunkMap.emplace(chunkKey, chunk);
-//                if (!shouldLoadAll && loadedChunks > 3) return;
-//                loadedChunks++;
-//            }
         }
     }
 }
 
-World::World(GLFWwindow *window, Player &player) : window(window),
+World::World(GLFWwindow *window, Player &player, Renderer &renderer) : window(window),
                                                    player(player),
+                                                   renderer(renderer),
                                                    chunkRenderer(player.camera,
                                                                  ResourceManager::getTexture(
                                                                          "texture_atlas")) {
@@ -104,7 +100,7 @@ void World::castRay(Ray ray) {
     glm::vec3 direction = glm::normalize(ray.direction) * 0.05f;
     static std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
     int steps = 0;
-    while (glm::distance(rayStart, rayEnd) < 6.0f) {
+    while (glm::distance(rayStart, rayEnd) < 10.0f) {
         glm::ivec3 blockPos = {floor(rayEnd.x), floor(rayEnd.y), floor(rayEnd.z)};
         lastRayCastBlockPos = blockPos;
         Block block = chunkManager.getBlock(blockPos);
@@ -132,6 +128,7 @@ void World::castRay(Ray ray) {
         rayEnd += direction;
         steps++;
     }
+    lastRayCastBlockPos = {-1, -1, -1};
 }
 
 void World::addEvent(std::unique_ptr<IEvent> event) {
