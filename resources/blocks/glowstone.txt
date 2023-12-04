@@ -1,11 +1,11 @@
 Name
-Diamond Block
+Glowstone
 
 Id
--1
+14
 
 TexAll
-7 14
+0 11
 
 Transparent
 0

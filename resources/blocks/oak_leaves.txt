@@ -1,11 +1,11 @@
 Name
-Diamond Block
+Oak Leaves
 
 Id
--1
+8
 
 TexAll
-7 14
+3 15
 
 Transparent
 0

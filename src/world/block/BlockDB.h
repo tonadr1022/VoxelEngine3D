@@ -6,6 +6,7 @@
 #define VOXEL_ENGINE_BLOCKDB_H
 
 #include "Block.h"
+#include "../../Config.h"
 
 struct BlockData {
     Block::ID id;
@@ -25,7 +26,7 @@ class BlockDB {
 public:
     static void loadData(const std::string& filePath);
     static BlockData& getBlockData(Block::ID id);
-
+    static void saveJson();
 private:
     static std::unordered_map<Block::ID, BlockData> data;
 };

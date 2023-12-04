@@ -18,7 +18,7 @@
 
 class World {
 public:
-    World(GLFWwindow *window, Player &player, Renderer &renderer);
+    World(GLFWwindow *window, Renderer &renderer);
 
     void update();
 
@@ -29,6 +29,8 @@ public:
     int renderDistance = 8;
 
     void addEvent(std::unique_ptr<IEvent> event);
+
+    Player player;
 
 private:
     GLFWwindow *window;
@@ -41,7 +43,9 @@ private:
 //    void updateChunkMeshes(ChunkKey &playerChunkKeyPos, bool shouldUpdateAll = false);
 
     void unloadChunks();
-    Player &player;
+
+
+
     ChunkRenderer chunkRenderer;
     ChunkManager chunkManager;
     Renderer renderer;

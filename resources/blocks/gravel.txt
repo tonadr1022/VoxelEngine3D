@@ -1,11 +1,11 @@
 Name
-Diamond Block
+Gravel
 
 Id
--1
+4
 
 TexAll
-7 14
+13 13
 
 Transparent
 0

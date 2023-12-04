@@ -14,6 +14,6 @@ void main() {
 
     if(texColor.a < 0.5)
         discard;
-
+//    o_Color = vec4(0.0, 0.0, 0.0, 1.0);
     o_Color = texColor;
 }

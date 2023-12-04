@@ -6,23 +6,23 @@
 #include "../shaders/ShaderManager.h"
 
 
-Renderer::Renderer(GLFWwindow *window, Camera &camera) : window(window), camera(camera) {
+Renderer::Renderer(GLFWwindow *window) : window(window) {
 }
 
-void Renderer::render() {
+void Renderer::render(Camera &camera) {
     glm::mat4 viewMatrix = camera.getViewMatrix();
     glm::mat4 projectionMatrix = camera.getProjectionMatrix();
 }
 
-void Renderer::renderBlockOutline(glm::ivec3 blockPosition) {
+void Renderer::renderBlockOutline(Camera &camera, glm::ivec3 blockPosition) {
     blockOutlineRenderer.render(blockPosition, camera);
 }
 
-void Renderer::renderBlockBreak(glm::ivec3 blockPosition, float breakPercentage) {
+void Renderer::renderBlockBreak(Camera &camera, glm::ivec3 blockPosition, float breakPercentage) {
     blockBreakRenderer.render(blockPosition, camera, breakPercentage);
 }
 
-void Renderer::startRender(const std::shared_ptr<Shader> &shader) {
+void Renderer::startRender(Camera &camera, const std::shared_ptr<Shader> &shader) {
     shader->use();
     shader->setMat4("u_View", camera.getViewMatrix());
     shader->setMat4("u_Projection", camera.getProjectionMatrix());

@@ -12,6 +12,8 @@ void BlockBreakRenderer::render(glm::vec3 blockPosition, Camera &camera, int bre
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, blockPosition);
+    model = glm::scale(model, glm::vec3(1.005f));
+    model = glm::translate(model, glm::vec3(-0.0025f));
 
     std::shared_ptr<Shader> blockBreakShader = ShaderManager::getShader("blockBreak");
     blockBreakShader->use();
@@ -19,14 +21,16 @@ void BlockBreakRenderer::render(glm::vec3 blockPosition, Camera &camera, int bre
     blockBreakShader->setMat4("u_View", camera.getViewMatrix());
     blockBreakShader->setMat4("u_Projection", camera.getProjectionMatrix());
     blockBreakShader->setInt("u_Texture", 0);
-    blockBreakShader->setInt("u_TexIndex", textureIndex);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+//    blockBreakShader->setInt("u_TexIndex", 15 * TEXTURE_ATLAS_WIDTH + 2);
+//    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+
+    blockBreakShader->setInt("u_TexIndex", textureIndex);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+
+
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
@@ -34,40 +38,40 @@ void BlockBreakRenderer::render(glm::vec3 blockPosition, Camera &camera, int bre
 BlockBreakRenderer::BlockBreakRenderer() : VAO(0), VBO(0), EBO(0) {
     std::array<float, 120> vertices = {
             // front face
-            1.005f, -0.005f, -0.005f, -0.005f, -0.005f,
-            1.005f, 1.005f, -0.005f, 1.005f, -0.005f,
-            1.005f, -0.005f, 1.005f, -0.005f, 1.005f,
-            1.005f, 1.005f, 1.005f, 1.005f, 1.005f,
+            1.0f, -0.0f, -0.0f, -0.0f, -0.0f,
+            1.0f, 1.0f, -0.0f, 1.0f, -0.0f,
+            1.0f, -0.0f, 1.0f, -0.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 
             // back face
-            -0.005f, -0.005f, -0.005f, -0.005f, -0.005f,
-            -0.005f, -0.005f, 1.005f, -0.005f, 1.005f,
-            -0.005f, 1.005f, -0.005f, 1.005f, -0.005f,
-            -0.005f, 1.005f, 1.005f, 1.005f, 1.005f,
+            -0.0f, -0.0f, -0.0f, -0.0f, -0.0f,
+            -0.0f, -0.0f, 1.0f, -0.0f, 1.0f,
+            -0.0f, 1.0f, -0.0f, 1.0f, -0.0f,
+            -0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 
             // left face
-            -0.005f, -0.005f, -0.005f, -0.005f, -0.005f,
-            1.005f, -0.005f, -0.005f, 1.005f, -0.005f,
-            -0.005f, -0.005f, 1.005f, -0.005f, 1.005f,
-            1.005f, -0.005f, 1.005f, 1.005f, 1.005f,
+            -0.0f, -0.0f, -0.0f, -0.0f, -0.0f,
+            1.0f, -0.0f, -0.0f, 1.0f, -0.0f,
+            -0.0f, -0.0f, 1.0f, -0.0f, 1.0f,
+            1.0f, -0.0f, 1.0f, 1.0f, 1.0f,
 
             // right face
-            -0.005f, 1.005f, -0.005f, -0.005f, -0.005f,
-            -0.005f, 1.005f, 1.005f, -0.005f, 1.005f,
-            1.005f, 1.005f, -0.005f, 1.005f, -0.005f,
-            1.005f, 1.005f, 1.005f, 1.005f, 1.005f,
+            -0.0f, 1.0f, -0.0f, -0.0f, -0.0f,
+            -0.0f, 1.0f, 1.0f, -0.0f, 1.0f,
+            1.0f, 1.0f, -0.0f, 1.0f, -0.0f,
+            1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 
             // top face
-            -0.005f, -0.005f, 1.005f, -0.005f, -0.005f,
-            1.005f, -0.005f, 1.005f, 1.005f, -0.005f,
-            -0.005f, 1.005f, 1.005f, -0.005f, 1.005f,
-            1.005f, 1.005f, 1.005f, 1.005f, 1.005f,
+            -0.0f, -0.0f, 1.0f, -0.0f, -0.0f,
+            1.0f, -0.0f, 1.0f, 1.0f, -0.0f,
+            -0.0f, 1.0f, 1.0f, -0.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 
             // bottom face
-            -0.005f, -0.005f, -0.005f, -0.005f, -0.005f,
-            -0.005f, 1.005f, -0.005f, -0.005f, 1.005f,
-            1.005f, -0.005f, -0.005f, 1.005f, -0.005f,
-            1.005f, 1.005f, -0.005f, 1.005f, 1.005f,
+            -0.0f, -0.0f, -0.0f, -0.0f, -0.0f,
+            -0.0f, 1.0f, -0.0f, -0.0f, 1.0f,
+            1.0f, -0.0f, -0.0f, 1.0f, -0.0f,
+            1.0f, 1.0f, -0.0f, 1.0f, 1.0f,
     };
 
     std::array<unsigned int, 36> indices = {

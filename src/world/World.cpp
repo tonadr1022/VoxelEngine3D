@@ -18,8 +18,10 @@ void World::render() {
 
     // render block outline if aiming at a block
     if (static_cast<const glm::vec3>(lastRayCastBlockPos) != NULL_VECTOR) {
-        renderer.renderBlockOutline(lastRayCastBlockPos);
-        renderer.renderBlockBreak(lastRayCastBlockPos, player.blockBreakStage);
+        // disable depth test so that the outline is always rendered on top
+
+        renderer.renderBlockOutline(player.camera, lastRayCastBlockPos);
+        renderer.renderBlockBreak(player.camera, lastRayCastBlockPos, player.blockBreakStage);
     }
 }
 
@@ -54,12 +56,10 @@ void World::loadChunks(ChunkKey &playerChunkKeyPos, bool shouldLoadAll) {
     }
 }
 
-World::World(GLFWwindow *window, Player &player, Renderer &renderer) : window(window),
-                                                                       player(player),
-                                                                       renderer(renderer),
-                                                                       chunkRenderer(player.camera,
-                                                                                     ResourceManager::getTexture(
-                                                                                             "texture_atlas")) {
+World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(renderer),
+                                                       chunkRenderer(player.camera,
+                                                                     ResourceManager::getTexture(
+                                                                             "texture_atlas")) {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -114,14 +114,15 @@ void World::castRay(Ray ray) {
         if (block.id != Block::AIR) {
             // calculate block break stage. 10 stages. 0 is no break, 10 is fully broken
             auto duration = std::chrono::steady_clock::now() - lastTime;
-            long durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+            long durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    duration).count();
             int breakStage = durationMS / (MINING_DELAY_MS / 10);
             if (breakStage > 10) breakStage = 10;
 
             // breaking block
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
                 if (std::chrono::steady_clock::now() - lastTime <
-                                      std::chrono::milliseconds(MINING_DELAY_MS)) {
+                    std::chrono::milliseconds(MINING_DELAY_MS)) {
                     player.blockBreakStage = breakStage;
                     return;
                 }
@@ -135,7 +136,8 @@ void World::castRay(Ray ray) {
                                       std::chrono::milliseconds(PLACING_DELAY_MS)) {
                     return;
                 }
-                chunkManager.setBlockAndHandleChunkUpdates(lastAirBlockPos, Block(Block::STONE));
+                chunkManager.setBlockAndHandleChunkUpdates(lastAirBlockPos,
+                                                           Block(player.inventory.getHeldBlock()));
                 isFirstAction = false;
             }
             lastTime = std::chrono::steady_clock::now();

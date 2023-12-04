@@ -41,14 +41,16 @@ BlockOutlineRenderer::BlockOutlineRenderer() : VAO(0), VBO(0), EBO(0) {
 void BlockOutlineRenderer::render(glm::vec3 blockPosition, Camera &camera) const {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, blockPosition);
-
+    model = glm::scale(model, glm::vec3(1.005f));
+    model = glm::translate(model, glm::vec3(-0.0025f));
 
     std::shared_ptr<Shader> outlineShader = ShaderManager::getShader("outline");
     outlineShader->use();
     outlineShader->setMat4("u_Model", model);
     outlineShader->setMat4("u_View", camera.getViewMatrix());
     outlineShader->setMat4("u_Projection", camera.getProjectionMatrix());
-    outlineShader->setFloat("u_LineWidth", 0.02f);
+    outlineShader->setFloat("u_LineWidth", 0.01f);
+
     // set width using opengl command
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

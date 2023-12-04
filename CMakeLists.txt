@@ -71,6 +71,16 @@ set(SOURCE_FILES
         src/renderer/BlockOutlineRenderer.h
         src/renderer/BlockBreakRenderer.cpp
         src/renderer/BlockBreakRenderer.h
+        src/player/Inventory.cpp
+        src/player/Inventory.h
+        src/input/Keyboard.cpp
+        src/input/Keyboard.h
+        src/renderer/Renderer2D.cpp
+        src/renderer/Renderer2D.h
+        src/renderer/GuiRenderer.cpp
+        src/renderer/GuiRenderer.h
+        src/debug_gui/DebugGui.cpp
+        src/debug_gui/DebugGui.h
 
 )
 

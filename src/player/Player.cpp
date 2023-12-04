@@ -4,24 +4,22 @@
 
 #include "Player.h"
 #include "../world/chunk/ChunkKey.h"
+#include "../input/Keyboard.h"
 
 Player::Player() = default;
 
-glm::vec3& Player::getPosition() {
+glm::vec3 &Player::getPosition() {
     return position;
 }
 
 ChunkKey Player::getChunkKeyPos() const {
     return {static_cast<int>(position.x / CHUNK_WIDTH), static_cast<int>(position.y / CHUNK_WIDTH)};
 }
+
 void Player::processKeyInput(GLFWwindow *window, float deltaTime) {
     glm::vec3 &front = camera.getFront();
     glm::vec3 globalUp = Camera::getGlobalUp();
-    // quit on escape
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-        return;
-    }
+
     float multiplier = movementSpeed * deltaTime;
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -32,24 +30,20 @@ void Player::processKeyInput(GLFWwindow *window, float deltaTime) {
         position -= glm::normalize(glm::cross(front, globalUp)) * multiplier;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         position += glm::normalize(glm::cross(front, globalUp)) * multiplier;
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
         position += globalUp * multiplier;
     }
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
         position -= globalUp * multiplier;
     }
     camera.setPosition(position);
-
 }
 
 
 void Player::processMouseInput(GLFWwindow *window, float deltaTime) {
     bool ImGuiWantMouse = ImGui::GetIO().WantCaptureMouse;
-//    if (!ImGuiWantMouse && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        camera.processMouseMovement(window, deltaTime);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    camera.processMouseMovement(window, deltaTime);
 //    } else {
 //        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 //    }
@@ -61,4 +55,28 @@ void Player::update(GLFWwindow *window, float deltaTime) {
     processMouseInput(window, deltaTime);
     processKeyInput(window, deltaTime);
     camera.update(deltaTime);
+}
+
+void Player::processScrollInput(double yoffset) {
+    if (yoffset > 0) {
+        inventory.scrollHotbar(true);
+    } else if (yoffset < 0) {
+        inventory.scrollHotbar(false);
+    }
+}
+
+void Player::perFrameUpdate(GLFWwindow *window) {
+    if (Keyboard::isPressed(GLFW_KEY_ESCAPE)) {
+        glfwSetWindowShouldClose(window, true);
+        return;
+    }
+
+    if (Keyboard::isPressedThisFrame(GLFW_KEY_LEFT_BRACKET)) {
+        std::cout << "scrolling left" << std::endl;
+        inventory.scrollHotbar(false);
+    }
+
+    if (Keyboard::isPressedThisFrame(GLFW_KEY_RIGHT_BRACKET)) {
+        inventory.scrollHotbar(true);
+    }
 }

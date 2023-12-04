@@ -4,6 +4,7 @@
 
 #ifndef VOXEL_ENGINE_CONFIG_H
 #define VOXEL_ENGINE_CONFIG_H
+
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/include/GLFW/glfw3.h>
@@ -14,8 +15,6 @@
 #include <vector>
 #include <map>
 #include <chrono>
-#include <deque>
-#include <memory>
 #include <unordered_map>
 
 #include <glm/glm.hpp>
@@ -23,6 +22,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/noise.hpp>
 #include <glm/gtx/hash.hpp>
+
+#include <json/json.hpp>
 
 #include "Constants.h"
 

@@ -1,11 +1,11 @@
 Name
-Diamond Block
+Cobblestone
 
 Id
--1
+9
 
 TexAll
-7 14
+1 11
 
 Transparent
 0

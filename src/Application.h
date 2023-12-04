@@ -8,25 +8,41 @@
 #include "Config.h"
 #include "camera/Camera.h"
 #include "player/Player.h"
+#include "world/World.h"
+#include "input/Keyboard.h"
 
 class Application {
 public:
-    explicit Application();
 
     void run();
 
+    static Application &getInstance();
+
 private:
-    static Application &getInstance() {
-        static Application instance;
-        return instance;
-    }
+    const char* glsl_version;
+
+    explicit Application();
 
     GLFWwindow *window{};
-    Player player;
 
     static void initOpenGL();
 
-    void initGlfwImGui();
+    void initGLFW();
+
+    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+    static void cursorPosCallback(GLFWwindow* window, double xpos, double ypos);
+
+    static void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
+
+    void processScrollInput(double xoffset, double yoffset);
+
+    std::shared_ptr<World> world;
+
+    void compileShaders();
+
+    void loadTextures();
+
 
 //    static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 

@@ -266,6 +266,41 @@ build CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o: CXX_COM
   OBJECT_DIR = CMakeFiles/voxel_engine.dir
   OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/renderer
 
+build CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/player/Inventory.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/player
+
+build CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/input/Keyboard.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/input
+
+build CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/renderer/Renderer2D.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/renderer
+
+build CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/renderer/GuiRenderer.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/renderer
+
+build CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o: CXX_COMPILER__voxel_engine_unscanned_Debug /Users/tony/CLionProjects/voxel_engine/src/debug_gui/DebugGui.cpp || cmake_object_order_depends_target_voxel_engine
+  DEP_FILE = CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/voxel_engine.dir
+  OBJECT_FILE_DIR = CMakeFiles/voxel_engine.dir/src/debug_gui
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target voxel_engine
@@ -274,7 +309,7 @@ build CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o: CXX_COM
 #############################################
 # Link the executable voxel_engine
 
-build voxel_engine: CXX_EXECUTABLE_LINKER__voxel_engine_Debug CMakeFiles/voxel_engine.dir/src/main.cpp.o CMakeFiles/voxel_engine.dir/src/Application.cpp.o CMakeFiles/voxel_engine.dir/src/glad.c.o CMakeFiles/voxel_engine.dir/src/Config.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_demo.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_draw.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_widgets.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_glfw.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_opengl3.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_tables.cpp.o CMakeFiles/voxel_engine.dir/src/camera/Camera.cpp.o CMakeFiles/voxel_engine.dir/src/shaders/Shader.cpp.o CMakeFiles/voxel_engine.dir/src/world/block/Block.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunk/Chunk.cpp.o CMakeFiles/voxel_engine.dir/src/player/Player.cpp.o CMakeFiles/voxel_engine.dir/src/world/World.cpp.o CMakeFiles/voxel_engine.dir/src/renderer/Renderer.cpp.o CMakeFiles/voxel_engine.dir/src/shaders/ShaderManager.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunklet/Chunklet.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkMesh.cpp.o CMakeFiles/voxel_engine.dir/src/world/generation/TerrainGenerator.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkRenderer.cpp.o CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o | /opt/homebrew/lib/libglfw.3.3.dylib /opt/homebrew/Cellar/glew/2.2.0_1/lib/libGLEW.dylib
+build voxel_engine: CXX_EXECUTABLE_LINKER__voxel_engine_Debug CMakeFiles/voxel_engine.dir/src/main.cpp.o CMakeFiles/voxel_engine.dir/src/Application.cpp.o CMakeFiles/voxel_engine.dir/src/glad.c.o CMakeFiles/voxel_engine.dir/src/Config.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_demo.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_draw.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_widgets.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_glfw.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_impl_opengl3.cpp.o CMakeFiles/voxel_engine.dir/src/vendor/imgui/imgui_tables.cpp.o CMakeFiles/voxel_engine.dir/src/camera/Camera.cpp.o CMakeFiles/voxel_engine.dir/src/shaders/Shader.cpp.o CMakeFiles/voxel_engine.dir/src/world/block/Block.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunk/Chunk.cpp.o CMakeFiles/voxel_engine.dir/src/player/Player.cpp.o CMakeFiles/voxel_engine.dir/src/world/World.cpp.o CMakeFiles/voxel_engine.dir/src/renderer/Renderer.cpp.o CMakeFiles/voxel_engine.dir/src/shaders/ShaderManager.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunklet/Chunklet.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkMesh.cpp.o CMakeFiles/voxel_engine.dir/src/world/generation/TerrainGenerator.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkRenderer.cpp.o CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o | /opt/homebrew/lib/libglfw.3.3.dylib /opt/homebrew/Cellar/glew/2.2.0_1/lib/libGLEW.dylib
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk
   LINK_LIBRARIES = -Wl,-rpath,/opt/homebrew/lib  -Xlinker -framework -Xlinker OpenGL  -Xlinker -framework -Xlinker OpenGL  /opt/homebrew/lib/libglfw.3.3.dylib  /opt/homebrew/Cellar/glew/2.2.0_1/lib/libGLEW.dylib
   OBJECT_DIR = CMakeFiles/voxel_engine.dir

@@ -14,17 +14,15 @@
 
 class Renderer {
 public:
-    explicit Renderer(GLFWwindow *window, Camera &camera);
+    explicit Renderer(GLFWwindow *window);
 
-
-
-    void render();
+    void render(Camera &camera);
 
     void renderCrossHair() const;
-    void renderBlockOutline(glm::ivec3 blockPosition);
-    void renderBlockBreak(glm::ivec3 blockPosition, float breakPercentage);
+    void renderBlockOutline(Camera &camera, glm::ivec3 blockPosition);
+    void renderBlockBreak(Camera &camera, glm::ivec3 blockPosition, float breakPercentage);
 
-    void startRender(const std::shared_ptr<Shader>& shader);
+    void startRender(Camera &camera, const std::shared_ptr<Shader>& shader);
 
 private:
     std::shared_ptr<Shader> highlightShader;
@@ -32,7 +30,6 @@ private:
     BlockBreakRenderer blockBreakRenderer;
 
     GLFWwindow *window;
-    Camera &camera;
     CrossHair crossHair;
 
 

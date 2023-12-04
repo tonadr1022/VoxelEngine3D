@@ -1,17 +1,17 @@
 Name
-Wood
+Jungle Wood
 
 Id
-6
+15
 
 TexSide
-5 15
+5 14
 
 TexTop
-4 15
+4 14
 
 TexBottom
-4 15
+4 14
 
 Transparent
 0

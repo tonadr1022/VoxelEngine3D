@@ -29,7 +29,7 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
 
             if (xPosInChunk == 8 && yPosInChunk == 8) {
                 for (int i = 0; i < 10; i++) {
-                    chunk.setBlock(xPosInChunk, yPosInChunk, i + height, Block(Block::WOOD));
+                    chunk.setBlock(xPosInChunk, yPosInChunk, i + height, Block(Block::OAK_WOOD));
                 }
                 chunk.setMaxBlockHeightAt(xPosInChunk, yPosInChunk, height + 10);
             }

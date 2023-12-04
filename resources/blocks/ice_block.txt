@@ -1,11 +1,11 @@
 Name
-Diamond Block
+Ice Block
 
 Id
--1
+11
 
 TexAll
-7 14
+13 14
 
 Transparent
 0

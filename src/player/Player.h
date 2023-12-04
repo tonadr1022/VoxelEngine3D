@@ -8,7 +8,7 @@
 #include "../Config.h"
 #include "../camera/Camera.h"
 #include "../world/chunk/ChunkKey.h"
-
+#include "Inventory.h"
 
 
 class Player {
@@ -20,15 +20,25 @@ public:
 
     void update(GLFWwindow *window, float deltaTime);
 
-    Camera camera;
+    void perFrameUpdate(GLFWwindow *window);
 
     int blockBreakStage = 0;
+
+    Inventory inventory;
+
+    void processScrollInput(double yoffset);
+
+    Camera camera;
 private:
+
+
     void processKeyInput(GLFWwindow *window, float deltaTime);
     void processMouseInput(GLFWwindow *window, float deltaTime);
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 70.0f);
 
     float movementSpeed = 10.0f;
+
+
 
 
 };
