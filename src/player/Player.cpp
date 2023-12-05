@@ -59,9 +59,9 @@ void Player::update(GLFWwindow *window, float deltaTime) {
 
 void Player::processScrollInput(double yoffset) {
     if (yoffset > 0) {
-        inventory.scrollHotbar(true);
+        inventory.shiftHotbarSelectedItem(true);
     } else if (yoffset < 0) {
-        inventory.scrollHotbar(false);
+        inventory.shiftHotbarSelectedItem(false);
     }
 }
 
@@ -72,11 +72,18 @@ void Player::perFrameUpdate(GLFWwindow *window) {
     }
 
     if (Keyboard::isPressedThisFrame(GLFW_KEY_LEFT_BRACKET)) {
-        std::cout << "scrolling left" << std::endl;
-        inventory.scrollHotbar(false);
+        inventory.shiftHotbarSelectedItem(false);
     }
 
     if (Keyboard::isPressedThisFrame(GLFW_KEY_RIGHT_BRACKET)) {
-        inventory.scrollHotbar(true);
+        inventory.shiftHotbarSelectedItem(true);
+    }
+
+    if (Keyboard::isPressedThisFrame(GLFW_KEY_MINUS)) {
+        inventory.shiftHotbarStartIndex(false);
+    }
+
+    if (Keyboard::isPressedThisFrame(GLFW_KEY_EQUAL)) {
+        inventory.shiftHotbarStartIndex(true);
     }
 }

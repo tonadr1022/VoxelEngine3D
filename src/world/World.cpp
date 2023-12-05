@@ -137,7 +137,7 @@ void World::castRay(Ray ray) {
                     return;
                 }
                 chunkManager.setBlockAndHandleChunkUpdates(lastAirBlockPos,
-                                                           Block(player.inventory.getHeldBlock()));
+                                                           Block(player.inventory.getHeldItem()));
                 isFirstAction = false;
             }
             lastTime = std::chrono::steady_clock::now();

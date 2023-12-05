@@ -25,6 +25,25 @@ struct Block {
         CRAFTING_TABLE, // 13
         GLOWSTONE, // 14
         JUNGLE_WOOD, // 15
+        JUNGLE_LEAVES, // 16
+        BIRCH_WOOD, // 17
+        BIRCH_LEAVES, // 18
+        SPRUCE_WOOD, // 19
+        SPRUCE_LEAVES, // 20
+        COAL_ORE, // 21
+        IRON_ORE, // 22
+        REDSTONE_ORE, // 23
+        GOLD_ORE, // 24
+        DIAMOND_ORE, // 25
+        EMERALD_ORE, // 26
+        LAPIS_ORE, // 27
+        CLAY, // 28
+        SUGAR_CANE, // 29
+        CACTUS, // 30
+        OAK_PLANKS, // 31
+        BIRCH_PLANKS, // 32
+        JUNGLE_PLANKS, // 33
+        SPRUCE_PLANKS, // 34
         BLOCK_COUNT,
         UNDEFINED
     };

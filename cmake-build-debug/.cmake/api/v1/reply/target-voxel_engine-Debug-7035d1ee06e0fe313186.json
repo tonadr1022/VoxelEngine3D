@@ -26,13 +26,13 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 96,
+				"line" : 100,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 98,
+				"line" : 102,
 				"parent" : 0
 			},
 			{
@@ -50,19 +50,19 @@
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 88,
+				"line" : 92,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 89,
+				"line" : 93,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 90,
+				"line" : 94,
 				"parent" : 0
 			}
 		]
@@ -149,7 +149,9 @@
 				59,
 				61,
 				63,
-				65
+				65,
+				67,
+				69
 			]
 		},
 		{
@@ -280,7 +282,9 @@
 				59,
 				61,
 				63,
-				65
+				65,
+				67,
+				69
 			]
 		},
 		{
@@ -317,7 +321,9 @@
 				60,
 				62,
 				64,
-				66
+				66,
+				68,
+				70
 			]
 		}
 	],
@@ -692,6 +698,28 @@
 		{
 			"backtrace" : 1,
 			"path" : "src/debug_gui/DebugGui.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/gui/Hotbar.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/gui/Hotbar.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/player/ItemStack.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/player/ItemStack.h",
 			"sourceGroupIndex" : 1
 		}
 	],

@@ -24,7 +24,7 @@ public:
 
     int blockBreakStage = 0;
 
-    Inventory inventory;
+    Inventory inventory{true};
 
     void processScrollInput(double yoffset);
 

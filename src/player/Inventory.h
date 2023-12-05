@@ -7,21 +7,26 @@
 
 
 #include "../world/block/Block.h"
+#include "ItemStack.h"
 
 class Inventory {
 public:
-    Inventory();
+    explicit Inventory(bool creative = true);
 
-    void scrollHotbar(bool scrollUp);
+    void shiftHotbarSelectedItem(bool scrollUp);
 
-    void selectBlock(Block::ID block);
+//    void selectBlock(Block::ID block);
 
-    Block::ID getHeldBlock();
+    void shiftHotbarStartIndex(bool shiftUp);
 
+    Block::ID getHeldItem();
 
+    static constexpr int HOTBAR_SIZE = 10;
+    static constexpr int MAX_INVENTORY_SIZE = 100;
 private:
-    std::map<Block::ID, int> blocks;
-    Block::ID heldBlock = Block::ID::DIRT;
+    std::array<ItemStack, MAX_INVENTORY_SIZE> m_items;
+    int m_hotbarSelectedItemIndex = 0; // index of item in hotbar 0-9
+    int m_hotbarStartIndex = 0; // 0, 10, 20, 30, 40, 50, 60, 70, 80, 90
 };
 
 

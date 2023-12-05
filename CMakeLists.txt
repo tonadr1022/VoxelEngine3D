@@ -81,6 +81,10 @@ set(SOURCE_FILES
         src/renderer/GuiRenderer.h
         src/debug_gui/DebugGui.cpp
         src/debug_gui/DebugGui.h
+        src/gui/Hotbar.cpp
+        src/gui/Hotbar.h
+        src/player/ItemStack.cpp
+        src/player/ItemStack.h
 
 )
 

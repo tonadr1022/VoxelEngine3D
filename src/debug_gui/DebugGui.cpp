@@ -40,10 +40,10 @@ void DebugGui::update() {
         glm::vec3 &cameraPos = world->player.getPosition();
         ImGui::Text("Camera Position  %.2f x  %.2f y %.2f z",
                     cameraPos.x, cameraPos.y, cameraPos.z);
-        std::string blockName = BlockDB::getBlockData(world->player.inventory.getHeldBlock()).name;
+        std::string blockName = BlockDB::getBlockData(world->player.inventory.getHeldItem()).name;
         ImGui::SliderInt("Render Distance", &world->renderDistance, 1, 32);
         ImGui::Text("Block Type: %s", blockName.c_str());
-        ImGui::Text("Block ID: %d", world->player.inventory.getHeldBlock());
+        ImGui::Text("Block ID: %d", world->player.inventory.getHeldItem());
         ImGui::End();
     }
 }

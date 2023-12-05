@@ -23,7 +23,6 @@ const std::array<std::string, 20> blockFileNames{
         "snowy_grass_block",
         "stone",
         "water",
-
 };
 
 std::unordered_map<Block::ID, BlockData> BlockDB::data;
@@ -31,14 +30,12 @@ std::unordered_map<Block::ID, BlockData> BlockDB::data;
 void BlockDB::loadData(const std::string &filePath) {
     std::ifstream jsonFile(filePath + "block_data.json");
     if (!jsonFile.is_open()) {
-        std::cerr << "Failed to open file: " << filePath << "block_data.json"
-                  << std::endl;
-        return;
+        throw std::runtime_error("Failed to open file: " + filePath + "block_data.json");
     }
     nlohmann::json blocks;
     jsonFile >> blocks;
     jsonFile.close();
-    for (const auto&[blockName, blockData]: blocks.items()) {
+    for (const auto &[blockName, blockData]: blocks.items()) {
         BlockData blockDataEntry{};
         blockDataEntry.name = blockName;
         blockDataEntry.id = static_cast<Block::ID>(blockData["id"].get<int>());
@@ -166,25 +163,33 @@ void BlockDB::saveJson() {
 //    jsonFile << std::setw(4) << blocks << std::endl;
 //    jsonFile.close();
 
-std::ofstream jsonFile("block_data.json");
+    std::ofstream jsonFile("block_data.json");
     jsonFile << "{\n";
-    for (const auto&[id, blockData]: data) {
+    for (const auto &[id, blockData]: data) {
         jsonFile << "    \"" << blockData.name << "\": {\n";
         jsonFile << "        \"id\": " << static_cast<int>(id) << ",\n";
-        jsonFile << "        \"topTexCoords\": [" << blockData.topTexCoords.x << ", " << blockData.topTexCoords.y
+        jsonFile << "        \"topTexCoords\": [" << blockData.topTexCoords.x << ", "
+                 << blockData.topTexCoords.y
                  << "],\n";
-        jsonFile << "        \"frontTexCoords\": [" << blockData.frontTexCoords.x << ", " << blockData.frontTexCoords.y
+        jsonFile << "        \"frontTexCoords\": [" << blockData.frontTexCoords.x << ", "
+                 << blockData.frontTexCoords.y
                  << "],\n";
-        jsonFile << "        \"backTexCoords\": [" << blockData.backTexCoords.x << ", " << blockData.backTexCoords.y
+        jsonFile << "        \"backTexCoords\": [" << blockData.backTexCoords.x << ", "
+                 << blockData.backTexCoords.y
                  << "],\n";
-        jsonFile << "        \"leftTexCoords\": [" << blockData.leftTexCoords.x << ", " << blockData.leftTexCoords.y
+        jsonFile << "        \"leftTexCoords\": [" << blockData.leftTexCoords.x << ", "
+                 << blockData.leftTexCoords.y
                  << "],\n";
-        jsonFile << "        \"rightTexCoords\": [" << blockData.rightTexCoords.x << ", " << blockData.rightTexCoords.y
+        jsonFile << "        \"rightTexCoords\": [" << blockData.rightTexCoords.x << ", "
+                 << blockData.rightTexCoords.y
                  << "],\n";
-        jsonFile << "        \"bottomTexCoords\": [" << blockData.bottomTexCoords.x << ", " << blockData.bottomTexCoords.y
+        jsonFile << "        \"bottomTexCoords\": [" << blockData.bottomTexCoords.x << ", "
+                 << blockData.bottomTexCoords.y
                  << "],\n";
-        jsonFile << "        \"isTransparent\": " << (blockData.isTransparent ? "true" : "false") << ",\n";
-        jsonFile << "        \"isCollidable\": " << (blockData.isCollidable ? "true" : "false") << "\n";
+        jsonFile << "        \"isTransparent\": " << (blockData.isTransparent ? "true" : "false")
+                 << ",\n";
+        jsonFile << "        \"isCollidable\": " << (blockData.isCollidable ? "true" : "false")
+                 << "\n";
         jsonFile << "    },\n";
     }
     jsonFile << "}";

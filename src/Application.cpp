@@ -152,7 +152,6 @@ void Application::keyCallback(GLFWwindow *window, int key, int scancode, int act
 }
 
 void Application::cursorPosCallback(GLFWwindow *window, double xpos, double ypos) {
-    std::cout << "cursor pos callback" << std::endl;
 }
 
 Application &Application::getInstance() {
