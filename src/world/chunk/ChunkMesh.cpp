@@ -230,9 +230,13 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace fac
     indices.push_back(baseVertexIndex + 3);
 }
 
-void ChunkMesh::destruct() {
+void ChunkMesh::clearData() {
     vertices.clear();
     indices.clear();
+}
+
+void ChunkMesh::clearBuffers() {
+    std::cout << "Clearing buffers" << std::endl;
     if (VAO != 0) {
         glDeleteVertexArrays(1, &VAO);
         VAO = 0;

@@ -5,7 +5,6 @@
 #ifndef VOXEL_ENGINE_WORLD_H
 #define VOXEL_ENGINE_WORLD_H
 
-#include "../Config.h"
 #include "../player/Player.h"
 #include "../camera/Camera.h"
 #include "generation/TerrainGenerator.h"
@@ -14,11 +13,14 @@
 #include "../physics/Ray.h"
 #include "events/IEvent.h"
 #include "../renderer/Renderer.h"
+#include <thread>
 
 
 class World {
 public:
     World(GLFWwindow *window, Renderer &renderer);
+
+    ~World();
 
     void update();
 
@@ -34,17 +36,32 @@ public:
 
 private:
     GLFWwindow *window;
-    int chunksToLoadPerFrame = 1;
-    int chunksLoadedThisFrame = 0;
     glm::ivec3 lastRayCastBlockPos = glm::ivec3(-1, -1, -1);
     std::vector<std::unique_ptr<IEvent>> events;
 
-    void loadChunks(ChunkKey &playerChunkKeyPos, bool shouldLoadAll = false);
-//    void updateChunkMeshes(ChunkKey &playerChunkKeyPos, bool shouldUpdateAll = false);
+    void loadChunks();
 
     void unloadChunks();
 
+    void updateChunksToUnload();
 
+    void updateChunks();
+
+    void setBlock(glm::ivec3 position, Block block);
+
+    void updateChunkMeshes(ChunkKey &playerChunkKeyPos);
+
+    void reloadChunksToReload();
+
+    void handleChunkUpdates(Chunk& chunk, ChunkKey chunkKey, int chunkX, int chunkY);
+
+    std::vector<ChunkKey> chunksToReload;
+    std::vector<ChunkKey> m_chunksToUnload;
+
+    std::mutex m_mainMutex;
+    std::atomic<bool> m_isRunning{true};
+
+    std::vector<std::thread> m_chunkLoadThreads;
 
     ChunkRenderer chunkRenderer;
     ChunkManager chunkManager;

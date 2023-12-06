@@ -5,68 +5,25 @@
 #include "World.h"
 #include "../resources/ResourceManager.h"
 #include "chunk/ChunkKey.h"
-
-void World::render() {
-    // render chunks
-    chunkRenderer.start();
-    ChunkMap &chunkMap = chunkManager.getChunkMap();
-    for (auto &chunk: chunkMap) {
-        if (chunk.second.chunkMeshState == ChunkMeshState::BUILT) {
-            chunkRenderer.render(chunk.second);
-        }
-    }
-
-    // render block outline if aiming at a block
-    if (static_cast<const glm::vec3>(lastRayCastBlockPos) != NULL_VECTOR) {
-        // disable depth test so that the outline is always rendered on top
-
-        renderer.renderBlockOutline(player.camera, lastRayCastBlockPos);
-        renderer.renderBlockBreak(player.camera, lastRayCastBlockPos, player.blockBreakStage);
-    }
-}
-
-void World::update() {
-    castRay({player.camera.getPosition(), player.camera.getFront()});
-    ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-    loadChunks(playerChunkKeyPos);
-    chunkManager.updateChunkMeshes(playerChunkKeyPos, renderDistance);
-    unloadChunks();
-
-}
-
-
-void World::loadChunks(ChunkKey &playerChunkKeyPos, bool shouldLoadAll) {
-    int loadDistanceChunks = renderDistance + 2;
-    int loadedChunks = 0;
-    ChunkMap &chunkMap = chunkManager.getChunkMap();
-    for (int chunkX = playerChunkKeyPos.x - loadDistanceChunks;
-         chunkX < playerChunkKeyPos.x + loadDistanceChunks; chunkX++) {
-        for (int chunkY = playerChunkKeyPos.y - loadDistanceChunks;
-             chunkY < playerChunkKeyPos.y + loadDistanceChunks; chunkY++) {
-            ChunkKey chunkKey = {chunkX, chunkY};
-            if (chunkMap.find(chunkKey) == chunkMap.end()) {
-                Chunk chunk(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
-                TerrainGenerator::generateTerrainFor(chunk);
-                chunk.chunkState = ChunkState::GENERATED;
-                chunkMap.emplace(chunkKey, chunk);
-                if (!shouldLoadAll) return;
-                loadedChunks++;
-            }
-        }
-    }
-}
+#include "../utils/Utils.h"
 
 World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(renderer),
                                                        chunkRenderer(player.camera,
                                                                      ResourceManager::getTexture(
                                                                              "texture_atlas")) {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-
     auto start = std::chrono::high_resolution_clock::now();
+    updateChunks();
 
-    loadChunks(playerChunkKeyPos, true);
-    chunkManager.updateChunkMeshes(playerChunkKeyPos, renderDistance, true);
-
+    for (int i = 0; i < 2; i++) {
+        m_chunkLoadThreads.emplace_back([&]() {
+            while (m_isRunning) {
+                updateChunks();
+                // Optionally, add a sleep or yield to avoid busy-waiting
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+        });
+    }
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     if (duration.count() > 0.5)
@@ -74,12 +31,65 @@ World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(
                   << std::endl;
 }
 
+void World::render() {
+//    std::unique_lock<std::mutex> lock(m_mainMutex);
+    chunkRenderer.start();
+    ChunkMap &chunkMap = chunkManager.getChunkMap();
+    for (auto &chunk: chunkMap) {
+        if (chunk.second.chunkMeshState == ChunkMeshState::BUILT) {
+            chunkRenderer.render(chunk.second);
+        }
+    }
+    // render block outline if aiming at a block
+    if (static_cast<const glm::vec3>(lastRayCastBlockPos) != NULL_VECTOR) {
+        // disable depth test so that the outline is always rendered on top
+        renderer.renderBlockOutline(player.camera, lastRayCastBlockPos);
+        renderer.renderBlockBreak(player.camera, lastRayCastBlockPos, player.blockBreakStage);
+    }
+}
+
+void World::update() {
+    castRay({player.camera.getPosition(), player.camera.getFront()});
+    reloadChunksToReload();
+    unloadChunks();
+}
+
+void World::updateChunks() {
+    loadChunks();
+    ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
+    updateChunkMeshes(playerChunkKeyPos);
+//    unloadChunks();
+}
+
+void World::loadChunks() {
+    ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
+    int loadDistanceChunks = renderDistance + 2;
+    ChunkMap &chunkMap = chunkManager.getChunkMap();
+    for (int chunkX = playerChunkKeyPos.x - loadDistanceChunks;
+         chunkX < playerChunkKeyPos.x + loadDistanceChunks; chunkX++) {
+        for (int chunkY = playerChunkKeyPos.y - loadDistanceChunks;
+             chunkY < playerChunkKeyPos.y + loadDistanceChunks; chunkY++) {
+            ChunkKey chunkKey = {chunkX, chunkY};
+            std::unique_lock<std::mutex> lock(m_mainMutex);
+            if (chunkMap.find(chunkKey) == chunkMap.end()) {
+                Chunk chunk(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
+                TerrainGenerator::generateTerrainFor(chunk);
+                chunk.chunkState = ChunkState::GENERATED;
+                chunkMap.emplace(chunkKey, chunk);
+            }
+        }
+    }
+}
+
+
+
 void World::unloadChunks() {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     int unloadDistanceChunks = renderDistance + 2;
     ChunkMap &chunkMap = chunkManager.getChunkMap();
-
     for (auto it = chunkMap.begin(); it != chunkMap.end();) {
+//        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::unique_lock<std::mutex> lock(m_mainMutex);
         ChunkKey chunkKey = it->first;
         Chunk &chunk = it->second;
         if (chunkKey.x < playerChunkKeyPos.x - unloadDistanceChunks ||
@@ -92,6 +102,79 @@ void World::unloadChunks() {
             ++it;
         }
     }
+}
+
+void World::addEvent(std::unique_ptr<IEvent> event) {
+    events.push_back(std::move(event));
+}
+
+World::~World() {
+    m_isRunning = false;
+    for (auto &thread: m_chunkLoadThreads) {
+        thread.join();
+    }
+}
+
+void World::reloadChunksToReload() {
+    for (auto &chunkKey: chunksToReload) {
+//        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+//        std::unique_lock<std::mutex> lock(m_mainMutex);
+        chunkManager.updateChunkMesh(chunkKey);
+    }
+    chunksToReload.clear();
+}
+
+void World::updateChunkMeshes(ChunkKey &playerChunkKeyPos) {
+    for (int chunkX = playerChunkKeyPos.x - (renderDistance);
+         chunkX < playerChunkKeyPos.x + (renderDistance); chunkX++) {
+        for (int chunkY = playerChunkKeyPos.y - renderDistance;
+             chunkY < playerChunkKeyPos.y + renderDistance; chunkY++) {
+//            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            std::unique_lock<std::mutex> lock(m_mainMutex);
+            ChunkKey chunkKey = {chunkX, chunkY};
+            Chunk& chunk = chunkManager.getChunk(chunkKey);
+            if (chunk.chunkMeshState == ChunkMeshState::BUILT) continue;
+            chunkManager.updateChunkMesh(chunkKey);
+        }
+    }
+}
+
+void World::handleChunkUpdates(Chunk& chunk, ChunkKey chunkKey, int chunkX, int chunkY) {
+    chunksToReload.push_back(chunkKey);
+    chunk.markDirty();
+    // need to update adjacent chunks if block is on border
+    if (chunkX == 0) {
+        ChunkKey backChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::BACK, chunkKey);
+        Chunk &backChunk = chunkManager.getChunk(backChunkKey);
+        chunksToReload.push_back(backChunkKey);
+        backChunk.markDirty();
+    } else if (chunkX == CHUNK_WIDTH - 1) {
+        ChunkKey frontChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::FRONT, chunkKey);
+        Chunk &frontChunk = chunkManager.getChunk(frontChunkKey);
+        chunksToReload.push_back(frontChunkKey);
+        frontChunk.markDirty();
+    }
+    if (chunkY == 0) {
+        ChunkKey leftChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::LEFT, chunkKey);
+        Chunk &leftChunk = chunkManager.getChunk(leftChunkKey);
+        chunksToReload.push_back(leftChunkKey);
+        leftChunk.markDirty();
+    } else if (chunkY == CHUNK_WIDTH - 1) {
+        ChunkKey rightChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::RIGHT, chunkKey);
+        Chunk &rightChunk = chunkManager.getChunk(rightChunkKey);
+        chunksToReload.push_back(rightChunkKey);
+        rightChunk.markDirty();
+    }
+}
+
+void World::setBlock(glm::ivec3 position, Block block) {
+    auto chunkKey = ChunkManager::getChunkKeyByWorldLocation(position.x, position.y);
+    Chunk &chunk = chunkManager.getChunk(chunkKey);
+    int chunkX = Utils::positiveModulo(position.x, CHUNK_WIDTH);
+    int chunkY = Utils::positiveModulo(position.y, CHUNK_WIDTH);
+
+    chunk.setBlock(chunkX, chunkY, position.z, block);
+    handleChunkUpdates(chunk, chunkKey, chunkX, chunkY);
 }
 
 void World::castRay(Ray ray) {
@@ -126,8 +209,8 @@ void World::castRay(Ray ray) {
                     player.blockBreakStage = breakStage;
                     return;
                 }
-                chunkManager.setBlockAndHandleChunkUpdates({blockPos.x, blockPos.y, blockPos.z},
-                                                           Block(Block::AIR));
+
+                setBlock({blockPos.x, blockPos.y, blockPos.z}, Block(Block::AIR));
                 isFirstAction = false;
             }
                 // placing block
@@ -136,8 +219,8 @@ void World::castRay(Ray ray) {
                                       std::chrono::milliseconds(PLACING_DELAY_MS)) {
                     return;
                 }
-                chunkManager.setBlockAndHandleChunkUpdates(lastAirBlockPos,
-                                                           Block(player.inventory.getHeldItem()));
+                setBlock(lastAirBlockPos, Block(player.inventory.getHeldItem()));
+
                 isFirstAction = false;
             }
             lastTime = std::chrono::steady_clock::now();
@@ -150,8 +233,3 @@ void World::castRay(Ray ray) {
     player.blockBreakStage = 0;
     lastRayCastBlockPos = NULL_VECTOR;
 }
-
-void World::addEvent(std::unique_ptr<IEvent> event) {
-    events.push_back(std::move(event));
-}
-

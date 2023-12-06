@@ -17,8 +17,7 @@ public:
 
     void updateChunk(Chunk &chunk);
 
-    void updateChunkMeshes(ChunkKey &playerChunkKeyPos, int renderDistance,
-                           bool shouldUpdateAll = false);
+    void updateChunkMesh(ChunkKey &chunkKey);
 
 
 
@@ -30,24 +29,19 @@ public:
 
     void setBlock(glm::ivec3 position, Block block);
 
-    void setBlockAndHandleChunkUpdates(glm::ivec3 position, Block block);
-
     bool chunkExists(ChunkKey chunkKey);
 
     ChunkMap &getChunkMap();
 
     static ChunkKey getChunkKeyByWorldLocation(int x, int y);
 
-    static ChunkKey getNeighborChunkKey(HorizontalDirection direction, ChunkKey &chunkKey);
+    static ChunkKey calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey &chunkKey);
 
 private:
 
-    std::map<ChunkKey, Chunk> chunkMap;
-    std::vector<ChunkKey> chunksToReload;
+    ChunkMap chunkMap;
 
-    void reloadChunksToReload();
 
-    void updateChunkMesh(ChunkKey &chunkKey);
 
 };
 

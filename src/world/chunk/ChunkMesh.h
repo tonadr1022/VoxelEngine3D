@@ -28,10 +28,13 @@ public:
                    Chunk &frontNeighborChunk,
                    Chunk &backNeighborChunk);
 
-    void destruct();
+    void clearData();
+
+    void clearBuffers();
 
     std::vector<uint32_t> vertices;
     std::vector<unsigned int> indices;
+    bool isBuffered = false;
     unsigned int VAO, VBO, EBO;
 
 

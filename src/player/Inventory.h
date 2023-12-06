@@ -25,8 +25,8 @@ public:
     static constexpr int MAX_INVENTORY_SIZE = 100;
 private:
     std::array<ItemStack, MAX_INVENTORY_SIZE> m_items;
-    int m_hotbarSelectedItemIndex = 0; // index of item in hotbar 0-9
-    int m_hotbarStartIndex = 0; // 0, 10, 20, 30, 40, 50, 60, 70, 80, 90
+    int m_hotbarSelectedItemIndex = 0;
+    int m_hotbarStartIndex = 0;
 };
 
 

@@ -36,7 +36,7 @@ private:
     void processMouseInput(GLFWwindow *window, float deltaTime);
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 70.0f);
 
-    float movementSpeed = 10.0f;
+    float movementSpeed = 40.0f;
 
 
 
