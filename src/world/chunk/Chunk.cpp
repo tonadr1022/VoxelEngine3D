@@ -17,13 +17,9 @@ Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshS
 
 void Chunk::buildMesh(Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
                       Chunk &backNeighborChunk) {
-//        ChunkRenderer::destroyGPUResources(*this);
-//        unload();
-        if (chunkState == ChunkState::UNDEFINED) {
-            std::cout << "Chunk is undefined: " << location.x << ", " << location.y << std::endl;
-        }
     mesh.construct(*this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk, backNeighborChunk);
     chunkMeshState = ChunkMeshState::BUILT;
+    chunkState = ChunkState::GENERATED;
 }
 
 void Chunk::load() {
@@ -33,7 +29,6 @@ void Chunk::load() {
 void Chunk::unload() {
     mesh.clearData();
     mesh.clearBuffers();
-    mesh.isBuffered = false;
     chunkMeshState = ChunkMeshState::UNBUILT;
 }
 
@@ -50,9 +45,6 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 }
 
 Block Chunk::getBlock(int x, int y, int z) {
-//    if (x < 0 || x >= CHUNK_WIDTH || y < 0 || y >= CHUNK_WIDTH || z < 0 || z >= CHUNK_HEIGHT) {
-//        return Block(Block::UNDEFINED);
-//    }
     int chunkletIndex = z / CHUNKLET_HEIGHT;
     int chunkletZ = z % CHUNKLET_HEIGHT;
     Chunklet &chunklet = chunklets[chunkletIndex];

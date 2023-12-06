@@ -71,21 +71,13 @@ ChunkKey ChunkManager::calculateNeighborChunkKey(HorizontalDirection direction, 
     }
 }
 
-void ChunkManager::updateChunkMesh(ChunkKey &chunkKey) {
+void ChunkManager::buildChunkMesh(ChunkKey &chunkKey) {
     if (!chunkExists(chunkKey)) {
         throw std::runtime_error(
                 "Chunk not found at: " + std::to_string(chunkKey.x) + ", " +
                 std::to_string(chunkKey.y) + "\n");
     }
     Chunk &chunk = getChunk(chunkKey);
-    if (chunk.chunkMeshState == ChunkMeshState::BUILT) {
-        std::cout << "going to unload at" << chunkKey.x << ", " << chunkKey.y << std::endl;
-        chunk.unload();
-    } else if (chunk.chunkState == ChunkState::CHANGED){
-        std::cout << "chunk changed at: " << chunkKey.x << ", " << chunkKey.y << std::endl;
-        chunk.unload();
-    }
-    std::cout << "Updating chunk mesh at: " << chunkKey.x << ", " << chunkKey.y << std::endl;
 
     ChunkKey leftNeighborChunkKey = calculateNeighborChunkKey(
             HorizontalDirection::LEFT, chunkKey);
@@ -106,7 +98,13 @@ void ChunkManager::updateChunkMesh(ChunkKey &chunkKey) {
     Chunk rightNeighborChunk = getChunk(rightNeighborChunkKey);
     Chunk frontNeighborChunk = getChunk(frontNeighborChunkKey);
     Chunk backNeighborChunk = getChunk(backNeighborChunkKey);
-
     chunk.buildMesh(leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
                     backNeighborChunk);
+}
+
+void ChunkManager::updateChunkMesh(ChunkKey &chunkKey) {
+    Chunk &chunk = getChunk(chunkKey);
+    chunk.unload();
+    buildChunkMesh(chunkKey);
+
 }

@@ -15,7 +15,7 @@ World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(
     auto start = std::chrono::high_resolution_clock::now();
     updateChunks();
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 1; i++) {
         m_chunkLoadThreads.emplace_back([&]() {
             while (m_isRunning) {
                 updateChunks();
@@ -49,9 +49,9 @@ void World::render() {
 }
 
 void World::update() {
+    unloadChunks();
     castRay({player.camera.getPosition(), player.camera.getFront()});
     reloadChunksToReload();
-    unloadChunks();
 }
 
 void World::updateChunks() {
@@ -70,6 +70,7 @@ void World::loadChunks() {
         for (int chunkY = playerChunkKeyPos.y - loadDistanceChunks;
              chunkY < playerChunkKeyPos.y + loadDistanceChunks; chunkY++) {
             ChunkKey chunkKey = {chunkX, chunkY};
+            std::this_thread::sleep_for(std::chrono::microseconds(1));
             std::unique_lock<std::mutex> lock(m_mainMutex);
             if (chunkMap.find(chunkKey) == chunkMap.end()) {
                 Chunk chunk(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
@@ -117,8 +118,6 @@ World::~World() {
 
 void World::reloadChunksToReload() {
     for (auto &chunkKey: chunksToReload) {
-//        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-//        std::unique_lock<std::mutex> lock(m_mainMutex);
         chunkManager.updateChunkMesh(chunkKey);
     }
     chunksToReload.clear();
@@ -129,12 +128,14 @@ void World::updateChunkMeshes(ChunkKey &playerChunkKeyPos) {
          chunkX < playerChunkKeyPos.x + (renderDistance); chunkX++) {
         for (int chunkY = playerChunkKeyPos.y - renderDistance;
              chunkY < playerChunkKeyPos.y + renderDistance; chunkY++) {
-//            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            std::this_thread::sleep_for(std::chrono::microseconds(1));
             std::unique_lock<std::mutex> lock(m_mainMutex);
             ChunkKey chunkKey = {chunkX, chunkY};
             Chunk& chunk = chunkManager.getChunk(chunkKey);
+//            if (chunk.chunkMeshState != ChunkMeshState::UNBUILT) continue;
             if (chunk.chunkMeshState == ChunkMeshState::BUILT) continue;
-            chunkManager.updateChunkMesh(chunkKey);
+            if (chunk.chunkState != ChunkState::GENERATED) continue;
+            chunkManager.buildChunkMesh(chunkKey);
         }
     }
 }

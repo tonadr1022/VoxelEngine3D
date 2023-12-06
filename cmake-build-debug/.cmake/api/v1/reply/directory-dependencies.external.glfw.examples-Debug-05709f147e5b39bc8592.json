@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "dependencies/external/glfw/examples",
+		"source" : "dependencies/external/glfw/examples"
+	}
+}

@@ -18,6 +18,7 @@ void ChunkRenderer::render(Chunk &chunk) {
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(chunk.getLocation(), 0.0f));
     shader->setMat4("u_Model", model);
     ChunkMesh &mesh = chunk.getMesh();
+
     if (!mesh.isBuffered) {
         createGPUResources(chunk);
         mesh.isBuffered = true;
@@ -27,6 +28,11 @@ void ChunkRenderer::render(Chunk &chunk) {
     glDrawElements(GL_TRIANGLES, static_cast<GLint>(mesh.indices.size()), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR) {
+        std::cerr << "OpenGL Error: " << error << std::endl;
+    }
 }
 
 void ChunkRenderer::createGPUResources(Chunk &chunk) {

@@ -19,7 +19,7 @@ public:
 
     void updateChunkMesh(ChunkKey &chunkKey);
 
-
+    void buildChunkMesh(ChunkKey &chunkKey);
 
     Chunk &getChunk(ChunkKey chunkKey);
 

@@ -118,8 +118,9 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, BlockFace face, Ch
 void ChunkMesh::construct(Chunk &chunk, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
                           Chunk &frontNeighborChunk,
                           Chunk &backNeighborChunk) {
+    clearData();
     AdjacentBlockPositions adjacentBlockPositions{};
-     for (Chunklet &chunklet: chunk.chunklets) {
+    for (Chunklet &chunklet: chunk.chunklets) {
         for (int chunkletZ = 0; chunkletZ < CHUNKLET_HEIGHT; chunkletZ++) {
             int chunkZ = static_cast<int>(chunklet.location.z) + chunkletZ;
             if (chunk.numSolidBlocksInLayers[chunkZ] == 0) {
@@ -236,7 +237,6 @@ void ChunkMesh::clearData() {
 }
 
 void ChunkMesh::clearBuffers() {
-    std::cout << "Clearing buffers" << std::endl;
     if (VAO != 0) {
         glDeleteVertexArrays(1, &VAO);
         VAO = 0;
@@ -249,5 +249,6 @@ void ChunkMesh::clearBuffers() {
         glDeleteBuffers(1, &EBO);
         EBO = 0;
     }
+    isBuffered = false;
 }
 

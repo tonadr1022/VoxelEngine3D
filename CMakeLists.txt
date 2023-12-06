@@ -5,9 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 set_property(TARGET PROPERTY CXX_STANDARD 17)
 
-set(GLEW_ROOT_DIR /opt/homebrew/Cellar/glew/2.2.0_1)
+#set(GLEW_ROOT_DIR /opt/homebrew/Cellar/glew/2.2.0_1)
 
-include_directories(${GLEW_ROOT_DIR})
+#include_directories(${GLEW_ROOT_DIR})
 include_directories(src/vendor)
 
 set(SOURCE_FILES
@@ -88,16 +88,19 @@ set(SOURCE_FILES
 
 )
 
+#add_subdirectory(src/vendor/glfw)
+
+
 
 include_directories("dependencies")
 include_directories("shaders")
 include_directories("resources")
 
+add_subdirectory(dependencies/external/glfw)
+add_subdirectory(dependencies/external/glm)
+
 find_package(OpenGL REQUIRED)
-find_package(GLFW3 REQUIRED)
-find_package(glm REQUIRED)
 
 add_executable(voxel_engine ${SOURCE_FILES})
 
-target_link_libraries(voxel_engine ${OPENGL_LIBRARIES}
-        glfw ${GLEW_ROOT_DIR}/lib/libGLEW.dylib)
+target_link_libraries(voxel_engine ${OPENGL_LIBRARIES} glfw glm)
