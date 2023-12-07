@@ -405,6 +405,202 @@ CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.s"
 	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/resources/ResourceManager.cpp -o CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.s
 
+CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/world/chunk/ChunkManager.cpp
+CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o -MF CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/world/chunk/ChunkManager.cpp
+
+CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/world/chunk/ChunkManager.cpp > CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/world/chunk/ChunkManager.cpp -o CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/world/block/BlockDB.cpp
+CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o -MF CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/world/block/BlockDB.cpp
+
+CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/world/block/BlockDB.cpp > CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/world/block/BlockDB.cpp -o CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/world/events/DigEvent.cpp
+CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o -MF CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/world/events/DigEvent.cpp
+
+CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/world/events/DigEvent.cpp > CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/world/events/DigEvent.cpp -o CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/utils/Utils.cpp
+CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o -MF CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/utils/Utils.cpp
+
+CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/utils/Utils.cpp > CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/utils/Utils.cpp -o CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/gui/CrossHair.cpp
+CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o -MF CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/gui/CrossHair.cpp
+
+CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/gui/CrossHair.cpp > CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/gui/CrossHair.cpp -o CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/renderer/BlockOutlineRenderer.cpp
+CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o -MF CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/renderer/BlockOutlineRenderer.cpp
+
+CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/renderer/BlockOutlineRenderer.cpp > CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/renderer/BlockOutlineRenderer.cpp -o CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/renderer/BlockBreakRenderer.cpp
+CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o -MF CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/renderer/BlockBreakRenderer.cpp
+
+CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/renderer/BlockBreakRenderer.cpp > CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/renderer/BlockBreakRenderer.cpp -o CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/player/Inventory.cpp
+CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o -MF CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/player/Inventory.cpp
+
+CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/player/Inventory.cpp > CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/player/Inventory.cpp -o CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/input/Keyboard.cpp
+CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o -MF CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/input/Keyboard.cpp
+
+CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/input/Keyboard.cpp > CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/input/Keyboard.cpp -o CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/renderer/Renderer2D.cpp
+CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o -MF CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/renderer/Renderer2D.cpp
+
+CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/renderer/Renderer2D.cpp > CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/renderer/Renderer2D.cpp -o CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/renderer/GuiRenderer.cpp
+CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o -MF CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/renderer/GuiRenderer.cpp
+
+CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/renderer/GuiRenderer.cpp > CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/renderer/GuiRenderer.cpp -o CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/debug_gui/DebugGui.cpp
+CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o -MF CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/debug_gui/DebugGui.cpp
+
+CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/debug_gui/DebugGui.cpp > CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/debug_gui/DebugGui.cpp -o CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/gui/Hotbar.cpp
+CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.o -MF CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/gui/Hotbar.cpp
+
+CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/gui/Hotbar.cpp > CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/gui/Hotbar.cpp -o CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.s
+
+CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.o: CMakeFiles/voxel_engine.dir/flags.make
+CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.o: /Users/tony/CLionProjects/voxel_engine/src/player/ItemStack.cpp
+CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.o: CMakeFiles/voxel_engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.o -MF CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.o.d -o CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.o -c /Users/tony/CLionProjects/voxel_engine/src/player/ItemStack.cpp
+
+CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tony/CLionProjects/voxel_engine/src/player/ItemStack.cpp > CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.i
+
+CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tony/CLionProjects/voxel_engine/src/player/ItemStack.cpp -o CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.s
+
 # Object files for target voxel_engine
 voxel_engine_OBJECTS = \
 "CMakeFiles/voxel_engine.dir/src/main.cpp.o" \
@@ -430,7 +626,21 @@ voxel_engine_OBJECTS = \
 "CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkMesh.cpp.o" \
 "CMakeFiles/voxel_engine.dir/src/world/generation/TerrainGenerator.cpp.o" \
 "CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkRenderer.cpp.o" \
-"CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.o"
+"CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.o" \
+"CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.o"
 
 # External object files for target voxel_engine
 voxel_engine_EXTERNAL_OBJECTS =
@@ -459,11 +669,24 @@ voxel_engine: CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkMesh.cpp.o
 voxel_engine: CMakeFiles/voxel_engine.dir/src/world/generation/TerrainGenerator.cpp.o
 voxel_engine: CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkRenderer.cpp.o
 voxel_engine: CMakeFiles/voxel_engine.dir/src/resources/ResourceManager.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.o
+voxel_engine: CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.o
 voxel_engine: CMakeFiles/voxel_engine.dir/build.make
-voxel_engine: /opt/homebrew/lib/libglfw.3.3.dylib
-voxel_engine: /opt/homebrew/Cellar/glew/2.2.0_1/lib/libGLEW.dylib
+voxel_engine: dependencies/external/glfw/src/libglfw3.a
 voxel_engine: CMakeFiles/voxel_engine.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Linking CXX executable voxel_engine"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/tony/CLionProjects/voxel_engine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Linking CXX executable voxel_engine"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/voxel_engine.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

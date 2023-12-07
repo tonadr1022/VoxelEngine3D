@@ -5,9 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 set_property(TARGET PROPERTY CXX_STANDARD 17)
 
-#set(GLEW_ROOT_DIR /opt/homebrew/Cellar/glew/2.2.0_1)
-
-#include_directories(${GLEW_ROOT_DIR})
 include_directories(src/vendor)
 
 set(SOURCE_FILES

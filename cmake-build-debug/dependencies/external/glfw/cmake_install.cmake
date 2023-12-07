@@ -42,16 +42,6 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/external/glfw/src/cmake_install.cmake")
 endif()
 
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/external/glfw/examples/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/Users/tony/CLionProjects/voxel_engine/cmake-build-debug/dependencies/external/glfw/tests/cmake_install.cmake")
-endif()
-
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/Users/tony/CLionProjects/voxel_engine/dependencies/external/glfw/include/GLFW" FILES_MATCHING REGEX "/glfw3\\.h$" REGEX "/glfw3native\\.h$")
 endif()

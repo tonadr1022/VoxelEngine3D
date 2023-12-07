@@ -85,6 +85,51 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/opt/homebrew/Cellar/cmake/3.27.8/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/opt/homebrew/Cellar/cmake/3.27.8/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/opt/homebrew/Cellar/cmake/3.27.8/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/opt/homebrew/Cellar/cmake/3.27.8/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/opt/homebrew/Cellar/cmake/3.27.8/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/opt/homebrew/Cellar/cmake/3.27.8/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
 # The main all target
 all: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tony/CLionProjects/voxel_engine/build/CMakeFiles /Users/tony/CLionProjects/voxel_engine/build//CMakeFiles/progress.marks
@@ -128,6 +173,45 @@ voxel_engine: cmake_check_build_system
 voxel_engine/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/build
 .PHONY : voxel_engine/fast
+
+#=============================================================================
+# Target rules for targets named uninstall
+
+# Build rule for target.
+uninstall: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 uninstall
+.PHONY : uninstall
+
+# fast build rule for target.
+uninstall/fast:
+	$(MAKE) $(MAKESILENT) -f dependencies/external/glfw/CMakeFiles/uninstall.dir/build.make dependencies/external/glfw/CMakeFiles/uninstall.dir/build
+.PHONY : uninstall/fast
+
+#=============================================================================
+# Target rules for targets named glfw
+
+# Build rule for target.
+glfw: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 glfw
+.PHONY : glfw
+
+# fast build rule for target.
+glfw/fast:
+	$(MAKE) $(MAKESILENT) -f dependencies/external/glfw/src/CMakeFiles/glfw.dir/build.make dependencies/external/glfw/src/CMakeFiles/glfw.dir/build
+.PHONY : glfw/fast
+
+#=============================================================================
+# Target rules for targets named update_mappings
+
+# Build rule for target.
+update_mappings: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 update_mappings
+.PHONY : update_mappings
+
+# fast build rule for target.
+update_mappings/fast:
+	$(MAKE) $(MAKESILENT) -f dependencies/external/glfw/src/CMakeFiles/update_mappings.dir/build.make dependencies/external/glfw/src/CMakeFiles/update_mappings.dir/build
+.PHONY : update_mappings/fast
 
 src/Application.o: src/Application.cpp.o
 .PHONY : src/Application.o
@@ -201,6 +285,30 @@ src/camera/Camera.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/camera/Camera.cpp.s
 .PHONY : src/camera/Camera.cpp.s
 
+src/debug_gui/DebugGui.o: src/debug_gui/DebugGui.cpp.o
+.PHONY : src/debug_gui/DebugGui.o
+
+# target to build an object file
+src/debug_gui/DebugGui.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.o
+.PHONY : src/debug_gui/DebugGui.cpp.o
+
+src/debug_gui/DebugGui.i: src/debug_gui/DebugGui.cpp.i
+.PHONY : src/debug_gui/DebugGui.i
+
+# target to preprocess a source file
+src/debug_gui/DebugGui.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.i
+.PHONY : src/debug_gui/DebugGui.cpp.i
+
+src/debug_gui/DebugGui.s: src/debug_gui/DebugGui.cpp.s
+.PHONY : src/debug_gui/DebugGui.s
+
+# target to generate assembly for a file
+src/debug_gui/DebugGui.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/debug_gui/DebugGui.cpp.s
+.PHONY : src/debug_gui/DebugGui.cpp.s
+
 src/glad.o: src/glad.c.o
 .PHONY : src/glad.o
 
@@ -224,6 +332,78 @@ src/glad.s: src/glad.c.s
 src/glad.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/glad.c.s
 .PHONY : src/glad.c.s
+
+src/gui/CrossHair.o: src/gui/CrossHair.cpp.o
+.PHONY : src/gui/CrossHair.o
+
+# target to build an object file
+src/gui/CrossHair.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.o
+.PHONY : src/gui/CrossHair.cpp.o
+
+src/gui/CrossHair.i: src/gui/CrossHair.cpp.i
+.PHONY : src/gui/CrossHair.i
+
+# target to preprocess a source file
+src/gui/CrossHair.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.i
+.PHONY : src/gui/CrossHair.cpp.i
+
+src/gui/CrossHair.s: src/gui/CrossHair.cpp.s
+.PHONY : src/gui/CrossHair.s
+
+# target to generate assembly for a file
+src/gui/CrossHair.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/gui/CrossHair.cpp.s
+.PHONY : src/gui/CrossHair.cpp.s
+
+src/gui/Hotbar.o: src/gui/Hotbar.cpp.o
+.PHONY : src/gui/Hotbar.o
+
+# target to build an object file
+src/gui/Hotbar.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.o
+.PHONY : src/gui/Hotbar.cpp.o
+
+src/gui/Hotbar.i: src/gui/Hotbar.cpp.i
+.PHONY : src/gui/Hotbar.i
+
+# target to preprocess a source file
+src/gui/Hotbar.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.i
+.PHONY : src/gui/Hotbar.cpp.i
+
+src/gui/Hotbar.s: src/gui/Hotbar.cpp.s
+.PHONY : src/gui/Hotbar.s
+
+# target to generate assembly for a file
+src/gui/Hotbar.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/gui/Hotbar.cpp.s
+.PHONY : src/gui/Hotbar.cpp.s
+
+src/input/Keyboard.o: src/input/Keyboard.cpp.o
+.PHONY : src/input/Keyboard.o
+
+# target to build an object file
+src/input/Keyboard.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.o
+.PHONY : src/input/Keyboard.cpp.o
+
+src/input/Keyboard.i: src/input/Keyboard.cpp.i
+.PHONY : src/input/Keyboard.i
+
+# target to preprocess a source file
+src/input/Keyboard.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.i
+.PHONY : src/input/Keyboard.cpp.i
+
+src/input/Keyboard.s: src/input/Keyboard.cpp.s
+.PHONY : src/input/Keyboard.s
+
+# target to generate assembly for a file
+src/input/Keyboard.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/input/Keyboard.cpp.s
+.PHONY : src/input/Keyboard.cpp.s
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
@@ -249,6 +429,54 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/player/Inventory.o: src/player/Inventory.cpp.o
+.PHONY : src/player/Inventory.o
+
+# target to build an object file
+src/player/Inventory.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.o
+.PHONY : src/player/Inventory.cpp.o
+
+src/player/Inventory.i: src/player/Inventory.cpp.i
+.PHONY : src/player/Inventory.i
+
+# target to preprocess a source file
+src/player/Inventory.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.i
+.PHONY : src/player/Inventory.cpp.i
+
+src/player/Inventory.s: src/player/Inventory.cpp.s
+.PHONY : src/player/Inventory.s
+
+# target to generate assembly for a file
+src/player/Inventory.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/player/Inventory.cpp.s
+.PHONY : src/player/Inventory.cpp.s
+
+src/player/ItemStack.o: src/player/ItemStack.cpp.o
+.PHONY : src/player/ItemStack.o
+
+# target to build an object file
+src/player/ItemStack.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.o
+.PHONY : src/player/ItemStack.cpp.o
+
+src/player/ItemStack.i: src/player/ItemStack.cpp.i
+.PHONY : src/player/ItemStack.i
+
+# target to preprocess a source file
+src/player/ItemStack.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.i
+.PHONY : src/player/ItemStack.cpp.i
+
+src/player/ItemStack.s: src/player/ItemStack.cpp.s
+.PHONY : src/player/ItemStack.s
+
+# target to generate assembly for a file
+src/player/ItemStack.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/player/ItemStack.cpp.s
+.PHONY : src/player/ItemStack.cpp.s
+
 src/player/Player.o: src/player/Player.cpp.o
 .PHONY : src/player/Player.o
 
@@ -273,6 +501,78 @@ src/player/Player.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/player/Player.cpp.s
 .PHONY : src/player/Player.cpp.s
 
+src/renderer/BlockBreakRenderer.o: src/renderer/BlockBreakRenderer.cpp.o
+.PHONY : src/renderer/BlockBreakRenderer.o
+
+# target to build an object file
+src/renderer/BlockBreakRenderer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.o
+.PHONY : src/renderer/BlockBreakRenderer.cpp.o
+
+src/renderer/BlockBreakRenderer.i: src/renderer/BlockBreakRenderer.cpp.i
+.PHONY : src/renderer/BlockBreakRenderer.i
+
+# target to preprocess a source file
+src/renderer/BlockBreakRenderer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.i
+.PHONY : src/renderer/BlockBreakRenderer.cpp.i
+
+src/renderer/BlockBreakRenderer.s: src/renderer/BlockBreakRenderer.cpp.s
+.PHONY : src/renderer/BlockBreakRenderer.s
+
+# target to generate assembly for a file
+src/renderer/BlockBreakRenderer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/BlockBreakRenderer.cpp.s
+.PHONY : src/renderer/BlockBreakRenderer.cpp.s
+
+src/renderer/BlockOutlineRenderer.o: src/renderer/BlockOutlineRenderer.cpp.o
+.PHONY : src/renderer/BlockOutlineRenderer.o
+
+# target to build an object file
+src/renderer/BlockOutlineRenderer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.o
+.PHONY : src/renderer/BlockOutlineRenderer.cpp.o
+
+src/renderer/BlockOutlineRenderer.i: src/renderer/BlockOutlineRenderer.cpp.i
+.PHONY : src/renderer/BlockOutlineRenderer.i
+
+# target to preprocess a source file
+src/renderer/BlockOutlineRenderer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.i
+.PHONY : src/renderer/BlockOutlineRenderer.cpp.i
+
+src/renderer/BlockOutlineRenderer.s: src/renderer/BlockOutlineRenderer.cpp.s
+.PHONY : src/renderer/BlockOutlineRenderer.s
+
+# target to generate assembly for a file
+src/renderer/BlockOutlineRenderer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/BlockOutlineRenderer.cpp.s
+.PHONY : src/renderer/BlockOutlineRenderer.cpp.s
+
+src/renderer/GuiRenderer.o: src/renderer/GuiRenderer.cpp.o
+.PHONY : src/renderer/GuiRenderer.o
+
+# target to build an object file
+src/renderer/GuiRenderer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.o
+.PHONY : src/renderer/GuiRenderer.cpp.o
+
+src/renderer/GuiRenderer.i: src/renderer/GuiRenderer.cpp.i
+.PHONY : src/renderer/GuiRenderer.i
+
+# target to preprocess a source file
+src/renderer/GuiRenderer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.i
+.PHONY : src/renderer/GuiRenderer.cpp.i
+
+src/renderer/GuiRenderer.s: src/renderer/GuiRenderer.cpp.s
+.PHONY : src/renderer/GuiRenderer.s
+
+# target to generate assembly for a file
+src/renderer/GuiRenderer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/GuiRenderer.cpp.s
+.PHONY : src/renderer/GuiRenderer.cpp.s
+
 src/renderer/Renderer.o: src/renderer/Renderer.cpp.o
 .PHONY : src/renderer/Renderer.o
 
@@ -296,6 +596,30 @@ src/renderer/Renderer.s: src/renderer/Renderer.cpp.s
 src/renderer/Renderer.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/Renderer.cpp.s
 .PHONY : src/renderer/Renderer.cpp.s
+
+src/renderer/Renderer2D.o: src/renderer/Renderer2D.cpp.o
+.PHONY : src/renderer/Renderer2D.o
+
+# target to build an object file
+src/renderer/Renderer2D.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.o
+.PHONY : src/renderer/Renderer2D.cpp.o
+
+src/renderer/Renderer2D.i: src/renderer/Renderer2D.cpp.i
+.PHONY : src/renderer/Renderer2D.i
+
+# target to preprocess a source file
+src/renderer/Renderer2D.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.i
+.PHONY : src/renderer/Renderer2D.cpp.i
+
+src/renderer/Renderer2D.s: src/renderer/Renderer2D.cpp.s
+.PHONY : src/renderer/Renderer2D.s
+
+# target to generate assembly for a file
+src/renderer/Renderer2D.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/renderer/Renderer2D.cpp.s
+.PHONY : src/renderer/Renderer2D.cpp.s
 
 src/resources/ResourceManager.o: src/resources/ResourceManager.cpp.o
 .PHONY : src/resources/ResourceManager.o
@@ -368,6 +692,30 @@ src/shaders/ShaderManager.s: src/shaders/ShaderManager.cpp.s
 src/shaders/ShaderManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/shaders/ShaderManager.cpp.s
 .PHONY : src/shaders/ShaderManager.cpp.s
+
+src/utils/Utils.o: src/utils/Utils.cpp.o
+.PHONY : src/utils/Utils.o
+
+# target to build an object file
+src/utils/Utils.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.o
+.PHONY : src/utils/Utils.cpp.o
+
+src/utils/Utils.i: src/utils/Utils.cpp.i
+.PHONY : src/utils/Utils.i
+
+# target to preprocess a source file
+src/utils/Utils.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.i
+.PHONY : src/utils/Utils.cpp.i
+
+src/utils/Utils.s: src/utils/Utils.cpp.s
+.PHONY : src/utils/Utils.s
+
+# target to generate assembly for a file
+src/utils/Utils.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/utils/Utils.cpp.s
+.PHONY : src/utils/Utils.cpp.s
 
 src/vendor/imgui/imgui.o: src/vendor/imgui/imgui.cpp.o
 .PHONY : src/vendor/imgui/imgui.o
@@ -585,6 +933,30 @@ src/world/block/Block.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/block/Block.cpp.s
 .PHONY : src/world/block/Block.cpp.s
 
+src/world/block/BlockDB.o: src/world/block/BlockDB.cpp.o
+.PHONY : src/world/block/BlockDB.o
+
+# target to build an object file
+src/world/block/BlockDB.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.o
+.PHONY : src/world/block/BlockDB.cpp.o
+
+src/world/block/BlockDB.i: src/world/block/BlockDB.cpp.i
+.PHONY : src/world/block/BlockDB.i
+
+# target to preprocess a source file
+src/world/block/BlockDB.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.i
+.PHONY : src/world/block/BlockDB.cpp.i
+
+src/world/block/BlockDB.s: src/world/block/BlockDB.cpp.s
+.PHONY : src/world/block/BlockDB.s
+
+# target to generate assembly for a file
+src/world/block/BlockDB.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/block/BlockDB.cpp.s
+.PHONY : src/world/block/BlockDB.cpp.s
+
 src/world/chunk/Chunk.o: src/world/chunk/Chunk.cpp.o
 .PHONY : src/world/chunk/Chunk.o
 
@@ -608,6 +980,30 @@ src/world/chunk/Chunk.s: src/world/chunk/Chunk.cpp.s
 src/world/chunk/Chunk.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/chunk/Chunk.cpp.s
 .PHONY : src/world/chunk/Chunk.cpp.s
+
+src/world/chunk/ChunkManager.o: src/world/chunk/ChunkManager.cpp.o
+.PHONY : src/world/chunk/ChunkManager.o
+
+# target to build an object file
+src/world/chunk/ChunkManager.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.o
+.PHONY : src/world/chunk/ChunkManager.cpp.o
+
+src/world/chunk/ChunkManager.i: src/world/chunk/ChunkManager.cpp.i
+.PHONY : src/world/chunk/ChunkManager.i
+
+# target to preprocess a source file
+src/world/chunk/ChunkManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.i
+.PHONY : src/world/chunk/ChunkManager.cpp.i
+
+src/world/chunk/ChunkManager.s: src/world/chunk/ChunkManager.cpp.s
+.PHONY : src/world/chunk/ChunkManager.s
+
+# target to generate assembly for a file
+src/world/chunk/ChunkManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/chunk/ChunkManager.cpp.s
+.PHONY : src/world/chunk/ChunkManager.cpp.s
 
 src/world/chunk/ChunkMesh.o: src/world/chunk/ChunkMesh.cpp.o
 .PHONY : src/world/chunk/ChunkMesh.o
@@ -681,6 +1077,30 @@ src/world/chunklet/Chunklet.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/chunklet/Chunklet.cpp.s
 .PHONY : src/world/chunklet/Chunklet.cpp.s
 
+src/world/events/DigEvent.o: src/world/events/DigEvent.cpp.o
+.PHONY : src/world/events/DigEvent.o
+
+# target to build an object file
+src/world/events/DigEvent.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.o
+.PHONY : src/world/events/DigEvent.cpp.o
+
+src/world/events/DigEvent.i: src/world/events/DigEvent.cpp.i
+.PHONY : src/world/events/DigEvent.i
+
+# target to preprocess a source file
+src/world/events/DigEvent.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.i
+.PHONY : src/world/events/DigEvent.cpp.i
+
+src/world/events/DigEvent.s: src/world/events/DigEvent.cpp.s
+.PHONY : src/world/events/DigEvent.s
+
+# target to generate assembly for a file
+src/world/events/DigEvent.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/voxel_engine.dir/build.make CMakeFiles/voxel_engine.dir/src/world/events/DigEvent.cpp.s
+.PHONY : src/world/events/DigEvent.cpp.s
+
 src/world/generation/TerrainGenerator.o: src/world/generation/TerrainGenerator.cpp.o
 .PHONY : src/world/generation/TerrainGenerator.o
 
@@ -712,7 +1132,14 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... uninstall"
+	@echo "... update_mappings"
+	@echo "... glfw"
 	@echo "... voxel_engine"
 	@echo "... src/Application.o"
 	@echo "... src/Application.i"
@@ -723,18 +1150,48 @@ help:
 	@echo "... src/camera/Camera.o"
 	@echo "... src/camera/Camera.i"
 	@echo "... src/camera/Camera.s"
+	@echo "... src/debug_gui/DebugGui.o"
+	@echo "... src/debug_gui/DebugGui.i"
+	@echo "... src/debug_gui/DebugGui.s"
 	@echo "... src/glad.o"
 	@echo "... src/glad.i"
 	@echo "... src/glad.s"
+	@echo "... src/gui/CrossHair.o"
+	@echo "... src/gui/CrossHair.i"
+	@echo "... src/gui/CrossHair.s"
+	@echo "... src/gui/Hotbar.o"
+	@echo "... src/gui/Hotbar.i"
+	@echo "... src/gui/Hotbar.s"
+	@echo "... src/input/Keyboard.o"
+	@echo "... src/input/Keyboard.i"
+	@echo "... src/input/Keyboard.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/player/Inventory.o"
+	@echo "... src/player/Inventory.i"
+	@echo "... src/player/Inventory.s"
+	@echo "... src/player/ItemStack.o"
+	@echo "... src/player/ItemStack.i"
+	@echo "... src/player/ItemStack.s"
 	@echo "... src/player/Player.o"
 	@echo "... src/player/Player.i"
 	@echo "... src/player/Player.s"
+	@echo "... src/renderer/BlockBreakRenderer.o"
+	@echo "... src/renderer/BlockBreakRenderer.i"
+	@echo "... src/renderer/BlockBreakRenderer.s"
+	@echo "... src/renderer/BlockOutlineRenderer.o"
+	@echo "... src/renderer/BlockOutlineRenderer.i"
+	@echo "... src/renderer/BlockOutlineRenderer.s"
+	@echo "... src/renderer/GuiRenderer.o"
+	@echo "... src/renderer/GuiRenderer.i"
+	@echo "... src/renderer/GuiRenderer.s"
 	@echo "... src/renderer/Renderer.o"
 	@echo "... src/renderer/Renderer.i"
 	@echo "... src/renderer/Renderer.s"
+	@echo "... src/renderer/Renderer2D.o"
+	@echo "... src/renderer/Renderer2D.i"
+	@echo "... src/renderer/Renderer2D.s"
 	@echo "... src/resources/ResourceManager.o"
 	@echo "... src/resources/ResourceManager.i"
 	@echo "... src/resources/ResourceManager.s"
@@ -744,6 +1201,9 @@ help:
 	@echo "... src/shaders/ShaderManager.o"
 	@echo "... src/shaders/ShaderManager.i"
 	@echo "... src/shaders/ShaderManager.s"
+	@echo "... src/utils/Utils.o"
+	@echo "... src/utils/Utils.i"
+	@echo "... src/utils/Utils.s"
 	@echo "... src/vendor/imgui/imgui.o"
 	@echo "... src/vendor/imgui/imgui.i"
 	@echo "... src/vendor/imgui/imgui.s"
@@ -771,9 +1231,15 @@ help:
 	@echo "... src/world/block/Block.o"
 	@echo "... src/world/block/Block.i"
 	@echo "... src/world/block/Block.s"
+	@echo "... src/world/block/BlockDB.o"
+	@echo "... src/world/block/BlockDB.i"
+	@echo "... src/world/block/BlockDB.s"
 	@echo "... src/world/chunk/Chunk.o"
 	@echo "... src/world/chunk/Chunk.i"
 	@echo "... src/world/chunk/Chunk.s"
+	@echo "... src/world/chunk/ChunkManager.o"
+	@echo "... src/world/chunk/ChunkManager.i"
+	@echo "... src/world/chunk/ChunkManager.s"
 	@echo "... src/world/chunk/ChunkMesh.o"
 	@echo "... src/world/chunk/ChunkMesh.i"
 	@echo "... src/world/chunk/ChunkMesh.s"
@@ -783,6 +1249,9 @@ help:
 	@echo "... src/world/chunklet/Chunklet.o"
 	@echo "... src/world/chunklet/Chunklet.i"
 	@echo "... src/world/chunklet/Chunklet.s"
+	@echo "... src/world/events/DigEvent.o"
+	@echo "... src/world/events/DigEvent.i"
+	@echo "... src/world/events/DigEvent.s"
 	@echo "... src/world/generation/TerrainGenerator.o"
 	@echo "... src/world/generation/TerrainGenerator.i"
 	@echo "... src/world/generation/TerrainGenerator.s"

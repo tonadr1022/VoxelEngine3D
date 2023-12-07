@@ -5,7 +5,7 @@
 # compile CXX with /usr/bin/clang++
 C_DEFINES = 
 
-C_INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include
+C_INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -I/Users/tony/CLionProjects/voxel_engine/dependencies/external/glfw/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/external/glm -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks
 
 C_FLAGSarm64 = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk
 
@@ -13,7 +13,7 @@ C_FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Pl
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/opt/homebrew/Cellar/glew/2.2.0_1 -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks -isystem /opt/homebrew/include
+CXX_INCLUDES = -I/Users/tony/CLionProjects/voxel_engine/src/vendor -I/Users/tony/CLionProjects/voxel_engine/dependencies -I/Users/tony/CLionProjects/voxel_engine/shaders -I/Users/tony/CLionProjects/voxel_engine/resources -I/Users/tony/CLionProjects/voxel_engine/dependencies/external/glfw/include -I/Users/tony/CLionProjects/voxel_engine/dependencies/external/glm -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks
 
 CXX_FLAGSarm64 = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk
 
