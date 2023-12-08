@@ -3,8 +3,8 @@
 //
 
 #include "CrossHair.h"
-#include "../Config.h"
 #include "../shaders/ShaderManager.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 CrossHair::CrossHair() : VAO(0), VBO(0) {
     glGenVertexArrays(1, &VAO);
@@ -30,7 +30,7 @@ CrossHair::CrossHair() : VAO(0), VBO(0) {
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::scale(model, glm::vec3(0.03f));
-    glm::vec3 crossHairColor = glm::vec3(1.0f);
+    auto crossHairColor = glm::vec3(1.0f);
 
     ShaderManager::getShader("crosshair")->use();
     ShaderManager::getShader("crosshair")->setMat4("u_Model", model);

@@ -3,6 +3,12 @@
 //
 
 #include "Shader.h"
+#include <glm/gtc/type_ptr.hpp>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <glad/glad.h>
+
 
 GLint Shader::makeModule(const std::string &filepath, GLint module_type) {
     // open file and read contents into string stream (one big string)
@@ -27,7 +33,7 @@ GLint Shader::makeModule(const std::string &filepath, GLint module_type) {
     file.close();
 
     GLint shaderModule = glCreateShader(module_type);
-    glShaderSource(shaderModule, 1, &shaderSrc, NULL);
+    glShaderSource(shaderModule, 1, &shaderSrc, nullptr);
     glCompileShader(shaderModule);
 
     int success;
@@ -38,8 +44,7 @@ GLint Shader::makeModule(const std::string &filepath, GLint module_type) {
         std::cout << "ERROR::SHADER::"
                   << (module_type == GL_VERTEX_SHADER ?
                       "VERTEX" : module_type == GL_FRAGMENT_SHADER ?
-                                 "FRAGMENT" : module_type == GL_GEOMETRY_SHADER
-                                              ? "GEOMETRY" : "UNKNOWN")
+                                 "FRAGMENT" : "GEOMETRY")
                   << "::COMPILATION_FAILED\n" << infoLog << std::endl;
         return -1;
     }

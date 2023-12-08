@@ -5,7 +5,7 @@
 #ifndef VOXEL_ENGINE_RESOURCEMANAGER_H
 #define VOXEL_ENGINE_RESOURCEMANAGER_H
 
-#include "../Config.h"
+#include <string>
 
 class ResourceManager {
 public:

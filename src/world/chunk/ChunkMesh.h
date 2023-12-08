@@ -5,8 +5,9 @@
 #ifndef VOXEL_ENGINE_CHUNKMESH_H
 #define VOXEL_ENGINE_CHUNKMESH_H
 
-#include "../../Config.h"
 #include "../block/Block.h"
+#include <vector>
+#include <glm/glm.hpp>
 
 class Chunk;
 

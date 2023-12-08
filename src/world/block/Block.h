@@ -5,7 +5,7 @@
 #ifndef VOXEL_ENGINE_BLOCK_H
 #define VOXEL_ENGINE_BLOCK_H
 
-#include "../../Config.h"
+#include <cstdint>
 
 struct Block {
     enum ID : uint8_t {

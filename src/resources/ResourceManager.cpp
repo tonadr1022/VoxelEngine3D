@@ -2,7 +2,9 @@
 // Created by Tony Adriansen on 11/17/23.
 //
 
+#define STB_IMAGE_IMPLEMENTATION
 #include "ResourceManager.h"
+#include <glad/glad.h>
 #include "../vendor/stb_image/stb_image.h"
 
 std::unordered_map<std::string, unsigned int> ResourceManager::textures;

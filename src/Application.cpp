@@ -10,6 +10,7 @@
 #include "shaders/ShaderManager.h"
 #include "renderer/Renderer.h"
 #include "debug_gui/DebugGui.h"
+#include <iostream>
 
 void Application::run() {
     initGLFW();

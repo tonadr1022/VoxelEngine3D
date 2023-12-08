@@ -5,7 +5,11 @@
 #ifndef VOXEL_ENGINE_SHADER_H
 #define VOXEL_ENGINE_SHADER_H
 
-#include "../Config.h"
+#include <glad/glad.h>
+#include <unordered_map>
+#include <string>
+#include <glm/glm.hpp>
+
 
 class Shader {
 public:

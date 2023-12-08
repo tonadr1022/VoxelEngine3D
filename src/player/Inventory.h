@@ -5,9 +5,10 @@
 #ifndef VOXEL_ENGINE_INVENTORY_H
 #define VOXEL_ENGINE_INVENTORY_H
 
-
 #include "../world/block/Block.h"
 #include "ItemStack.h"
+#include <array>
+
 
 class Inventory {
 public:

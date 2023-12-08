@@ -5,7 +5,8 @@
 #ifndef VOXEL_ENGINE_KEYBOARD_H
 #define VOXEL_ENGINE_KEYBOARD_H
 
-#include "../Config.h"
+#include <GLFW/glfw3.h>
+#include <unordered_map>
 
 struct KeyPress {
     bool current, previous;

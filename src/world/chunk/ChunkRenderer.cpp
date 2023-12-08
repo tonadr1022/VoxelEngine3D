@@ -2,8 +2,10 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "ChunkRenderer.h"
 #include "../../shaders/ShaderManager.h"
+#include "ChunkRenderer.h"
+#include <iostream>
+
 
 
 ChunkRenderer::ChunkRenderer(Camera &camera, unsigned int textureAtlasID) : camera(camera),

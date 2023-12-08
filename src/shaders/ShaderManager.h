@@ -5,7 +5,6 @@
 #ifndef VOXEL_ENGINE_SHADERMANAGER_H
 #define VOXEL_ENGINE_SHADERMANAGER_H
 
-#include "../Config.h"
 #include "Shader.h"
 
 class ShaderManager {

@@ -5,7 +5,6 @@
 #ifndef VOXEL_ENGINE_DEBUGGUI_H
 #define VOXEL_ENGINE_DEBUGGUI_H
 
-#include "../Config.h"
 #include "../world/World.h"
 
 class DebugGui {

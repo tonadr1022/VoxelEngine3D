@@ -5,8 +5,11 @@
 #ifndef VOXEL_ENGINE_CHUNKLET_H
 #define VOXEL_ENGINE_CHUNKLET_H
 
-#include "../../Config.h"
+
 #include "../block/Block.h"
+#include <glm/glm.hpp>
+#include "../../Constants.h"
+#include <array>
 
 
 class Chunk;
@@ -17,7 +20,7 @@ public:
     explicit Chunklet(glm::ivec3 location);
     void setBlock(int x, int y, int z, Block block);
     Block getBlock(int x, int y, int z);
-    glm::ivec3 location;
+    glm::ivec3 location{};
 private:
     std::array<Block, CHUNKLET_VOLUME> blocks;
     static int getIndex(int x, int y, int z);

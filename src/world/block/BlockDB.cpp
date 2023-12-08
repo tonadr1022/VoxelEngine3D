@@ -3,7 +3,9 @@
 //
 
 #include "BlockDB.h"
+#include "json/json.hpp"
 #include <fstream>
+#include <iostream>
 
 const std::array<std::string, 20> blockFileNames{
         "air",

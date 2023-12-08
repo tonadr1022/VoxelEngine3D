@@ -5,23 +5,23 @@
 #ifndef VOXEL_ENGINE_DIGEVENT_H
 #define VOXEL_ENGINE_DIGEVENT_H
 
-#include "../../Config.h"
-#include "../../player/Player.h"
-#include "../World.h"
-#include "IEvent.h"
 
-class DigEvent : public IEvent {
-public:
-    DigEvent(World &world, Player &player, glm::ivec3& blockPos);
-    void handle() override;
+//#include "../../player/Player.h"
+//#include "../World.h"
+//#include "IEvent.h"
 
-private:
-    glm::ivec3& blockPos;
-    World &world;
-    Player &player;
-
-
-};
+//class DigEvent : public IEvent {
+//public:
+//    DigEvent(World &world, Player &player, glm::ivec3& blockPos);
+//    void handle() override;
+//
+//private:
+//    glm::ivec3& blockPos;
+//    World &world;
+//    Player &player;
+//
+//
+//};
 
 
 #endif //VOXEL_ENGINE_DIGEVENT_H

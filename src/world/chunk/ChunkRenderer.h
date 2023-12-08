@@ -5,10 +5,10 @@
 #ifndef VOXEL_ENGINE_CHUNKRENDERER_H
 #define VOXEL_ENGINE_CHUNKRENDERER_H
 
-
+#include "../../shaders/Shader.h"
 #include "Chunk.h"
 #include "../../camera/Camera.h"
-#include "../../shaders/Shader.h"
+
 
 class ChunkRenderer {
 public:

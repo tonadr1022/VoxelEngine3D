@@ -5,7 +5,6 @@
 #ifndef VOXEL_ENGINE_CHUNK_H
 #define VOXEL_ENGINE_CHUNK_H
 
-#include "../../Config.h"
 #include "ChunkMesh.h"
 #include "../chunklet/Chunklet.h"
 

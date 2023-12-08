@@ -3,9 +3,7 @@
 //
 
 #include "Camera.h"
-
-
-//Camera::Camera(GLFWwindow *window) : window(window) {}
+#include "../Constants.h"
 
 void Camera::processMouseMovement(GLFWwindow *window, float deltaTime) {
     double xPos, yPos;
@@ -13,17 +11,17 @@ void Camera::processMouseMovement(GLFWwindow *window, float deltaTime) {
     glfwSetCursorPos(window, WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f);
 
     auto dEulers = glm::vec3(0.0f);
-    dEulers.z = mouseSensitivity * (WINDOW_WIDTH / 2.0f - xPos);
-    dEulers.y = mouseSensitivity * (WINDOW_HEIGHT / 2.0f - yPos);
+    dEulers.z = static_cast<float>(mouseSensitivity * (WINDOW_WIDTH / 2.0f - xPos));
+    dEulers.y = static_cast<float>(mouseSensitivity * (WINDOW_HEIGHT / 2.0f - yPos));
 
     eulers += dEulers;
     eulers.y = glm::clamp(eulers.y, -89.0f, 89.0f);
     eulers.z = glm::mod(eulers.z, 360.0f);
 
-    updateCameraVectors(deltaTime);
+    updateCameraVectors();
 }
 
-void Camera::updateCameraVectors(float deltaTime) {
+void Camera::updateCameraVectors() {
     float theta = glm::radians(eulers.z);
     float phi = glm::radians(eulers.y);
 
@@ -38,21 +36,21 @@ void Camera::updateCameraVectors(float deltaTime) {
 }
 
 void Camera::update(float deltaTime) {
-    updateCameraVectors(deltaTime);
+    updateCameraVectors();
 }
 
 void Camera::setPosition(glm::vec3 newPosition) {
     this->position = newPosition;
 }
 
-void Camera::setFarPlane(float newFarPlane) {
-    farPlane = newFarPlane;
-
-}
-
-float Camera::getFarPlane() const {
-    return farPlane;
-}
+//void Camera::setFarPlane(float newFarPlane) {
+//    farPlane = newFarPlane;
+//
+//}
+//
+//float Camera::getFarPlane() const {
+//    return farPlane;
+//}
 
 Camera::Camera()= default;
 

@@ -3,9 +3,6 @@
 //
 
 #include "Chunk.h"
-#include "ChunkManager.h"
-#include "ChunkRenderer.h"
-
 
 Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshState::UNBUILT),
                                    chunkState(ChunkState::UNDEFINED) {

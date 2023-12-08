@@ -5,7 +5,6 @@
 #ifndef VOXEL_ENGINE_BLOCKOUTLINERENDERER_H
 #define VOXEL_ENGINE_BLOCKOUTLINERENDERER_H
 
-#include "../Config.h"
 #include "../camera/Camera.h"
 
 class BlockOutlineRenderer {

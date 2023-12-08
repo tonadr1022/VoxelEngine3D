@@ -4,6 +4,7 @@
 
 #include "TerrainGenerator.h"
 #include "../chunk/Chunk.h"
+#include <glm/gtc/noise.hpp>
 
 void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
     glm::ivec2 chunkLocation = chunk.getLocation();

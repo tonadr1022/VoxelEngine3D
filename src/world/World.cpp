@@ -4,16 +4,22 @@
 
 #include "World.h"
 #include "../resources/ResourceManager.h"
-#include "chunk/ChunkKey.h"
 #include "../utils/Utils.h"
+#include <iostream>
+#include "generation/TerrainGenerator.h"
 
 World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(renderer),
                                                        chunkRenderer(player.camera,
                                                                      ResourceManager::getTexture(
                                                                              "texture_atlas")) {
-    ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     auto start = std::chrono::high_resolution_clock::now();
+
     updateChunks();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << "Chunk generation took: " << duration.count() << "milliseconds"
+              << std::endl;
 
     for (int i = 0; i < 1; i++) {
         m_chunkLoadThreads.emplace_back([&]() {
@@ -24,11 +30,7 @@ World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(
             }
         });
     }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    if (duration.count() > 0.5)
-        std::cout << "Chunk generation took: " << duration.count() << "milliseconds"
-                  << std::endl;
+
 }
 
 void World::render() {
@@ -83,7 +85,6 @@ void World::loadChunks() {
 }
 
 
-
 void World::unloadChunks() {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     int unloadDistanceChunks = renderDistance + 2;
@@ -105,9 +106,9 @@ void World::unloadChunks() {
     }
 }
 
-void World::addEvent(std::unique_ptr<IEvent> event) {
-    events.push_back(std::move(event));
-}
+//void World::addEvent(std::unique_ptr<IEvent> event) {
+//    events.push_back(std::move(event));
+//}
 
 World::~World() {
     m_isRunning = false;
@@ -131,7 +132,7 @@ void World::updateChunkMeshes(ChunkKey &playerChunkKeyPos) {
             std::this_thread::sleep_for(std::chrono::microseconds(1));
             std::unique_lock<std::mutex> lock(m_mainMutex);
             ChunkKey chunkKey = {chunkX, chunkY};
-            Chunk& chunk = chunkManager.getChunk(chunkKey);
+            Chunk &chunk = chunkManager.getChunk(chunkKey);
 //            if (chunk.chunkMeshState != ChunkMeshState::UNBUILT) continue;
             if (chunk.chunkMeshState == ChunkMeshState::BUILT) continue;
             if (chunk.chunkState != ChunkState::GENERATED) continue;
@@ -140,28 +141,32 @@ void World::updateChunkMeshes(ChunkKey &playerChunkKeyPos) {
     }
 }
 
-void World::handleChunkUpdates(Chunk& chunk, ChunkKey chunkKey, int chunkX, int chunkY) {
+void World::handleChunkUpdates(Chunk &chunk, ChunkKey chunkKey, int chunkX, int chunkY) {
     chunksToReload.push_back(chunkKey);
     chunk.markDirty();
     // need to update adjacent chunks if block is on border
     if (chunkX == 0) {
-        ChunkKey backChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::BACK, chunkKey);
+        ChunkKey backChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::BACK,
+                                                                        chunkKey);
         Chunk &backChunk = chunkManager.getChunk(backChunkKey);
         chunksToReload.push_back(backChunkKey);
         backChunk.markDirty();
     } else if (chunkX == CHUNK_WIDTH - 1) {
-        ChunkKey frontChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::FRONT, chunkKey);
+        ChunkKey frontChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::FRONT,
+                                                                         chunkKey);
         Chunk &frontChunk = chunkManager.getChunk(frontChunkKey);
         chunksToReload.push_back(frontChunkKey);
         frontChunk.markDirty();
     }
     if (chunkY == 0) {
-        ChunkKey leftChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::LEFT, chunkKey);
+        ChunkKey leftChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::LEFT,
+                                                                        chunkKey);
         Chunk &leftChunk = chunkManager.getChunk(leftChunkKey);
         chunksToReload.push_back(leftChunkKey);
         leftChunk.markDirty();
     } else if (chunkY == CHUNK_WIDTH - 1) {
-        ChunkKey rightChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::RIGHT, chunkKey);
+        ChunkKey rightChunkKey = ChunkManager::calculateNeighborChunkKey(HorizontalDirection::RIGHT,
+                                                                         chunkKey);
         Chunk &rightChunk = chunkManager.getChunk(rightChunkKey);
         chunksToReload.push_back(rightChunkKey);
         rightChunk.markDirty();

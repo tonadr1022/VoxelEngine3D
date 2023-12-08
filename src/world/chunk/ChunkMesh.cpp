@@ -5,6 +5,9 @@
 #include "ChunkMesh.h"
 #include "Chunk.h"
 #include "../block/BlockDB.h"
+#include <bitset>
+#include <glad/glad.h>
+
 
 namespace {
     const std::array<int, 20> frontFace{

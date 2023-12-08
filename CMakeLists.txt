@@ -12,8 +12,6 @@ set(SOURCE_FILES
                 src/Application.cpp
                 src/Application.h
                 src/glad.c
-        src/Config.cpp
-        src/Config.h
         src/vendor/imgui/imgui.cpp
         src/vendor/imgui/imgui_demo.cpp
         src/vendor/imgui/imgui_draw.cpp
@@ -85,10 +83,6 @@ set(SOURCE_FILES
 
 )
 
-#add_subdirectory(src/vendor/glfw)
-
-
-
 include_directories("dependencies")
 include_directories("shaders")
 include_directories("resources")
@@ -100,4 +94,4 @@ find_package(OpenGL REQUIRED)
 
 add_executable(voxel_engine ${SOURCE_FILES})
 
-target_link_libraries(voxel_engine ${OPENGL_LIBRARIES} glfw glm)
+target_link_libraries(voxel_engine ${OPENGL_LIBRARIES} glfw)

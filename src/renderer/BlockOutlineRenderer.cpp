@@ -2,8 +2,9 @@
 // Created by Tony Adriansen on 12/2/23.
 //
 
-#include "BlockOutlineRenderer.h"
 #include "../shaders/ShaderManager.h"
+#include "BlockOutlineRenderer.h"
+
 
 const std::array<float, 24> cubeVertices = {
         0.0f, 0.0f, 1.0f,

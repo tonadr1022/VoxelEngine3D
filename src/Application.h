@@ -5,10 +5,9 @@
 #ifndef VOXEL_ENGINE_APPLICATION_H
 #define VOXEL_ENGINE_APPLICATION_H
 
-#include "Config.h"
+#include "world/World.h"
 #include "camera/Camera.h"
 #include "player/Player.h"
-#include "world/World.h"
 #include "input/Keyboard.h"
 
 class Application {

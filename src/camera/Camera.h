@@ -5,8 +5,10 @@
 #ifndef VOXEL_ENGINE_CAMERA_H
 #define VOXEL_ENGINE_CAMERA_H
 
-#include "../Config.h"
 #include "../physics/Ray.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <GLFW/glfw3.h>
 
 class Camera {
 public:
@@ -25,25 +27,21 @@ public:
 
     inline glm::vec3 &getFront() { return front; }
 
-    inline glm::vec3 &getRight() { return right; }
+//    inline glm::vec3 &getRight() { return right; }
 
-    inline glm::vec3 &getUp() { return up; }
+//    inline glm::vec3 &getUp() { return up; }
 
     static inline glm::vec3 &getGlobalUp() { return const_cast<glm::vec3 &>(globalUp); }
 
+    void update(float deltaTime);
 
 //    void setFarPlane(float farPlane);
 
-
-    void update(float deltaTime);
-
-    void setFarPlane(float farPlane);
-
-    float getFarPlane() const;
+//    [[nodiscard]] float getFarPlane() const;
 
 
 private:
-    void updateCameraVectors(float deltaTime);
+    void updateCameraVectors();
 
     float fov = 70.0f;
     float mouseSensitivity = 0.1f;

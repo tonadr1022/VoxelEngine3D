@@ -8,6 +8,7 @@
 
 #include "Chunk.h"
 #include "ChunkKey.h"
+#include <map>
 
 using ChunkMap = std::map<ChunkKey, Chunk>;
 

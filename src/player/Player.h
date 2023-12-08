@@ -5,11 +5,11 @@
 #ifndef VOXEL_ENGINE_PLAYER_H
 #define VOXEL_ENGINE_PLAYER_H
 
-#include "../Config.h"
 #include "../camera/Camera.h"
 #include "../world/chunk/ChunkKey.h"
 #include "Inventory.h"
-
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 class Player {
 public:
@@ -37,10 +37,6 @@ private:
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 70.0f);
 
     float movementSpeed = 40.0f;
-
-
-
-
 };
 
 

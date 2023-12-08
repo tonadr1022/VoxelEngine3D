@@ -6,7 +6,9 @@
 #define VOXEL_ENGINE_BLOCKDB_H
 
 #include "Block.h"
-#include "../../Config.h"
+#include <unordered_map>
+#include <string>
+#include <glm/glm.hpp>
 
 struct BlockData {
     Block::ID id;

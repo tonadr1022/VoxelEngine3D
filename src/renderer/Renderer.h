@@ -5,8 +5,6 @@
 #ifndef VOXEL_ENGINE_RENDERER_H
 #define VOXEL_ENGINE_RENDERER_H
 
-#include "../Config.h"
-#include "../camera/Camera.h"
 #include "../shaders/Shader.h"
 #include "../gui/CrossHair.h"
 #include "BlockOutlineRenderer.h"
