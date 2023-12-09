@@ -18,7 +18,7 @@ public:
     static Application &getInstance();
 
 private:
-    const char* glsl_version;
+    const char* glsl_version{};
 
     explicit Application();
 
@@ -38,19 +38,9 @@ private:
 
     std::shared_ptr<World> world;
 
-    void compileShaders();
+    static void compileShaders();
 
-    void loadTextures();
-
-
-//    static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
-
-//    static void mouseCallback(GLFWwindow *window, double xpos, double ypos);
-
-//    static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
-
-
+    static void loadTextures();
 };
-
 
 #endif //VOXEL_ENGINE_APPLICATION_H

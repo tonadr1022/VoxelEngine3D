@@ -43,7 +43,7 @@ void Application::run() {
 
         world->player.perFrameUpdate(window);
         while (frameTime > 0.0) {
-            float deltaTime = std::min(frameTime, dt);
+            auto deltaTime = static_cast<float>(std::min(frameTime, dt));
             frameTime -= deltaTime;
             time += deltaTime;
             world->player.update(window, deltaTime);
@@ -139,8 +139,6 @@ void Application::scrollCallback(GLFWwindow *window, double xoffset, double yoff
 }
 
 void Application::processScrollInput(double xoffset, double yoffset) {
-    // need to pass to player somehow
-    // player has process scroll input method, how to call?
     world->player.processScrollInput(yoffset);
 }
 

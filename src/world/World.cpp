@@ -203,9 +203,9 @@ void World::castRay(Ray ray) {
         if (block.id != Block::AIR) {
             // calculate block break stage. 10 stages. 0 is no break, 10 is fully broken
             auto duration = std::chrono::steady_clock::now() - lastTime;
-            long durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(
+            auto durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(
                     duration).count();
-            int breakStage = durationMS / (MINING_DELAY_MS / 10);
+            int breakStage = static_cast<int>(durationMS / (MINING_DELAY_MS / 10));
             if (breakStage > 10) breakStage = 10;
 
             // breaking block
@@ -217,6 +217,8 @@ void World::castRay(Ray ray) {
                 }
 
                 setBlock({blockPos.x, blockPos.y, blockPos.z}, Block(Block::AIR));
+                player.blockBreakStage = 0;
+                lastRayCastBlockPos = NULL_VECTOR;
                 isFirstAction = false;
             }
                 // placing block
@@ -226,7 +228,6 @@ void World::castRay(Ray ray) {
                     return;
                 }
                 setBlock(lastAirBlockPos, Block(player.inventory.getHeldItem()));
-
                 isFirstAction = false;
             }
             lastTime = std::chrono::steady_clock::now();

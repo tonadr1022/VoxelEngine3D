@@ -64,14 +64,7 @@ void Chunk::setMaxBlockHeightAt(int x, int y, int z) {
     maxBlockHeights[x + y * CHUNK_WIDTH] = z;
 }
 
-void Chunk::setIsBlockBuried(int x, int y, int z, bool isBuried) {
-    blocksBuried[z * CHUNK_AREA + y * CHUNK_WIDTH + x] = isBuried;
-}
-
 void Chunk::markDirty() {
     chunkMeshState = ChunkMeshState::UNBUILT;
     chunkState = ChunkState::CHANGED;
 }
-
-
-

@@ -9,23 +9,12 @@
 Renderer::Renderer(GLFWwindow *window) : window(window) {
 }
 
-void Renderer::render(Camera &camera) {
-    glm::mat4 viewMatrix = camera.getViewMatrix();
-    glm::mat4 projectionMatrix = camera.getProjectionMatrix();
-}
-
 void Renderer::renderBlockOutline(Camera &camera, glm::ivec3 blockPosition) {
-    blockOutlineRenderer.render(blockPosition, camera);
+    m_blockOutlineRenderer.render(blockPosition, camera);
 }
 
-void Renderer::renderBlockBreak(Camera &camera, glm::ivec3 blockPosition, float breakPercentage) {
-    blockBreakRenderer.render(blockPosition, camera, breakPercentage);
-}
-
-void Renderer::startRender(Camera &camera, const std::shared_ptr<Shader> &shader) {
-    shader->use();
-    shader->setMat4("u_View", camera.getViewMatrix());
-    shader->setMat4("u_Projection", camera.getProjectionMatrix());
+void Renderer::renderBlockBreak(Camera &camera, glm::ivec3 blockPosition, int breakStage) {
+    m_blockBreakRenderer.render(blockPosition, camera, breakStage);
 }
 
 void Renderer::renderCrossHair() const {

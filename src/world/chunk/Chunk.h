@@ -60,13 +60,9 @@ public:
 
     void markDirty();
 
-    void setIsBlockBuried(int x, int y, int z, bool isBuried);
-
     std::array<int, CHUNK_HEIGHT> numSolidBlocksInLayers;
 private:
-
     std::array<int, CHUNK_AREA> maxBlockHeights;
-    std::array<bool, CHUNK_VOLUME> blocksBuried;
     ChunkMesh mesh;
     glm::vec2 location;
 };

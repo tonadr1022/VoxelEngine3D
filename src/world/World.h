@@ -60,9 +60,10 @@ private:
 
     std::vector<std::thread> m_chunkLoadThreads;
 
+    Renderer renderer;
     ChunkRenderer chunkRenderer;
     ChunkManager chunkManager;
-    Renderer renderer;
+
 };
 
 
