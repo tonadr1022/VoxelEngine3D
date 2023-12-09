@@ -43,11 +43,12 @@ void Player::processKeyInput(GLFWwindow *window, float deltaTime) {
 
 void Player::processMouseInput(GLFWwindow *window, float deltaTime) {
     bool ImGuiWantMouse = ImGui::GetIO().WantCaptureMouse;
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    camera.processMouseMovement(window, deltaTime);
-//    } else {
-//        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-//    }
+    if (!Keyboard::isPressed(GLFW_KEY_B)) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        camera.processMouseMovement(window, deltaTime);
+    } else {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
 
 
 }

@@ -12,7 +12,7 @@
 
 class ChunkRenderer {
 public:
-    ChunkRenderer(Camera &camera, unsigned int textureAtlasID);
+    ChunkRenderer(Camera &camera);
 
     ~ChunkRenderer();
 

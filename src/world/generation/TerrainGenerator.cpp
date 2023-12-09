@@ -13,9 +13,19 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
         for (int yPosInChunk = 0; yPosInChunk < CHUNK_WIDTH; yPosInChunk++) {
             int worldX = chunkLocation.x + xPosInChunk;
             int worldY = chunkLocation.y + yPosInChunk;
-            float noiseVal = glm::simplex(glm::vec2(worldX, worldY) / 64.0f);
+            int baseHeight = 32;
+            float noiseVal = 0.0f;
+            int numOctaves = 4;
+            float frequency = 64.0f;
+            float amplitude = 32.0f;
+            for (int i = 0; i < numOctaves; i++) {
+                noiseVal += amplitude * glm::simplex(glm::vec2(worldX, worldY) / frequency);
+                frequency *= 2.0f;
+                amplitude /= 2.0f;
+            }
             noiseVal = (noiseVal + 1.0f) / 2.0f;
-            int height = floor(noiseVal * 64.0f);
+            int height = floor(noiseVal + baseHeight);
+
             chunk.setMaxBlockHeightAt(xPosInChunk, yPosInChunk, height);
 
             for (int zPosInChunk = 0; zPosInChunk < CHUNK_HEIGHT; zPosInChunk++) {

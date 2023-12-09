@@ -4,16 +4,18 @@
 
 #include "../../shaders/ShaderManager.h"
 #include "ChunkRenderer.h"
+#include "../../resources/ResourceManager.h"
 #include <iostream>
 
 
 
-ChunkRenderer::ChunkRenderer(Camera &camera, unsigned int textureAtlasID) : camera(camera),
+ChunkRenderer::ChunkRenderer(Camera &camera) : camera(camera),
                                                                             shader(
                                                                                     ShaderManager::getShader(
                                                                                             "chunk")),
                                                                             textureAtlasID(
-                                                                                    textureAtlasID) {
+                                                                                    ResourceManager::getTexture(
+                                                                                            "texture_atlas")) {
 }
 
 void ChunkRenderer::render(Chunk &chunk) {

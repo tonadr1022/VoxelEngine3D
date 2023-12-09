@@ -9,9 +9,7 @@
 #include "generation/TerrainGenerator.h"
 
 World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(renderer),
-                                                       chunkRenderer(player.camera,
-                                                                     ResourceManager::getTexture(
-                                                                             "texture_atlas")) {
+                                                       chunkRenderer(player.camera) {
     auto start = std::chrono::high_resolution_clock::now();
 
     updateChunks();
@@ -30,7 +28,6 @@ World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(
             }
         });
     }
-
 }
 
 void World::render() {

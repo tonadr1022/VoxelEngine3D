@@ -82,7 +82,6 @@ set(SOURCE_FILES
         src/gui/Hotbar.h
         src/player/ItemStack.cpp
         src/player/ItemStack.h
-
 )
 
 include_directories("dependencies")

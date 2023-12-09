@@ -10,42 +10,42 @@
 
 
 namespace {
-    const std::array<int, 20> frontFace{
+    constexpr std::array<int, 20> frontFace{
             1, 0, 0, 0, 0,
             1, 1, 0, 1, 0,
             1, 0, 1, 0, 1,
             1, 1, 1, 1, 1,
     };
 
-    const std::array<int, 20> backFace{
+    constexpr std::array<int, 20> backFace{
             0, 0, 0, 0, 0,
             0, 0, 1, 0, 1,
             0, 1, 0, 1, 0,
             0, 1, 1, 1, 1,
     };
 
-    const std::array<int, 20> leftFace{
+    constexpr std::array<int, 20> leftFace{
             0, 0, 0, 0, 0,
             1, 0, 0, 1, 0,
             0, 0, 1, 0, 1,
             1, 0, 1, 1, 1,
     };
 
-    const std::array<int, 20> rightFace{
+    constexpr std::array<int, 20> rightFace{
             0, 1, 0, 0, 0,
             0, 1, 1, 0, 1,
             1, 1, 0, 1, 0,
             1, 1, 1, 1, 1,
     };
 
-    const std::array<int, 20> topFace{
+    constexpr std::array<int, 20> topFace{
             0, 0, 1, 0, 0,
             1, 0, 1, 1, 0,
             0, 1, 1, 0, 1,
             1, 1, 1, 1, 1,
     };
 
-    const std::array<int, 20> bottomFace{
+    constexpr std::array<int, 20> bottomFace{
             0, 0, 0, 0, 0,
             0, 1, 0, 0, 1,
             1, 0, 0, 1, 0,
@@ -241,6 +241,7 @@ void ChunkMesh::clearData() {
 }
 
 void ChunkMesh::clearBuffers() {
+
     if (VAO != 0) {
         glDeleteVertexArrays(1, &VAO);
         VAO = 0;
