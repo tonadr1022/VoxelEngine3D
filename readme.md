@@ -1,5 +1,17 @@
 ## A 3D Voxel Engine Implementation
 
+### Build and Run With CMake
+MacOS:
+```
+sh build_run.sh
+```
+Windows (Visual Studio):
+```
+build_run.bat
+```
+
+
+
 ### Tentative Controls:
 * WASD - Move
 * R - Up
