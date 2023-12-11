@@ -4,7 +4,7 @@ layout(location = 0) in uint vertexData; // assuming layout(location = 0) corres
 
 out vec3 v_FragPos;
 out vec2 v_TexCoord;
-out vec3 v_Normal;
+out float v_LightLevel;
 
 uniform mat4 u_Model;
 uniform mat4 u_View;
@@ -27,7 +27,7 @@ void main() {
     int xPos = int(bitfieldExtract(vertexData, 27, 5));
     int yPos = int(bitfieldExtract(vertexData, 22, 5));
     int zPos = int(bitfieldExtract(vertexData, 13, 9));
-    int faceNum = int(bitfieldExtract(vertexData, 10, 3));
+    int occlusionLevel = int(bitfieldExtract(vertexData, 10, 3));
     int x = int(bitfieldExtract(vertexData, 9, 1));
     int y = int(bitfieldExtract(vertexData, 8, 1));
 
@@ -43,5 +43,5 @@ void main() {
     v_FragPos = vec3(u_Model * vec4(vertexPos, 1.0));
     gl_Position = u_Projection * u_View * u_Model * vec4(vertexPos, 1.0);
     v_TexCoord = vec2(u, v);
-    v_Normal = normals[faceNum];
+    v_LightLevel = 0.2f + 0.2 * float(occlusionLevel);
 }

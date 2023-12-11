@@ -33,7 +33,7 @@ public:
 
     explicit Chunk(glm::vec2 location);
 
-    void buildMesh(Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
+    void buildMesh(ChunkManager& chunkManager, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
                    Chunk &backNeighborChunk);
 
     void load();
@@ -43,6 +43,13 @@ public:
     void setBlock(int x, int y, int z, Block block);
 
     Block getBlock(int x, int y, int z);
+
+    Block getBlock(glm::ivec3& position, ChunkManager &chunkManager);
+
+    Block getBlockIncludingNeighborChunks(int x, int y, int z, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
+                                          Chunk &frontNeighborChunk, Chunk &backNeighborChunk);
+
+    bool hasNonAirBlockAt(int x, int y, int z);
 
     ChunkMeshState chunkMeshState = ChunkMeshState::UNBUILT;
     ChunkState chunkState = ChunkState::UNDEFINED;

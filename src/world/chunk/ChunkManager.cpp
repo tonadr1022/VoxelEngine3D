@@ -98,7 +98,7 @@ void ChunkManager::buildChunkMesh(ChunkKey &chunkKey) {
     Chunk rightNeighborChunk = getChunk(rightNeighborChunkKey);
     Chunk frontNeighborChunk = getChunk(frontNeighborChunkKey);
     Chunk backNeighborChunk = getChunk(backNeighborChunkKey);
-    chunk.buildMesh(leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
+    chunk.buildMesh(*this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
                     backNeighborChunk);
 }
 

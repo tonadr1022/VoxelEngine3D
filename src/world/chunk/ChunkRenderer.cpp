@@ -47,7 +47,7 @@ void ChunkRenderer::createGPUResources(Chunk &chunk) {
 
     glGenBuffers(1, &mesh.VBO);
     glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
-    glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(float), &mesh.vertices[0],
+    glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(unsigned int), &mesh.vertices[0],
                  GL_STATIC_DRAW);
 
     glGenBuffers(1, &mesh.EBO);
@@ -57,12 +57,8 @@ void ChunkRenderer::createGPUResources(Chunk &chunk) {
 
     glVertexAttribPointer(0, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(uint32_t), (void *) nullptr);
     glEnableVertexAttribArray(0);
-}
 
-//void ChunkRenderer::destroyGPUResources(Chunk &chunk) {
-//    ChunkMesh &mesh = chunk.getMesh();
-//    mesh.destruct();
-//}
+}
 
 void ChunkRenderer::start() {
     shader->use();

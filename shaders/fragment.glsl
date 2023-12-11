@@ -1,7 +1,7 @@
 #version 330 core
 
 in vec2 v_TexCoord;
-in vec3 v_Normal;
+in float v_LightLevel;
 in vec3 v_FragPos;
 
 out vec4 o_Color;
@@ -15,8 +15,10 @@ void main() {
     float ambientStrength = 0.2;
     vec3 ambient = ambientStrength * lightColor;
 
-    float diffuse = max(dot(v_Normal, sunDirection), 0.0);
-    vec3 diffuseColor = lightColor * diffuse;
+//    float diffuse = max(dot(v_Normal, sunDirection), 0.0);
+//    vec3 diffuseColor = lightColor * diffuse;
 
-    o_Color = vec4(diffuseColor + ambient, 1.0) * texture(u_Texture, v_TexCoord);
+    vec4 texture = texture(u_Texture, v_TexCoord);
+    o_Color = vec4(texture.rgb * v_LightLevel, texture.a);
+//    o_Color = vec4(v_LightLevel, v_LightLevel, v_LightLevel, 1.0);
 }

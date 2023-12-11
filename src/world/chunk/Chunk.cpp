@@ -3,6 +3,8 @@
 //
 
 #include "Chunk.h"
+#include "ChunkManager.h"
+#include <iostream>
 
 Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshState::UNBUILT),
                                    chunkState(ChunkState::UNDEFINED) {
@@ -12,9 +14,11 @@ Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshS
     }
 }
 
-void Chunk::buildMesh(Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
-                      Chunk &backNeighborChunk) {
-    mesh.construct(*this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk, backNeighborChunk);
+void
+Chunk::buildMesh(ChunkManager& chunkManager, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
+                 Chunk &backNeighborChunk) {
+    mesh.construct(chunkManager, *this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
+                   backNeighborChunk);
     chunkMeshState = ChunkMeshState::BUILT;
     chunkState = ChunkState::GENERATED;
 }
@@ -67,4 +71,42 @@ void Chunk::setMaxBlockHeightAt(int x, int y, int z) {
 void Chunk::markDirty() {
     chunkMeshState = ChunkMeshState::UNBUILT;
     chunkState = ChunkState::CHANGED;
+}
+
+bool Chunk::hasNonAirBlockAt(int x, int y, int z) {
+    return getBlock(x, y, z).id != Block::AIR;
+}
+
+Block Chunk::getBlockIncludingNeighborChunks(int x, int y, int z, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
+                                             Chunk &frontNeighborChunk, Chunk &backNeighborChunk) {
+    // check if below min height, if so don't add face
+    if (z < 0) return Block(Block::UNDEFINED);
+
+    // check if adjacent block is vertically out of bounds, if so add face
+    if (z > CHUNK_HEIGHT) {
+        return Block(Block::UNDEFINED);
+    }
+    // if horizontally out of bounds use world
+    if (x < 0 || x >= CHUNK_WIDTH || y < 0 || y >= CHUNK_WIDTH) {
+
+    } else {
+        return getBlock(x, y, z);
+    }
+}
+
+Block Chunk::getBlock(glm::ivec3& position, ChunkManager &chunkManager) {
+    // check if below min height, if so don't add face
+    if (position.z < 0) return Block(Block::UNDEFINED);
+
+    // check if adjacent block is vertically out of bounds, if so add face
+    if (position.z > CHUNK_HEIGHT) {
+        return Block(Block::UNDEFINED);
+    }
+    // if horizontally out of bounds use world
+    if (position.x < 0 || position.x >= CHUNK_WIDTH || position.y < 0 || position.y >= CHUNK_WIDTH) {
+        glm::ivec3 worldLocation = glm::ivec3(location, 0) + position;
+        return chunkManager.getBlock(worldLocation);
+    } else {
+        return getBlock(position.x, position.y, position.z);
+    }
 }
