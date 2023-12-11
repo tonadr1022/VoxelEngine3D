@@ -5,6 +5,7 @@
 #include "../../shaders/ShaderManager.h"
 #include "ChunkRenderer.h"
 #include "../../resources/ResourceManager.h"
+#include "../../Config.h"
 #include <iostream>
 
 
@@ -61,12 +62,17 @@ void ChunkRenderer::createGPUResources(Chunk &chunk) {
 }
 
 void ChunkRenderer::start() {
+    updateShaderUniforms();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureAtlasID);
+}
+
+void ChunkRenderer::updateShaderUniforms() {
     shader->use();
+    shader->setBool("u_UseAmbientOcclusion", Config::getUseAmbientOcclusion());
     shader->setInt("u_Texture", 0);
     shader->setMat4("u_Projection", camera.getProjectionMatrix());
     shader->setMat4("u_View", camera.getViewMatrix());
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureAtlasID);
 }
 
 

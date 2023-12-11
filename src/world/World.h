@@ -33,6 +33,8 @@ public:
 
     Player player;
 
+    ChunkRenderer chunkRenderer;
+
 private:
     GLFWwindow *window;
     glm::ivec3 lastRayCastBlockPos = glm::ivec3(-1, -1, -1);
@@ -61,7 +63,7 @@ private:
     std::vector<std::thread> m_chunkLoadThreads;
 
     Renderer renderer;
-    ChunkRenderer chunkRenderer;
+
     ChunkManager chunkManager;
 
 };

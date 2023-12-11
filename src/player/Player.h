@@ -16,6 +16,7 @@ public:
     Player();
 
     glm::vec3 &getPosition();
+
     [[nodiscard]] ChunkKey getChunkKeyPos() const;
 
     void update(GLFWwindow *window, float deltaTime);
@@ -29,14 +30,21 @@ public:
     void processScrollInput(double yoffset);
 
     Camera camera;
+
+    [[nodiscard]] float getMovementSpeed() const;
+
+    void setMovementSpeed(float movementSpeed);
+
 private:
 
 
     void processKeyInput(GLFWwindow *window, float deltaTime);
+
     void processMouseInput(GLFWwindow *window, float deltaTime);
+
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 70.0f);
 
-    float movementSpeed = 10.0f;
+    float m_movementSpeed = 10.0f;
 };
 
 

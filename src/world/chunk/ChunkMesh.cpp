@@ -9,6 +9,7 @@
 #include <glad/glad.h>
 #include <iostream>
 #include "ChunkManager.h"
+#include "../../Config.h"
 
 
 namespace {
@@ -53,6 +54,80 @@ namespace {
             1, 0, 0, 1, 0,
             1, 1, 0, 1, 1,
     };
+
+    constexpr std::array<std::array<std::array<glm::ivec3, 3>, 4>, 6> lightingAdjacencies =
+            {{
+                     // front face
+                     {{
+                              // Bottom Left
+                              {glm::ivec3(1, 0, -1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, -1)},
+                              // Bottom Right
+                              {glm::ivec3(1, 0, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
+                              // Top Left
+                              {glm::ivec3(1, 0, 1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, 1)},
+                              // Top Right
+                              {glm::ivec3(1, 0, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
+                      }},
+                     // back face
+                     {{
+                              // 0, 0, 0
+                              {glm::ivec3(-1, 0, -1), glm::ivec3(-1, -1, 0),
+                               glm::ivec3(-1, -1, -1)},
+                              // 0, 0, 1
+                              {glm::ivec3(-1, 0, 1), glm::ivec3(-1, -1, 0), glm::ivec3(-1, -1, 1)},
+                              // 0, 1, 0
+                              {glm::ivec3(-1, 0, -1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, -1)},
+                              // 0, 1, 1
+                              {glm::ivec3(-1, 1, 0), glm::ivec3(-1, 0, 1), glm::ivec3(-1, 1, 1)},
+                      }},
+                     // left face
+                     {{
+                              // 0, 0, 0
+                              {glm::ivec3(0, -1, -1), glm::ivec3(-1, -1, 0),
+                               glm::ivec3(-1, -1, -1)},
+                              // 1, 0, 0
+                              {glm::ivec3(0, -1, -1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, -1)},
+                              // 0, 0, 1
+                              {glm::ivec3(-1, -1, 0), glm::ivec3(0, -1, 1), glm::ivec3(-1, -1, 1)},
+                              // 1, 0, 1
+                              {glm::ivec3(0, -1, 1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, 1)},
+                      }},
+                     // right face
+                     {{
+                              // 0, 1, 0
+                              {glm::ivec3(0, 1, -1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, -1)},
+                              // 0, 1, 1
+                              {glm::ivec3(0, 1, 1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, 1)},
+                              // 1, 1, 0
+                              {glm::ivec3(0, 1, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
+                              // 1, 1, 1
+                              {glm::ivec3(0, 1, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
+                      }},
+                     // top face
+                     {{
+                              // 0, 0, 1
+                              {glm::ivec3(0, -1, 1), glm::ivec3(-1, 0, 1), glm::ivec3(-1, -1, 1)},
+                              // 1, 0, 1
+                              {glm::ivec3(0, -1, 1), glm::ivec3(1, 0, 1), glm::ivec3(1, -1, 1)},
+                              // 0, 1, 1
+                              {glm::ivec3(0, 1, 1), glm::ivec3(-1, 0, 1), glm::ivec3(-1, 1, 1)},
+                              // 1, 1, 1
+                              {glm::ivec3(0, 1, 1), glm::ivec3(1, 0, 1), glm::ivec3(1, 1, 1)},
+                      }},
+
+                     // bottom face
+                     {{
+                              // 0, 0, 0
+                              {glm::ivec3(0, -1, -1), glm::ivec3(-1, 0, -1),
+                               glm::ivec3(-1, -1, -1)},
+                              // 0, 1, 0
+                              {glm::ivec3(0, 1, -1), glm::ivec3(-1, 0, -1), glm::ivec3(-1, 1, -1)},
+                              // 1, 0, 0
+                              {glm::ivec3(0, -1, -1), glm::ivec3(1, 0, -1), glm::ivec3(1, -1, -1)},
+                              // 1, 1, 0
+                              {glm::ivec3(0, 1, -1), glm::ivec3(1, 0, -1), glm::ivec3(1, 1, -1)},
+                      }},
+             }};
 } // namespace
 
 
@@ -70,14 +145,12 @@ struct AdjacentBlockPositions {
 };
 
 ChunkMesh::ChunkMesh() : VAO(0), VBO(0), EBO(0) {
-
 }
 
 bool
-ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, BlockFace face, Chunk &chunk,
-                         Chunk &leftNeighborChunk,
-                         Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
-                         Chunk &backNeighborChunk) {
+ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, Chunk &chunk,
+                         Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
+                         Chunk &frontNeighborChunk, Chunk &backNeighborChunk) {
     // check if below min height, if so don't add face
     if (adjacentBlockPosInChunk.z < 0) return false;
 
@@ -119,77 +192,6 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, BlockFace face, Ch
     return false;
 }
 
-constexpr std::array<std::array<std::array<glm::ivec3, 3>, 4>, 6> lightingAdjacencies =
-        {{
-                 // front face
-                 {{
-                          // Bottom Left
-                          {glm::ivec3(1, 0, -1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, -1)},
-                          // Bottom Right
-                          {glm::ivec3(1, 0, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
-                          // Top Left
-                          {glm::ivec3(1, 0, 1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, 1)},
-                          // Top Right
-                          {glm::ivec3(1, 0, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
-                  }},
-                 // back face
-                 {{
-                          // 0, 0, 0
-                          {glm::ivec3(-1, 0, -1), glm::ivec3(-1, -1, 0), glm::ivec3(-1, -1, -1)},
-                          // 0, 0, 1
-                          {glm::ivec3(-1, 0, 1), glm::ivec3(-1, -1, 0), glm::ivec3(-1, -1, 1)},
-                          // 0, 1, 0
-                          {glm::ivec3(-1, 0, -1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, -1)},
-                          // 0, 1, 1
-                          {glm::ivec3(-1, 1, 0), glm::ivec3(-1, 0, 1), glm::ivec3(-1, 1, 1)},
-                  }},
-                 // left face
-                 {{
-                          // 0, 0, 0
-                          {glm::ivec3(0, -1, -1), glm::ivec3(-1, -1, 0), glm::ivec3(-1, -1, -1)},
-                          // 1, 0, 0
-                          {glm::ivec3(0,-1,-1), glm::ivec3(1,-1,0), glm::ivec3(1,-1,-1)},
-                          // 0, 0, 1
-                          {glm::ivec3(-1, -1, 0), glm::ivec3(0, -1, 1), glm::ivec3(-1, -1, 1)},
-                          // 1, 0, 1
-                          {glm::ivec3(0,-1,1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, 1)},
-                  }},
-                 // right face
-                 {{
-                          // 0, 1, 0
-                          {glm::ivec3(0, 1, -1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, -1)},
-                          // 0, 1, 1
-                          {glm::ivec3(0, 1, 1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, 1)},
-                          // 1, 1, 0
-                          {glm::ivec3(0, 1, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
-                          // 1, 1, 1
-                          {glm::ivec3(0, 1, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
-                  }},
-                 // top face
-                 {{
-                          // 0, 0, 1
-                          {glm::ivec3(0, -1, 1), glm::ivec3(-1, 0, 1), glm::ivec3(-1, -1, 1)},
-                          // 1, 0, 1
-                          {glm::ivec3(0, -1, 1), glm::ivec3(1, 0, 1), glm::ivec3(1, -1, 1)},
-                          // 0, 1, 1
-                          {glm::ivec3(0, 1, 1), glm::ivec3(-1, 0, 1), glm::ivec3(-1, 1, 1)},
-                          // 1, 1, 1
-                          {glm::ivec3(0, 1, 1), glm::ivec3(1, 0, 1), glm::ivec3(1, 1, 1)},
-                  }},
-                 // bottom face
-                 {{
-                          // 0, 0, 0
-                          {glm::ivec3(0, -1, -1), glm::ivec3(-1, 0, -1), glm::ivec3(-1, -1, -1)},
-                          // 0, 1, 0
-                          {glm::ivec3(0, 1, -1), glm::ivec3(-1, 0, -1), glm::ivec3(-1, 1, -1)},
-                          // 1, 0, 0
-                          {glm::ivec3(0, -1, -1), glm::ivec3(1, 0, -1), glm::ivec3(1, -1, -1)},
-                          // 1, 1, 0
-                          {glm::ivec3(0, 1, -1), glm::ivec3(1, 0, -1), glm::ivec3(1, 1, -1)},
-                  }},
-         }};
-
-
 void ChunkMesh::construct(ChunkManager &chunkManager, Chunk &chunk, Chunk &leftNeighborChunk,
                           Chunk &rightNeighborChunk,
                           Chunk &frontNeighborChunk,
@@ -197,16 +199,6 @@ void ChunkMesh::construct(ChunkManager &chunkManager, Chunk &chunk, Chunk &leftN
     clearData();
     AdjacentBlockPositions adjacentBlockPositions{};
 
-    const std::array<glm::ivec3, 6> positionOffsets = {
-            {
-                    {1, 0, 0},
-                    {-1, 0, 0},
-                    {0, 1, 0},
-                    {0, -1, 0},
-                    {0, 0, 1},
-                    {0, 0, -1},
-            }
-    };
     for (Chunklet &chunklet: chunk.chunklets) {
         for (int chunkletZ = 0; chunkletZ < CHUNKLET_HEIGHT; chunkletZ++) {
             int chunkZ = static_cast<int>(chunklet.location.z) + chunkletZ;
@@ -231,7 +223,7 @@ void ChunkMesh::construct(ChunkManager &chunkManager, Chunk &chunk, Chunk &leftN
                     for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
                         auto face = static_cast<BlockFace>(faceIndex);
                         glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[static_cast<int>(face)];
-                        if (shouldAddFace(adjacentBlockPos, face, chunk, leftNeighborChunk,
+                        if (shouldAddFace(adjacentBlockPos, chunk, leftNeighborChunk,
                                           rightNeighborChunk, frontNeighborChunk,
                                           backNeighborChunk)) {
                             // calculate ambient occlusion level for each vertex of this face
@@ -251,42 +243,37 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace fac
     int textureX = 0;
     int textureY = 0;
     std::array<int, 20> faceVertices{};
+
     OcclusionLevels occlusionLevels = getOcclusionLevels(blockPosInChunk, face, chunk,
                                                          chunkManager);
-    int faceNum;
+
     switch (face) {
         case BlockFace::FRONT:
-            faceNum = 0;
             faceVertices = frontFace;
             textureX = blockData.frontTexCoords.x;
             textureY = blockData.frontTexCoords.y;
             break;
         case BlockFace::BACK:
-            faceNum = 1;
             faceVertices = backFace;
             textureX = blockData.backTexCoords.x;
             textureY = blockData.backTexCoords.y;
             break;
         case BlockFace::LEFT:
-            faceNum = 2;
             faceVertices = leftFace;
             textureX = blockData.leftTexCoords.x;
             textureY = blockData.leftTexCoords.y;
             break;
         case BlockFace::RIGHT:
-            faceNum = 3;
             faceVertices = rightFace;
             textureX = blockData.rightTexCoords.x;
             textureY = blockData.rightTexCoords.y;
             break;
         case BlockFace::TOP:
-            faceNum = 4;
             faceVertices = topFace;
             textureX = blockData.topTexCoords.x;
             textureY = blockData.topTexCoords.y;
             break;
         case BlockFace::BOTTOM:
-            faceNum = 5;
             faceVertices = bottomFace;
             textureX = blockData.bottomTexCoords.x;
             textureY = blockData.bottomTexCoords.y;
@@ -316,6 +303,7 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace fac
 
         vertices.push_back(encodedValue);
     }
+
     // check whether to flip quad based on AO
     if (occlusionLevels[0] + occlusionLevels[3] > occlusionLevels[1] + occlusionLevels[2]) {
         indices.push_back(baseVertexIndex + 2);
@@ -363,7 +351,7 @@ ChunkMesh::getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk
 
     // source: https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
 
-    OcclusionLevels occlusionLevels = {3, 3, 3, 3};
+    OcclusionLevels occlusionLevels = NO_OCCLUSION;
     auto &faceLightingAdjacencies = lightingAdjacencies[static_cast<int>(face)];
     for (int faceVertexIndex = 0; faceVertexIndex < 4; faceVertexIndex++) {
         auto &faceLightingAdjacency = faceLightingAdjacencies[faceVertexIndex];
@@ -373,9 +361,6 @@ ChunkMesh::getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk
         // side 1
         glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
 
-//        if (side1Pos.x == -1 && side1Pos.y == 0 && side1Pos.z == 64) {
-//            std::cout << "here: " <<
-//        }
         Block::ID side1BlockId = chunk.getBlock(side1Pos, chunkManager).id;
         if (side1BlockId != Block::AIR && side1BlockId != Block::UNDEFINED) {
             side1IsSolid = true;

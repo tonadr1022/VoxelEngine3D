@@ -21,7 +21,7 @@ void Player::processKeyInput(GLFWwindow *window, float deltaTime) {
     glm::vec3 &front = camera.getFront();
     glm::vec3 globalUp = Camera::getGlobalUp();
 
-    float multiplier = movementSpeed * deltaTime;
+    float multiplier = m_movementSpeed * deltaTime;
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         position += front * multiplier;
@@ -88,4 +88,12 @@ void Player::perFrameUpdate(GLFWwindow *window) {
     if (Keyboard::isPressedThisFrame(GLFW_KEY_EQUAL)) {
         inventory.shiftHotbarStartIndex(true);
     }
+}
+
+float Player::getMovementSpeed() const {
+    return m_movementSpeed;
+}
+
+void Player::setMovementSpeed(float movementSpeed) {
+    Player::m_movementSpeed = movementSpeed;
 }

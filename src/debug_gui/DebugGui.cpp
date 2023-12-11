@@ -4,12 +4,14 @@
 
 #include "DebugGui.h"
 #include "../world/block/BlockDB.h"
+#include "../Config.h"
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <utility>
 
-DebugGui::DebugGui(GLFWwindow *window, const char* glsl_version, std::shared_ptr<World> world) : window(window), world(std::move(world)) {
+DebugGui::DebugGui(GLFWwindow *window, const char *glsl_version, std::shared_ptr<World> world)
+        : window(window), world(std::move(world)) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -48,6 +50,17 @@ void DebugGui::update() {
         ImGui::SliderInt("Render Distance", &world->renderDistance, 1, 32);
         ImGui::Text("Block Type: %s", blockName.c_str());
         ImGui::Text("Block ID: %d", world->player.inventory.getHeldItem());
+
+        bool useAmbientOcclusion = Config::getUseAmbientOcclusion();
+        if (ImGui::Checkbox("Ambient Occlusion", &useAmbientOcclusion)) {
+            Config::setUseAmbientOcclusion(useAmbientOcclusion);
+            world->chunkRenderer.updateShaderUniforms();
+        }
+
+        float movementSpeed = world->player.getMovementSpeed();
+        if (ImGui::SliderFloat("Movement Speed", &movementSpeed, 1.0f, 100.0f)) {
+            world->player.setMovementSpeed(movementSpeed);
+        }
         ImGui::End();
     }
 }

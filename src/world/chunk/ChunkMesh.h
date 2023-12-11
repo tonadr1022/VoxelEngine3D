@@ -11,6 +11,7 @@
 #include <array>
 
 class Chunk;
+
 class ChunkManager;
 
 enum class BlockFace {
@@ -24,11 +25,13 @@ enum class BlockFace {
 };
 
 using OcclusionLevels = std::array<uint8_t, 4>;
+
 class ChunkMesh {
 public:
     ChunkMesh();
 
-    void construct(ChunkManager& chunkManager, Chunk &chunk, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
+    void construct(ChunkManager &chunkManager, Chunk &chunk, Chunk &leftNeighborChunk,
+                   Chunk &rightNeighborChunk,
                    Chunk &frontNeighborChunk,
                    Chunk &backNeighborChunk);
 
@@ -43,15 +46,18 @@ public:
 
 
 private:
-    void addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace face, Chunk& chunk,
-                 ChunkManager& chunkManager);
-    static bool shouldAddFace(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk &chunk,
-                              Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
-                              Chunk &frontNeighborChunk,
+    void addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace face, Chunk &chunk,
+                 ChunkManager &chunkManager);
+
+    static bool shouldAddFace(glm::ivec3 &blockPosInChunk, Chunk &chunk, Chunk &leftNeighborChunk,
+                              Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
                               Chunk &backNeighborChunk);
 
-    static OcclusionLevels getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk &chunk,
-                                       ChunkManager &chunkManager);
+    static OcclusionLevels
+    getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk &chunk,
+                       ChunkManager &chunkManager);
+
+    constexpr static OcclusionLevels NO_OCCLUSION = {3, 3, 3, 3};
 };
 
 

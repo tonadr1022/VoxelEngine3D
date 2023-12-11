@@ -12,7 +12,7 @@
 
 class ChunkRenderer {
 public:
-    ChunkRenderer(Camera &camera);
+    explicit ChunkRenderer(Camera &camera);
 
     ~ChunkRenderer();
 
@@ -23,6 +23,8 @@ public:
     void render(Chunk &chunk);
 
     void start();
+
+    void updateShaderUniforms();
 
 private:
     unsigned int textureAtlasID;

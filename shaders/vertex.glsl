@@ -9,6 +9,7 @@ out float v_LightLevel;
 uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Projection;
+uniform bool u_UseAmbientOcclusion;
 
 uniform vec3 normals[6] = vec3[6](
 vec3(1.0, 0.0, 0.0),  // Front
@@ -43,5 +44,15 @@ void main() {
     v_FragPos = vec3(u_Model * vec4(vertexPos, 1.0));
     gl_Position = u_Projection * u_View * u_Model * vec4(vertexPos, 1.0);
     v_TexCoord = vec2(u, v);
-    v_LightLevel = 0.2f + 0.2 * float(occlusionLevel);
+
+    float occlusionFactor = mix(0.0, 1.0, float(u_UseAmbientOcclusion));
+    float baseLightLevel = mix(1.0, 0.4, float(u_UseAmbientOcclusion));
+
+    float occlusion = 0.2 * float(occlusionLevel) * occlusionFactor;
+    v_LightLevel = baseLightLevel + occlusion;
+
+//    float occlusionFactor = 1.0 - step(1, float(u_UseAmbientOcclusion));
+//    float baseLightLevel = 1.0 - step(0.8, float(u_UseAmbientOcclusion));
+//    float occlusion = 0.2 * float(occlusionLevel) * occlusionFactor;
+//    v_LightLevel = baseLightLevel + occlusion;
 }
