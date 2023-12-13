@@ -2,8 +2,8 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "Camera.h"
-#include "../Constants.h"
+#include "Camera.hpp"
+#include "../AppConstants.hpp"
 
 void Camera::processMouseMovement(GLFWwindow *window, float deltaTime) {
     double xPos, yPos;

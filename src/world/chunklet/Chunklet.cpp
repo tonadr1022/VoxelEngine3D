@@ -2,7 +2,7 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "Chunklet.h"
+#include "Chunklet.hpp"
 
 Chunklet::Chunklet(glm::ivec3 location) : location(location) {
 }

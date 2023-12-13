@@ -2,9 +2,9 @@
 // Created by Tony Adriansen on 12/3/23.
 //
 
-#include "../shaders/ShaderManager.h"
-#include "BlockBreakRenderer.h"
-#include "../Constants.h"
+#include "../shaders/ShaderManager.hpp"
+#include "BlockBreakRenderer.hpp"
+#include "../AppConstants.hpp"
 
 void BlockBreakRenderer::render(glm::vec3 blockPosition, Camera &camera, int breakStage) const {
     int textureX = 15 - breakStage;

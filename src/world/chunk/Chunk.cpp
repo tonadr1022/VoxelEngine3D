@@ -2,8 +2,8 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "Chunk.h"
-#include "ChunkManager.h"
+#include "Chunk.hpp"
+#include "ChunkManager.hpp"
 #include <iostream>
 
 Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshState::UNBUILT),

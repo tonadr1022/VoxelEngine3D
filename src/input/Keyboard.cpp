@@ -2,7 +2,7 @@
 // Created by Tony Adriansen on 12/3/23.
 //
 
-#include "Keyboard.h"
+#include "Keyboard.hpp"
 
 void Keyboard::press(int key) {
     KeyPress& keyPress = keyStates[key];

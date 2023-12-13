@@ -2,14 +2,14 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "ChunkMesh.h"
-#include "Chunk.h"
-#include "../block/BlockDB.h"
+#include "ChunkMesh.hpp"
+#include "Chunk.hpp"
+#include "../block/BlockDB.hpp"
 #include <bitset>
 #include <glad/glad.h>
 #include <iostream>
-#include "ChunkManager.h"
-#include "../../Config.h"
+#include "ChunkManager.hpp"
+#include "../../Config.hpp"
 
 
 namespace {

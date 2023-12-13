@@ -2,14 +2,14 @@
 // Created by Tony Adriansen on 11/15/23.
 //
 
-#include "Application.h"
-#include "shaders/Shader.h"
-#include "world/World.h"
-#include "resources/ResourceManager.h"
-#include "world/block/BlockDB.h"
-#include "shaders/ShaderManager.h"
-#include "renderer/Renderer.h"
-#include "debug_gui/DebugGui.h"
+#include "Application.hpp"
+#include "shaders/Shader.hpp"
+#include "world/World.hpp"
+#include "resources/ResourceManager.hpp"
+#include "world/block/BlockDB.hpp"
+#include "shaders/ShaderManager.hpp"
+#include "renderer/Renderer.hpp"
+#include "debug_gui/DebugGui.hpp"
 #include <iostream>
 
 void Application::run() {

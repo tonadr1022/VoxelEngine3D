@@ -2,8 +2,8 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "Renderer.h"
-#include "../shaders/ShaderManager.h"
+#include "Renderer.hpp"
+#include "../shaders/ShaderManager.hpp"
 
 
 Renderer::Renderer(GLFWwindow *window) : window(window) {

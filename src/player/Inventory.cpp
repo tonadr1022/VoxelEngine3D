@@ -2,7 +2,7 @@
 // Created by Tony Adriansen on 12/3/23.
 //
 
-#include "Inventory.h"
+#include "Inventory.hpp"
 
 void Inventory::shiftHotbarSelectedItem(bool scrollUp) {
     int current = m_hotbarSelectedItemIndex;

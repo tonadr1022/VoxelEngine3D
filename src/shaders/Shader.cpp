@@ -2,7 +2,7 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "Shader.h"
+#include "Shader.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <sstream>

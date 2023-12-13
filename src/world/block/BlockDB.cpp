@@ -2,7 +2,7 @@
 // Created by Tony Adriansen on 11/22/23.
 //
 
-#include "BlockDB.h"
+#include "BlockDB.hpp"
 #include "json/json.hpp"
 #include <fstream>
 #include <filesystem>

@@ -2,11 +2,11 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "World.h"
-#include "../resources/ResourceManager.h"
-#include "../utils/Utils.h"
+#include "World.hpp"
+#include "../resources/ResourceManager.hpp"
+#include "../utils/Utils.hpp"
 #include <iostream>
-#include "generation/TerrainGenerator.h"
+#include "generation/TerrainGenerator.hpp"
 
 World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(renderer),
                                                        chunkRenderer(player.camera) {

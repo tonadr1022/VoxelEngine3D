@@ -12,7 +12,7 @@ include_directories(src/vendor)
 set(SOURCE_FILES
                 src/main.cpp
                 src/Application.cpp
-                src/Application.h
+        src/Application.hpp
                 src/glad.c
         src/vendor/imgui/imgui.cpp
         src/vendor/imgui/imgui_demo.cpp
@@ -22,68 +22,68 @@ set(SOURCE_FILES
         src/vendor/imgui/imgui_impl_opengl3.cpp
         src/vendor/imgui/imgui_tables.cpp
         src/vendor/imgui/imgui_widgets.cpp
-        src/Constants.h
+        src/AppConstants.hpp
         src/camera/Camera.cpp
-        src/camera/Camera.h
+        src/camera/Camera.hpp
         src/shaders/Shader.cpp
-        src/shaders/Shader.h
+        src/shaders/Shader.hpp
         src/shaders/Shader.cpp
         src/world/block/Block.cpp
-        src/world/block/Block.h
+        src/world/block/Block.hpp
         src/world/chunk/Chunk.cpp
-        src/world/chunk/Chunk.h
+        src/world/chunk/Chunk.hpp
         src/player/Player.cpp
-        src/player/Player.h
+        src/player/Player.hpp
         src/world/World.cpp
-        src/world/World.h
-        src/world/World.h
+        src/world/World.hpp
+        src/world/World.hpp
         src/renderer/Renderer.cpp
-        src/renderer/Renderer.h
+        src/renderer/Renderer.hpp
         src/shaders/ShaderManager.cpp
-        src/shaders/ShaderManager.h
+        src/shaders/ShaderManager.hpp
         src/world/chunklet/Chunklet.cpp
-        src/world/chunklet/Chunklet.h
+        src/world/chunklet/Chunklet.hpp
         src/world/chunk/ChunkMesh.cpp
-        src/world/chunk/ChunkMesh.h
+        src/world/chunk/ChunkMesh.hpp
         src/world/generation/TerrainGenerator.cpp
-        src/world/generation/TerrainGenerator.h
+        src/world/generation/TerrainGenerator.hpp
         src/world/chunk/ChunkRenderer.cpp
-        src/world/chunk/ChunkRenderer.h
+        src/world/chunk/ChunkRenderer.hpp
         src/resources/ResourceManager.cpp
-        src/resources/ResourceManager.h
+        src/resources/ResourceManager.hpp
         src/world/chunk/ChunkManager.cpp
-        src/world/chunk/ChunkManager.h
-        src/world/chunk/ChunkKey.h
+        src/world/chunk/ChunkManager.hpp
+        src/world/chunk/ChunkKey.hpp
         src/world/block/BlockDB.cpp
-        src/world/block/BlockDB.h
-        src/physics/Ray.h
+        src/world/block/BlockDB.hpp
+        src/physics/Ray.hpp
         src/world/events/DigEvent.cpp
-        src/world/events/DigEvent.h
-        src/world/events/IEvent.h
-        src/utils/Utils.h
+        src/world/events/DigEvent.hpp
+        src/world/events/IEvent.hpp
+        src/utils/Utils.hpp
         src/utils/Utils.cpp
         src/gui/CrossHair.cpp
-        src/gui/CrossHair.h
+        src/gui/CrossHair.hpp
         src/renderer/BlockOutlineRenderer.cpp
-        src/renderer/BlockOutlineRenderer.h
+        src/renderer/BlockOutlineRenderer.hpp
         src/renderer/BlockBreakRenderer.cpp
-        src/renderer/BlockBreakRenderer.h
+        src/renderer/BlockBreakRenderer.hpp
         src/player/Inventory.cpp
-        src/player/Inventory.h
+        src/player/Inventory.hpp
         src/input/Keyboard.cpp
-        src/input/Keyboard.h
+        src/input/Keyboard.hpp
         src/renderer/Renderer2D.cpp
-        src/renderer/Renderer2D.h
+        src/renderer/Renderer2D.hpp
         src/renderer/GuiRenderer.cpp
-        src/renderer/GuiRenderer.h
+        src/renderer/GuiRenderer.hpp
         src/debug_gui/DebugGui.cpp
-        src/debug_gui/DebugGui.h
+        src/debug_gui/DebugGui.hpp
         src/gui/Hotbar.cpp
-        src/gui/Hotbar.h
+        src/gui/Hotbar.hpp
         src/player/ItemStack.cpp
-        src/player/ItemStack.h
+        src/player/ItemStack.hpp
         src/Config.cpp
-        src/Config.h
+        src/Config.hpp
 )
 
 include_directories("dependencies")

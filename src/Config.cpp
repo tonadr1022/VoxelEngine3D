@@ -2,7 +2,7 @@
 // Created by Tony Adriansen on 12/11/23.
 //
 
-#include "Config.h"
+#include "Config.hpp"
 
 bool Config::getUseAmbientOcclusion() {
     return useAmbientOcclusion;

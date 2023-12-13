@@ -2,10 +2,10 @@
 // Created by Tony Adriansen on 11/22/23.
 //
 
-#include "ChunkManager.h"
-#include "../generation/TerrainGenerator.h"
-#include "../../utils/Utils.h"
-#include "ChunkRenderer.h"
+#include "ChunkManager.hpp"
+#include "../generation/TerrainGenerator.hpp"
+#include "../../utils/Utils.hpp"
+#include "ChunkRenderer.hpp"
 
 ChunkManager::ChunkManager() = default;
 

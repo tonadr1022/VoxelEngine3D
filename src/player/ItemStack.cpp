@@ -2,8 +2,8 @@
 // Created by Tony Adriansen on 12/4/23.
 //
 
-#include "ItemStack.h"
-#include "Inventory.h"
+#include "ItemStack.hpp"
+#include "Inventory.hpp"
 
 Block::ID ItemStack::getBlockId() const {
     return m_blockId;

@@ -2,8 +2,8 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "TerrainGenerator.h"
-#include "../chunk/Chunk.h"
+#include "TerrainGenerator.hpp"
+#include "../chunk/Chunk.hpp"
 #include <glm/gtc/noise.hpp>
 
 void TerrainGenerator::generateTerrainFor(Chunk &chunk) {

@@ -2,7 +2,7 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "ShaderManager.h"
+#include "ShaderManager.hpp"
 
 std::unordered_map<std::string, std::shared_ptr<Shader>> ShaderManager::shaders;
 

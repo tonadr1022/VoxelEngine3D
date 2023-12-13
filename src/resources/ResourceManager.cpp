@@ -3,7 +3,7 @@
 //
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "ResourceManager.h"
+#include "ResourceManager.hpp"
 #include <glad/glad.h>
 #include "../vendor/stb_image/stb_image.h"
 

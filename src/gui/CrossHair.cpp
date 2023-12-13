@@ -2,8 +2,8 @@
 // Created by Tony Adriansen on 11/29/23.
 //
 
-#include "CrossHair.h"
-#include "../shaders/ShaderManager.h"
+#include "CrossHair.hpp"
+#include "../shaders/ShaderManager.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 CrossHair::CrossHair() : VAO(0), VBO(0) {

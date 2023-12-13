@@ -2,9 +2,9 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "Player.h"
-#include "../input/Keyboard.h"
-#include "../Constants.h"
+#include "Player.hpp"
+#include "../input/Keyboard.hpp"
+#include "../AppConstants.hpp"
 #include <imgui/imgui.h>
 
 Player::Player() = default;

@@ -2,10 +2,10 @@
 // Created by Tony Adriansen on 11/16/23.
 //
 
-#include "../../shaders/ShaderManager.h"
-#include "ChunkRenderer.h"
-#include "../../resources/ResourceManager.h"
-#include "../../Config.h"
+#include "../../shaders/ShaderManager.hpp"
+#include "ChunkRenderer.hpp"
+#include "../../resources/ResourceManager.hpp"
+#include "../../Config.hpp"
 #include <iostream>
 
 

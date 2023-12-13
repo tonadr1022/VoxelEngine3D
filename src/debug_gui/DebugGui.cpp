@@ -2,9 +2,9 @@
 // Created by Tony Adriansen on 12/4/23.
 //
 
-#include "DebugGui.h"
-#include "../world/block/BlockDB.h"
-#include "../Config.h"
+#include "DebugGui.hpp"
+#include "../world/block/BlockDB.hpp"
+#include "../Config.hpp"
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
