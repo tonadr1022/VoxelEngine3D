@@ -1,5 +1,5 @@
-glad.c -linguist-vendored
-khrplatform.h -linguist-vendored
-wglew.h -linguist-vendored
-glxew.h -linguist-vendored
-glad.h -linguist-vendored
+glad.c linguist-vendored
+khrplatform.h linguist-vendored
+wglew.h linguist-vendored
+glxew.h linguist-vendored
+glad.h linguist-vendored
