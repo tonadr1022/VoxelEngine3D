@@ -41,15 +41,15 @@ private:
     glm::ivec3 prevLastRayCastBlockPos = NULL_VECTOR;
 //    std::vector<std::unique_ptr<IEvent>> events;
 
-    void loadChunks();
+    void loadChunks(bool firstTime);
 
     void unloadChunks();
 
-    void updateChunks();
+    void updateChunks(bool firstTime);
 
     void setBlock(glm::ivec3 position, Block block);
 
-    void updateChunkMeshes(ChunkKey &playerChunkKeyPos);
+    void updateChunkMeshes(ChunkKey &playerChunkKeyPos, bool firstTime);
 
     void reloadChunksToReload();
 
@@ -62,6 +62,7 @@ private:
     std::atomic<bool> m_isRunning{true};
 
     std::vector<std::thread> m_chunkLoadThreads;
+    int m_loadDistanceChunks = renderDistance + 2;
 
     Renderer renderer;
 

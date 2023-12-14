@@ -12,7 +12,7 @@ World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(
                                                        chunkRenderer(player.camera) {
     auto start = std::chrono::high_resolution_clock::now();
 
-    updateChunks();
+    updateChunks(true);
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -22,7 +22,7 @@ World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(
     for (int i = 0; i < 1; i++) {
         m_chunkLoadThreads.emplace_back([&]() {
             while (m_isRunning) {
-                updateChunks();
+                updateChunks(false);
                 // Optionally, add a sleep or yield to avoid busy-waiting
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
@@ -53,29 +53,35 @@ void World::update() {
     reloadChunksToReload();
 }
 
-void World::updateChunks() {
-    loadChunks();
+void World::updateChunks(bool firstTime) {
+    loadChunks(firstTime);
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-    updateChunkMeshes(playerChunkKeyPos);
-//    unloadChunks();
+    updateChunkMeshes(playerChunkKeyPos, firstTime);
 }
 
-void World::loadChunks() {
+void World::loadChunks(bool firstTime) {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-    int loadDistanceChunks = renderDistance + 2;
+    int loadDistanceChunks = firstTime ? 5 : m_loadDistanceChunks;
     ChunkMap &chunkMap = chunkManager.getChunkMap();
-    for (int chunkX = playerChunkKeyPos.x - loadDistanceChunks;
-         chunkX < playerChunkKeyPos.x + loadDistanceChunks; chunkX++) {
-        for (int chunkY = playerChunkKeyPos.y - loadDistanceChunks;
-             chunkY < playerChunkKeyPos.y + loadDistanceChunks; chunkY++) {
-            ChunkKey chunkKey = {chunkX, chunkY};
-            std::this_thread::sleep_for(std::chrono::microseconds(1));
-            std::unique_lock<std::mutex> lock(m_mainMutex);
-            if (chunkMap.find(chunkKey) == chunkMap.end()) {
-                Chunk chunk(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
-                TerrainGenerator::generateTerrainFor(chunk);
-                chunk.chunkState = ChunkState::GENERATED;
-                chunkMap.emplace(chunkKey, chunk);
+    for (int i = 1; i <= loadDistanceChunks; i++) {
+        int minX = playerChunkKeyPos.x -  i;
+        int maxX = playerChunkKeyPos.x +  i;
+        int minY = playerChunkKeyPos.y -  i;
+        int maxY = playerChunkKeyPos.y +  i;
+        for (int chunkX = minX; chunkX < maxX; chunkX++) {
+            for (int chunkY = minY; chunkY < maxY; chunkY++) {
+                ChunkKey chunkKey = {chunkX, chunkY};
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
+                std::unique_lock<std::mutex> lock(m_mainMutex);
+                if (chunkMap.find(chunkKey) == chunkMap.end()) {
+                    Chunk chunk(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
+                    TerrainGenerator::generateTerrainFor(chunk);
+                    if (firstTime) {
+                        std::cout << "Loaded chunk: " << chunkKey.x << ", " << chunkKey.y << std::endl;
+                    }
+                    chunk.chunkState = ChunkState::GENERATED;
+                    chunkMap.emplace(chunkKey, chunk);
+                }
             }
         }
     }
@@ -103,9 +109,6 @@ void World::unloadChunks() {
     }
 }
 
-//void World::addEvent(std::unique_ptr<IEvent> event) {
-//    events.push_back(std::move(event));
-//}
 
 World::~World() {
     m_isRunning = false;
@@ -121,21 +124,47 @@ void World::reloadChunksToReload() {
     chunksToReload.clear();
 }
 
-void World::updateChunkMeshes(ChunkKey &playerChunkKeyPos) {
-    for (int chunkX = playerChunkKeyPos.x - (renderDistance);
-         chunkX < playerChunkKeyPos.x + (renderDistance); chunkX++) {
-        for (int chunkY = playerChunkKeyPos.y - renderDistance;
-             chunkY < playerChunkKeyPos.y + renderDistance; chunkY++) {
-            std::this_thread::sleep_for(std::chrono::microseconds(1));
-            std::unique_lock<std::mutex> lock(m_mainMutex);
-            ChunkKey chunkKey = {chunkX, chunkY};
-            Chunk &chunk = chunkManager.getChunk(chunkKey);
-//            if (chunk.chunkMeshState != ChunkMeshState::UNBUILT) continue;
-            if (chunk.chunkMeshState == ChunkMeshState::BUILT) continue;
-            if (chunk.chunkState != ChunkState::GENERATED) continue;
-            chunkManager.buildChunkMesh(chunkKey);
+void World::updateChunkMeshes(ChunkKey &playerChunkKeyPos, bool firstTime) {
+    int realRenderDistance = firstTime ? 4 : this->renderDistance;
+    if (firstTime) {
+        std::cout << "first time meshing" << std::endl;
+    }
+    for (int i = 1; i <= realRenderDistance; i++) {
+        int minX = playerChunkKeyPos.x - i;
+        int maxX = playerChunkKeyPos.x + i;
+        int minY = playerChunkKeyPos.y - i;
+        int maxY = playerChunkKeyPos.y + i;
+        for (int chunkX = minX; chunkX < maxX; chunkX++) {
+            for (int chunkY = minY; chunkY < maxY; chunkY++) {
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
+                std::unique_lock<std::mutex> lock(m_mainMutex);
+                ChunkKey chunkKey = {chunkX, chunkY};
+                Chunk &chunk = chunkManager.getChunk(chunkKey);
+                if (firstTime) {
+                    std::cout << "first time meshing: " << chunkKey.x << ", " << chunkKey.y << std::endl;
+                }
+                if (chunk.chunkMeshState == ChunkMeshState::BUILT) continue;
+                if (chunk.chunkState != ChunkState::GENERATED) continue;
+                chunkManager.buildChunkMesh(chunkKey);
+                std::cout << "built chunk mesh: " << chunkKey.x << ", " << chunkKey.y << std::endl;
+            }
         }
     }
+//
+//    for (int chunkX = playerChunkKeyPos.x - (renderDistance);
+//         chunkX < playerChunkKeyPos.x + (renderDistance); chunkX++) {
+//        for (int chunkY = playerChunkKeyPos.y - renderDistance;
+//             chunkY < playerChunkKeyPos.y + renderDistance; chunkY++) {
+//            std::this_thread::sleep_for(std::chrono::microseconds(1));
+//            std::unique_lock<std::mutex> lock(m_mainMutex);
+//            ChunkKey chunkKey = {chunkX, chunkY};
+//            Chunk &chunk = chunkManager.getChunk(chunkKey);
+////            if (chunk.chunkMeshState != ChunkMeshState::UNBUILT) continue;
+//            if (chunk.chunkMeshState == ChunkMeshState::BUILT) continue;
+//            if (chunk.chunkState != ChunkState::GENERATED) continue;
+//            chunkManager.buildChunkMesh(chunkKey);
+//        }
+//    }
 }
 
 void World::handleChunkUpdates(Chunk &chunk, ChunkKey chunkKey, int chunkX, int chunkY) {
