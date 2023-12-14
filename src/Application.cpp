@@ -66,8 +66,8 @@ void Application::run() {
 
 void Application::initOpenGL() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    glEnable(GL_BLEND);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 }
@@ -159,8 +159,8 @@ Application &Application::getInstance() {
 }
 
 void Application::compileShaders() {
-    std::shared_ptr<Shader> chunkShader = std::make_shared<Shader>("../shaders/vertex.glsl",
-                                                                   "../shaders/fragment.glsl");
+    std::shared_ptr<Shader> chunkShader = std::make_shared<Shader>("../shaders/ChunkVert.glsl",
+                                                                   "../shaders/ChunkFrag.glsl");
     std::shared_ptr<Shader> outlineShader = std::make_shared<Shader>("../shaders/OutlineVert.glsl",
                                                                      "../shaders/OutlineFrag.glsl",
                                                                      "../shaders/OutlineGeom.glsl");
@@ -177,7 +177,7 @@ void Application::compileShaders() {
 }
 
 void Application::loadTextures() {
-    ResourceManager::makeTexture("../resources/textures/default_pack_512.png", "texture_atlas",
+    ResourceManager::makeTexture2dArray("../resources/textures/default_pack_512.png", "texture_atlas",
                                  true);
 }
 

@@ -10,6 +10,8 @@
 class ResourceManager {
 public:
     static void makeTexture(const std::string& texturePath, const std::string& textureName, bool flipVertically = false);
+    static void makeTexture2dArray(const std::string& texturePath, const std::string& textureName, bool flipVertically = false);
+
     static unsigned int getTexture(const std::string &textureName);
 
 private:

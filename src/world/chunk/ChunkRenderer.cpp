@@ -64,7 +64,7 @@ void ChunkRenderer::createGPUResources(Chunk &chunk) {
 void ChunkRenderer::start() {
     updateShaderUniforms();
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureAtlasID);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }
 
 void ChunkRenderer::updateShaderUniforms() {

@@ -27,7 +27,7 @@ public:
 
     void render();
 
-    int renderDistance = 16;
+    int renderDistance = 2;
 
 //    void addEvent(std::unique_ptr<IEvent> event);
 
