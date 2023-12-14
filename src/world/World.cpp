@@ -49,7 +49,7 @@ void World::render() {
 
 void World::update() {
     unloadChunks();
-    castRay({player.camera.getPosition(), player.camera.getFront()});
+    castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
     reloadChunksToReload();
 }
 
@@ -180,7 +180,11 @@ void World::setBlock(glm::ivec3 position, Block block) {
     handleChunkUpdates(chunk, chunkKey, chunkX, chunkY);
 }
 
-void World::castRay(Ray ray) {
+bool compareVec3(glm::vec3 a, glm::vec3 b) {
+    return a.x == b.x && a.y == b.y && a.z == b.z;
+}
+
+void World::castPlayerAimRay(Ray ray) {
     glm::ivec3 lastAirBlockPos = NULL_VECTOR;
     glm::vec3 rayStart = ray.origin;
     glm::vec3 rayEnd = ray.origin;
@@ -188,52 +192,62 @@ void World::castRay(Ray ray) {
     static std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
     static bool isFirstAction = true;
 
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE &&
-        glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
-        player.blockBreakStage = 0;
-        isFirstAction = true;
-    }
     while (glm::distance(rayStart, rayEnd) < 10.0f) {
         glm::ivec3 blockPos = {floor(rayEnd.x), floor(rayEnd.y), floor(rayEnd.z)};
-        lastRayCastBlockPos = blockPos;
         Block block = chunkManager.getBlock(blockPos);
-        if (block.id != Block::AIR) {
-            // calculate block break stage. 10 stages. 0 is no break, 10 is fully broken
-            auto duration = std::chrono::steady_clock::now() - lastTime;
-            auto durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    duration).count();
-            int breakStage = static_cast<int>(durationMS / (MINING_DELAY_MS / 10));
-            if (breakStage > 10) breakStage = 10;
-
-            // breaking block
-            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-                if (std::chrono::steady_clock::now() - lastTime <
-                    std::chrono::milliseconds(MINING_DELAY_MS)) {
-                    player.blockBreakStage = breakStage;
-                    return;
-                }
-
-                setBlock({blockPos.x, blockPos.y, blockPos.z}, Block(Block::AIR));
-                player.blockBreakStage = 0;
-                lastRayCastBlockPos = NULL_VECTOR;
-                isFirstAction = false;
-            }
-                // placing block
-            else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-                if (!isFirstAction && std::chrono::steady_clock::now() - lastTime <
-                                      std::chrono::milliseconds(PLACING_DELAY_MS)) {
-                    return;
-                }
-                setBlock(lastAirBlockPos, Block(player.inventory.getHeldItem()));
-                isFirstAction = false;
-            }
-            lastTime = std::chrono::steady_clock::now();
-            return;
-        } else {
+        if (block.id == Block::AIR) {
             lastAirBlockPos = blockPos;
+            rayEnd += directionIncrement;
+            continue;
         }
-        rayEnd += directionIncrement;
+        prevLastRayCastBlockPos = lastRayCastBlockPos;
+        lastRayCastBlockPos = blockPos;
+
+        // calculate block break stage. 10 stages. 0 is no break, 10 is fully broken
+        auto duration = std::chrono::steady_clock::now() - lastTime;
+        auto durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(
+                duration).count();
+        int breakStage = static_cast<int>(durationMS / (MINING_DELAY_MS / 10));
+        if (breakStage > 10) breakStage = 10;
+
+        // breaking block
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            // check if player switched block aimed at. if so, reset time and break stage and return
+            if (!compareVec3(lastRayCastBlockPos, prevLastRayCastBlockPos)) {
+                player.blockBreakStage = 0;
+                lastTime = std::chrono::steady_clock::now();
+                return;
+            }
+            if (std::chrono::steady_clock::now() - lastTime <
+                std::chrono::milliseconds(MINING_DELAY_MS)) {
+                player.blockBreakStage = breakStage;
+                return;
+            }
+
+            setBlock({blockPos.x, blockPos.y, blockPos.z}, Block(Block::AIR));
+            player.blockBreakStage = 0;
+            lastRayCastBlockPos = NULL_VECTOR;
+            isFirstAction = false;
+        }
+            // placing block
+        else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+            if (!isFirstAction && std::chrono::steady_clock::now() - lastTime <
+                                  std::chrono::milliseconds(PLACING_DELAY_MS)) {
+                return;
+            }
+            setBlock(lastAirBlockPos, Block(player.inventory.getHeldItem()));
+            isFirstAction = false;
+
+            // not placing or breaking, reset
+        } else {
+            player.blockBreakStage = 0;
+            isFirstAction = true;
+        }
+
+        lastTime = std::chrono::steady_clock::now();
+        return;
     }
+    lastTime = std::chrono::steady_clock::now();
     player.blockBreakStage = 0;
     lastRayCastBlockPos = NULL_VECTOR;
 }

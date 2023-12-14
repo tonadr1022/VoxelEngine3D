@@ -4,16 +4,14 @@ in vec2 v_TexCoord;
 
 out vec4 o_Color;
 
-uniform sampler2D u_Texture;
-
+uniform sampler2DArray u_Texture;
+uniform int u_TexIndex;
 
 void main() {
-    //    o_Color = vec4(1.0, 0.0, 0.0, 1.0);
 
-    vec4 texColor = texture(u_Texture, v_TexCoord);
+    vec4 texColor = texture(u_Texture, vec3(v_TexCoord, u_TexIndex));
 
-    if(texColor.a < 0.5)
+    if(texColor.a == 0.0)
         discard;
-//    o_Color = vec4(0.0, 0.0, 0.0, 1.0);
     o_Color = texColor;
 }

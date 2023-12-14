@@ -29,8 +29,6 @@ void BlockBreakRenderer::render(glm::vec3 blockPosition, Camera &camera, int bre
 
     blockBreakShader->setInt("u_TexIndex", textureIndex);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
-
-
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

@@ -283,6 +283,7 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace fac
     }
     auto baseVertexIndex = vertices.size();
     int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
+//    textureIndex = textureX | (textureY << 4);
     for (int i = 0; i < 20; i += 5) {
         std::bitset<5> xPosBits(faceVertices[i] + blockPosInChunk.x);
         std::bitset<5> yPosBits(faceVertices[i + 1] + blockPosInChunk.y);

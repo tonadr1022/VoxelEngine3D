@@ -23,11 +23,11 @@ public:
 
     void update();
 
-    void castRay(Ray ray);
+    void castPlayerAimRay(Ray ray);
 
     void render();
 
-    int renderDistance = 2;
+    int renderDistance = 16;
 
 //    void addEvent(std::unique_ptr<IEvent> event);
 
@@ -37,7 +37,8 @@ public:
 
 private:
     GLFWwindow *window;
-    glm::ivec3 lastRayCastBlockPos = glm::ivec3(-1, -1, -1);
+    glm::ivec3 lastRayCastBlockPos = NULL_VECTOR;
+    glm::ivec3 prevLastRayCastBlockPos = NULL_VECTOR;
 //    std::vector<std::unique_ptr<IEvent>> events;
 
     void loadChunks();

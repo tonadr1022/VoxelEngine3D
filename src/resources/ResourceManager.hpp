@@ -6,6 +6,7 @@
 #define VOXEL_ENGINE_RESOURCEMANAGER_HPP
 
 #include <string>
+#include "Image.hpp"
 
 class ResourceManager {
 public:
@@ -13,6 +14,8 @@ public:
     static void makeTexture2dArray(const std::string& texturePath, const std::string& textureName, bool flipVertically = false);
 
     static unsigned int getTexture(const std::string &textureName);
+
+    static Image loadImage(const std::string& imagePath, bool flipVertically = false);
 
 private:
     static std::unordered_map<std::string, unsigned int> textures;

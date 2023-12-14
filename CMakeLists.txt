@@ -84,6 +84,8 @@ set(SOURCE_FILES
         src/player/ItemStack.hpp
         src/Config.cpp
         src/Config.hpp
+        src/resources/Image.cpp
+        src/resources/Image.hpp
 )
 
 include_directories("dependencies")

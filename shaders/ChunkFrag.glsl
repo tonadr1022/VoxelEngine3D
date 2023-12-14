@@ -17,6 +17,7 @@ void main() {
     vec3 ambient = ambientStrength * lightColor;
 
     vec4 texture = texture(u_Texture, vec3(v_TexCoord, v_TexIndex));
+//    vec4 texture = texture(u_Texture, vec3(v_TexCoord, v_TexIndex));
     o_Color = vec4(texture.rgb * v_LightLevel, texture.a);
 //        o_Color = vec4(v_LightLevel, v_LightLevel, v_LightLevel, 1.0);
 }
