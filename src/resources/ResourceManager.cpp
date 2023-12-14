@@ -20,8 +20,6 @@ void ResourceManager::makeTexture(const std::string &texturePath, const std::str
         throw std::runtime_error("Failed to load texture: " + texturePath);
     }
     unsigned int texture;
-
-
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -38,7 +36,6 @@ void ResourceManager::makeTexture(const std::string &texturePath, const std::str
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glGenerateMipmap(GL_TEXTURE_2D);
-
 }
 
 unsigned int ResourceManager::getTexture(const std::string &textureName) {
