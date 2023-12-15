@@ -215,7 +215,6 @@ void ChunkMesh::construct(ChunkManager &chunkManager, Chunk &chunk, Chunk &leftN
                     if (block.id == Block::AIR) {
                         continue;
                     }
-
                     // block pos in chunk
                     glm::ivec3 blockPosInChunk = {x, y, chunkZ};
                     adjacentBlockPositions.update(x, y, chunkZ);

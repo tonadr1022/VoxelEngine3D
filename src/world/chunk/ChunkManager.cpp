@@ -58,7 +58,8 @@ ChunkKey ChunkManager::getChunkKeyByWorldLocation(int x, int y) {
                     static_cast<int>(std::floor(static_cast<float>(y) / CHUNK_WIDTH))};
 }
 
-ChunkKey ChunkManager::calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey &chunkKey) {
+ChunkKey
+ChunkManager::calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey &chunkKey) {
     switch (direction) {
         case HorizontalDirection::LEFT:
             return ChunkKey{chunkKey.x, chunkKey.y - 1};
@@ -106,5 +107,23 @@ void ChunkManager::updateChunkMesh(ChunkKey &chunkKey) {
     Chunk &chunk = getChunk(chunkKey);
     chunk.unload();
     buildChunkMesh(chunkKey);
+}
 
+constexpr std::array<glm::ivec2, 8> neighborChunkKeyOffsets = {
+        glm::ivec2{-1, -1},
+        glm::ivec2{-1, 0},
+        glm::ivec2{-1, 1},
+        glm::ivec2{0, -1},
+        glm::ivec2{0, 1},
+        glm::ivec2{1, -1},
+        glm::ivec2{1, 0},
+        glm::ivec2{1, 1}
+};
+
+bool ChunkManager::hasAllNeighbors(ChunkKey &chunkKey) {
+    return std::all_of(neighborChunkKeyOffsets.begin(), neighborChunkKeyOffsets.end(),
+                       [&](glm::ivec2 offset) {
+                           return chunkExists(
+                                   ChunkKey{chunkKey.x + offset.x, chunkKey.y + offset.y});
+                       });
 }

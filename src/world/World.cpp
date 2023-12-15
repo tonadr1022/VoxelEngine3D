@@ -22,11 +22,21 @@ World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(
     for (int i = 0; i < 1; i++) {
         m_chunkLoadThreads.emplace_back([&]() {
             while (m_isRunning) {
-                updateChunks();
-                // Optionally, add a sleep or yield to avoid busy-waiting
+                loadChunks();
+                updateChunkMeshes();
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
         });
+
+        // NOT USING SEPARATE MESH BUILDING THREAD FOR NOW. PERFORMANCE IS BETTER WITHOUT IT
+
+//        m_chunkMeshThreads.emplace_back([&]() {
+//            while (m_isRunning) {
+//                updateChunkMeshes();
+//                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+//
+//            }
+//        });
     }
 }
 
@@ -38,9 +48,9 @@ void World::render() {
             chunkRenderer.render(chunk.second);
         }
     }
-    // render block outline if aiming at a block
+
+    // render block break and outline if a block is being aimed at
     if (static_cast<const glm::vec3>(lastRayCastBlockPos) != NULL_VECTOR) {
-        // disable depth test so that the outline is always rendered on top
         renderer.renderBlockOutline(player.camera, lastRayCastBlockPos);
         renderer.renderBlockBreak(player.camera, lastRayCastBlockPos, player.blockBreakStage);
     }
@@ -54,8 +64,7 @@ void World::update() {
 
 void World::updateChunks() {
     loadChunks();
-    ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-    updateChunkMeshes(playerChunkKeyPos);
+    updateChunkMeshes();
 }
 
 void World::loadChunks() {
@@ -85,7 +94,7 @@ void World::loadChunks() {
 
 void World::unloadChunks() {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-    int unloadDistanceChunks = renderDistance + 2;
+    int unloadDistanceChunks = m_renderDistance + 2;
     ChunkMap &chunkMap = chunkManager.getChunkMap();
     for (auto it = chunkMap.begin(); it != chunkMap.end();) {
 //        std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -119,9 +128,9 @@ void World::reloadChunksToReload() {
     chunksToReload.clear();
 }
 
-void World::updateChunkMeshes(ChunkKey &playerChunkKeyPos) {
-
-    for (int i = 1; i <= renderDistance; i++) {
+void World::updateChunkMeshes() {
+    ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
+    for (int i = 1; i <= m_renderDistance; i++) {
         int minX = playerChunkKeyPos.x - i;
         int maxX = playerChunkKeyPos.x + i;
         int minY = playerChunkKeyPos.y - i;
@@ -131,9 +140,11 @@ void World::updateChunkMeshes(ChunkKey &playerChunkKeyPos) {
                 std::this_thread::sleep_for(std::chrono::microseconds(1));
                 std::unique_lock<std::mutex> lock(m_mainMutex);
                 ChunkKey chunkKey = {chunkX, chunkY};
+                if (!chunkManager.chunkExists(chunkKey)) return;
                 Chunk &chunk = chunkManager.getChunk(chunkKey);
                 if (chunk.chunkMeshState == ChunkMeshState::BUILT) continue;
                 if (chunk.chunkState != ChunkState::GENERATED) continue;
+                if (!chunkManager.hasAllNeighbors(chunkKey)) continue;
                 chunkManager.buildChunkMesh(chunkKey);
             }
         }
@@ -252,4 +263,13 @@ void World::castPlayerAimRay(Ray ray) {
     lastTime = std::chrono::steady_clock::now();
     player.blockBreakStage = 0;
     lastRayCastBlockPos = NULL_VECTOR;
+}
+
+int World::getRenderDistance() const {
+    return m_renderDistance;
+}
+
+void World::setRenderDistance(int renderDistance) {
+    m_renderDistance = renderDistance;
+    m_loadDistanceChunks = renderDistance + 1;
 }

@@ -51,8 +51,8 @@ public:
 
     bool hasNonAirBlockAt(int x, int y, int z);
 
-    ChunkMeshState chunkMeshState = ChunkMeshState::UNBUILT;
-    ChunkState chunkState = ChunkState::UNDEFINED;
+    ChunkMeshState chunkMeshState;
+    ChunkState chunkState;
 
 
     glm::vec2 &getLocation();

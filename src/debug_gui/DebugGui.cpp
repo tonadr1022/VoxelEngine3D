@@ -47,7 +47,10 @@ void DebugGui::update() {
         ImGui::Text("Camera Position  %.2f x  %.2f y %.2f z",
                     cameraPos.x, cameraPos.y, cameraPos.z);
         std::string blockName = BlockDB::getBlockData(world->player.inventory.getHeldItem()).name;
-        ImGui::SliderInt("Render Distance", &world->renderDistance, 1, 32);
+        int renderDistance = world->getRenderDistance();
+        if (ImGui::SliderInt("Render Distance", &renderDistance, 1, 32)) {
+            world->setRenderDistance(renderDistance);
+        }
         ImGui::Text("Block Type: %s", blockName.c_str());
         ImGui::Text("Block ID: %d", world->player.inventory.getHeldItem());
 

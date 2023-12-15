@@ -27,13 +27,15 @@ public:
 
     void render();
 
-    int renderDistance = 8;
-
 //    void addEvent(std::unique_ptr<IEvent> event);
 
     Player player;
 
     ChunkRenderer chunkRenderer;
+
+    int getRenderDistance() const;
+
+    void setRenderDistance(int renderDistance);
 
 private:
     GLFWwindow *window;
@@ -49,7 +51,7 @@ private:
 
     void setBlock(glm::ivec3 position, Block block);
 
-    void updateChunkMeshes(ChunkKey &playerChunkKeyPos);
+    void updateChunkMeshes();
 
     void reloadChunksToReload();
 
@@ -62,7 +64,11 @@ private:
     std::atomic<bool> m_isRunning{true};
 
     std::vector<std::thread> m_chunkLoadThreads;
-    int m_loadDistanceChunks = renderDistance + 2;
+    std::vector<std::thread> m_chunkMeshThreads;
+
+    int m_renderDistance = 12;
+    int m_loadDistanceChunks = m_renderDistance + 1;
+
 
     Renderer renderer;
 

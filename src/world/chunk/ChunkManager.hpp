@@ -38,6 +38,8 @@ public:
 
     static ChunkKey calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey &chunkKey);
 
+    bool hasAllNeighbors(ChunkKey &chunkKey);
+
 private:
 
     ChunkMap chunkMap;

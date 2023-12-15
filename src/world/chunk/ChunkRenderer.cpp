@@ -9,14 +9,8 @@
 #include <iostream>
 
 
-
-ChunkRenderer::ChunkRenderer(Camera &camera) : camera(camera),
-                                                                            shader(
-                                                                                    ShaderManager::getShader(
-                                                                                            "chunk")),
-                                                                            textureAtlasID(
-                                                                                    ResourceManager::getTexture(
-                                                                                            "texture_atlas")) {
+ChunkRenderer::ChunkRenderer(Camera &camera) : camera(camera), shader(ShaderManager::getShader(
+        "chunk")), textureAtlasID(ResourceManager::getTexture("texture_atlas")) {
 }
 
 void ChunkRenderer::render(Chunk &chunk) {
@@ -30,7 +24,7 @@ void ChunkRenderer::render(Chunk &chunk) {
     }
     glBindVertexArray(mesh.VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
-    glDrawElements(GL_TRIANGLES, static_cast<GLint>(mesh.indices.size()), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, static_cast<GLint>(mesh.indices.size()),GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 

@@ -7,7 +7,7 @@
 #include <iostream>
 
 Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshState::UNBUILT),
-                                   chunkState(ChunkState::UNDEFINED) {
+                                   chunkState(ChunkState::UNGENERATED) {
     for (int chunkZ = 0; chunkZ < CHUNK_HEIGHT; chunkZ += CHUNKLET_HEIGHT) {
         Chunklet chunklet(glm::vec3(location, chunkZ));
         chunklets[chunkZ / CHUNKLET_HEIGHT] = chunklet;
