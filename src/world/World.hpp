@@ -27,7 +27,7 @@ public:
 
     void render();
 
-    int renderDistance = 16;
+    int renderDistance = 8;
 
 //    void addEvent(std::unique_ptr<IEvent> event);
 
@@ -41,15 +41,15 @@ private:
     glm::ivec3 prevLastRayCastBlockPos = NULL_VECTOR;
 //    std::vector<std::unique_ptr<IEvent>> events;
 
-    void loadChunks(bool firstTime);
+    void loadChunks();
 
     void unloadChunks();
 
-    void updateChunks(bool firstTime);
+    void updateChunks();
 
     void setBlock(glm::ivec3 position, Block block);
 
-    void updateChunkMeshes(ChunkKey &playerChunkKeyPos, bool firstTime);
+    void updateChunkMeshes(ChunkKey &playerChunkKeyPos);
 
     void reloadChunksToReload();
 

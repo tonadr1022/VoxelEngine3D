@@ -26,8 +26,6 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
             noiseVal = (noiseVal + 1.0f) / 2.0f;
             int height = floor(noiseVal + baseHeight);
 
-            chunk.setMaxBlockHeightAt(xPosInChunk, yPosInChunk, height);
-
             for (int zPosInChunk = 0; zPosInChunk < CHUNK_HEIGHT; zPosInChunk++) {
                 if (zPosInChunk < height) {
                     chunk.setBlock(xPosInChunk, yPosInChunk, zPosInChunk, Block(Block::DIRT));
@@ -42,7 +40,6 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
                 for (int i = 0; i < 10; i++) {
                     chunk.setBlock(xPosInChunk, yPosInChunk, i + height, Block(Block::OAK_WOOD));
                 }
-                chunk.setMaxBlockHeightAt(xPosInChunk, yPosInChunk, height + 10);
             }
         }
     }

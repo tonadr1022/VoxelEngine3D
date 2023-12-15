@@ -12,6 +12,8 @@ Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshS
         Chunklet chunklet(glm::vec3(location, chunkZ));
         chunklets[chunkZ / CHUNKLET_HEIGHT] = chunklet;
     }
+    maxBlockHeights.fill(0);
+    numSolidBlocksInLayers.fill(0);
 }
 
 void

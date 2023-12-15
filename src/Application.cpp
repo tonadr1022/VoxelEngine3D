@@ -128,9 +128,7 @@ void Application::initGLFW() {
 
 }
 
-Application::Application() {
-    std::cout << "Application constructor" << std::endl;
-}
+Application::Application() = default;
 
 void Application::scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
     Application &app = Application::getInstance();

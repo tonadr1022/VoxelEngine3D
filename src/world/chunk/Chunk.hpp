@@ -67,9 +67,9 @@ public:
 
     void markDirty();
 
-    std::array<int, CHUNK_HEIGHT> numSolidBlocksInLayers;
+    std::array<int, CHUNK_HEIGHT> numSolidBlocksInLayers{};
 private:
-    std::array<int, CHUNK_AREA> maxBlockHeights;
+    std::array<int, CHUNK_AREA> maxBlockHeights{};
     ChunkMesh mesh;
     glm::vec2 location;
 };
