@@ -37,8 +37,6 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
                     chunk.setBlock(xPosInChunk, yPosInChunk, zPosInChunk, Block(Block::AIR));
                 }
             }
-
-
         }
     }
 

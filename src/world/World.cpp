@@ -68,7 +68,7 @@ void World::updateChunks() {
 }
 
 void World::loadChunks() {
-    auto start = std::chrono::high_resolution_clock::now();
+//    auto start = std::chrono::high_resolution_clock::now();
 
     int firstPassLoadDistance = m_renderDistance + 2;
     int secondPassLoadDistance = firstPassLoadDistance - 1;
@@ -88,10 +88,10 @@ void World::loadChunks() {
                     Chunk chunk(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
                     TerrainGenerator::generateTerrainFor(chunk);
                     chunkMap.emplace(chunkKey, chunk);
-                }
-                else if (i <= secondPassLoadDistance) {
+                } else if (i <= secondPassLoadDistance) {
                     Chunk &chunk = chunkMap.at(chunkKey);
-                    if (chunk.chunkState == ChunkState::TERRAIN_GENERATED && chunkManager.hasAllNeighbors(chunkKey)) {
+                    if (chunk.chunkState == ChunkState::TERRAIN_GENERATED &&
+                        chunkManager.hasAllNeighbors(chunkKey)) {
                         TerrainGenerator::generateStructuresFor(*this, chunk);
                         chunk.chunkState = ChunkState::FULLY_GENERATED;
                     }
@@ -100,10 +100,10 @@ void World::loadChunks() {
             }
         }
     }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "Chunk Loading took: " << duration.count() << "milliseconds"
-              << std::endl;
+//    auto end = std::chrono::high_resolution_clock::now();
+//    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+//    std::cout << "Chunk Loading took: " << duration.count() << "milliseconds"
+//              << std::endl;
 }
 
 void World::unloadChunks() {
@@ -165,78 +165,45 @@ void World::updateChunkMeshes() {
 }
 
 void World::handleChunkUpdates(Chunk &chunk, ChunkKey chunkKey, int chunkX, int chunkY) {
+    // don't use lambda since we already have a reference to the chunk
     if (chunk.chunkMeshState == ChunkMeshState::BUILT) {
         m_chunksToRemesh.insert(chunkKey);
         chunk.markDirty();
     }
+
+    // lambda to handle neighbor chunk updates
+    auto handleNeighborChunk = [&](int offsetX, int offsetY) {
+        auto neighborChunkKey = ChunkKey{chunkKey.x + offsetX, chunkKey.y + offsetY};
+        Chunk &neighborChunk = chunkManager.getChunk(neighborChunkKey);
+        if (neighborChunk.chunkMeshState == ChunkMeshState::BUILT) {
+            m_chunksToRemesh.insert(neighborChunkKey);
+            neighborChunk.markDirty();
+        }
+    };
+
+    // X axis side chunks
     if (chunkX == 0) {
-        ChunkKey backChunkKey = ChunkManager::calculateNeighborChunkKey(
-                HorizontalDirection::BACK,
-                chunkKey);
-        Chunk &backChunk = chunkManager.getChunk(backChunkKey);
-        if (backChunk.chunkMeshState == ChunkMeshState::BUILT) {
-            m_chunksToRemesh.insert(backChunkKey);
-            backChunk.markDirty();
-        }
+        handleNeighborChunk(-1, 0);
     } else if (chunkX == CHUNK_WIDTH - 1) {
-        ChunkKey frontChunkKey = ChunkManager::calculateNeighborChunkKey(
-                HorizontalDirection::FRONT,
-                chunkKey);
-        Chunk &frontChunk = chunkManager.getChunk(frontChunkKey);
-        if (frontChunk.chunkMeshState == ChunkMeshState::BUILT) {
-            m_chunksToRemesh.insert(frontChunkKey);
-            frontChunk.markDirty();
-        }
+        handleNeighborChunk(1, 0);
     }
+
+    // Y axis side chunks
     if (chunkY == 0) {
-        ChunkKey leftChunkKey = ChunkManager::calculateNeighborChunkKey(
-                HorizontalDirection::LEFT,
-                chunkKey);
-        Chunk &leftChunk = chunkManager.getChunk(leftChunkKey);
-        if (leftChunk.chunkMeshState == ChunkMeshState::BUILT) {
-            m_chunksToRemesh.insert(leftChunkKey);
-            leftChunk.markDirty();
-        }
+        handleNeighborChunk(0, -1);
     } else if (chunkY == CHUNK_WIDTH - 1) {
-        ChunkKey rightChunkKey = ChunkManager::calculateNeighborChunkKey(
-                HorizontalDirection::RIGHT,
-                chunkKey);
-        Chunk &rightChunk = chunkManager.getChunk(rightChunkKey);
-        if (rightChunk.chunkMeshState == ChunkMeshState::BUILT) {
-            m_chunksToRemesh.insert(rightChunkKey);
-            rightChunk.markDirty();
-        }
+        handleNeighborChunk(0, 1);
     }
 
     // corner chunks
     if (chunkX == 0 && chunkY == 0) {
-        auto backLeftChunkKey = ChunkKey{chunkKey.x - 1, chunkKey.y - 1};
-        Chunk &backLeftChunk = chunkManager.getChunk(backLeftChunkKey);
-        if (backLeftChunk.chunkMeshState == ChunkMeshState::BUILT) {
-            m_chunksToRemesh.insert(backLeftChunkKey);
-            backLeftChunk.markDirty();
-        }
+        handleNeighborChunk(-1, -1);
     } else if (chunkX == 0 && chunkY == CHUNK_WIDTH - 1) {
-        auto backRightChunkKey = ChunkKey{chunkKey.x - 1, chunkKey.y + 1};
-        Chunk &backRightChunk = chunkManager.getChunk(backRightChunkKey);
-        if (backRightChunk.chunkMeshState == ChunkMeshState::BUILT) {
-            m_chunksToRemesh.insert(backRightChunkKey);
-            backRightChunk.markDirty();
-        }
+        handleNeighborChunk(-1, 1);
     } else if (chunkX == CHUNK_WIDTH - 1 && chunkY == 0) {
-        auto frontLeftChunkKey = ChunkKey{chunkKey.x + 1, chunkKey.y - 1};
-        Chunk &frontLeftChunk = chunkManager.getChunk(frontLeftChunkKey);
-        if (frontLeftChunk.chunkMeshState == ChunkMeshState::BUILT) {
-            m_chunksToRemesh.insert(frontLeftChunkKey);
-            frontLeftChunk.markDirty();
-        }
+        handleNeighborChunk(1, -1);
     } else if (chunkX == CHUNK_WIDTH - 1 && chunkY == CHUNK_WIDTH - 1) {
-        auto frontRightChunkKey = ChunkKey{chunkKey.x + 1, chunkKey.y + 1};
-        Chunk &frontRightChunk = chunkManager.getChunk(frontRightChunkKey);
-        if (frontRightChunk.chunkMeshState == ChunkMeshState::BUILT) {
-            m_chunksToRemesh.insert(frontRightChunkKey);
-            frontRightChunk.markDirty();
-        }
+        handleNeighborChunk(1, 1);
     }
 }
 
