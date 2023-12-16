@@ -10,21 +10,17 @@
 #include "ChunkKey.hpp"
 #include <map>
 
-using ChunkMap = std::map<ChunkKey, Chunk>;
+using ChunkMap = std::unordered_map<ChunkKey, Chunk>;
 
 class ChunkManager {
 public:
     ChunkManager();
 
-    void updateChunk(Chunk &chunk);
+    void updateChunkMesh(ChunkKey chunkKey);
 
-    void updateChunkMesh(ChunkKey &chunkKey);
-
-    void buildChunkMesh(ChunkKey &chunkKey);
+    void buildChunkMesh(ChunkKey chunkKey);
 
     Chunk &getChunk(ChunkKey chunkKey);
-
-    Chunk &getChunkByWorldLocation(int x, int y);
 
     Block getBlock(glm::ivec3 position);
 
@@ -39,6 +35,17 @@ public:
     static ChunkKey calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey &chunkKey);
 
     bool hasAllNeighbors(ChunkKey &chunkKey);
+
+    static constexpr std::array<glm::ivec2, 8> NEIGHBOR_CHUNK_KEY_OFFSETS = {
+            glm::ivec2{-1, -1},
+            glm::ivec2{-1, 0},
+            glm::ivec2{-1, 1},
+            glm::ivec2{0, -1},
+            glm::ivec2{0, 1},
+            glm::ivec2{1, -1},
+            glm::ivec2{1, 0},
+            glm::ivec2{1, 1}
+    };
 
 private:
 

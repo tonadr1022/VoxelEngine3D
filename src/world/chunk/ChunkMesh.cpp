@@ -320,7 +320,6 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace fac
         indices.push_back(baseVertexIndex + 1);
         indices.push_back(baseVertexIndex + 3);
     }
-
 }
 
 void ChunkMesh::clearData() {

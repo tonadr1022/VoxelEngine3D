@@ -3,7 +3,6 @@
 //
 
 #include "ChunkManager.hpp"
-#include "../generation/TerrainGenerator.hpp"
 #include "../../utils/Utils.hpp"
 #include "ChunkRenderer.hpp"
 
@@ -17,11 +16,6 @@ Chunk &ChunkManager::getChunk(ChunkKey chunkKey) {
                 std::to_string(chunkKey.y) + "\n");
     }
     return it->second;
-}
-
-Chunk &ChunkManager::getChunkByWorldLocation(int x, int y) {
-    auto chunkKey = ChunkKey{x / CHUNK_WIDTH, y / CHUNK_WIDTH};
-    return getChunk(chunkKey);
 }
 
 bool ChunkManager::chunkExists(ChunkKey chunkKey) {
@@ -66,7 +60,7 @@ ChunkManager::calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey 
     }
 }
 
-void ChunkManager::buildChunkMesh(ChunkKey &chunkKey) {
+void ChunkManager::buildChunkMesh(ChunkKey chunkKey) {
     if (!chunkExists(chunkKey)) {
         throw std::runtime_error(
                 "Chunk not found at: " + std::to_string(chunkKey.x) + ", " +
@@ -97,25 +91,16 @@ void ChunkManager::buildChunkMesh(ChunkKey &chunkKey) {
                     backNeighborChunk);
 }
 
-void ChunkManager::updateChunkMesh(ChunkKey &chunkKey) {
+void ChunkManager::updateChunkMesh(ChunkKey chunkKey) {
     Chunk &chunk = getChunk(chunkKey);
     chunk.unload();
     buildChunkMesh(chunkKey);
 }
 
-constexpr std::array<glm::ivec2, 8> neighborChunkKeyOffsets = {
-        glm::ivec2{-1, -1},
-        glm::ivec2{-1, 0},
-        glm::ivec2{-1, 1},
-        glm::ivec2{0, -1},
-        glm::ivec2{0, 1},
-        glm::ivec2{1, -1},
-        glm::ivec2{1, 0},
-        glm::ivec2{1, 1}
-};
+
 
 bool ChunkManager::hasAllNeighbors(ChunkKey &chunkKey) {
-    return std::all_of(neighborChunkKeyOffsets.begin(), neighborChunkKeyOffsets.end(),
+    return std::all_of(NEIGHBOR_CHUNK_KEY_OFFSETS.begin(), NEIGHBOR_CHUNK_KEY_OFFSETS.end(),
                        [&](glm::ivec2 offset) {
                            return chunkExists(
                                    ChunkKey{chunkKey.x + offset.x, chunkKey.y + offset.y});

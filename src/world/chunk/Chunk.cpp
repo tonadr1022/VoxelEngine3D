@@ -22,6 +22,7 @@ Chunk::buildMesh(ChunkManager& chunkManager, Chunk &leftNeighborChunk, Chunk &ri
     mesh.construct(chunkManager, *this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
                    backNeighborChunk);
     chunkMeshState = ChunkMeshState::BUILT;
+    chunkState = ChunkState::FULLY_GENERATED;
 }
 
 void Chunk::unload() {
@@ -85,28 +86,13 @@ void Chunk::setMaxBlockHeightAt(int x, int y, int z) {
 
 void Chunk::markDirty() {
     chunkMeshState = ChunkMeshState::UNBUILT;
+    chunkState = ChunkState::CHANGED;
 }
 
 bool Chunk::hasNonAirBlockAt(int x, int y, int z) {
     return getBlock(x, y, z).id != Block::AIR;
 }
 
-Block Chunk::getBlockIncludingNeighborChunks(int x, int y, int z, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
-                                             Chunk &frontNeighborChunk, Chunk &backNeighborChunk) {
-    // check if below min height, if so don't add face
-    if (z < 0) return Block(Block::UNDEFINED);
-
-    // check if adjacent block is vertically out of bounds, if so add face
-    if (z > CHUNK_HEIGHT) {
-        return Block(Block::UNDEFINED);
-    }
-    // if horizontally out of bounds use world
-    if (x < 0 || x >= CHUNK_WIDTH || y < 0 || y >= CHUNK_WIDTH) {
-
-    } else {
-        return getBlock(x, y, z);
-    }
-}
 
 Block Chunk::getBlock(glm::ivec3& position, ChunkManager &chunkManager) {
     // check if below min height, if so don't add face

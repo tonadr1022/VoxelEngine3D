@@ -45,9 +45,6 @@ public:
 
     Block getBlock(glm::ivec3& position, ChunkManager &chunkManager);
 
-    Block getBlockIncludingNeighborChunks(int x, int y, int z, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
-                                          Chunk &frontNeighborChunk, Chunk &backNeighborChunk);
-
     bool hasNonAirBlockAt(int x, int y, int z);
 
     ChunkMeshState chunkMeshState;

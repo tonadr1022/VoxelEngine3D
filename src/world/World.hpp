@@ -12,6 +12,7 @@
 #include "../physics/Ray.hpp"
 
 #include <thread>
+#include <unordered_set>
 
 
 
@@ -52,11 +53,11 @@ private:
 
     void updateChunkMeshes();
 
-    void reloadChunksToReload();
+    void remeshChunksToRemesh();
 
     void handleChunkUpdates(Chunk& chunk, ChunkKey chunkKey, int chunkX, int chunkY);
 
-    std::vector<ChunkKey> chunksToReload;
+    std::unordered_set<ChunkKey> m_chunksToRemesh;
     std::vector<ChunkKey> m_chunksToUnload;
 
     std::mutex m_mainMutex;
@@ -65,7 +66,7 @@ private:
     std::vector<std::thread> m_chunkLoadThreads;
     std::vector<std::thread> m_chunkMeshThreads;
 
-    int m_renderDistance = 6;
+    int m_renderDistance = 12;
 
     Renderer renderer;
 
