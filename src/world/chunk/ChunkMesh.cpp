@@ -202,15 +202,15 @@ void ChunkMesh::construct(ChunkManager &chunkManager, Chunk &chunk, Chunk &leftN
     for (Chunklet &chunklet: chunk.chunklets) {
         for (int chunkletZ = 0; chunkletZ < CHUNKLET_HEIGHT; chunkletZ++) {
             int chunkZ = static_cast<int>(chunklet.location.z) + chunkletZ;
-            if (chunk.numSolidBlocksInLayers[chunkZ] == 0) {
-                continue;
-            }
+//            if (chunk.numSolidBlocksInLayers[chunkZ] == 0) {
+//                continue;
+//            }
             for (int x = 0; x < CHUNK_WIDTH; x++) {
                 for (int y = 0; y < CHUNK_WIDTH; y++) {
-                    int maxBlockHeight = chunk.getMaxBlockHeightAt(x, y);
-                    if (chunkZ > maxBlockHeight) {
-                        continue;
-                    }
+//                    int maxBlockHeight = chunk.getMaxBlockHeightAt(x, y);
+//                    if (chunkZ > maxBlockHeight) {
+//                        continue;
+//                    }
                     Block block = chunklet.getBlock(x, y, chunkletZ);
                     if (block.id == Block::AIR) {
                         continue;
@@ -329,7 +329,6 @@ void ChunkMesh::clearData() {
 }
 
 void ChunkMesh::clearBuffers() {
-
     if (VAO != 0) {
         glDeleteVertexArrays(1, &VAO);
         VAO = 0;

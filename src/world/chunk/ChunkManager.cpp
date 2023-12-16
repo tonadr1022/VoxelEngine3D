@@ -9,12 +9,6 @@
 
 ChunkManager::ChunkManager() = default;
 
-void ChunkManager::updateChunk(Chunk &chunk) {
-    TerrainGenerator::generateTerrainFor(chunk);
-    chunk.chunkState = ChunkState::GENERATED;
-//        chunkMap.emplace(chunkKey, chunk);
-}
-
 Chunk &ChunkManager::getChunk(ChunkKey chunkKey) {
     auto it = chunkMap.find(chunkKey);
     if (it == chunkMap.end()) {

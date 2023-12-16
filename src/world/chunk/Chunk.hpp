@@ -16,7 +16,8 @@ enum class ChunkMeshState {
 };
 
 enum class ChunkState {
-    GENERATED = 0,
+    TERRAIN_GENERATED = 0,
+    FULLY_GENERATED,
     UNGENERATED,
     CHANGED,
     UNDEFINED,
@@ -35,8 +36,6 @@ public:
 
     void buildMesh(ChunkManager& chunkManager, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
                    Chunk &backNeighborChunk);
-
-    void load();
 
     void unload();
 

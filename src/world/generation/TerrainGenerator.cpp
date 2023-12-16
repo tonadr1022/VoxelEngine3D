@@ -4,7 +4,9 @@
 
 #include "TerrainGenerator.hpp"
 #include "../chunk/Chunk.hpp"
+#include "../world/World.hpp"
 #include <glm/gtc/noise.hpp>
+#include <iostream>
 
 void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
     glm::ivec2 chunkLocation = chunk.getLocation();
@@ -36,15 +38,28 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
                 }
             }
 
-            if (xPosInChunk == 8 && yPosInChunk == 8) {
-                for (int i = 0; i < 10; i++) {
-                    chunk.setBlock(xPosInChunk, yPosInChunk, i + height, Block(Block::OAK_WOOD));
-                }
-            }
+
         }
     }
 
-    chunk.chunkState = ChunkState::GENERATED;
+    chunk.chunkState = ChunkState::TERRAIN_GENERATED;
+}
+
+void TerrainGenerator::generateStructuresFor(World &world, Chunk &chunk) {
+    int height = chunk.getMaxBlockHeightAt(15, 15);
+    for (int i = 0; i < 10; i++) {
+        chunk.setBlock(15, 15, height + i, Block(Block::OAK_WOOD));
+    }
+//    // leaves
+//    for (int x = 13; x <= 17; x++) {
+//        for (int y = 13; y <= 17; y++) {
+//            for (int z = height + 10; z <= height + 14; z++) {
+//                world.setBlock({x, y, z}, Block(Block::OAK_LEAVES));
+//            }
+//        }
+//    }
+
+    chunk.chunkState = ChunkState::FULLY_GENERATED;
 }
 
 TerrainGenerator::TerrainGenerator() = default;

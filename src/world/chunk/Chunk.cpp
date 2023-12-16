@@ -22,11 +22,6 @@ Chunk::buildMesh(ChunkManager& chunkManager, Chunk &leftNeighborChunk, Chunk &ri
     mesh.construct(chunkManager, *this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
                    backNeighborChunk);
     chunkMeshState = ChunkMeshState::BUILT;
-    chunkState = ChunkState::GENERATED;
-}
-
-void Chunk::load() {
-
 }
 
 void Chunk::unload() {
@@ -35,12 +30,30 @@ void Chunk::unload() {
     chunkMeshState = ChunkMeshState::UNBUILT;
 }
 
+bool blockIsAirOrUndefined(Block::ID blockId) {
+    return blockId == Block::AIR || blockId == Block::UNDEFINED;
+}
+
 void Chunk::setBlock(int x, int y, int z, Block block) {
-    if (block.id != Block::AIR)
+    Block::ID oldBlockId = getBlock(x, y, z).id;
+    Block::ID newBlockId = block.id;
+    if (!blockIsAirOrUndefined(oldBlockId) && block.id == Block::AIR) {
+        numSolidBlocksInLayers[z]--;
+    } else if (blockIsAirOrUndefined(oldBlockId) && newBlockId != Block::AIR) {
         numSolidBlocksInLayers[z]++;
-    if (z > getMaxBlockHeightAt(x, y)) {
+    }
+
+    if (newBlockId != Block::AIR && z > getMaxBlockHeightAt(x, y)) {
         setMaxBlockHeightAt(x, y, z);
     }
+
+//    if (block.id != Block::AIR) {
+//        numSolidBlocksInLayers[z]++;
+//    }
+//
+//    if (z > getMaxBlockHeightAt(x, y)) {
+//        setMaxBlockHeightAt(x, y, z);
+//    }
     int chunkletIndex = z / CHUNKLET_HEIGHT;
     int chunkletZ = z % CHUNKLET_HEIGHT;
     chunklets[chunkletIndex].setBlock(x, y, chunkletZ, block);
@@ -72,7 +85,6 @@ void Chunk::setMaxBlockHeightAt(int x, int y, int z) {
 
 void Chunk::markDirty() {
     chunkMeshState = ChunkMeshState::UNBUILT;
-    chunkState = ChunkState::CHANGED;
 }
 
 bool Chunk::hasNonAirBlockAt(int x, int y, int z) {
