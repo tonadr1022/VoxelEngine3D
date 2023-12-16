@@ -105,4 +105,8 @@ Block Chunk::getBlock(glm::ivec3 &position, ChunkManager &chunkManager) {
     }
 }
 
+ChunkKey Chunk::getChunkKey() {
+    return m_chunkKey;
+}
+
 Chunk::~Chunk() = default;

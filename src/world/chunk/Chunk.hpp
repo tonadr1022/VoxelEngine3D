@@ -65,6 +65,8 @@ public:
     void markDirty();
 
     std::array<int, CHUNK_HEIGHT> numSolidBlocksInLayers{};
+
+    ChunkKey getChunkKey();
 private:
     std::array<int, CHUNK_AREA> maxBlockHeights{};
     ChunkMesh mesh;
