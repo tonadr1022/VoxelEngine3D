@@ -39,9 +39,6 @@ public:
 
     bool hasAllNeighborsFullyGenerated(ChunkKey chunkKey);
 
-    bool hasAnyNeighborWithMeshBuilt(ChunkKey chunkKey);
-
-
     static constexpr std::array<glm::ivec2, 8> NEIGHBOR_CHUNK_KEY_OFFSETS = {
             glm::ivec2{-1, -1},
             glm::ivec2{-1, 0},
@@ -59,11 +56,12 @@ public:
 
     void addChunkToRemesh(ChunkKey chunkKey);
 
-
 private:
 
     ChunkMap chunkMap;
     std::unordered_set<ChunkKey> m_chunksToRemesh;
+
+
 
 
 

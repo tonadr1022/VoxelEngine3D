@@ -118,13 +118,6 @@ bool ChunkManager::hasAllNeighborsFullyGenerated(ChunkKey chunkKey) {
                        });
 }
 
-bool ChunkManager::hasAnyNeighborWithMeshBuilt(ChunkKey chunkKey) {
-    return std::any_of(NEIGHBOR_CHUNK_KEY_OFFSETS.begin(), NEIGHBOR_CHUNK_KEY_OFFSETS.end(),
-                       [&](glm::ivec2 offset) {
-                           auto neighborChunkKey = ChunkKey{chunkKey.x + offset.x, chunkKey.y + offset.y};
-                           return chunkExists(neighborChunkKey) && getChunk(neighborChunkKey).chunkMeshState == ChunkMeshState::BUILT;
-                       });
-}
 
 void ChunkManager::addChunkToRemesh(ChunkKey chunkKey) {
     m_chunksToRemesh.insert(chunkKey);
@@ -134,7 +127,6 @@ void ChunkManager::handleChunkUpdates(Chunk &chunk, ChunkKey chunkKey, int chunk
     // don't use lambda since we already have a reference to the chunk
     if (chunk.chunkMeshState == ChunkMeshState::BUILT) {
         std::cout << "adding chunk to remesh (itself): "  << chunkKey.x << ", " << chunkKey.y << std::endl;
-
         addChunkToRemesh(chunkKey);
         chunk.markDirty();
     }

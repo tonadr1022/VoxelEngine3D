@@ -13,7 +13,6 @@
 enum class ChunkMeshState {
     BUILT = 0,
     UNBUILT,
-    FAILED,
 };
 
 enum class ChunkState {
@@ -22,7 +21,6 @@ enum class ChunkState {
     UNGENERATED,
     CHANGED,
     UNDEFINED,
-    FAILED
 };
 
 class ChunkManager;

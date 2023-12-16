@@ -44,9 +44,9 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
 
 void TerrainGenerator::generateStructuresFor(ChunkManager &chunkManager, Chunk &chunk) {
     glm::vec2 chunkLocation = chunk.getLocation();
-    int height = chunk.getMaxBlockHeightAt(0,0);
+    int height = chunk.getMaxBlockHeightAt(15, 15);
     for (int i = 0; i < 10; i++) {
-        chunk.setBlock(0,0, height + i, Block(Block::OAK_WOOD));
+        chunk.setBlock(15, 15, height + i, Block(Block::OAK_WOOD));
 //chunkManager.setBlock({chunkLocation.x + 15, chunkLocation.y + 14, height + i}, Block(Block::OAK_WOOD));
     }
     // leaves
@@ -57,8 +57,8 @@ void TerrainGenerator::generateStructuresFor(ChunkManager &chunkManager, Chunk &
 //            }
 //        }
 //    }
-    for (int x = -5; x <= 5; x++) {
-        for (int y = -5; y <= 5; y++) {
+    for (int x = 14; x <= 17; x++) {
+        for (int y = 14; y <= 17; y++) {
             for (int z = height + 10; z <= height + 14; z++) {
                 chunkManager.setBlock({chunkLocation.x + x, chunkLocation.y + y, z}, Block(Block::OAK_LEAVES));
             }

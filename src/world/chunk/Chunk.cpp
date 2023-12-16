@@ -7,8 +7,8 @@
 #include <iostream>
 
 Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshState::UNBUILT),
-                                   chunkState(ChunkState::UNGENERATED) {
-    m_chunkKey = ChunkManager::getChunkKeyByWorldLocation(location.x, location.y);
+                                   chunkState(ChunkState::UNGENERATED), m_chunkKey(
+                ChunkManager::getChunkKeyByWorldLocation(location.x, location.y)) {
     for (int chunkZ = 0; chunkZ < CHUNK_HEIGHT; chunkZ += CHUNKLET_HEIGHT) {
         Chunklet chunklet(glm::vec3(location, chunkZ));
         chunklets[chunkZ / CHUNKLET_HEIGHT] = chunklet;
@@ -24,7 +24,6 @@ Chunk::buildMesh(ChunkManager &chunkManager, Chunk &leftNeighborChunk, Chunk &ri
     mesh.construct(chunkManager, *this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
                    backNeighborChunk);
     chunkMeshState = ChunkMeshState::BUILT;
-//    chunkState = ChunkState::FULLY_GENERATED;
 }
 
 void Chunk::unload() {
@@ -50,14 +49,6 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
     if (newBlockId != Block::AIR && z > getMaxBlockHeightAt(x, y)) {
         setMaxBlockHeightAt(x, y, z);
     }
-
-//    if (block.id != Block::AIR) {
-//        numSolidBlocksInLayers[z]++;
-//    }
-//
-//    if (z > getMaxBlockHeightAt(x, y)) {
-//        setMaxBlockHeightAt(x, y, z);
-//    }
     int chunkletIndex = z / CHUNKLET_HEIGHT;
     int chunkletZ = z % CHUNKLET_HEIGHT;
     chunklets[chunkletIndex].setBlock(x, y, chunkletZ, block);

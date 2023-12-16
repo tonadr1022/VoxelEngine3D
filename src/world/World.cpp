@@ -50,6 +50,7 @@ void World::update() {
     chunkManager.remeshChunksToRemesh();
 }
 
+
 void World::updateChunks() {
     loadChunks();
     updateChunkMeshes();
@@ -100,10 +101,6 @@ void World::loadChunks() {
                     Chunk &chunk = chunkMap.at(chunkKey);
                     if (chunk.chunkState == ChunkState::TERRAIN_GENERATED &&
                         chunkManager.hasAllNeighbors(chunkKey)) {
-                        if (chunkManager.hasAnyNeighborWithMeshBuilt(chunkKey)) {
-                            std::cout << "has neighbors with mesh built at: " << chunkKey.x << ", "
-                                      << chunkKey.y << std::endl;
-                        }
                         TerrainGenerator::generateStructuresFor(chunkManager, chunk);
                     }
                 }
@@ -119,7 +116,8 @@ void World::loadChunks() {
 }
 
 void World::unloadChunks() {
-    int unloadDistanceChunks = m_renderDistance + 5;
+    std::unordered_set<ChunkKey> chunksToUnload;
+    int unloadDistanceChunks = m_renderDistance + 2;
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     ChunkMap &chunkMap = chunkManager.getChunkMap();
     for (auto it = chunkMap.begin(); it != chunkMap.end();) {
@@ -129,11 +127,7 @@ void World::unloadChunks() {
             chunkKey.x > playerChunkKeyPos.x + unloadDistanceChunks ||
             chunkKey.y < playerChunkKeyPos.y - unloadDistanceChunks ||
             chunkKey.y > playerChunkKeyPos.y + unloadDistanceChunks) {
-
             chunk.unload();
-            if (chunkKey.x == -12 && chunkKey.y == -12) {
-                std::cout << "-12 -12 erased" << std::endl;
-            }
             it = chunkMap.erase(it);
         } else {
             ++it;
