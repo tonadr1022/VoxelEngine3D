@@ -91,20 +91,18 @@ void World::loadChunks() {
     }
 }
 
-
 void World::unloadChunks() {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-    int unloadDistanceChunks = m_renderDistance + 2;
     ChunkMap &chunkMap = chunkManager.getChunkMap();
     for (auto it = chunkMap.begin(); it != chunkMap.end();) {
 //        std::this_thread::sleep_for(std::chrono::milliseconds(1));
         std::unique_lock<std::mutex> lock(m_mainMutex);
         ChunkKey chunkKey = it->first;
         Chunk &chunk = it->second;
-        if (chunkKey.x < playerChunkKeyPos.x - unloadDistanceChunks ||
-            chunkKey.x > playerChunkKeyPos.x + unloadDistanceChunks ||
-            chunkKey.y < playerChunkKeyPos.y - unloadDistanceChunks ||
-            chunkKey.y > playerChunkKeyPos.y + unloadDistanceChunks) {
+        if (chunkKey.x < playerChunkKeyPos.x - m_unloadDistanceChunks ||
+            chunkKey.x > playerChunkKeyPos.x + m_unloadDistanceChunks ||
+            chunkKey.y < playerChunkKeyPos.y - m_unloadDistanceChunks ||
+            chunkKey.y > playerChunkKeyPos.y + m_unloadDistanceChunks) {
             chunk.unload();
             it = chunkMap.erase(it);
         } else {
@@ -140,7 +138,7 @@ void World::updateChunkMeshes() {
                 std::this_thread::sleep_for(std::chrono::microseconds(1));
                 std::unique_lock<std::mutex> lock(m_mainMutex);
                 ChunkKey chunkKey = {chunkX, chunkY};
-                if (!chunkManager.chunkExists(chunkKey)) return;
+                if (!chunkManager.chunkExists(chunkKey)) continue;
                 Chunk &chunk = chunkManager.getChunk(chunkKey);
                 if (chunk.chunkMeshState == ChunkMeshState::BUILT) continue;
                 if (chunk.chunkState != ChunkState::GENERATED) continue;

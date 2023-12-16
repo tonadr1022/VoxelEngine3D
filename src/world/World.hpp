@@ -68,6 +68,7 @@ private:
 
     int m_renderDistance = 12;
     int m_loadDistanceChunks = m_renderDistance + 1;
+    int m_unloadDistanceChunks = m_renderDistance + 4;
 
 
     Renderer renderer;
