@@ -8,6 +8,7 @@
 
 Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshState::UNBUILT),
                                    chunkState(ChunkState::UNGENERATED) {
+    m_chunkKey = ChunkManager::getChunkKeyByWorldLocation(location.x, location.y);
     for (int chunkZ = 0; chunkZ < CHUNK_HEIGHT; chunkZ += CHUNKLET_HEIGHT) {
         Chunklet chunklet(glm::vec3(location, chunkZ));
         chunklets[chunkZ / CHUNKLET_HEIGHT] = chunklet;
@@ -17,17 +18,19 @@ Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshS
 }
 
 void
-Chunk::buildMesh(ChunkManager& chunkManager, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
+Chunk::buildMesh(ChunkManager &chunkManager, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
+                 Chunk &frontNeighborChunk,
                  Chunk &backNeighborChunk) {
     mesh.construct(chunkManager, *this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
                    backNeighborChunk);
     chunkMeshState = ChunkMeshState::BUILT;
-    chunkState = ChunkState::FULLY_GENERATED;
+//    chunkState = ChunkState::FULLY_GENERATED;
 }
 
 void Chunk::unload() {
     mesh.clearData();
     mesh.clearBuffers();
+    chunkState = ChunkState::UNDEFINED;
     chunkMeshState = ChunkMeshState::UNBUILT;
 }
 
@@ -58,7 +61,6 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
     int chunkletIndex = z / CHUNKLET_HEIGHT;
     int chunkletZ = z % CHUNKLET_HEIGHT;
     chunklets[chunkletIndex].setBlock(x, y, chunkletZ, block);
-
 }
 
 Block Chunk::getBlock(int x, int y, int z) {
@@ -94,7 +96,7 @@ bool Chunk::hasNonAirBlockAt(int x, int y, int z) {
 }
 
 
-Block Chunk::getBlock(glm::ivec3& position, ChunkManager &chunkManager) {
+Block Chunk::getBlock(glm::ivec3 &position, ChunkManager &chunkManager) {
     // check if below min height, if so don't add face
     if (position.z < 0) return Block(Block::UNDEFINED);
 
@@ -103,10 +105,13 @@ Block Chunk::getBlock(glm::ivec3& position, ChunkManager &chunkManager) {
         return Block(Block::UNDEFINED);
     }
     // if horizontally out of bounds use world
-    if (position.x < 0 || position.x >= CHUNK_WIDTH || position.y < 0 || position.y >= CHUNK_WIDTH) {
+    if (position.x < 0 || position.x >= CHUNK_WIDTH || position.y < 0 ||
+        position.y >= CHUNK_WIDTH) {
         glm::ivec3 worldLocation = glm::ivec3(location, 0) + position;
         return chunkManager.getBlock(worldLocation);
     } else {
         return getBlock(position.x, position.y, position.z);
     }
 }
+
+Chunk::~Chunk() = default;

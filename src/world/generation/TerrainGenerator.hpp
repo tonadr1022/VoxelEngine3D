@@ -9,13 +9,13 @@
 
 class Chunk;
 
-class World;
+class ChunkManager;
 
 class TerrainGenerator {
 public:
     TerrainGenerator();
     static void generateTerrainFor(Chunk &chunk);
-    static void generateStructuresFor(World& world, Chunk &chunk);
+    static void generateStructuresFor(ChunkManager& chunkManager, Chunk &chunk);
 };
 
 

@@ -7,6 +7,7 @@
 
 #include "ChunkMesh.hpp"
 #include "../chunklet/Chunklet.hpp"
+#include "ChunkKey.hpp"
 
 
 enum class ChunkMeshState {
@@ -31,6 +32,8 @@ class Chunklet;
 class Chunk {
 public:
     Chunk() = delete;
+
+    ~Chunk();
 
     explicit Chunk(glm::vec2 location);
 
@@ -68,6 +71,7 @@ private:
     std::array<int, CHUNK_AREA> maxBlockHeights{};
     ChunkMesh mesh;
     glm::vec2 location;
+    ChunkKey m_chunkKey;
 };
 
 

@@ -28,8 +28,6 @@ public:
 
     void render();
 
-//    void addEvent(std::unique_ptr<IEvent> event);
-
     Player player;
 
     ChunkRenderer chunkRenderer;
@@ -37,8 +35,6 @@ public:
     int getRenderDistance() const;
 
     void setRenderDistance(int renderDistance);
-
-    void setBlock(glm::ivec3 position, Block block);
 
 private:
     GLFWwindow *window;
@@ -53,11 +49,7 @@ private:
 
     void updateChunkMeshes();
 
-    void remeshChunksToRemesh();
 
-    void handleChunkUpdates(Chunk& chunk, ChunkKey chunkKey, int chunkX, int chunkY);
-
-    std::unordered_set<ChunkKey> m_chunksToRemesh;
     std::vector<ChunkKey> m_chunksToUnload;
 
     std::mutex m_mainMutex;

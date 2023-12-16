@@ -226,7 +226,6 @@ void ChunkMesh::construct(ChunkManager &chunkManager, Chunk &chunk, Chunk &leftN
                                           rightNeighborChunk, frontNeighborChunk,
                                           backNeighborChunk)) {
                             // calculate ambient occlusion level for each vertex of this face
-                            // if front face
                             addFace(blockPosInChunk, block, face, chunk, chunkManager);
                         }
                     }

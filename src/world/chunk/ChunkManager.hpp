@@ -8,7 +8,8 @@
 
 #include "Chunk.hpp"
 #include "ChunkKey.hpp"
-#include <map>
+#include <unordered_map>
+#include <unordered_set>
 
 using ChunkMap = std::unordered_map<ChunkKey, Chunk>;
 
@@ -34,7 +35,12 @@ public:
 
     static ChunkKey calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey &chunkKey);
 
-    bool hasAllNeighbors(ChunkKey &chunkKey);
+    bool hasAllNeighbors(ChunkKey chunkKey);
+
+    bool hasAllNeighborsFullyGenerated(ChunkKey chunkKey);
+
+    bool hasAnyNeighborWithMeshBuilt(ChunkKey chunkKey);
+
 
     static constexpr std::array<glm::ivec2, 8> NEIGHBOR_CHUNK_KEY_OFFSETS = {
             glm::ivec2{-1, -1},
@@ -47,9 +53,18 @@ public:
             glm::ivec2{1, 1}
     };
 
+    void handleChunkUpdates(Chunk &chunk, ChunkKey chunkKey, int chunkX, int chunkY);
+
+    void remeshChunksToRemesh();
+
+    void addChunkToRemesh(ChunkKey chunkKey);
+
+
 private:
 
     ChunkMap chunkMap;
+    std::unordered_set<ChunkKey> m_chunksToRemesh;
+
 
 
 
