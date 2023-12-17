@@ -5,6 +5,7 @@
 #ifndef VOXEL_ENGINE_CROSSHAIR_HPP
 #define VOXEL_ENGINE_CROSSHAIR_HPP
 
+#include "../EngineConfig.hpp"
 
 class CrossHair {
 public:

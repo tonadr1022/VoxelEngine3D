@@ -4,7 +4,6 @@
 
 #include "World.hpp"
 #include "../resources/ResourceManager.hpp"
-#include <iostream>
 #include "generation/TerrainGenerator.hpp"
 
 World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(renderer),
@@ -31,9 +30,9 @@ World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(
 void World::render() {
     chunkRenderer.start();
     ChunkMap &chunkMap = chunkManager.getChunkMap();
-    for (auto &chunk: chunkMap) {
-        if (chunk.second.chunkMeshState == ChunkMeshState::BUILT) {
-            chunkRenderer.render(chunk.second);
+    for (auto &chunkEntry: chunkMap) {
+        if (chunkEntry.second->chunkMeshState == ChunkMeshState::BUILT) {
+            chunkRenderer.render(chunkEntry.second);
         }
     }
 
@@ -77,7 +76,7 @@ void World::loadChunks() {
                 ChunkKey chunkKey = {chunkX, chunkY};
                 std::unique_lock<std::mutex> lock(m_mainMutex);
                 if (chunkMap.find(chunkKey) == chunkMap.end()) {
-                    Chunk chunk(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
+                    const Ref<Chunk>& chunk = std::make_shared<Chunk>(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
                     TerrainGenerator::generateTerrainFor(chunk);
                     chunkMap.emplace(chunkKey, chunk);
                 }
@@ -98,8 +97,8 @@ void World::loadChunks() {
                 ChunkKey chunkKey = {chunkX, chunkY};
                 std::unique_lock<std::mutex> lock(m_mainMutex);
                 if (chunkMap.find(chunkKey) != chunkMap.end()) {
-                    Chunk &chunk = chunkMap.at(chunkKey);
-                    if (chunk.chunkState == ChunkState::TERRAIN_GENERATED &&
+                    const Ref<Chunk>& chunk = chunkMap.at(chunkKey);
+                    if (chunk->chunkState == ChunkState::TERRAIN_GENERATED &&
                         chunkManager.hasAllNeighbors(chunkKey)) {
                         TerrainGenerator::generateStructuresFor(chunkManager, chunk);
                     }
@@ -122,12 +121,12 @@ void World::unloadChunks() {
     ChunkMap &chunkMap = chunkManager.getChunkMap();
     for (auto it = chunkMap.begin(); it != chunkMap.end();) {
         ChunkKey chunkKey = it->first;
-        Chunk &chunk = it->second;
+        const Ref<Chunk>& chunk = it->second;
         if (chunkKey.x < playerChunkKeyPos.x - unloadDistanceChunks ||
             chunkKey.x > playerChunkKeyPos.x + unloadDistanceChunks ||
             chunkKey.y < playerChunkKeyPos.y - unloadDistanceChunks ||
             chunkKey.y > playerChunkKeyPos.y + unloadDistanceChunks) {
-            chunk.unload();
+            chunk->unload();
             it = chunkMap.erase(it);
         } else {
             ++it;
@@ -155,9 +154,9 @@ void World::updateChunkMeshes() {
                 std::unique_lock<std::mutex> lock(m_mainMutex);
                 ChunkKey chunkKey = {chunkX, chunkY};
                 if (!chunkManager.chunkExists(chunkKey)) continue;
-                Chunk &chunk = chunkManager.getChunk(chunkKey);
-                if (chunk.chunkState != ChunkState::FULLY_GENERATED) continue;
-                if (chunk.chunkMeshState == ChunkMeshState::BUILT) continue;
+                const Ref<Chunk>& chunk = chunkManager.getChunk(chunkKey);
+                if (chunk->chunkState != ChunkState::FULLY_GENERATED) continue;
+                if (chunk->chunkMeshState == ChunkMeshState::BUILT) continue;
                 if (!chunkManager.hasAllNeighborsFullyGenerated(chunkKey)) continue;
                 chunkManager.buildChunkMesh(chunkKey);
             }

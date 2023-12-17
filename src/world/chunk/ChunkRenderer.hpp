@@ -8,6 +8,7 @@
 #include "../../shaders/Shader.hpp"
 #include "Chunk.hpp"
 #include "../../camera/Camera.hpp"
+#include "../../EngineConfig.hpp"
 
 
 class ChunkRenderer {
@@ -16,11 +17,11 @@ public:
 
     ~ChunkRenderer();
 
-    static void createGPUResources(Chunk &chunk);
+    static void createGPUResources(const Ref<Chunk> &chunk);
 
 //    static void destroyGPUResources(Chunk &chunk);
 
-    void render(Chunk &chunk);
+    void render(const Ref<Chunk> &chunk);
 
     void start();
 

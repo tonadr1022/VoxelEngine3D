@@ -3,11 +3,6 @@
 //
 
 #include "Shader.hpp"
-#include <glm/gtc/type_ptr.hpp>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <glad/glad.h>
 
 
 GLint Shader::makeModule(const std::string &filepath, GLint module_type) {

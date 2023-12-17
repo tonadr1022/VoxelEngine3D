@@ -5,11 +5,7 @@
 #include "ChunkMesh.hpp"
 #include "Chunk.hpp"
 #include "../block/BlockDB.hpp"
-#include <bitset>
-#include <glad/glad.h>
-#include <iostream>
 #include "ChunkManager.hpp"
-#include "../../Config.hpp"
 
 
 namespace {
@@ -148,9 +144,10 @@ ChunkMesh::ChunkMesh() : VAO(0), VBO(0), EBO(0) {
 }
 
 bool
-ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, Chunk &chunk,
-                         Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
-                         Chunk &frontNeighborChunk, Chunk &backNeighborChunk) {
+ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, const Ref<Chunk> &chunk,
+                         const Ref<Chunk> &leftNeighborChunk, const Ref<Chunk> &rightNeighborChunk,
+                         const Ref<Chunk> &frontNeighborChunk,
+                         const Ref<Chunk> &backNeighborChunk) {
     // check if below min height, if so don't add face
     if (adjacentBlockPosInChunk.z < 0) return false;
 
@@ -161,45 +158,46 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, Chunk &chunk,
 
     if (adjacentBlockPosInChunk.x < 0) {
         // get back neighbor chunk
-        if (!backNeighborChunk.hasNonAirBlockAt(CHUNK_WIDTH - 1, adjacentBlockPosInChunk.y,
-                                                adjacentBlockPosInChunk.z)) {
+        if (!backNeighborChunk->hasNonAirBlockAt(CHUNK_WIDTH - 1, adjacentBlockPosInChunk.y,
+                                                 adjacentBlockPosInChunk.z)) {
             return true;
         }
     } else if (adjacentBlockPosInChunk.x >= CHUNK_WIDTH) {
         // get front neighbor chunk
-        if (!frontNeighborChunk.hasNonAirBlockAt(0, adjacentBlockPosInChunk.y,
-                                                 adjacentBlockPosInChunk.z)) {
+        if (!frontNeighborChunk->hasNonAirBlockAt(0, adjacentBlockPosInChunk.y,
+                                                  adjacentBlockPosInChunk.z)) {
             return true;
         }
     } else if (adjacentBlockPosInChunk.y < 0) {
         // get left neighbor chunk
-        if (!leftNeighborChunk.hasNonAirBlockAt(adjacentBlockPosInChunk.x, CHUNK_WIDTH - 1,
-                                                adjacentBlockPosInChunk.z)) {
+        if (!leftNeighborChunk->hasNonAirBlockAt(adjacentBlockPosInChunk.x, CHUNK_WIDTH - 1,
+                                                 adjacentBlockPosInChunk.z)) {
             return true;
         }
     } else if (adjacentBlockPosInChunk.y >= CHUNK_WIDTH) {
         // get right neighbor chunk
-        if (!rightNeighborChunk.hasNonAirBlockAt(adjacentBlockPosInChunk.x, 0,
-                                                 adjacentBlockPosInChunk.z)) {
+        if (!rightNeighborChunk->hasNonAirBlockAt(adjacentBlockPosInChunk.x, 0,
+                                                  adjacentBlockPosInChunk.z)) {
             return true;
         }
 
         // check adjacent block (in chunk at this point), if it's air or transparent, add face
-    } else if (chunk.getBlock(adjacentBlockPosInChunk.x, adjacentBlockPosInChunk.y,
-                              adjacentBlockPosInChunk.z).isTransparent()) {
+    } else if (chunk->getBlock(adjacentBlockPosInChunk.x, adjacentBlockPosInChunk.y,
+                               adjacentBlockPosInChunk.z).isTransparent()) {
         return true;
     }
     return false;
 }
 
-void ChunkMesh::construct(ChunkManager &chunkManager, Chunk &chunk, Chunk &leftNeighborChunk,
-                          Chunk &rightNeighborChunk,
-                          Chunk &frontNeighborChunk,
-                          Chunk &backNeighborChunk) {
+void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk,
+                          const Ref<Chunk> &leftNeighborChunk,
+                          const Ref<Chunk> &rightNeighborChunk,
+                          const Ref<Chunk> &frontNeighborChunk,
+                          const Ref<Chunk> &backNeighborChunk) {
     clearData();
     AdjacentBlockPositions adjacentBlockPositions{};
 
-    for (Chunklet &chunklet: chunk.chunklets) {
+    for (Chunklet &chunklet: chunk->chunklets) {
         for (int chunkletZ = 0; chunkletZ < CHUNKLET_HEIGHT; chunkletZ++) {
             int chunkZ = static_cast<int>(chunklet.location.z) + chunkletZ;
 //            if (chunk.numSolidBlocksInLayers[chunkZ] == 0) {
@@ -222,11 +220,11 @@ void ChunkMesh::construct(ChunkManager &chunkManager, Chunk &chunk, Chunk &leftN
                     for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
                         auto face = static_cast<BlockFace>(faceIndex);
                         glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[static_cast<int>(face)];
-                        if (shouldAddFace(adjacentBlockPos, chunk, leftNeighborChunk,
+                        if (shouldAddFace(adjacentBlockPos, std::move(chunk), leftNeighborChunk,
                                           rightNeighborChunk, frontNeighborChunk,
                                           backNeighborChunk)) {
                             // calculate ambient occlusion level for each vertex of this face
-                            addFace(blockPosInChunk, block, face, chunk, chunkManager);
+                            addFace(blockPosInChunk, block, face, std::move(chunk), chunkManager);
                         }
                     }
                 }
@@ -235,14 +233,15 @@ void ChunkMesh::construct(ChunkManager &chunkManager, Chunk &chunk, Chunk &leftN
     }
 }
 
-void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace face, Chunk &chunk,
+void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace face,
+                        const Ref<Chunk> &chunk,
                         ChunkManager &chunkManager) {
     BlockData &blockData = BlockDB::getBlockData(block.id);
     int textureX = 0;
     int textureY = 0;
     std::array<int, 20> faceVertices{};
 
-    OcclusionLevels occlusionLevels = getOcclusionLevels(blockPosInChunk, face, chunk,
+    OcclusionLevels occlusionLevels = getOcclusionLevels(blockPosInChunk, face, std::move(chunk),
                                                          chunkManager);
 
     switch (face) {
@@ -343,7 +342,7 @@ void ChunkMesh::clearBuffers() {
 }
 
 OcclusionLevels
-ChunkMesh::getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk &chunk,
+ChunkMesh::getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, const Ref<Chunk> &chunk,
                               ChunkManager &chunkManager) {
 
     // source: https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
@@ -358,20 +357,20 @@ ChunkMesh::getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk
         // side 1
         glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
 
-        Block::ID side1BlockId = chunk.getBlock(side1Pos, chunkManager).id;
+        Block::ID side1BlockId = chunk->getBlock(side1Pos, chunkManager).id;
         if (side1BlockId != Block::AIR && side1BlockId != Block::UNDEFINED) {
             side1IsSolid = true;
         }
         // side 2
         glm::ivec3 side2Pos = blockPosInChunk + faceLightingAdjacency[1];
 
-        Block::ID side2BlockId = chunk.getBlock(side2Pos, chunkManager).id;
+        Block::ID side2BlockId = chunk->getBlock(side2Pos, chunkManager).id;
         if (side2BlockId != Block::AIR && side2BlockId != Block::UNDEFINED) {
             side2IsSolid = true;
         }
         // corner
         glm::ivec3 cornerPos = blockPosInChunk + faceLightingAdjacency[2];
-        Block::ID cornerBlockId = chunk.getBlock(cornerPos, chunkManager).id;
+        Block::ID cornerBlockId = chunk->getBlock(cornerPos, chunkManager).id;
         if (cornerBlockId != Block::AIR && cornerBlockId != Block::UNDEFINED) {
             cornerIsSolid = true;
         }

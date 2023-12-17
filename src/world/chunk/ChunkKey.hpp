@@ -5,7 +5,7 @@
 #ifndef VOXEL_ENGINE_CHUNKKEY_HPP
 #define VOXEL_ENGINE_CHUNKKEY_HPP
 
-#include <functional>
+#include "../../EngineConfig.hpp"
 
 struct ChunkKey {
     int x;

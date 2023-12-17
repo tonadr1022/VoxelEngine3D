@@ -5,9 +5,7 @@
 #ifndef VOXEL_ENGINE_IMAGE_HPP
 #define VOXEL_ENGINE_IMAGE_HPP
 
-#include <vector>
-#include <glm/glm.hpp>
-#include "glad/glad.h"
+#include "../EngineConfig.hpp"
 
 struct Image {
     GLsizei width, height;

@@ -5,10 +5,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "ResourceManager.hpp"
-#include <glad/glad.h>
 #include "../vendor/stb_image/stb_image.h"
 #include "Image.hpp"
-#include <iostream>
 
 std::unordered_map<std::string, unsigned int> ResourceManager::textures;
 

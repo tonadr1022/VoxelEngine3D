@@ -5,10 +5,9 @@
 #include "TerrainGenerator.hpp"
 #include "../chunk/Chunk.hpp"
 #include "../chunk/ChunkManager.hpp"
-#include <glm/gtc/noise.hpp>
 
-void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
-    glm::ivec2 chunkLocation = chunk.getLocation();
+void TerrainGenerator::generateTerrainFor(const Ref<Chunk> &chunk) {
+    glm::ivec2 chunkLocation = chunk->getLocation();
 
     for (int xPosInChunk = 0; xPosInChunk < CHUNK_WIDTH; xPosInChunk++) {
         for (int yPosInChunk = 0; yPosInChunk < CHUNK_WIDTH; yPosInChunk++) {
@@ -29,24 +28,23 @@ void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
 
             for (int zPosInChunk = 0; zPosInChunk < CHUNK_HEIGHT; zPosInChunk++) {
                 if (zPosInChunk < height) {
-                    chunk.setBlock(xPosInChunk, yPosInChunk, zPosInChunk, Block(Block::DIRT));
+                    chunk->setBlock(xPosInChunk, yPosInChunk, zPosInChunk, Block(Block::DIRT));
                 } else if (zPosInChunk == height) {
-                    chunk.setBlock(xPosInChunk, yPosInChunk, zPosInChunk, Block(Block::GRASS));
+                    chunk->setBlock(xPosInChunk, yPosInChunk, zPosInChunk, Block(Block::GRASS));
                 } else {
-                    chunk.setBlock(xPosInChunk, yPosInChunk, zPosInChunk, Block(Block::AIR));
+                    chunk->setBlock(xPosInChunk, yPosInChunk, zPosInChunk, Block(Block::AIR));
                 }
             }
         }
     }
-
-    chunk.chunkState = ChunkState::TERRAIN_GENERATED;
+    chunk->chunkState = ChunkState::TERRAIN_GENERATED;
 }
 
-void TerrainGenerator::generateStructuresFor(ChunkManager &chunkManager, Chunk &chunk) {
-    glm::vec2 chunkLocation = chunk.getLocation();
-    int height = chunk.getMaxBlockHeightAt(15, 15);
+void TerrainGenerator::generateStructuresFor(ChunkManager &chunkManager, const Ref<Chunk>& chunk) {
+    glm::vec2 chunkLocation = chunk->getLocation();
+    int height = chunk->getMaxBlockHeightAt(15, 15);
     for (int i = 0; i < 10; i++) {
-        chunk.setBlock(15, 15, height + i, Block(Block::OAK_WOOD));
+        chunk->setBlock(15, 15, height + i, Block(Block::OAK_WOOD));
 //chunkManager.setBlock({chunkLocation.x + 15, chunkLocation.y + 14, height + i}, Block(Block::OAK_WOOD));
     }
     // leaves
@@ -66,7 +64,7 @@ void TerrainGenerator::generateStructuresFor(ChunkManager &chunkManager, Chunk &
     }
 //    chunkManager.setBlock({chunkLocation.x + 16, chunkLocation.y + 15, height + 10},
 //                          Block(Block::OAK_LEAVES));
-    chunk.chunkState = ChunkState::FULLY_GENERATED;
+    chunk->chunkState = ChunkState::FULLY_GENERATED;
 }
 
 TerrainGenerator::TerrainGenerator() = default;

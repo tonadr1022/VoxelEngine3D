@@ -4,11 +4,10 @@
 
 #include "ChunkManager.hpp"
 #include "../../utils/Utils.hpp"
-#include <iostream>
 
 ChunkManager::ChunkManager() = default;
 
-Chunk &ChunkManager::getChunk(ChunkKey chunkKey) {
+const Ref<Chunk> &ChunkManager::getChunk(ChunkKey chunkKey) {
     auto it = chunkMap.find(chunkKey);
     if (it == chunkMap.end()) {
         throw std::runtime_error(
@@ -29,18 +28,18 @@ ChunkMap &ChunkManager::getChunkMap() {
 
 Block ChunkManager::getBlock(glm::ivec3 position) {
     auto chunkKey = getChunkKeyByWorldLocation(position.x, position.y);
-    Chunk &chunk = getChunk(chunkKey);
-    return chunk.getBlock(Utils::positiveModulo(position.x, CHUNK_WIDTH),
-                          Utils::positiveModulo(position.y, CHUNK_WIDTH), position.z);
+    const Ref<Chunk> &chunk = getChunk(chunkKey);
+    return chunk->getBlock(Utils::positiveModulo(position.x, CHUNK_WIDTH),
+                           Utils::positiveModulo(position.y, CHUNK_WIDTH), position.z);
 }
 
 void ChunkManager::setBlock(glm::ivec3 position, Block block) {
     auto chunkKey = ChunkManager::getChunkKeyByWorldLocation(position.x, position.y);
-    Chunk &chunk = getChunk(chunkKey);
+    const Ref<Chunk> &chunk = getChunk(chunkKey);
     int chunkX = Utils::positiveModulo(position.x, CHUNK_WIDTH);
     int chunkY = Utils::positiveModulo(position.y, CHUNK_WIDTH);
 
-    chunk.setBlock(chunkX, chunkY, position.z, block);
+    chunk->setBlock(chunkX, chunkY, position.z, block);
     handleChunkUpdates(chunk, chunkKey, chunkX, chunkY);
 }
 
@@ -50,7 +49,7 @@ ChunkKey ChunkManager::getChunkKeyByWorldLocation(int x, int y) {
 }
 
 ChunkKey
-ChunkManager::calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey &chunkKey) {
+ChunkManager::calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey chunkKey) {
     switch (direction) {
         case HorizontalDirection::LEFT:
             return ChunkKey{chunkKey.x, chunkKey.y - 1};
@@ -69,7 +68,7 @@ void ChunkManager::buildChunkMesh(ChunkKey chunkKey) {
                 "Chunk not found at: " + std::to_string(chunkKey.x) + ", " +
                 std::to_string(chunkKey.y) + "\n");
     }
-    Chunk &chunk = getChunk(chunkKey);
+    const Ref<Chunk> &chunk = getChunk(chunkKey);
 
     ChunkKey leftNeighborChunkKey = calculateNeighborChunkKey(
             HorizontalDirection::LEFT, chunkKey);
@@ -86,20 +85,19 @@ void ChunkManager::buildChunkMesh(ChunkKey chunkKey) {
         !chunkExists(backNeighborChunkKey)) {
         return;
     }
-    Chunk leftNeighborChunk = getChunk(leftNeighborChunkKey);
-    Chunk rightNeighborChunk = getChunk(rightNeighborChunkKey);
-    Chunk frontNeighborChunk = getChunk(frontNeighborChunkKey);
-    Chunk backNeighborChunk = getChunk(backNeighborChunkKey);
-    chunk.buildMesh(*this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
-                    backNeighborChunk);
+    const Ref<Chunk> &leftNeighborChunk = getChunk(leftNeighborChunkKey);
+    const Ref<Chunk> &rightNeighborChunk = getChunk(rightNeighborChunkKey);
+    const Ref<Chunk> &frontNeighborChunk = getChunk(frontNeighborChunkKey);
+    const Ref<Chunk> &backNeighborChunk = getChunk(backNeighborChunkKey);
+    chunk->buildMesh(*this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
+                     backNeighborChunk);
 }
 
 void ChunkManager::updateChunkMesh(ChunkKey chunkKey) {
-    Chunk &chunk = getChunk(chunkKey);
-    chunk.unload();
+    const Ref<Chunk> &chunk = getChunk(chunkKey);
+    chunk->unload();
     buildChunkMesh(chunkKey);
 }
-
 
 
 bool ChunkManager::hasAllNeighbors(ChunkKey chunkKey) {
@@ -113,8 +111,11 @@ bool ChunkManager::hasAllNeighbors(ChunkKey chunkKey) {
 bool ChunkManager::hasAllNeighborsFullyGenerated(ChunkKey chunkKey) {
     return std::all_of(NEIGHBOR_CHUNK_KEY_OFFSETS.begin(), NEIGHBOR_CHUNK_KEY_OFFSETS.end(),
                        [&](glm::ivec2 offset) {
-                           auto neighborChunkKey = ChunkKey{chunkKey.x + offset.x, chunkKey.y + offset.y};
-                           return chunkExists(neighborChunkKey) && getChunk(neighborChunkKey).chunkState == ChunkState::FULLY_GENERATED;
+                           auto neighborChunkKey = ChunkKey{chunkKey.x + offset.x,
+                                                            chunkKey.y + offset.y};
+                           return chunkExists(neighborChunkKey) &&
+                                  getChunk(neighborChunkKey)->chunkState ==
+                                  ChunkState::FULLY_GENERATED;
                        });
 }
 
@@ -123,22 +124,26 @@ void ChunkManager::addChunkToRemesh(ChunkKey chunkKey) {
     m_chunksToRemesh.insert(chunkKey);
 }
 
-void ChunkManager::handleChunkUpdates(Chunk &chunk, ChunkKey chunkKey, int chunkX, int chunkY) {
+void ChunkManager::handleChunkUpdates(const Ref<Chunk> &chunk, ChunkKey chunkKey, int chunkX,
+                                      int chunkY) {
     // don't use lambda since we already have a reference to the chunk
-    if (chunk.chunkMeshState == ChunkMeshState::BUILT) {
-        std::cout << "adding chunk to remesh (itself): "  << chunkKey.x << ", " << chunkKey.y << std::endl;
+    if (chunk->chunkMeshState == ChunkMeshState::BUILT) {
+        std::cout << "adding chunk to remesh (itself): " << chunkKey.x << ", " << chunkKey.y
+                  << std::endl;
         addChunkToRemesh(chunkKey);
-        chunk.markDirty();
+        chunk->markDirty();
     }
 
     // lambda to handle neighbor chunk updates
     auto handleNeighborChunk = [&](int offsetX, int offsetY) {
         auto neighborChunkKey = ChunkKey{chunkKey.x + offsetX, chunkKey.y + offsetY};
-        Chunk &neighborChunk = getChunk(neighborChunkKey);
-        if (neighborChunk.chunkMeshState == ChunkMeshState::BUILT) {
-            std::cout << "adding chunk to remesh: " << neighborChunkKey.x << ", " << neighborChunkKey.y << ". offset: " << offsetX << ", " << offsetY << ". original: " << chunkKey.x << ", " << chunkKey.y << std::endl;
+        const Ref<Chunk> &neighborChunk = getChunk(neighborChunkKey);
+        if (neighborChunk->chunkMeshState == ChunkMeshState::BUILT) {
+            std::cout << "adding chunk to remesh: " << neighborChunkKey.x << ", "
+                      << neighborChunkKey.y << ". offset: " << offsetX << ", " << offsetY
+                      << ". original: " << chunkKey.x << ", " << chunkKey.y << std::endl;
             addChunkToRemesh(neighborChunkKey);
-            neighborChunk.markDirty();
+            neighborChunk->markDirty();
         }
     };
 

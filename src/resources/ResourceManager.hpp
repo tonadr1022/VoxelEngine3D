@@ -5,8 +5,9 @@
 #ifndef VOXEL_ENGINE_RESOURCEMANAGER_HPP
 #define VOXEL_ENGINE_RESOURCEMANAGER_HPP
 
-#include <string>
+
 #include "Image.hpp"
+#include "../EngineConfig.hpp"
 
 class ResourceManager {
 public:

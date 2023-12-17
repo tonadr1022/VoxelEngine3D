@@ -8,10 +8,10 @@
 
 #include "Chunk.hpp"
 #include "ChunkKey.hpp"
-#include <unordered_map>
-#include <unordered_set>
+#include "../../EngineConfig.hpp"
 
-using ChunkMap = std::unordered_map<ChunkKey, Chunk>;
+
+using ChunkMap = std::unordered_map<ChunkKey, std::shared_ptr<Chunk>>;
 
 class ChunkManager {
 public:
@@ -21,7 +21,7 @@ public:
 
     void buildChunkMesh(ChunkKey chunkKey);
 
-    Chunk &getChunk(ChunkKey chunkKey);
+    const Ref<Chunk> &getChunk(ChunkKey chunkKey);
 
     Block getBlock(glm::ivec3 position);
 
@@ -33,7 +33,7 @@ public:
 
     static ChunkKey getChunkKeyByWorldLocation(int x, int y);
 
-    static ChunkKey calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey &chunkKey);
+    static ChunkKey calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey chunkKey);
 
     bool hasAllNeighbors(ChunkKey chunkKey);
 
@@ -50,7 +50,7 @@ public:
             glm::ivec2{1, 1}
     };
 
-    void handleChunkUpdates(Chunk &chunk, ChunkKey chunkKey, int chunkX, int chunkY);
+    void handleChunkUpdates(const Ref<Chunk> &chunk, ChunkKey chunkKey, int chunkX, int chunkY);
 
     void remeshChunksToRemesh();
 
@@ -60,10 +60,6 @@ private:
 
     ChunkMap chunkMap;
     std::unordered_set<ChunkKey> m_chunksToRemesh;
-
-
-
-
 
 
 };

@@ -9,6 +9,7 @@
 #include "camera/Camera.hpp"
 #include "player/Player.hpp"
 #include "input/Keyboard.hpp"
+#include "EngineConfig.hpp"
 
 class Application {
 public:

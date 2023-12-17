@@ -6,9 +6,7 @@
 #define VOXEL_ENGINE_CHUNKMESH_HPP
 
 #include "../block/Block.hpp"
-#include <vector>
-#include <glm/glm.hpp>
-#include <array>
+#include "../../EngineConfig.hpp"
 
 class Chunk;
 
@@ -30,10 +28,11 @@ class ChunkMesh {
 public:
     ChunkMesh();
 
-    void construct(ChunkManager &chunkManager, Chunk &chunk, Chunk &leftNeighborChunk,
-                   Chunk &rightNeighborChunk,
-                   Chunk &frontNeighborChunk,
-                   Chunk &backNeighborChunk);
+    void construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk,
+                   const Ref<Chunk> &leftNeighborChunk,
+                   const Ref<Chunk> &rightNeighborChunk,
+                   const Ref<Chunk> &frontNeighborChunk,
+                   const Ref<Chunk> &backNeighborChunk);
 
     void clearData();
 
@@ -46,15 +45,17 @@ public:
 
 
 private:
-    void addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace face, Chunk &chunk,
+    void addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace face, const Ref<Chunk> &chunk,
                  ChunkManager &chunkManager);
 
-    static bool shouldAddFace(glm::ivec3 &blockPosInChunk, Chunk &chunk, Chunk &leftNeighborChunk,
-                              Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
-                              Chunk &backNeighborChunk);
+    static bool shouldAddFace(glm::ivec3 &blockPosInChunk, const Ref<Chunk> &chunk,
+                              const Ref<Chunk> &leftNeighborChunk,
+                              const Ref<Chunk> &rightNeighborChunk,
+                              const Ref<Chunk> &frontNeighborChunk,
+                              const Ref<Chunk> &backNeighborChunk);
 
     static OcclusionLevels
-    getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, Chunk &chunk,
+    getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, const Ref<Chunk> &chunk,
                        ChunkManager &chunkManager);
 
     constexpr static OcclusionLevels NO_OCCLUSION = {3, 3, 3, 3};

@@ -86,6 +86,7 @@ set(SOURCE_FILES
         src/Config.hpp
         src/resources/Image.cpp
         src/resources/Image.hpp
+        src/EngineConfig.hpp
 )
 
 include_directories("dependencies")

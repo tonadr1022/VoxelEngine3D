@@ -7,9 +7,8 @@
 
 
 #include "../block/Block.hpp"
-#include <glm/glm.hpp>
 #include "../../AppConstants.hpp"
-#include <array>
+#include "../../EngineConfig.hpp"
 
 
 class Chunk;

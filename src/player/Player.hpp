@@ -8,8 +8,7 @@
 #include "../camera/Camera.hpp"
 #include "../world/chunk/ChunkKey.hpp"
 #include "Inventory.hpp"
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
+#include "../EngineConfig.hpp"
 
 class Player {
 public:

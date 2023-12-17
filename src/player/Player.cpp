@@ -5,7 +5,6 @@
 #include "Player.hpp"
 #include "../input/Keyboard.hpp"
 #include "../AppConstants.hpp"
-#include <imgui/imgui.h>
 
 Player::Player() = default;
 

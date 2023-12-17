@@ -5,10 +5,6 @@
 #include "DebugGui.hpp"
 #include "../world/block/BlockDB.hpp"
 #include "../Config.hpp"
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_glfw.h>
-#include <imgui/imgui_impl_opengl3.h>
-#include <utility>
 
 DebugGui::DebugGui(GLFWwindow *window, const char *glsl_version, std::shared_ptr<World> world)
         : window(window), world(std::move(world)) {

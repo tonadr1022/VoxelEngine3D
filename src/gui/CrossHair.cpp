@@ -4,7 +4,6 @@
 
 #include "CrossHair.hpp"
 #include "../shaders/ShaderManager.hpp"
-#include <glm/gtc/matrix_transform.hpp>
 
 CrossHair::CrossHair() : VAO(0), VBO(0) {
     glGenVertexArrays(1, &VAO);

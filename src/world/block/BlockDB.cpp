@@ -4,8 +4,6 @@
 
 #include "BlockDB.hpp"
 #include "json/json.hpp"
-#include <fstream>
-#include <filesystem>
 
 std::unordered_map<Block::ID, BlockData> BlockDB::data;
 

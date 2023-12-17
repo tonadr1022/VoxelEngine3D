@@ -6,9 +6,7 @@
 #define VOXEL_ENGINE_CAMERA_HPP
 
 #include "../physics/Ray.hpp"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <GLFW/glfw3.h>
+#include "../EngineConfig.hpp"
 
 class Camera {
 public:

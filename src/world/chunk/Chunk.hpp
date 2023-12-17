@@ -8,6 +8,7 @@
 #include "ChunkMesh.hpp"
 #include "../chunklet/Chunklet.hpp"
 #include "ChunkKey.hpp"
+#include "../../EngineConfig.hpp"
 
 
 enum class ChunkMeshState {
@@ -35,8 +36,9 @@ public:
 
     explicit Chunk(glm::vec2 location);
 
-    void buildMesh(ChunkManager& chunkManager, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk, Chunk &frontNeighborChunk,
-                   Chunk &backNeighborChunk);
+    void buildMesh(ChunkManager &chunkManager, const Ref<Chunk> &leftNeighborChunk,
+                   const Ref<Chunk> &rightNeighborChunk, const Ref<Chunk> &frontNeighborChunk,
+                   const Ref<Chunk> &backNeighborChunk);
 
     void unload();
 
@@ -44,7 +46,7 @@ public:
 
     Block getBlock(int x, int y, int z);
 
-    Block getBlock(glm::ivec3& position, ChunkManager &chunkManager);
+    Block getBlock(glm::ivec3 &position, ChunkManager &chunkManager);
 
     bool hasNonAirBlockAt(int x, int y, int z);
 
@@ -67,6 +69,7 @@ public:
     std::array<int, CHUNK_HEIGHT> numSolidBlocksInLayers{};
 
     ChunkKey getChunkKey();
+
 private:
     std::array<int, CHUNK_AREA> maxBlockHeights{};
     ChunkMesh mesh;

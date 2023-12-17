@@ -4,7 +4,6 @@
 
 #include "Chunk.hpp"
 #include "ChunkManager.hpp"
-#include <iostream>
 
 Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshState::UNBUILT),
                                    chunkState(ChunkState::UNGENERATED), m_chunkKey(
@@ -18,10 +17,13 @@ Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshS
 }
 
 void
-Chunk::buildMesh(ChunkManager &chunkManager, Chunk &leftNeighborChunk, Chunk &rightNeighborChunk,
-                 Chunk &frontNeighborChunk,
-                 Chunk &backNeighborChunk) {
-    mesh.construct(chunkManager, *this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
+Chunk::buildMesh(ChunkManager &chunkManager, const Ref<Chunk> &leftNeighborChunk,
+                 const Ref<Chunk> &rightNeighborChunk,
+                 const Ref<Chunk> &frontNeighborChunk,
+                 const Ref<Chunk> &backNeighborChunk) {
+    std::shared_ptr<Chunk> sharedThis = std::make_shared<Chunk>(*this);
+    mesh.construct(chunkManager, std::move(sharedThis), leftNeighborChunk, rightNeighborChunk,
+                   frontNeighborChunk,
                    backNeighborChunk);
     chunkMeshState = ChunkMeshState::BUILT;
 }

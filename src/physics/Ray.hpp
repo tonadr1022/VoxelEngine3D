@@ -5,7 +5,7 @@
 #ifndef VOXEL_ENGINE_RAY_HPP
 #define VOXEL_ENGINE_RAY_HPP
 
-#include <glm/glm.hpp>
+#include "../EngineConfig.hpp"
 
 struct Ray {
     glm::vec3 origin;

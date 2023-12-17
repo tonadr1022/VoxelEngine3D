@@ -7,7 +7,7 @@
 
 #include "../world/block/Block.hpp"
 #include "ItemStack.hpp"
-#include <array>
+#include "../EngineConfig.hpp"
 
 
 class Inventory {
