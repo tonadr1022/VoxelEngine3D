@@ -27,6 +27,7 @@ using OcclusionLevels = std::array<uint8_t, 4>;
 class ChunkMesh {
 public:
     ChunkMesh();
+    ~ChunkMesh() = default;
 
     void construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk,
                    const Ref<Chunk> &leftNeighborChunk,

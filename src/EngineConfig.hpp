@@ -31,6 +31,9 @@
 #include <bitset>
 #include <filesystem>
 #include <functional>
+#include <mutex>
+#include <atomic>
+#include <future>
 
 
 template<typename T>

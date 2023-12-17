@@ -21,8 +21,8 @@ Chunk::buildMesh(ChunkManager &chunkManager, const Ref<Chunk> &leftNeighborChunk
                  const Ref<Chunk> &rightNeighborChunk,
                  const Ref<Chunk> &frontNeighborChunk,
                  const Ref<Chunk> &backNeighborChunk) {
-    std::shared_ptr<Chunk> sharedThis = std::make_shared<Chunk>(*this);
-    mesh.construct(chunkManager, std::move(sharedThis), leftNeighborChunk, rightNeighborChunk,
+    const Ref<Chunk>& sharedThis = std::make_shared<Chunk>(*this);
+    mesh.construct(chunkManager, sharedThis, leftNeighborChunk, rightNeighborChunk,
                    frontNeighborChunk,
                    backNeighborChunk);
     chunkMeshState = ChunkMeshState::BUILT;

@@ -17,6 +17,7 @@ World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(
     std::cout << "Chunk generation took: " << duration.count() << "milliseconds"
               << std::endl;
 
+
     for (int i = 0; i < 1; i++) {
         m_chunkLoadThreads.emplace_back([&]() {
             while (m_isRunning) {
@@ -64,55 +65,9 @@ void World::loadChunks() {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     ChunkMap &chunkMap = chunkManager.getChunkMap();
 
-//// First pass
-//    for (int i = 1; i <= firstPassLoadDistance; i++) {
-//        int minX = playerChunkKeyPos.x - i;
-//        int maxX = playerChunkKeyPos.x + i;
-//        int minY = playerChunkKeyPos.y - i;
-//        int maxY = playerChunkKeyPos.y + i;
-//
-//        for (int chunkX = minX; chunkX <= maxX; chunkX++) {
-//            for (int chunkY = minY; chunkY <= maxY; chunkY++) {
-//                ChunkKey chunkKey = {chunkX, chunkY};
-//                {
-//                    std::unique_lock<std::mutex> lock(m_mainMutex);
-//                    if (chunkMap.find(chunkKey) == chunkMap.end()) {
-//                        const Ref<Chunk> &chunk = std::make_shared<Chunk>(
-//                                glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
-//                        TerrainGenerator::generateTerrainFor(chunk);
-//                        chunkMap.emplace(chunkKey, chunk);
-//                    }
-//                }
-//                std::this_thread::sleep_for(std::chrono::microseconds(1));
-//            }
-//        }
-//    }
-//
-//    // Second pass for structure generation
-//    for (int i = 1; i <= secondPassLoadDistance; i++) {
-//        int minX = playerChunkKeyPos.x - i;
-//        int maxX = playerChunkKeyPos.x + i;
-//        int minY = playerChunkKeyPos.y - i;
-//        int maxY = playerChunkKeyPos.y + i;
-//
-//        for (int chunkX = minX; chunkX <= maxX; chunkX++) {
-//            for (int chunkY = minY; chunkY <= maxY; chunkY++) {
-//                ChunkKey chunkKey = {chunkX, chunkY};
-//                {
-//                    std::unique_lock<std::mutex> lock(m_mainMutex);
-//                    if (chunkMap.find(chunkKey) != chunkMap.end()) {
-//                        const Ref<Chunk> &chunk = chunkMap.at(chunkKey);
-//                        if (chunk->chunkState == ChunkState::TERRAIN_GENERATED &&
-//                            chunkManager.hasAllNeighbors(chunkKey)) {
-//                            TerrainGenerator::generateStructuresFor(chunkManager, chunk);
-//                        }
-//                    }
-//                }
-//                std::this_thread::sleep_for(std::chrono::microseconds(1));
-//            }
-//        }
-//    }
-    // First pass
+// Container for std::async tasks
+    std::vector<std::future<void>> futures;
+
     for (int i = 1; i <= firstPassLoadDistance; i++) {
         int minX = playerChunkKeyPos.x - i;
         int maxX = playerChunkKeyPos.x + i;
@@ -122,19 +77,46 @@ void World::loadChunks() {
         for (int chunkX = minX; chunkX <= maxX; chunkX++) {
             for (int chunkY = minY; chunkY <= maxY; chunkY++) {
                 ChunkKey chunkKey = {chunkX, chunkY};
-                {
-                    std::unique_lock<std::mutex> lock(m_mainMutex);
-                    if (chunkMap.find(chunkKey) == chunkMap.end()) {
-                        const Ref<Chunk> &chunk = std::make_shared<Chunk>(
+                // Use std::async for parallel execution of tasks
+                futures.push_back(std::async(std::launch::async, [this, &chunkMap, chunkKey] {
+//                    std::unique_lock<std::mutex> lock(m_mainMutex);
+                    auto it = chunkMap.find(chunkKey);
+                    if (it == chunkMap.end()) {
+                        // Chunk not found, create and insert it
+                        const Ref<Chunk> chunk = std::make_shared<Chunk>(
                                 glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
                         TerrainGenerator::generateTerrainFor(chunk);
                         chunkMap.emplace(chunkKey, chunk);
-                    } else if (i <= secondPassLoadDistance && chunkMap.at(chunkKey)->chunkState == ChunkState::TERRAIN_GENERATED &&
-                               chunkManager.hasAllNeighbors(chunkKey)) {
-                        TerrainGenerator::generateStructuresFor(chunkManager, chunkMap.at(chunkKey));
                     }
+                }));
+            }
+        }
+    }
+
+    // Wait for all tasks to finish
+    for (auto &future: futures) {
+        future.wait();
+    }
+
+    futures.clear();
+
+    for (int i = 1; i <= secondPassLoadDistance; i++) {
+        int minX = playerChunkKeyPos.x - i;
+        int maxX = playerChunkKeyPos.x + i;
+        int minY = playerChunkKeyPos.y - i;
+        int maxY = playerChunkKeyPos.y + i;
+
+        for (int chunkX = minX; chunkX <= maxX; chunkX++) {
+            for (int chunkY = minY; chunkY <= maxY; chunkY++) {
+                ChunkKey chunkKey = {chunkX, chunkY};
+                // Use std::async for parallel execution of tasks
+//                    std::unique_lock<std::mutex> lock(m_mainMutex);
+                auto it = chunkMap.find(chunkKey);
+                if (it != chunkMap.end() &&
+                    it->second->chunkState == ChunkState::TERRAIN_GENERATED &&
+                    chunkManager.hasAllNeighbors(chunkKey)) {
+                    TerrainGenerator::generateStructuresFor(chunkManager, it->second);
                 }
-                std::this_thread::sleep_for(std::chrono::microseconds(1));
             }
         }
     }
@@ -152,7 +134,7 @@ void World::unloadChunks() {
     ChunkMap &chunkMap = chunkManager.getChunkMap();
     for (auto it = chunkMap.begin(); it != chunkMap.end();) {
         ChunkKey chunkKey = it->first;
-        const Ref<Chunk>& chunk = it->second;
+        const Ref<Chunk> &chunk = it->second;
         if (chunkKey.x < playerChunkKeyPos.x - unloadDistanceChunks ||
             chunkKey.x > playerChunkKeyPos.x + unloadDistanceChunks ||
             chunkKey.y < playerChunkKeyPos.y - unloadDistanceChunks ||
@@ -165,7 +147,6 @@ void World::unloadChunks() {
     }
 }
 
-
 World::~World() {
     m_isRunning = false;
     for (auto &thread: m_chunkLoadThreads) {
@@ -174,6 +155,7 @@ World::~World() {
 }
 
 void World::updateChunkMeshes() {
+    auto start = std::chrono::high_resolution_clock::now();
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     for (int i = 1; i <= m_renderDistance; i++) {
         int minX = playerChunkKeyPos.x - i;
@@ -182,10 +164,9 @@ void World::updateChunkMeshes() {
         int maxY = playerChunkKeyPos.y + i;
         for (int chunkX = minX; chunkX <= maxX; chunkX++) {
             for (int chunkY = minY; chunkY <= maxY; chunkY++) {
-                std::unique_lock<std::mutex> lock(m_mainMutex);
                 ChunkKey chunkKey = {chunkX, chunkY};
                 if (!chunkManager.chunkExists(chunkKey)) continue;
-                const Ref<Chunk>& chunk = chunkManager.getChunk(chunkKey);
+                const Ref<Chunk> &chunk = chunkManager.getChunk(chunkKey);
                 if (chunk->chunkState != ChunkState::FULLY_GENERATED) continue;
                 if (chunk->chunkMeshState == ChunkMeshState::BUILT) continue;
                 if (!chunkManager.hasAllNeighborsFullyGenerated(chunkKey)) continue;
@@ -193,7 +174,9 @@ void World::updateChunkMeshes() {
             }
         }
     }
-    std::this_thread::sleep_for(std::chrono::microseconds(1));
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << "Chunk Meshing took: " << duration.count() << "milliseconds" << std::endl;
 }
 
 bool compareVec3(glm::vec3 a, glm::vec3 b) {
