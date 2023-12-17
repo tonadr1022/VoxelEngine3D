@@ -64,7 +64,55 @@ void World::loadChunks() {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     ChunkMap &chunkMap = chunkManager.getChunkMap();
 
-// First pass
+//// First pass
+//    for (int i = 1; i <= firstPassLoadDistance; i++) {
+//        int minX = playerChunkKeyPos.x - i;
+//        int maxX = playerChunkKeyPos.x + i;
+//        int minY = playerChunkKeyPos.y - i;
+//        int maxY = playerChunkKeyPos.y + i;
+//
+//        for (int chunkX = minX; chunkX <= maxX; chunkX++) {
+//            for (int chunkY = minY; chunkY <= maxY; chunkY++) {
+//                ChunkKey chunkKey = {chunkX, chunkY};
+//                {
+//                    std::unique_lock<std::mutex> lock(m_mainMutex);
+//                    if (chunkMap.find(chunkKey) == chunkMap.end()) {
+//                        const Ref<Chunk> &chunk = std::make_shared<Chunk>(
+//                                glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
+//                        TerrainGenerator::generateTerrainFor(chunk);
+//                        chunkMap.emplace(chunkKey, chunk);
+//                    }
+//                }
+//                std::this_thread::sleep_for(std::chrono::microseconds(1));
+//            }
+//        }
+//    }
+//
+//    // Second pass for structure generation
+//    for (int i = 1; i <= secondPassLoadDistance; i++) {
+//        int minX = playerChunkKeyPos.x - i;
+//        int maxX = playerChunkKeyPos.x + i;
+//        int minY = playerChunkKeyPos.y - i;
+//        int maxY = playerChunkKeyPos.y + i;
+//
+//        for (int chunkX = minX; chunkX <= maxX; chunkX++) {
+//            for (int chunkY = minY; chunkY <= maxY; chunkY++) {
+//                ChunkKey chunkKey = {chunkX, chunkY};
+//                {
+//                    std::unique_lock<std::mutex> lock(m_mainMutex);
+//                    if (chunkMap.find(chunkKey) != chunkMap.end()) {
+//                        const Ref<Chunk> &chunk = chunkMap.at(chunkKey);
+//                        if (chunk->chunkState == ChunkState::TERRAIN_GENERATED &&
+//                            chunkManager.hasAllNeighbors(chunkKey)) {
+//                            TerrainGenerator::generateStructuresFor(chunkManager, chunk);
+//                        }
+//                    }
+//                }
+//                std::this_thread::sleep_for(std::chrono::microseconds(1));
+//            }
+//        }
+//    }
+    // First pass
     for (int i = 1; i <= firstPassLoadDistance; i++) {
         int minX = playerChunkKeyPos.x - i;
         int maxX = playerChunkKeyPos.x + i;
@@ -74,38 +122,21 @@ void World::loadChunks() {
         for (int chunkX = minX; chunkX <= maxX; chunkX++) {
             for (int chunkY = minY; chunkY <= maxY; chunkY++) {
                 ChunkKey chunkKey = {chunkX, chunkY};
-                std::unique_lock<std::mutex> lock(m_mainMutex);
-                if (chunkMap.find(chunkKey) == chunkMap.end()) {
-                    const Ref<Chunk>& chunk = std::make_shared<Chunk>(glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
-                    TerrainGenerator::generateTerrainFor(chunk);
-                    chunkMap.emplace(chunkKey, chunk);
-                }
-            }
-        }
-        std::this_thread::sleep_for(std::chrono::microseconds(1));
-    }
-
-    // Second pass for structure generation
-    for (int i = 1; i <= secondPassLoadDistance; i++) {
-        int minX = playerChunkKeyPos.x - i;
-        int maxX = playerChunkKeyPos.x + i;
-        int minY = playerChunkKeyPos.y - i;
-        int maxY = playerChunkKeyPos.y + i;
-
-        for (int chunkX = minX; chunkX <= maxX; chunkX++) {
-            for (int chunkY = minY; chunkY <= maxY; chunkY++) {
-                ChunkKey chunkKey = {chunkX, chunkY};
-                std::unique_lock<std::mutex> lock(m_mainMutex);
-                if (chunkMap.find(chunkKey) != chunkMap.end()) {
-                    const Ref<Chunk>& chunk = chunkMap.at(chunkKey);
-                    if (chunk->chunkState == ChunkState::TERRAIN_GENERATED &&
-                        chunkManager.hasAllNeighbors(chunkKey)) {
-                        TerrainGenerator::generateStructuresFor(chunkManager, chunk);
+                {
+                    std::unique_lock<std::mutex> lock(m_mainMutex);
+                    if (chunkMap.find(chunkKey) == chunkMap.end()) {
+                        const Ref<Chunk> &chunk = std::make_shared<Chunk>(
+                                glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
+                        TerrainGenerator::generateTerrainFor(chunk);
+                        chunkMap.emplace(chunkKey, chunk);
+                    } else if (i <= secondPassLoadDistance && chunkMap.at(chunkKey)->chunkState == ChunkState::TERRAIN_GENERATED &&
+                               chunkManager.hasAllNeighbors(chunkKey)) {
+                        TerrainGenerator::generateStructuresFor(chunkManager, chunkMap.at(chunkKey));
                     }
                 }
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
             }
         }
-        std::this_thread::sleep_for(std::chrono::microseconds(1));
     }
 
 //    auto end = std::chrono::high_resolution_clock::now();
