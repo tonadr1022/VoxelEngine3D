@@ -3,19 +3,20 @@
 //
 
 #include "World.hpp"
-#include "../resources/ResourceManager.hpp"
 #include "generation/TerrainGenerator.hpp"
+#include "../utils/Timer.hpp"
+#include "../Config.hpp"
+#include "block/BlockDB.hpp"
+#include "../input/Mouse.hpp"
 
-World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(renderer),
-                                                       chunkRenderer(player.camera) {
-    auto start = std::chrono::high_resolution_clock::now();
+World::World(Renderer &renderer) : renderer(renderer),
+                                   chunkRenderer(player.camera) {
+    BlockDB::loadData("../resources/blocks/");
 
-    updateChunks();
-
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "Chunk generation took: " << duration.count() << "milliseconds"
-              << std::endl;
+    {
+        Timer timer("World initialization");
+        updateChunks();
+    }
 
 
     for (int i = 0; i < 1; i++) {
@@ -25,6 +26,13 @@ World::World(GLFWwindow *window, Renderer &renderer) : window(window), renderer(
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
         });
+    }
+}
+
+World::~World() {
+    m_isRunning = false;
+    for (auto &thread: m_chunkLoadThreads) {
+        thread.join();
     }
 }
 
@@ -42,6 +50,8 @@ void World::render() {
         renderer.renderBlockOutline(player.camera, lastRayCastBlockPos);
         renderer.renderBlockBreak(player.camera, lastRayCastBlockPos, player.blockBreakStage);
     }
+    renderer.renderCrossHair();
+    renderDebugGui();
 }
 
 void World::update() {
@@ -57,15 +67,12 @@ void World::updateChunks() {
 }
 
 void World::loadChunks() {
-//    auto start = std::chrono::high_resolution_clock::now();
-
     int firstPassLoadDistance = m_renderDistance + 2;
     int secondPassLoadDistance = firstPassLoadDistance - 1;
 
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     ChunkMap &chunkMap = chunkManager.getChunkMap();
 
-// Container for std::async tasks
     std::vector<std::future<void>> futures;
 
     for (int i = 1; i <= firstPassLoadDistance; i++) {
@@ -73,16 +80,12 @@ void World::loadChunks() {
         int maxX = playerChunkKeyPos.x + i;
         int minY = playerChunkKeyPos.y - i;
         int maxY = playerChunkKeyPos.y + i;
-
         for (int chunkX = minX; chunkX <= maxX; chunkX++) {
             for (int chunkY = minY; chunkY <= maxY; chunkY++) {
-                ChunkKey chunkKey = {chunkX, chunkY};
-                // Use std::async for parallel execution of tasks
-                futures.push_back(std::async(std::launch::async, [this, &chunkMap, chunkKey] {
-//                    std::unique_lock<std::mutex> lock(m_mainMutex);
+                futures.push_back(std::async(std::launch::async, [this, &chunkMap, chunkX, chunkY] {
+                    ChunkKey chunkKey = {chunkX, chunkY};
                     auto it = chunkMap.find(chunkKey);
                     if (it == chunkMap.end()) {
-                        // Chunk not found, create and insert it
                         const Ref<Chunk> chunk = std::make_shared<Chunk>(
                                 glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
                         TerrainGenerator::generateTerrainFor(chunk);
@@ -93,7 +96,6 @@ void World::loadChunks() {
         }
     }
 
-    // Wait for all tasks to finish
     for (auto &future: futures) {
         future.wait();
     }
@@ -109,8 +111,6 @@ void World::loadChunks() {
         for (int chunkX = minX; chunkX <= maxX; chunkX++) {
             for (int chunkY = minY; chunkY <= maxY; chunkY++) {
                 ChunkKey chunkKey = {chunkX, chunkY};
-                // Use std::async for parallel execution of tasks
-//                    std::unique_lock<std::mutex> lock(m_mainMutex);
                 auto it = chunkMap.find(chunkKey);
                 if (it != chunkMap.end() &&
                     it->second->chunkState == ChunkState::TERRAIN_GENERATED &&
@@ -120,11 +120,6 @@ void World::loadChunks() {
             }
         }
     }
-
-//    auto end = std::chrono::high_resolution_clock::now();
-//    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-//    std::cout << "Chunk Loading took: " << duration.count() << "milliseconds"
-//              << std::endl;
 }
 
 void World::unloadChunks() {
@@ -147,15 +142,9 @@ void World::unloadChunks() {
     }
 }
 
-World::~World() {
-    m_isRunning = false;
-    for (auto &thread: m_chunkLoadThreads) {
-        thread.join();
-    }
-}
-
 void World::updateChunkMeshes() {
-    auto start = std::chrono::high_resolution_clock::now();
+//    Timer timer("Update chunk meshes");
+
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     for (int i = 1; i <= m_renderDistance; i++) {
         int minX = playerChunkKeyPos.x - i;
@@ -174,9 +163,6 @@ void World::updateChunkMeshes() {
             }
         }
     }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "Chunk Meshing took: " << duration.count() << "milliseconds" << std::endl;
 }
 
 bool compareVec3(glm::vec3 a, glm::vec3 b) {
@@ -210,7 +196,7 @@ void World::castPlayerAimRay(Ray ray) {
         if (breakStage > 10) breakStage = 10;
 
         // breaking block
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        if (Mouse::isPressed(GLFW_MOUSE_BUTTON_LEFT)) {
             // check if player switched block aimed at. if so, reset time and break stage and return
             if (!compareVec3(lastRayCastBlockPos, prevLastRayCastBlockPos)) {
                 player.blockBreakStage = 0;
@@ -229,7 +215,7 @@ void World::castPlayerAimRay(Ray ray) {
             isFirstAction = false;
         }
             // placing block
-        else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+        else if (Mouse::isPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
             if (!isFirstAction && std::chrono::steady_clock::now() - lastTime <
                                   std::chrono::milliseconds(PLACING_DELAY_MS)) {
                 return;
@@ -258,3 +244,41 @@ int World::getRenderDistance() const {
 void World::setRenderDistance(int renderDistance) {
     m_renderDistance = renderDistance;
 }
+
+void World::initialize(const std::function<void()> &callback) {
+
+    m_isInitializing = true;
+    std::future initializationFuture = std::async(std::launch::async, [this, callback] {
+        Timer timer("World initialization");
+        updateChunks();
+    });
+
+    while (initializationFuture.wait_for(std::chrono::milliseconds(10)) !=
+           std::future_status::ready) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::cout << "Loading" << std::endl;
+    }
+
+    m_isInitializing = false;
+}
+
+void World::renderDebugGui() {
+    ImGuiIO &io = ImGui::GetIO();
+
+    ImGui::Begin("Debug");
+    ImGui::Text("Framerate: %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
+                io.Framerate);
+
+    ImGui::SliderInt("Render Distance", &m_renderDistance, 1, 32);
+
+    bool useAmbientOcclusion = Config::getUseAmbientOcclusion();
+    if (ImGui::Checkbox("Ambient Occlusion", &useAmbientOcclusion)) {
+        Config::setUseAmbientOcclusion(useAmbientOcclusion);
+        chunkRenderer.updateShaderUniforms();
+    }
+
+    player.renderDebugGui();
+
+    ImGui::End();
+}
+

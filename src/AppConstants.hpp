@@ -5,8 +5,8 @@
 #ifndef VOXEL_ENGINE_APPCONSTANTS_HPP
 #define VOXEL_ENGINE_APPCONSTANTS_HPP
 
-constexpr int WINDOW_HEIGHT = 900;
-constexpr int WINDOW_WIDTH = 1200;
+constexpr int DEFAULT_WINDOW_HEIGHT = 900;
+constexpr int DEFAULT_WINDOW_WIDTH = 1200;
 constexpr int CHUNK_WIDTH = 16;
 constexpr int CHUNK_HEIGHT = 256;
 constexpr int CHUNK_AREA = CHUNK_WIDTH * CHUNK_WIDTH;

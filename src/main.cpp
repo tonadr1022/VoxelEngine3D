@@ -1,7 +1,7 @@
-#include "Application.hpp"
+#include "application/Application.hpp"
 
 int main() {
-    Application& app = Application::getInstance();
-    app.run();
+    auto *app = new Application();
+    app->run();
     return 0;
 }

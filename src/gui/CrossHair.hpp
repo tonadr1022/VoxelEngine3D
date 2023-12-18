@@ -11,6 +11,8 @@ class CrossHair {
 public:
     CrossHair();
     unsigned int VAO, VBO;
+
+    void render() const;
 };
 
 

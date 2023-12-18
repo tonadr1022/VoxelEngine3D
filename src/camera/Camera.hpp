@@ -7,15 +7,18 @@
 
 #include "../physics/Ray.hpp"
 #include "../EngineConfig.hpp"
+#include "../AppConstants.hpp"
 
 class Camera {
 public:
 
     explicit Camera();
 
-    void processMouseMovement(GLFWwindow *window, float deltaTime);
+    void onCursorUpdate(double xOffset, double yOffset);
 
     void setPosition(glm::vec3 position);
+
+    void updateProjectionMatrix(float aspectRatio);
 
     inline glm::vec3 &getPosition() { return position; }
 
@@ -33,10 +36,6 @@ public:
 
     void update(float deltaTime);
 
-//    void setFarPlane(float farPlane);
-
-//    [[nodiscard]] float getFarPlane() const;
-
 
 private:
     void updateCameraVectors();
@@ -45,13 +44,8 @@ private:
     float mouseSensitivity = 0.1f;
     float farPlane = 800.0f;
 
-    constexpr static float aspectRatio = 800.0f / 600.0f;
     constexpr static float nearPlane = 0.1f;
     constexpr static glm::vec3 globalUp = glm::vec3(0.0f, 0.0f, 1.0f);
-
-//    float yaw = -90.0f;
-//    float pitch = 0.0f;
-
 
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 eulers = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -62,8 +56,9 @@ private:
 
     glm::mat4 viewMatrix = glm::mat4(1.0f);
     glm::mat4 projectionMatrix = glm::perspective(
-            glm::radians(fov), aspectRatio, nearPlane, farPlane);
-
+            glm::radians(fov),
+            static_cast<float>(DEFAULT_WINDOW_WIDTH) / static_cast<float>(DEFAULT_WINDOW_HEIGHT),
+            nearPlane, farPlane);
 };
 
 

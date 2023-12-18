@@ -5,6 +5,7 @@
 #include "Player.hpp"
 #include "../input/Keyboard.hpp"
 #include "../AppConstants.hpp"
+#include "../world/block/BlockDB.hpp"
 
 Player::Player() = default;
 
@@ -16,45 +17,42 @@ ChunkKey Player::getChunkKeyPos() const {
     return {static_cast<int>(position.x / CHUNK_WIDTH), static_cast<int>(position.y / CHUNK_WIDTH)};
 }
 
-void Player::processKeyInput(GLFWwindow *window, float deltaTime) {
+void Player::processKeyInput(float deltaTime) {
     glm::vec3 &front = camera.getFront();
     glm::vec3 globalUp = Camera::getGlobalUp();
 
     float multiplier = m_movementSpeed * deltaTime;
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (Keyboard::isPressed(GLFW_KEY_W))
         position += front * multiplier;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    if (Keyboard::isPressed(GLFW_KEY_S))
         position -= front * multiplier;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    if (Keyboard::isPressed(GLFW_KEY_A))
         position -= glm::normalize(glm::cross(front, globalUp)) * multiplier;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    if (Keyboard::isPressed(GLFW_KEY_D))
         position += glm::normalize(glm::cross(front, globalUp)) * multiplier;
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+    if (Keyboard::isPressed(GLFW_KEY_R)) {
         position += globalUp * multiplier;
     }
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+    if (Keyboard::isPressed(GLFW_KEY_F)) {
         position -= globalUp * multiplier;
     }
     camera.setPosition(position);
 }
 
 
-void Player::processMouseInput(GLFWwindow *window, float deltaTime) {
+void Player::processMouseInput(float deltaTime) {
     bool ImGuiWantMouse = ImGui::GetIO().WantCaptureMouse;
     if (!Keyboard::isPressed(GLFW_KEY_B)) {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        camera.processMouseMovement(window, deltaTime);
+//        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     } else {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+//        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
-
-
 }
 
-void Player::update(GLFWwindow *window, float deltaTime) {
-    processMouseInput(window, deltaTime);
-    processKeyInput(window, deltaTime);
+void Player::update(float deltaTime) {
+    processMouseInput(deltaTime);
+    processKeyInput(deltaTime);
     camera.update(deltaTime);
 }
 
@@ -66,12 +64,7 @@ void Player::processScrollInput(double yoffset) {
     }
 }
 
-void Player::perFrameUpdate(GLFWwindow *window) {
-    if (Keyboard::isPressed(GLFW_KEY_ESCAPE)) {
-        glfwSetWindowShouldClose(window, true);
-        return;
-    }
-
+void Player::perFrameUpdate() {
     if (Keyboard::isPressedThisFrame(GLFW_KEY_LEFT_BRACKET)) {
         inventory.shiftHotbarSelectedItem(false);
     }
@@ -89,10 +82,17 @@ void Player::perFrameUpdate(GLFWwindow *window) {
     }
 }
 
-float Player::getMovementSpeed() const {
-    return m_movementSpeed;
+void Player::renderDebugGui() {
+    ImGui::Text("Camera Position  %.2f x  %.2f y %.2f z",
+                position.x, position.y, position.z);
+
+    std::string blockName = BlockDB::getBlockData(inventory.getHeldItem()).name;
+    ImGui::Text("Block Type: %s", blockName.c_str());
+    ImGui::Text("Block ID: %d", inventory.getHeldItem());
+
+    ImGui::SliderFloat("Movement Speed", &m_movementSpeed, 1.0f, 100.0f);
 }
 
-void Player::setMovementSpeed(float movementSpeed) {
-    Player::m_movementSpeed = movementSpeed;
+void Player::onCursorUpdate(double xOffset, double yOffset) {
+    camera.onCursorUpdate(xOffset, yOffset);
 }

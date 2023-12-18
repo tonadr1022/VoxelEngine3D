@@ -4,9 +4,12 @@
 
 #include "Renderer.hpp"
 #include "../shaders/ShaderManager.hpp"
+#include "../resources/ResourceManager.hpp"
 
 
-Renderer::Renderer(GLFWwindow *window) : window(window) {
+Renderer::Renderer() {
+    compileShaders();
+    loadTextures();
 }
 
 void Renderer::renderBlockOutline(Camera &camera, glm::ivec3 blockPosition) {
@@ -18,13 +21,30 @@ void Renderer::renderBlockBreak(Camera &camera, glm::ivec3 blockPosition, int br
 }
 
 void Renderer::renderCrossHair() const {
-    glDisable(GL_DEPTH_TEST);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    ShaderManager::getShader("crosshair")->use();
-    glBindVertexArray(crossHair.VAO);
-    glDrawArrays(GL_LINES, 0, 4); // 4 vertices for crosshair
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glEnable(GL_DEPTH_TEST);
+    crossHair.render();
+}
+
+void Renderer::compileShaders() {
+    std::shared_ptr<Shader> chunkShader = std::make_shared<Shader>("../shaders/ChunkVert.glsl",
+                                                                   "../shaders/ChunkFrag.glsl");
+    std::shared_ptr<Shader> outlineShader = std::make_shared<Shader>("../shaders/OutlineVert.glsl",
+                                                                     "../shaders/OutlineFrag.glsl",
+                                                                     "../shaders/OutlineGeom.glsl");
+    std::shared_ptr<Shader> blockBreakShader = std::make_shared<Shader>(
+            "../shaders/BlockBreakVert.glsl", "../shaders/BlockBreakFrag.glsl");
+    std::shared_ptr<Shader> crossHairShader = std::make_shared<Shader>(
+            "../shaders/CrossHairVert.glsl", "../shaders/CrossHairFrag.glsl");
+
+    ShaderManager::addShader(chunkShader, "chunk");
+    ShaderManager::addShader(outlineShader, "outline");
+    ShaderManager::addShader(blockBreakShader, "blockBreak");
+    ShaderManager::addShader(crossHairShader, "crosshair");
+}
+
+void Renderer::loadTextures() {
+    ResourceManager::makeTexture2dArray("../resources/textures/default_pack_512.png",
+                                        "texture_atlas",
+                                        true);
 }
 
 

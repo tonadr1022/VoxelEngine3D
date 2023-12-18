@@ -11,8 +11,8 @@ include_directories(src/vendor)
 
 set(SOURCE_FILES
                 src/main.cpp
-                src/Application.cpp
-        src/Application.hpp
+        src/application/Application.cpp
+        src/application/Application.hpp
                 src/glad.c
         src/vendor/imgui/imgui.cpp
         src/vendor/imgui/imgui_demo.cpp
@@ -87,6 +87,16 @@ set(SOURCE_FILES
         src/resources/Image.cpp
         src/resources/Image.hpp
         src/EngineConfig.hpp
+        src/utils/Timer.cpp
+        src/utils/Timer.hpp
+        src/game_state/IGameState.hpp
+        src/game_state/MenuState.cpp
+        src/game_state/MenuState.hpp
+        src/application/Window.cpp
+        src/application/Window.hpp
+        src/input/Mouse.cpp
+        src/input/Mouse.hpp
+        src/input/KeyPress.hpp
 )
 
 include_directories("dependencies")

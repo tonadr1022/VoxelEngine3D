@@ -12,13 +12,9 @@
 #include "../physics/Ray.hpp"
 #include "../EngineConfig.hpp"
 
-
-
-
-
 class World {
 public:
-    World(GLFWwindow *window, Renderer &renderer);
+    explicit World(Renderer &renderer);
 
     ~World();
 
@@ -36,8 +32,11 @@ public:
 
     void setRenderDistance(int renderDistance);
 
+    void initialize(const std::function<void()>& callback);
+
+    void renderDebugGui();
+
 private:
-    GLFWwindow *window;
     glm::ivec3 lastRayCastBlockPos = NULL_VECTOR;
     glm::ivec3 prevLastRayCastBlockPos = NULL_VECTOR;
 
@@ -54,6 +53,7 @@ private:
 
     std::mutex m_mainMutex;
     std::atomic<bool> m_isRunning{true};
+    bool m_isInitializing = false;
 
     std::vector<std::thread> m_chunkLoadThreads;
     std::vector<std::thread> m_chunkMeshThreads;

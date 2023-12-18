@@ -12,7 +12,7 @@
 
 class Renderer {
 public:
-    explicit Renderer(GLFWwindow *window);
+    explicit Renderer();
 
     void renderCrossHair() const;
     void renderBlockOutline(Camera &camera, glm::ivec3 blockPosition);
@@ -21,9 +21,10 @@ public:
 private:
     BlockOutlineRenderer m_blockOutlineRenderer;
     BlockBreakRenderer m_blockBreakRenderer;
-
-    GLFWwindow *window;
     CrossHair crossHair;
+
+    void compileShaders();
+    void loadTextures();
 
 
 

@@ -18,9 +18,9 @@ public:
 
     [[nodiscard]] ChunkKey getChunkKeyPos() const;
 
-    void update(GLFWwindow *window, float deltaTime);
+    void update(float deltaTime);
 
-    void perFrameUpdate(GLFWwindow *window);
+    void perFrameUpdate();
 
     int blockBreakStage = 0;
 
@@ -30,16 +30,16 @@ public:
 
     Camera camera;
 
-    [[nodiscard]] float getMovementSpeed() const;
+    void renderDebugGui();
 
-    void setMovementSpeed(float movementSpeed);
+    void onCursorUpdate(double xOffset, double yOffset);
 
 private:
 
 
-    void processKeyInput(GLFWwindow *window, float deltaTime);
+    void processKeyInput(float deltaTime);
 
-    void processMouseInput(GLFWwindow *window, float deltaTime);
+    void processMouseInput(float deltaTime);
 
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 70.0f);
 

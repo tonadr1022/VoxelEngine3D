@@ -27,11 +27,21 @@ CrossHair::CrossHair() : VAO(0), VBO(0) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+
+}
+
+void CrossHair::render() const {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::scale(model, glm::vec3(0.03f));
     auto crossHairColor = glm::vec3(1.0f);
 
+    glDisable(GL_DEPTH_TEST);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     ShaderManager::getShader("crosshair")->use();
     ShaderManager::getShader("crosshair")->setMat4("u_Model", model);
     ShaderManager::getShader("crosshair")->setVec3("u_Color", crossHairColor);
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_LINES, 0, 4); // 4 vertices for crosshair
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glEnable(GL_DEPTH_TEST);
 }

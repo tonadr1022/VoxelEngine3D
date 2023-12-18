@@ -1,43 +1,43 @@
 //
-// Created by Tony Adriansen on 12/3/23.
+// Created by Tony Adriansen on 12/17/23.
 //
 
-#include "Keyboard.hpp"
+#include "Mouse.hpp"
 
-void Keyboard::press(int key) {
+void Mouse::press(int key) {
     KeyPress& keyPress = keyStates[key];
     keyPress.current = true;
 }
 
-void Keyboard::release(int key) {
+void Mouse::release(int key) {
     KeyPress& keyPress = keyStates[key];
     keyPress.current = false;
 }
 
-bool Keyboard::isPressed(int key) {
+bool Mouse::isPressed(int key) {
     return keyStates[key].current;
 }
 
-bool Keyboard::isPressedThisFrame(int key) {
+bool Mouse::isPressedThisFrame(int key) {
     return keyStates[key].current && !keyStates[key].previous;
 
 }
 
-bool Keyboard::isHeld(int key) {
+bool Mouse::isHeld(int key) {
     KeyPress& keyPress = keyStates[key];
     return keyPress.current && keyPress.previous;
 }
 
-void Keyboard::setWindow(GLFWwindow *pWindow) {
+void Mouse::setWindow(GLFWwindow *pWindow) {
     window = pWindow;
 }
 
-void Keyboard::update() {
+void Mouse::update() {
     for (auto& [key, keyPress] : keyStates) {
         keyPress.previous = keyPress.current;
     }
 }
 
-std::unordered_map<int, KeyPress> Keyboard::keyStates = std::unordered_map<int, KeyPress>();
+std::unordered_map<int, KeyPress> Mouse::keyStates = std::unordered_map<int, KeyPress>();
 
-GLFWwindow *Keyboard::window = nullptr;
+GLFWwindow *Mouse::window = nullptr;

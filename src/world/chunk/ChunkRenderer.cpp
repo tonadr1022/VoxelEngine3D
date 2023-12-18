@@ -51,7 +51,6 @@ void ChunkRenderer::createGPUResources(const Ref<Chunk> &chunk) {
 
     glVertexAttribPointer(0, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(uint32_t), (void *) nullptr);
     glEnableVertexAttribArray(0);
-
 }
 
 void ChunkRenderer::start() {

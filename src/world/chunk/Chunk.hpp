@@ -28,7 +28,7 @@ class ChunkManager;
 
 class Chunklet;
 
-class Chunk {
+class Chunk : public std::enable_shared_from_this<Chunk> {
 public:
     Chunk() = delete;
 

@@ -5,14 +5,10 @@
 #include "Camera.hpp"
 #include "../AppConstants.hpp"
 
-void Camera::processMouseMovement(GLFWwindow *window, float deltaTime) {
-    double xPos, yPos;
-    glfwGetCursorPos(window, &xPos, &yPos);
-    glfwSetCursorPos(window, WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f);
-
+void Camera::onCursorUpdate(double xOffset, double yOffset) {
     auto dEulers = glm::vec3(0.0f);
-    dEulers.z = static_cast<float>(mouseSensitivity * (WINDOW_WIDTH / 2.0f - xPos));
-    dEulers.y = static_cast<float>(mouseSensitivity * (WINDOW_HEIGHT / 2.0f - yPos));
+    dEulers.z = static_cast<float>(mouseSensitivity * (1- xOffset));
+    dEulers.y = static_cast<float>(mouseSensitivity * (yOffset));
 
     eulers += dEulers;
     eulers.y = glm::clamp(eulers.y, -89.0f, 89.0f);
@@ -43,15 +39,12 @@ void Camera::setPosition(glm::vec3 newPosition) {
     this->position = newPosition;
 }
 
-//void Camera::setFarPlane(float newFarPlane) {
-//    farPlane = newFarPlane;
-//
-//}
-//
-//float Camera::getFarPlane() const {
-//    return farPlane;
-//}
+void Camera::updateProjectionMatrix(float aspectRatio) {
+    projectionMatrix = glm::perspective(glm::radians(fov),
+                                        aspectRatio,
+                                        nearPlane, farPlane);
+}
 
-Camera::Camera()= default;
+Camera::Camera() = default;
 
 

@@ -9,14 +9,17 @@
 
 class DebugGui {
 public:
-    DebugGui(GLFWwindow *window, const char *glsl_version, std::shared_ptr<World> world);
-    void render();
-    void update();
-    void destroy();
+    DebugGui(GLFWwindow *context, const char *glsl_version);
+
+    ~DebugGui();
+
+    void beginFrame();
+
+    void endFrame();
 
 private:
-    GLFWwindow *window;
-    std::shared_ptr<World> world;
+    GLFWwindow *context;
+
 
 };
 

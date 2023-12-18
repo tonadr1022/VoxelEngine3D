@@ -220,11 +220,11 @@ void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk,
                     for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
                         auto face = static_cast<BlockFace>(faceIndex);
                         glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[static_cast<int>(face)];
-                        if (shouldAddFace(adjacentBlockPos, std::move(chunk), leftNeighborChunk,
+                        if (shouldAddFace(adjacentBlockPos, chunk, leftNeighborChunk,
                                           rightNeighborChunk, frontNeighborChunk,
                                           backNeighborChunk)) {
                             // calculate ambient occlusion level for each vertex of this face
-                            addFace(blockPosInChunk, block, face, std::move(chunk), chunkManager);
+                            addFace(blockPosInChunk, block, face, chunk, chunkManager);
                         }
                     }
                 }
@@ -241,7 +241,7 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace fac
     int textureY = 0;
     std::array<int, 20> faceVertices{};
 
-    OcclusionLevels occlusionLevels = getOcclusionLevels(blockPosInChunk, face, std::move(chunk),
+    OcclusionLevels occlusionLevels = getOcclusionLevels(blockPosInChunk, face, chunk,
                                                          chunkManager);
 
     switch (face) {

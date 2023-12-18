@@ -1,14 +1,14 @@
 //
-// Created by Tony Adriansen on 12/3/23.
+// Created by Tony Adriansen on 12/17/23.
 //
 
-#ifndef VOXEL_ENGINE_KEYBOARD_HPP
-#define VOXEL_ENGINE_KEYBOARD_HPP
+#ifndef VOXEL_ENGINE_MOUSE_HPP
+#define VOXEL_ENGINE_MOUSE_HPP
 
 #include "../EngineConfig.hpp"
 #include "KeyPress.hpp"
 
-class Keyboard {
+class Mouse {
 public:
     static void press(int key);
 
@@ -24,11 +24,11 @@ public:
 
     static void update();
 
-
 private:
     static std::unordered_map<int, KeyPress> keyStates;
     static GLFWwindow *window;
+
 };
 
 
-#endif //VOXEL_ENGINE_KEYBOARD_HPP
+#endif //VOXEL_ENGINE_MOUSE_HPP
