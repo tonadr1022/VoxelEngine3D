@@ -40,20 +40,8 @@ void Player::processKeyInput(float deltaTime) {
     camera.setPosition(position);
 }
 
-
-void Player::processMouseInput(float deltaTime) {
-    bool ImGuiWantMouse = ImGui::GetIO().WantCaptureMouse;
-    if (!Keyboard::isPressed(GLFW_KEY_B)) {
-//        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    } else {
-//        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
-}
-
 void Player::update(float deltaTime) {
-    processMouseInput(deltaTime);
     processKeyInput(deltaTime);
-    camera.update(deltaTime);
 }
 
 void Player::processScrollInput(double yoffset) {

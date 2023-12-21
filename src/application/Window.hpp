@@ -62,7 +62,7 @@ private:
     void initializeGlfw(int width, int height, const char *title);
     const char *glsl_version = "#version 330 core";
     GLFWwindow *window = nullptr;
-    glm::vec4 clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
+    glm::vec4 clearColor = {123.0f / 255.0f, 166.0f / 255.0f, 180.0f / 255.0f, 1.0f};
 };
 
 

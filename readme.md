@@ -24,3 +24,5 @@ build_run.bat
 * Right bracket - shift hotbar right 1 item
 * minus - shift hotbar by 10 items left (only 35ish items, inventory is 100)
 * equals - shift hotbar by 10 items right
+
+Block Ray Casting: http://www.cse.yorku.ca/~amana/research/grid.pdf

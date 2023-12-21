@@ -71,6 +71,9 @@ void Application::onScrollEvent(double xoffset, double yoffset) {
 }
 
 void Application::onMouseButtonEvent(int button, int action, int mods) {
+    if (ImGui::GetIO().WantCaptureMouse) {
+        return;
+    }
     if (action == GLFW_PRESS) {
         Mouse::press(button);
     } else if (action == GLFW_RELEASE) {

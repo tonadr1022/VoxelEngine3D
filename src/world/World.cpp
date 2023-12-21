@@ -8,6 +8,9 @@
 #include "../Config.hpp"
 #include "block/BlockDB.hpp"
 #include "../input/Mouse.hpp"
+#include "../input/Keyboard.hpp"
+#include <algorithm>
+
 
 World::World(Renderer &renderer) : renderer(renderer),
                                    chunkRenderer(player.camera) {
@@ -17,7 +20,6 @@ World::World(Renderer &renderer) : renderer(renderer),
         Timer timer("World initialization");
         updateChunks();
     }
-
 
     for (int i = 0; i < 1; i++) {
         m_chunkLoadThreads.emplace_back([&]() {
@@ -36,15 +38,29 @@ World::~World() {
     }
 }
 
+void sortChunksByDistance(std::vector<Ref<Chunk>> &chunks, const glm::vec3 &playerPos) {
+    std::sort(chunks.begin(), chunks.end(), [&playerPos](const Ref<Chunk> &a, const Ref<Chunk> &b) {
+        return (glm::distance(a.get()->location(), playerPos) >
+                glm::distance(b.get()->location(), playerPos));
+    });
+}
+
 void World::render() {
     chunkRenderer.start();
     ChunkMap &chunkMap = chunkManager.getChunkMap();
+    std::vector<Ref<Chunk>> chunksToRender;
     for (auto &chunkEntry: chunkMap) {
         if (chunkEntry.second->chunkMeshState == ChunkMeshState::BUILT) {
-            chunkRenderer.render(chunkEntry.second);
+            chunksToRender.push_back(chunkEntry.second);
+//            chunkRenderer.render(chunkEntry.second);
         }
     }
 
+    sortChunksByDistance(chunksToRender, player.getPosition());
+
+    for (auto &chunk : chunksToRender) {
+        chunkRenderer.render(chunk);
+    }
     // render block break and outline if a block is being aimed at
     if (static_cast<const glm::vec3>(lastRayCastBlockPos) != NULL_VECTOR) {
         renderer.renderBlockOutline(player.camera, lastRayCastBlockPos);

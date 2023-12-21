@@ -18,6 +18,8 @@ public:
     static void generateTerrainFor(const Ref<Chunk> &chunk);
 
     static void generateStructuresFor(ChunkManager &chunkManager, const Ref<Chunk> &chunk);
+
+    static void makeTree(ChunkManager &chunkManager,const Ref<Chunk>& chunk, const glm::vec3 &position);
 };
 
 

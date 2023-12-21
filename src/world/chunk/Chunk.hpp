@@ -56,6 +56,8 @@ public:
 
     glm::vec2 &getLocation();
 
+    inline glm::vec3 location() const { return { m_location.x, m_location.y, 0}; };
+
     ChunkMesh &getMesh();
 
     std::array<Chunklet, NUM_CHUNKLETS> chunklets;
@@ -73,7 +75,7 @@ public:
 private:
     std::array<int, CHUNK_AREA> maxBlockHeights{};
     ChunkMesh mesh;
-    glm::vec2 location;
+    glm::vec2 m_location;
     ChunkKey m_chunkKey;
 };
 

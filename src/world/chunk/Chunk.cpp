@@ -5,7 +5,7 @@
 #include "Chunk.hpp"
 #include "ChunkManager.hpp"
 
-Chunk::Chunk(glm::vec2 location) : location(location), chunkMeshState(ChunkMeshState::UNBUILT),
+Chunk::Chunk(glm::vec2 location) : m_location(location), chunkMeshState(ChunkMeshState::UNBUILT),
                                    chunkState(ChunkState::UNGENERATED), m_chunkKey(
                 ChunkManager::getChunkKeyByWorldLocation(location.x, location.y)) {
     for (int chunkZ = 0; chunkZ < CHUNK_HEIGHT; chunkZ += CHUNKLET_HEIGHT) {
@@ -64,7 +64,7 @@ Block Chunk::getBlock(int x, int y, int z) {
 }
 
 glm::vec2 &Chunk::getLocation() {
-    return location;
+    return m_location;
 }
 
 ChunkMesh &Chunk::getMesh() {
@@ -100,7 +100,7 @@ Block Chunk::getBlock(glm::ivec3 &position, ChunkManager &chunkManager) {
     // if horizontally out of bounds use world
     if (position.x < 0 || position.x >= CHUNK_WIDTH || position.y < 0 ||
         position.y >= CHUNK_WIDTH) {
-        glm::ivec3 worldLocation = glm::ivec3(location, 0) + position;
+        glm::ivec3 worldLocation = glm::ivec3(m_location, 0) + position;
         return chunkManager.getBlock(worldLocation);
     } else {
         return getBlock(position.x, position.y, position.z);

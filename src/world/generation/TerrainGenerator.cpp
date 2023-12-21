@@ -40,31 +40,61 @@ void TerrainGenerator::generateTerrainFor(const Ref<Chunk> &chunk) {
     chunk->chunkState = ChunkState::TERRAIN_GENERATED;
 }
 
-void TerrainGenerator::generateStructuresFor(ChunkManager &chunkManager, const Ref<Chunk>& chunk) {
+void TerrainGenerator::generateStructuresFor(ChunkManager &chunkManager, const Ref<Chunk> &chunk) {
     glm::vec2 chunkLocation = chunk->getLocation();
     int height = chunk->getMaxBlockHeightAt(15, 15);
-    for (int i = 0; i < 10; i++) {
-        chunk->setBlock(15, 15, height + i, Block(Block::OAK_WOOD));
-//chunkManager.setBlock({chunkLocation.x + 15, chunkLocation.y + 14, height + i}, Block(Block::OAK_WOOD));
-    }
-    // leaves
-//    for (int x = 13; x <= 17; x++) {
-//        for (int y = 13; y <= 17; y++) {
-//            for (int z = height + 10; z <= height + 14; z++) {
-//                chunkManager.setBlock({chunkLocation.x + x, chunkLocation.y + y, z}, Block(Block::OAK_LEAVES));
-//            }
-//        }
-//    }
-    for (int x = 14; x <= 17; x++) {
-        for (int y = 14; y <= 17; y++) {
-            for (int z = height + 10; z <= height + 14; z++) {
-                chunkManager.setBlock({chunkLocation.x + x, chunkLocation.y + y, z}, Block(Block::OAK_LEAVES));
+
+    for (int x = 0; x < CHUNK_WIDTH; x++) {
+        for (int y = 0; y < CHUNK_WIDTH; y++) {
+            for (int z = 0; z < CHUNK_HEIGHT; z++) {
+                if (chunk->getBlock(x, y, z).id == Block::GRASS) {
+//                    float noiseVal = glm::simplex(
+//                            glm::vec2(chunkLocation.x + x, chunkLocation.y + y)/ 64.0f);
+//                    noiseVal = (noiseVal + 1.0f) / 2.0f;
+                    float r = ((float) rand() / (RAND_MAX));
+                    if (r > 0.995f) {
+                        makeTree(chunkManager, chunk,
+                                 {x, y, z + 1});
+                    }
+                }
             }
         }
     }
-//    chunkManager.setBlock({chunkLocation.x + 16, chunkLocation.y + 15, height + 10},
-//                          Block(Block::OAK_LEAVES));
+//    for (int i = 0; i < 10; i++) {
+//        chunk->setBlock(15, 15, height + i, Block(Block::OAK_WOOD));
+////chunkManager.setBlock({chunkLocation.x + 15, chunkLocation.y + 14, height + i}, Block(Block::OAK_WOOD));
+//    }
+
+//    for (int x = 14; x <= 17; x++) {
+//        for (int y = 14; y <= 17; y++) {
+//            for (int z = height + 10; z <= height + 14; z++) {
+//                chunkManager.setBlock({chunkLocation.x + x, chunkLocation.y + y, z},
+//                                      Block(Block::OAK_LEAVES));
+//            }
+//        }
+//    }
     chunk->chunkState = ChunkState::FULLY_GENERATED;
+}
+
+void TerrainGenerator::makeTree(ChunkManager &chunkManager, const Ref<Chunk> &chunk,
+                                const glm::vec3 &position) {
+    glm::ivec2 chunkLocation = chunk->getLocation();
+    for (int i = 0; i < 10; i++) {
+        chunkManager.setBlock({chunkLocation.x + position.x, chunkLocation.y + position.y, position.z + i}, Block(Block::OAK_WOOD));
+    }
+
+    // leaves
+    for (int x = -2; x <= 2; x++) {
+        for (int y = -2; y <= 2; y++) {
+            for (int z = 8; z <= 12; z++) {
+                chunkManager.setBlock(
+                        {chunkLocation.x + position.x + x, chunkLocation.y + position.y + y,
+                         position.z + z},
+                        Block(Block::OAK_LEAVES));
+            }
+        }
+    }
+
 }
 
 TerrainGenerator::TerrainGenerator() = default;
