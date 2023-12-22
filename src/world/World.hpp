@@ -34,7 +34,7 @@ public:
 
     void setRenderDistance(int renderDistance);
 
-    void initialize(const std::function<void()>& callback);
+    void initialize(const std::function<void()> &callback);
 
     void renderDebugGui();
 
@@ -53,6 +53,8 @@ private:
 
     std::vector<ChunkKey> m_chunksToUnload;
 
+    std::vector<glm::ivec3> m_chunksToMeshVector;
+
     std::mutex m_mainMutex;
     std::atomic<bool> m_isRunning{true};
     bool m_isInitializing = false;
@@ -68,7 +70,29 @@ private:
 
     TerrainGenerator m_terrainGenerator;
 
-    std::unordered_map<glm::ivec2, std::unique_ptr<ChunkLoadInfo>> m_load_info_map;
+    std::unordered_map<glm::ivec2, std::unique_ptr<ChunkLoadInfo>> m_loadInfoMap;
+
+    inline bool cmpVec2(const glm::ivec2 &l, const glm::ivec2 &r) const {
+        return glm::length(glm::vec2(l) - glm::vec2(m_center.x, m_center.y)) <
+               glm::length(glm::vec2(r) - glm::vec2(m_center.x, m_center.y));
+    }
+
+    inline bool rcmpVec2(const glm::ivec2 &l, const glm::ivec2 &r) const {
+        return glm::length(glm::vec2(l) - glm::vec2(m_center.x, m_center.y)) >
+               glm::length(glm::vec2(r) - glm::vec2(m_center.x, m_center.y));
+    }
+
+    inline bool cmpVec3(const glm::ivec3 &l, const glm::ivec3 &r) {
+        return glm::length(glm::vec3(l) - (glm::vec3) m_center) <
+               glm::length(glm::vec3(r) - (glm::vec3) m_center);
+    }
+
+    inline bool rcmpVec3(const glm::ivec3 &l, const glm::ivec3 &r) {
+        return glm::length(glm::vec3(l) - (glm::vec3) m_center) >
+               glm::length(glm::vec3(r) - (glm::vec3) m_center);
+    }
+
+    glm::ivec3 m_center;
 
 };
 

@@ -16,6 +16,8 @@ public:
 
     [[nodiscard]] inline bool shouldClose() const { return glfwWindowShouldClose(window); };
 
+    inline void close() const { glfwSetWindowShouldClose(window, true); }
+
     [[nodiscard]] inline GLFWwindow* getContext() { return window; }
 
     static void onKeyEvent(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -61,7 +63,7 @@ private:
     void initializeGlad();
     void initializeGlfw(int width, int height, const char *title);
     const char *glsl_version = "#version 330 core";
-    GLFWwindow *window = nullptr;
+    GLFWwindow *window;
     glm::vec4 clearColor = {123.0f / 255.0f, 166.0f / 255.0f, 180.0f / 255.0f, 1.0f};
 };
 

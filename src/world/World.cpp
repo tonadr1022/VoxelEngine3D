@@ -25,17 +25,27 @@ World::World(Renderer &renderer, int seed) : renderer(renderer),
 //    m_load_info_map.at(pos)->process();
 
 
-//    for (int i = 0; i < 1; i++) {
+//    for (int i = 0; i < 3; i++) {
 //        m_chunkLoadThreads.emplace_back([&]() {
 //            while (m_isRunning) {
-//                updateChunks();
+//                loadChunks();
+//                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+//            }
+//        });
+//
+//        m_chunkMeshThreads.emplace_back([&]() {
+//            while (m_isRunning) {
+//                updateChunkMeshes();
 //                std::this_thread::sleep_for(std::chrono::milliseconds(10));
 //            }
 //        });
 //    }
+
+
 }
 
 World::~World() {
+    std::cout << "World destructor\n";
     m_isRunning = false;
     for (auto &thread: m_chunkLoadThreads) {
         thread.join();
@@ -75,8 +85,10 @@ void World::render() {
 }
 
 void World::update() {
-    unloadChunks();
+    ChunkKey playerChunkKey = player.getChunkKeyPos();
+    m_center = glm::ivec3(playerChunkKey.x, playerChunkKey.y, 0);
     updateChunks();
+    unloadChunks();
     castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
     chunkManager.remeshChunksToRemesh();
 }
@@ -103,6 +115,7 @@ void World::loadChunks() {
         for (int chunkX = minX; chunkX <= maxX && !foundChunk; chunkX++) {
             for (int chunkY = minY; chunkY <= maxY && !foundChunk; chunkY++) {
                 ChunkKey chunkKey = {chunkX, chunkY};
+//                std::lock_guard<std::mutex> lock(m_mainMutex);
                 auto it = chunkMap.find(chunkKey);
                 if (it == chunkMap.end()) {
                     const Ref<Chunk> chunk = std::make_shared<Chunk>(
@@ -125,6 +138,7 @@ void World::loadChunks() {
         for (int chunkX = minX; chunkX <= maxX && !foundChunk; chunkX++) {
             for (int chunkY = minY; chunkY <= maxY && !foundChunk; chunkY++) {
                 ChunkKey chunkKey = {chunkX, chunkY};
+//                std::lock_guard<std::mutex> lock(m_mainMutex);
                 auto it = chunkMap.find(chunkKey);
                 if (it != chunkMap.end() &&
                     it->second->chunkState == ChunkState::TERRAIN_GENERATED &&
@@ -139,7 +153,7 @@ void World::loadChunks() {
 
 void World::unloadChunks() {
     std::unordered_set<ChunkKey> chunksToUnload;
-    int unloadDistanceChunks = m_renderDistance + 32;
+    int unloadDistanceChunks = m_renderDistance + 8;
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     ChunkMap &chunkMap = chunkManager.getChunkMap();
     for (auto it = chunkMap.begin(); it != chunkMap.end();) {
@@ -158,7 +172,7 @@ void World::unloadChunks() {
 }
 
 void World::updateChunkMeshes() {
-    Timer t("mesh");
+//    Timer t("mesh");
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     for (int i = 1; i <= m_renderDistance; i++) {
         int minX = playerChunkKeyPos.x - i;
@@ -168,6 +182,7 @@ void World::updateChunkMeshes() {
         for (int chunkX = minX; chunkX <= maxX; chunkX++) {
             for (int chunkY = minY; chunkY <= maxY; chunkY++) {
                 ChunkKey chunkKey = {chunkX, chunkY};
+//                std::lock_guard<std::mutex> lock(m_mainMutex);
                 if (!chunkManager.chunkExists(chunkKey)) continue;
                 const Ref<Chunk> &chunk = chunkManager.getChunk(chunkKey);
                 if (chunk->chunkState != ChunkState::FULLY_GENERATED) continue;
@@ -178,7 +193,7 @@ void World::updateChunkMeshes() {
             }
         }
     }
-    std::cout << "didnt build" << std::endl;
+//    std::cout << "didnt build" << std::endl;
 }
 
 bool compareVec3(glm::vec3 a, glm::vec3 b) {

@@ -59,9 +59,14 @@ void Application::run() {
 }
 
 void Application::onKeyEvent(int key, int scancode, int action, int mods) {
-    if (action == GLFW_PRESS) {
+    bool isPressed = action == GLFW_PRESS;
+    bool isReleased = action == GLFW_RELEASE;
+    if (isPressed && key == GLFW_KEY_ESCAPE) {
+        window.close();
+    }
+    if (isPressed) {
         Keyboard::press(key);
-    } else if (action == GLFW_RELEASE) {
+    } else if (isReleased) {
         Keyboard::release(key);
     }
 }

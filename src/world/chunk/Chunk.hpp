@@ -128,8 +128,6 @@ private:
     Block m_result[CHUNK_INFO_SIZE * WORLD_HEIGHT]{};
     glm::ivec2 m_position;
     int m_seed;
-
-
 };
 
 
