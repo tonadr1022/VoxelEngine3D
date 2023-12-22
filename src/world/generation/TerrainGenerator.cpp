@@ -26,28 +26,22 @@ void TerrainGenerator::generateTerrainFor(const Ref<Chunk> &chunk) const {
         highest = std::max(highest, heights[i]);
     }
 
-//    for (int z = 0; z <= CHUNK_HEIGHT; z++) {
-//        int heightMapIndex = 0;
-//        for (int x = 0; x < CHUNK_WIDTH; x++) {
-//            for (int y = 0; y < CHUNK_WIDTH; y++) {
-//                int height = heights[heightMapIndex];
-//                if (z < height) {
-//                    chunk->setBlock(x, y, z, Block(Block::DIRT));
-//                } else if (z == height) {
-//                    chunk->setBlock(x, y, z, Block(Block::GRASS));
-//                }
-//                heightMapIndex++;
-//            }
-//        }
-//    }
-
-for (int z = 0; z <= 100; z++) {
-    for (int x = 0; x < CHUNK_WIDTH; x++) {
-        for (int y = 0; y < CHUNK_WIDTH; y++) {
-            chunk->setBlock(x, y, z, Block(Block::OAK_WOOD));
+    for (int z = 0; z <= CHUNK_HEIGHT; z++) {
+        int heightMapIndex = 0;
+        for (int x = 0; x < CHUNK_WIDTH; x++) {
+            for (int y = 0; y < CHUNK_WIDTH; y++) {
+                int height = heights[heightMapIndex];
+                if (z < height) {
+                    chunk->setBlock(x, y, z, Block(Block::DIRT));
+                } else if (z == height) {
+                    chunk->setBlock(x, y, z, Block(Block::GRASS));
+                }
+                heightMapIndex++;
+            }
         }
     }
-}
+
+
 
     chunk->chunkState = ChunkState::TERRAIN_GENERATED;
 }

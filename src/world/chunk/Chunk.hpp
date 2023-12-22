@@ -37,11 +37,11 @@ public:
     explicit Chunk(glm::ivec2 location);
 
     static inline int XYZ(int x, int y, int z) {
-        return y * CHUNK_AREA + z * CHUNK_WIDTH + x;
+        return z * CHUNK_AREA + y * CHUNK_WIDTH + x;
     }
 
     static inline int XYZ(glm::ivec3 pos) {
-        return pos.y * CHUNK_AREA + pos.z * CHUNK_WIDTH + pos.x;
+        return pos.z * CHUNK_AREA + pos.y * CHUNK_WIDTH + pos.x;
     }
 
 
