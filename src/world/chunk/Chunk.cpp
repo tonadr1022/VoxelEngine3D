@@ -4,14 +4,11 @@
 
 #include "Chunk.hpp"
 #include "ChunkManager.hpp"
+#include "../../utils/Timer.hpp"
 
-Chunk::Chunk(glm::vec2 location) : m_location(location), chunkMeshState(ChunkMeshState::UNBUILT),
-                                   chunkState(ChunkState::UNGENERATED), m_chunkKey(
+Chunk::Chunk(glm::ivec2 location) : m_location(location), chunkMeshState(ChunkMeshState::UNBUILT),
+                                    chunkState(ChunkState::UNGENERATED), m_chunkKey(
                 ChunkManager::getChunkKeyByWorldLocation(location.x, location.y)) {
-    for (int chunkZ = 0; chunkZ < CHUNK_HEIGHT; chunkZ += CHUNKLET_HEIGHT) {
-        Chunklet chunklet(glm::vec3(location, chunkZ));
-        chunklets[chunkZ / CHUNKLET_HEIGHT] = chunklet;
-    }
     maxBlockHeights.fill(0);
     numSolidBlocksInLayers.fill(0);
 }
@@ -21,7 +18,7 @@ Chunk::buildMesh(ChunkManager &chunkManager, const Ref<Chunk> &leftNeighborChunk
                  const Ref<Chunk> &rightNeighborChunk,
                  const Ref<Chunk> &frontNeighborChunk,
                  const Ref<Chunk> &backNeighborChunk) {
-    const Ref<Chunk>& sharedThis = std::make_shared<Chunk>(*this);
+    const Ref<Chunk> &sharedThis = std::make_shared<Chunk>(*this);
     mesh.construct(chunkManager, sharedThis, leftNeighborChunk, rightNeighborChunk,
                    frontNeighborChunk,
                    backNeighborChunk);
@@ -35,35 +32,23 @@ void Chunk::unload() {
     chunkMeshState = ChunkMeshState::UNBUILT;
 }
 
-bool blockIsAirOrUndefined(Block::ID blockId) {
-    return blockId == Block::AIR || blockId == Block::UNDEFINED;
-}
 
 void Chunk::setBlock(int x, int y, int z, Block block) {
     Block::ID oldBlockId = getBlock(x, y, z).id;
     Block::ID newBlockId = block.id;
-    if (!blockIsAirOrUndefined(oldBlockId) && block.id == Block::AIR) {
+    if (oldBlockId != Block::AIR && block.id == Block::AIR) {
         numSolidBlocksInLayers[z]--;
-    } else if (blockIsAirOrUndefined(oldBlockId) && newBlockId != Block::AIR) {
+    } else if (oldBlockId == Block::AIR && newBlockId != Block::AIR) {
         numSolidBlocksInLayers[z]++;
     }
+    m_blocks[XYZ(x, y, z)] = block;
 
-    if (newBlockId != Block::AIR && z > getMaxBlockHeightAt(x, y)) {
-        setMaxBlockHeightAt(x, y, z);
+    if (m_location.x == 0 && m_location.y == 0 && x == 15 && y == 10 && z == 150) {
+        std::cout << XYZ(15, 10, 150) << "In set block chunk" <<  std::endl;
     }
-    int chunkletIndex = z / CHUNKLET_HEIGHT;
-    int chunkletZ = z % CHUNKLET_HEIGHT;
-    chunklets[chunkletIndex].setBlock(x, y, chunkletZ, block);
 }
 
-Block Chunk::getBlock(int x, int y, int z) {
-    int chunkletIndex = z / CHUNKLET_HEIGHT;
-    int chunkletZ = z % CHUNKLET_HEIGHT;
-    Chunklet &chunklet = chunklets[chunkletIndex];
-    return chunklet.getBlock(x, y, chunkletZ);
-}
-
-glm::vec2 &Chunk::getLocation() {
+glm::ivec2 &Chunk::getLocation() {
     return m_location;
 }
 
@@ -84,26 +69,24 @@ void Chunk::markDirty() {
     chunkState = ChunkState::CHANGED;
 }
 
-bool Chunk::hasNonAirBlockAt(int x, int y, int z) {
+bool Chunk::hasNonAirBlockAt(int x, int y, int z) const {
     return getBlock(x, y, z).id != Block::AIR;
 }
 
 
 Block Chunk::getBlock(glm::ivec3 &position, ChunkManager &chunkManager) {
-    // check if below min height, if so don't add face
-    if (position.z < 0) return Block(Block::UNDEFINED);
+    if (position.z < 0) return Block(Block::AIR);
 
-    // check if adjacent block is vertically out of bounds, if so add face
-    if (position.z > CHUNK_HEIGHT) {
-        return Block(Block::UNDEFINED);
+    if (position.z >= CHUNK_HEIGHT) {
+        return Block(Block::AIR);
     }
-    // if horizontally out of bounds use world
+
     if (position.x < 0 || position.x >= CHUNK_WIDTH || position.y < 0 ||
         position.y >= CHUNK_WIDTH) {
         glm::ivec3 worldLocation = glm::ivec3(m_location, 0) + position;
         return chunkManager.getBlock(worldLocation);
     } else {
-        return getBlock(position.x, position.y, position.z);
+        return getBlock(position);
     }
 }
 
@@ -112,3 +95,38 @@ ChunkKey Chunk::getChunkKey() {
 }
 
 Chunk::~Chunk() = default;
+
+ChunkLoadInfo::ChunkLoadInfo(const glm::ivec2 &pos, int seed) : m_position(pos), m_seed(seed) {}
+
+void ChunkLoadInfo::applyTerrain(Chunk *(&chk)[WORLD_HEIGHT]) {
+
+}
+
+void ChunkLoadInfo::process() {
+    // make height map
+    constexpr int SIZE = 16;
+    constexpr int AREA = SIZE * SIZE;
+    int heights[AREA];
+    int highest = 0;
+    auto *heightMap = new float[AREA];  // Allocate memory for the height map
+
+    for (int i = 0; i < AREA; i++) {
+        heights[i] = (int)floor(heightMap[i]) * 64 + 100;
+        highest = std::max(highest, heights[i]);
+    }
+
+    for (int z = 0; z <= highest; z++) {
+        int index = 0;
+        for (int y = 0; y < SIZE; y++) {
+            for (int x = 0; x < SIZE; x++) {
+                int index_1d = z * CHUNK_SIZE * CHUNK_SIZE;
+                int index_2d = y * SIZE + x;
+
+                index++;
+            }
+        }
+    }
+
+
+    m_done = true;
+    delete []heightMap;}

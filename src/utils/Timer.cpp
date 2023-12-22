@@ -11,6 +11,6 @@ Timer::Timer(const std::string &message) : m_message(message) {
 
 Timer::~Timer() {
     auto m_endTime = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(m_endTime - m_startTime);
-    std::cout << m_message << " took: " << duration.count() << " ms" << std::endl;
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(m_endTime - m_startTime);
+    std::cout << m_message << " took: " << static_cast<float>(duration.count()) / 1000.0f << " ms" << std::endl;
 }

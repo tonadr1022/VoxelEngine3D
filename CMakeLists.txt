@@ -22,6 +22,13 @@ set(SOURCE_FILES
         src/vendor/imgui/imgui_impl_opengl3.cpp
         src/vendor/imgui/imgui_tables.cpp
         src/vendor/imgui/imgui_widgets.cpp
+        src/vendor/FastNoiseSIMD/FastNoiseSIMD.cpp
+        src/vendor/FastNoiseSIMD/FastNoiseSIMD_internal.cpp
+        src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx2.cpp
+        src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse2.cpp
+        src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx512.cpp
+        src/vendor/FastNoiseSIMD/FastNoiseSIMD_neon.cpp
+        src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.cpp
         src/AppConstants.hpp
         src/camera/Camera.cpp
         src/camera/Camera.hpp
@@ -41,8 +48,6 @@ set(SOURCE_FILES
         src/renderer/Renderer.hpp
         src/shaders/ShaderManager.cpp
         src/shaders/ShaderManager.hpp
-        src/world/chunklet/Chunklet.cpp
-        src/world/chunklet/Chunklet.hpp
         src/world/chunk/ChunkMesh.cpp
         src/world/chunk/ChunkMesh.hpp
         src/world/generation/TerrainGenerator.cpp

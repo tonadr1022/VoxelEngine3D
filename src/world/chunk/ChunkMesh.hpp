@@ -12,14 +12,13 @@ class Chunk;
 
 class ChunkManager;
 
-enum class BlockFace {
+enum BlockFace {
     FRONT = 0,
     BACK,
     LEFT,
     RIGHT,
     TOP,
-    BOTTOM,
-    COUNT
+    BOTTOM
 };
 
 using OcclusionLevels = std::array<uint8_t, 4>;

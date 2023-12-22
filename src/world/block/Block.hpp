@@ -45,7 +45,6 @@ struct Block {
         JUNGLE_PLANKS, // 33
         SPRUCE_PLANKS, // 34
         BLOCK_COUNT,
-        UNDEFINED
     };
 
     ID id;
@@ -53,8 +52,10 @@ struct Block {
     [[nodiscard]] bool isTransparent() const {
         return id == AIR || id == WATER;
     }
-    Block() : id(UNDEFINED) {}
+    Block() : id(AIR) {}
     explicit Block(ID id) : id(id) {}
 };
+
+typedef uint8_t BlockNum;
 
 #endif //VOXEL_ENGINE_BLOCK_HPP

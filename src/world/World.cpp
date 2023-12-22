@@ -8,7 +8,6 @@
 #include "../Config.hpp"
 #include "block/BlockDB.hpp"
 #include "../input/Mouse.hpp"
-#include "../input/Keyboard.hpp"
 #include <algorithm>
 
 
@@ -20,15 +19,19 @@ World::World(Renderer &renderer) : renderer(renderer),
         Timer timer("World initialization");
         updateChunks();
     }
+//    glm::ivec2 pos = {0,0};
+//    m_load_info_map.emplace(pos, std::make_unique<ChunkLoadInfo>(pos, 1));
+//    m_load_info_map.at(pos)->process();
 
-    for (int i = 0; i < 1; i++) {
-        m_chunkLoadThreads.emplace_back([&]() {
-            while (m_isRunning) {
-                updateChunks();
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            }
-        });
-    }
+
+//    for (int i = 0; i < 1; i++) {
+//        m_chunkLoadThreads.emplace_back([&]() {
+//            while (m_isRunning) {
+//                updateChunks();
+//                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+//            }
+//        });
+//    }
 }
 
 World::~World() {
@@ -52,7 +55,6 @@ void World::render() {
     for (auto &chunkEntry: chunkMap) {
         if (chunkEntry.second->chunkMeshState == ChunkMeshState::BUILT) {
             chunksToRender.push_back(chunkEntry.second);
-//            chunkRenderer.render(chunkEntry.second);
         }
     }
 
@@ -61,6 +63,7 @@ void World::render() {
     for (auto &chunk : chunksToRender) {
         chunkRenderer.render(chunk);
     }
+
     // render block break and outline if a block is being aimed at
     if (static_cast<const glm::vec3>(lastRayCastBlockPos) != NULL_VECTOR) {
         renderer.renderBlockOutline(player.camera, lastRayCastBlockPos);
@@ -72,6 +75,7 @@ void World::render() {
 
 void World::update() {
     unloadChunks();
+    updateChunks();
     castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
     chunkManager.remeshChunksToRemesh();
 }
@@ -89,49 +93,43 @@ void World::loadChunks() {
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     ChunkMap &chunkMap = chunkManager.getChunkMap();
 
-    std::vector<std::future<void>> futures;
-
-    for (int i = 1; i <= firstPassLoadDistance; i++) {
+    bool foundChunk = false;
+    for (int i = 1; i <= firstPassLoadDistance && !foundChunk; i++) {
         int minX = playerChunkKeyPos.x - i;
         int maxX = playerChunkKeyPos.x + i;
         int minY = playerChunkKeyPos.y - i;
         int maxY = playerChunkKeyPos.y + i;
-        for (int chunkX = minX; chunkX <= maxX; chunkX++) {
-            for (int chunkY = minY; chunkY <= maxY; chunkY++) {
-                futures.push_back(std::async(std::launch::async, [this, &chunkMap, chunkX, chunkY] {
+        for (int chunkX = minX; chunkX <= maxX && !foundChunk; chunkX++) {
+            for (int chunkY = minY; chunkY <= maxY && !foundChunk; chunkY++) {
                     ChunkKey chunkKey = {chunkX, chunkY};
                     auto it = chunkMap.find(chunkKey);
                     if (it == chunkMap.end()) {
                         const Ref<Chunk> chunk = std::make_shared<Chunk>(
                                 glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
-                        TerrainGenerator::generateTerrainFor(chunk);
+                        m_terrainGenerator.generateTerrainFor(chunk);
                         chunkMap.emplace(chunkKey, chunk);
+                        foundChunk = true;
                     }
-                }));
             }
         }
     }
 
-    for (auto &future: futures) {
-        future.wait();
-    }
-
-    futures.clear();
-
-    for (int i = 1; i <= secondPassLoadDistance; i++) {
+    foundChunk = false;
+    for (int i = 1; i <= secondPassLoadDistance && !foundChunk; i++) {
         int minX = playerChunkKeyPos.x - i;
         int maxX = playerChunkKeyPos.x + i;
         int minY = playerChunkKeyPos.y - i;
         int maxY = playerChunkKeyPos.y + i;
 
-        for (int chunkX = minX; chunkX <= maxX; chunkX++) {
-            for (int chunkY = minY; chunkY <= maxY; chunkY++) {
+        for (int chunkX = minX; chunkX <= maxX && !foundChunk; chunkX++) {
+            for (int chunkY = minY; chunkY <= maxY && !foundChunk; chunkY++) {
                 ChunkKey chunkKey = {chunkX, chunkY};
                 auto it = chunkMap.find(chunkKey);
                 if (it != chunkMap.end() &&
                     it->second->chunkState == ChunkState::TERRAIN_GENERATED &&
                     chunkManager.hasAllNeighbors(chunkKey)) {
-                    TerrainGenerator::generateStructuresFor(chunkManager, it->second);
+                    m_terrainGenerator.generateStructuresFor(chunkManager, it->second);
+                    foundChunk = true;
                 }
             }
         }
@@ -140,7 +138,7 @@ void World::loadChunks() {
 
 void World::unloadChunks() {
     std::unordered_set<ChunkKey> chunksToUnload;
-    int unloadDistanceChunks = m_renderDistance + 2;
+    int unloadDistanceChunks = m_renderDistance + 32;
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     ChunkMap &chunkMap = chunkManager.getChunkMap();
     for (auto it = chunkMap.begin(); it != chunkMap.end();) {
@@ -159,8 +157,6 @@ void World::unloadChunks() {
 }
 
 void World::updateChunkMeshes() {
-//    Timer timer("Update chunk meshes");
-
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     for (int i = 1; i <= m_renderDistance; i++) {
         int minX = playerChunkKeyPos.x - i;
@@ -195,12 +191,17 @@ void World::castPlayerAimRay(Ray ray) {
 
     while (glm::distance(rayStart, rayEnd) < 10.0f) {
         glm::ivec3 blockPos = {floor(rayEnd.x), floor(rayEnd.y), floor(rayEnd.z)};
-        Block block = chunkManager.getBlock(blockPos);
-        if (block.id == Block::AIR) {
-            lastAirBlockPos = blockPos;
-            rayEnd += directionIncrement;
-            continue;
+        try {
+            Block block = chunkManager.getBlock(blockPos);
+            if (block.id == Block::AIR) {
+                lastAirBlockPos = blockPos;
+                rayEnd += directionIncrement;
+                continue;
+            }
+        } catch (std::exception &e) {
+            return;
         }
+
         prevLastRayCastBlockPos = lastRayCastBlockPos;
         lastRayCastBlockPos = blockPos;
 

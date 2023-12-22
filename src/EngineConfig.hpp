@@ -16,6 +16,8 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 
+#include <FastNoiseSIMD/FastNoiseSIMD.h>
+
 #include <utility>
 #include <memory>
 #include <unordered_map>

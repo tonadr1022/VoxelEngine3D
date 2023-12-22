@@ -128,15 +128,15 @@ namespace {
 
 
 struct AdjacentBlockPositions {
-    glm::ivec3 positions[static_cast<int>(BlockFace::COUNT)];
+    glm::ivec3 positions[6];
 
     void update(int x, int y, int z) {
-        positions[static_cast<int>(BlockFace::TOP)] = {x, y, z + 1};
-        positions[static_cast<int>(BlockFace::BOTTOM)] = {x, y, z - 1};
-        positions[static_cast<int>(BlockFace::LEFT)] = {x, y - 1, z};
-        positions[static_cast<int>(BlockFace::RIGHT)] = {x, y + 1, z};
-        positions[static_cast<int>(BlockFace::FRONT)] = {x + 1, y, z};
-        positions[static_cast<int>(BlockFace::BACK)] = {x - 1, y, z};
+        positions[0] = {x + 1, y, z};
+        positions[1] = {x - 1, y, z};
+        positions[2] = {x, y - 1, z};
+        positions[3] = {x, y + 1, z};
+        positions[4] = {x, y, z + 1};
+        positions[5] = {x, y, z - 1};
     }
 };
 
@@ -197,35 +197,43 @@ void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk,
     clearData();
     AdjacentBlockPositions adjacentBlockPositions{};
 
-    for (Chunklet &chunklet: chunk->chunklets) {
-        for (int chunkletZ = 0; chunkletZ < CHUNKLET_HEIGHT; chunkletZ++) {
-            int chunkZ = static_cast<int>(chunklet.location.z) + chunkletZ;
-//            if (chunk.numSolidBlocksInLayers[chunkZ] == 0) {
-//                continue;
-//            }
-            for (int x = 0; x < CHUNK_WIDTH; x++) {
-                for (int y = 0; y < CHUNK_WIDTH; y++) {
-//                    int maxBlockHeight = chunk.getMaxBlockHeightAt(x, y);
-//                    if (chunkZ > maxBlockHeight) {
-//                        continue;
-//                    }
-                    Block block = chunklet.getBlock(x, y, chunkletZ);
-                    if (block.id == Block::AIR) {
-                        continue;
-                    }
-                    // block pos in chunk
-                    glm::ivec3 blockPosInChunk = {x, y, chunkZ};
-                    adjacentBlockPositions.update(x, y, chunkZ);
+    for (int z = 0; z < CHUNK_HEIGHT; z++) {
+//        if (chunk->numSolidBlocksInLayers[z] == 0) {
+//            continue;
+//        }
+//        std::cout << "num solid in layer z" << z << ": " << chunk->numSolidBlocksInLayers[z] << std::endl;
+        for (int x = 0; x < CHUNK_WIDTH; x++) {
+            for (int y = 0; y < CHUNK_WIDTH; y++) {
+                Block block = chunk->getBlock(x, y, z);
+                if (block.id == Block::AIR) {
+                    continue;
+                }
 
-                    for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
-                        auto face = static_cast<BlockFace>(faceIndex);
-                        glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[static_cast<int>(face)];
-                        if (shouldAddFace(adjacentBlockPos, chunk, leftNeighborChunk,
-                                          rightNeighborChunk, frontNeighborChunk,
-                                          backNeighborChunk)) {
-                            // calculate ambient occlusion level for each vertex of this face
-                            addFace(blockPosInChunk, block, face, chunk, chunkManager);
-                        }
+                if (chunk->getLocation().x == 0 && chunk->getLocation().y == 0 &&
+                    block.id != Block::AIR) {
+//                    if (x == 15 && y == 10 && z == 150) {
+//                        std::cout << chunk->XYZ(15, 10, 150) << std::endl;
+//                                            std::cout << x << " " << y << " " << z << std::endl;
+//                    std::cout << static_cast<int>(block.id) << std::endl;
+//                    }
+                    if (z > 100 && block.id == Block::OAK_WOOD) {
+                        std::cout << "oak above 100: " << x << " " << y << " " << z << std::endl;
+                    } else if (z <= 100 && block.id != Block::OAK_WOOD) {
+//                        std::cout << "not oak below 100: " << x << " " << y << " " << z << std::endl;
+                    }
+//                    std::cout << x << " " << y << " " << z << std::endl;
+//                    std::cout << static_cast<int>(block.id) << std::endl;
+                }
+                glm::ivec3 pos = {x, y, z};
+                adjacentBlockPositions.update(x, y, z);
+                for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
+                    auto face = static_cast<BlockFace>(faceIndex);
+                    glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[static_cast<int>(face)];
+                    if (shouldAddFace(adjacentBlockPos, chunk, leftNeighborChunk,
+                                      rightNeighborChunk, frontNeighborChunk,
+                                      backNeighborChunk)) {
+                        // calculate ambient occlusion level for each vertex of this face
+                        addFace(pos, block, face, chunk, chunkManager);
                     }
                 }
             }
@@ -358,20 +366,20 @@ ChunkMesh::getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, const
         glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
 
         Block::ID side1BlockId = chunk->getBlock(side1Pos, chunkManager).id;
-        if (side1BlockId != Block::AIR && side1BlockId != Block::UNDEFINED) {
+        if (side1BlockId != Block::AIR) {
             side1IsSolid = true;
         }
         // side 2
         glm::ivec3 side2Pos = blockPosInChunk + faceLightingAdjacency[1];
 
         Block::ID side2BlockId = chunk->getBlock(side2Pos, chunkManager).id;
-        if (side2BlockId != Block::AIR && side2BlockId != Block::UNDEFINED) {
+        if (side2BlockId != Block::AIR) {
             side2IsSolid = true;
         }
         // corner
         glm::ivec3 cornerPos = blockPosInChunk + faceLightingAdjacency[2];
         Block::ID cornerBlockId = chunk->getBlock(cornerPos, chunkManager).id;
-        if (cornerBlockId != Block::AIR && cornerBlockId != Block::UNDEFINED) {
+        if (cornerBlockId != Block::AIR) {
             cornerIsSolid = true;
         }
 

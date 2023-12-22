@@ -78,7 +78,7 @@ void Player::renderDebugGui() {
     ImGui::Text("Block Type: %s", blockName.c_str());
     ImGui::Text("Block ID: %d", inventory.getHeldItem());
 
-    ImGui::SliderFloat("Movement Speed", &m_movementSpeed, 1.0f, 100.0f);
+    ImGui::SliderFloat("Movement Speed", &m_movementSpeed, 1.0f, 300.0f);
 }
 
 void Player::onCursorUpdate(double xOffset, double yOffset) {

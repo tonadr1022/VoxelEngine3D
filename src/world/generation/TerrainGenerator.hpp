@@ -15,11 +15,11 @@ class TerrainGenerator {
 public:
     TerrainGenerator();
 
-    static void generateTerrainFor(const Ref<Chunk> &chunk);
+    void generateTerrainFor(const Ref<Chunk> &chunk) const;
 
-    static void generateStructuresFor(ChunkManager &chunkManager, const Ref<Chunk> &chunk);
+    void generateStructuresFor(ChunkManager &chunkManager, const Ref<Chunk> &chunk);
 
-    static void makeTree(ChunkManager &chunkManager,const Ref<Chunk>& chunk, const glm::vec3 &position);
+    void makeTree(ChunkManager &chunkManager,const Ref<Chunk>& chunk, const glm::ivec3 &position);
 };
 
 

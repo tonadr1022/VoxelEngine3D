@@ -11,6 +11,8 @@
 #include "chunk/ChunkManager.hpp"
 #include "../physics/Ray.hpp"
 #include "../EngineConfig.hpp"
+#include "generation/TerrainGenerator.hpp"
+#include <glm/gtx/hash.hpp>
 
 class World {
 public:
@@ -63,6 +65,11 @@ private:
     Renderer renderer;
 
     ChunkManager chunkManager;
+
+    TerrainGenerator m_terrainGenerator;
+
+    std::unordered_map<glm::ivec2, std::unique_ptr<ChunkLoadInfo>> m_load_info_map;
+
 };
 
 

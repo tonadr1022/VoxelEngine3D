@@ -39,7 +39,7 @@ private:
 
     void processKeyInput(float deltaTime);
 
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, 70.0f);
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 110.0f);
 
     float m_movementSpeed = 70.0f;
 };

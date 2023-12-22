@@ -23,7 +23,7 @@ Inventory::Inventory(bool creative) {
             m_items[i] = ItemStack(static_cast<Block::ID>(i), ItemStack::MAX_STACK_SIZE);
         }
         for (int i = Block::BLOCK_COUNT; i < MAX_INVENTORY_SIZE; i++) {
-            m_items[i] = ItemStack(Block::UNDEFINED, 0);
+            m_items[i] = ItemStack(Block::AIR, 0);
         }
     }
 }
