@@ -13,13 +13,16 @@ class ChunkManager;
 
 class TerrainGenerator {
 public:
-    TerrainGenerator();
+    TerrainGenerator(int seed);
 
-    void generateTerrainFor(const Ref<Chunk> &chunk) const;
+    void generateTerrainFor(const Ref<Chunk> &chunk) ;
 
-    void generateStructuresFor(ChunkManager &chunkManager, const Ref<Chunk> &chunk);
+    static void generateStructuresFor(ChunkManager &chunkManager, const Ref<Chunk> &chunk);
 
-    void makeTree(ChunkManager &chunkManager,const Ref<Chunk>& chunk, const glm::ivec3 &position);
+    static void makeTree(ChunkManager &chunkManager,const Ref<Chunk>& chunk, const glm::ivec3 &position);
+
+private:
+    int m_seed;
 };
 
 

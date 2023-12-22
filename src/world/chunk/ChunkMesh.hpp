@@ -28,11 +28,7 @@ public:
     ChunkMesh();
     ~ChunkMesh() = default;
 
-    void construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk,
-                   const Ref<Chunk> &leftNeighborChunk,
-                   const Ref<Chunk> &rightNeighborChunk,
-                   const Ref<Chunk> &frontNeighborChunk,
-                   const Ref<Chunk> &backNeighborChunk);
+    void construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk);
 
     void clearData();
 
@@ -45,7 +41,7 @@ public:
 
 
 private:
-    void addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace face, const Ref<Chunk> &chunk,
+    void addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face, const Ref<Chunk> &chunk,
                  ChunkManager &chunkManager);
 
     static bool shouldAddFace(glm::ivec3 &blockPosInChunk, const Ref<Chunk> &chunk,

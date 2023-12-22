@@ -152,77 +152,42 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, const Ref<Chunk> &
     if (adjacentBlockPosInChunk.z < 0) return false;
 
     // check if adjacent block is vertically out of bounds, if so add face
-    if (adjacentBlockPosInChunk.z > CHUNK_HEIGHT) {
-        return true;
-    }
+    if (adjacentBlockPosInChunk.z > CHUNK_HEIGHT) return true;
 
     if (adjacentBlockPosInChunk.x < 0) {
-        // get back neighbor chunk
-        if (!backNeighborChunk->hasNonAirBlockAt(CHUNK_WIDTH - 1, adjacentBlockPosInChunk.y,
-                                                 adjacentBlockPosInChunk.z)) {
-            return true;
-        }
+        return !backNeighborChunk->hasNonAirBlockAt(CHUNK_WIDTH - 1, adjacentBlockPosInChunk.y,
+                                                    adjacentBlockPosInChunk.z);
     } else if (adjacentBlockPosInChunk.x >= CHUNK_WIDTH) {
-        // get front neighbor chunk
-        if (!frontNeighborChunk->hasNonAirBlockAt(0, adjacentBlockPosInChunk.y,
-                                                  adjacentBlockPosInChunk.z)) {
-            return true;
-        }
+        return !frontNeighborChunk->hasNonAirBlockAt(0, adjacentBlockPosInChunk.y,
+                                                     adjacentBlockPosInChunk.z);
     } else if (adjacentBlockPosInChunk.y < 0) {
-        // get left neighbor chunk
-        if (!leftNeighborChunk->hasNonAirBlockAt(adjacentBlockPosInChunk.x, CHUNK_WIDTH - 1,
-                                                 adjacentBlockPosInChunk.z)) {
-            return true;
-        }
+        return !leftNeighborChunk->hasNonAirBlockAt(adjacentBlockPosInChunk.x, CHUNK_WIDTH - 1,
+                                                    adjacentBlockPosInChunk.z);
     } else if (adjacentBlockPosInChunk.y >= CHUNK_WIDTH) {
-        // get right neighbor chunk
-        if (!rightNeighborChunk->hasNonAirBlockAt(adjacentBlockPosInChunk.x, 0,
-                                                  adjacentBlockPosInChunk.z)) {
-            return true;
-        }
+        return !rightNeighborChunk->hasNonAirBlockAt(adjacentBlockPosInChunk.x, 0,
+                                                     adjacentBlockPosInChunk.z);
 
-        // check adjacent block (in chunk at this point), if it's air or transparent, add face
-    } else if (chunk->getBlock(adjacentBlockPosInChunk.x, adjacentBlockPosInChunk.y,
-                               adjacentBlockPosInChunk.z).isTransparent()) {
-        return true;
+    } else {
+        return BlockMethods::isTransparent(chunk->getBlock(adjacentBlockPosInChunk.x, adjacentBlockPosInChunk.y,
+                               adjacentBlockPosInChunk.z));
     }
-    return false;
 }
 
-void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk,
-                          const Ref<Chunk> &leftNeighborChunk,
-                          const Ref<Chunk> &rightNeighborChunk,
-                          const Ref<Chunk> &frontNeighborChunk,
-                          const Ref<Chunk> &backNeighborChunk) {
+void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk) {
     clearData();
     AdjacentBlockPositions adjacentBlockPositions{};
+    ChunkKey chunkKey = chunk->getChunkKey();
+    const Ref<Chunk> &leftNeighborChunk = chunkManager.getChunk({chunkKey.x, chunkKey.y - 1});
+    const Ref<Chunk> &rightNeighborChunk = chunkManager.getChunk({chunkKey.x, chunkKey.y + 1});
+    const Ref<Chunk> &frontNeighborChunk = chunkManager.getChunk({chunkKey.x + 1, chunkKey.y});
+    const Ref<Chunk> &backNeighborChunk = chunkManager.getChunk({chunkKey.x - 1, chunkKey.y});
 
     for (int z = 0; z < CHUNK_HEIGHT; z++) {
-//        if (chunk->numSolidBlocksInLayers[z] == 0) {
-//            continue;
-//        }
-//        std::cout << "num solid in layer z" << z << ": " << chunk->numSolidBlocksInLayers[z] << std::endl;
         for (int x = 0; x < CHUNK_WIDTH; x++) {
             for (int y = 0; y < CHUNK_WIDTH; y++) {
                 Block block = chunk->getBlock(x, y, z);
-                if (block.id == Block::AIR) {
+                if (block == Block::AIR) {
                     continue;
-                }
-
-                if (chunk->getLocation().x == 0 && chunk->getLocation().y == 0 &&
-                    block.id != Block::AIR) {
-//                    if (x == 15 && y == 10 && z == 150) {
-//                        std::cout << chunk->XYZ(15, 10, 150) << std::endl;
-//                                            std::cout << x << " " << y << " " << z << std::endl;
-//                    std::cout << static_cast<int>(block.id) << std::endl;
-//                    }
-                    if (z > 100 && block.id == Block::OAK_WOOD) {
-                        std::cout << "oak above 100: " << x << " " << y << " " << z << std::endl;
-                    } else if (z <= 100 && block.id != Block::OAK_WOOD) {
-//                        std::cout << "not oak below 100: " << x << " " << y << " " << z << std::endl;
-                    }
-//                    std::cout << x << " " << y << " " << z << std::endl;
-//                    std::cout << static_cast<int>(block.id) << std::endl;
                 }
                 glm::ivec3 pos = {x, y, z};
                 adjacentBlockPositions.update(x, y, z);
@@ -241,10 +206,10 @@ void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk,
     }
 }
 
-void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace face,
+void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face,
                         const Ref<Chunk> &chunk,
                         ChunkManager &chunkManager) {
-    BlockData &blockData = BlockDB::getBlockData(block.id);
+    BlockData &blockData = BlockDB::getBlockData(block);
     int textureX = 0;
     int textureY = 0;
     std::array<int, 20> faceVertices{};
@@ -288,7 +253,6 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block &block, BlockFace fac
     }
     auto baseVertexIndex = vertices.size();
     int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
-//    textureIndex = textureX | (textureY << 4);
     for (int i = 0; i < 20; i += 5) {
         std::bitset<5> xPosBits(faceVertices[i] + blockPosInChunk.x);
         std::bitset<5> yPosBits(faceVertices[i + 1] + blockPosInChunk.y);
@@ -365,21 +329,21 @@ ChunkMesh::getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, const
         // side 1
         glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
 
-        Block::ID side1BlockId = chunk->getBlock(side1Pos, chunkManager).id;
-        if (side1BlockId != Block::AIR) {
+        Block side1Block = chunk->getBlock(side1Pos, chunkManager);
+        if (side1Block != Block::AIR) {
             side1IsSolid = true;
         }
         // side 2
         glm::ivec3 side2Pos = blockPosInChunk + faceLightingAdjacency[1];
 
-        Block::ID side2BlockId = chunk->getBlock(side2Pos, chunkManager).id;
-        if (side2BlockId != Block::AIR) {
+        Block side2Block = chunk->getBlock(side2Pos, chunkManager);
+        if (side2Block != Block::AIR) {
             side2IsSolid = true;
         }
         // corner
         glm::ivec3 cornerPos = blockPosInChunk + faceLightingAdjacency[2];
-        Block::ID cornerBlockId = chunk->getBlock(cornerPos, chunkManager).id;
-        if (cornerBlockId != Block::AIR) {
+        Block cornerBlock = chunk->getBlock(cornerPos, chunkManager);
+        if (cornerBlock != Block::AIR) {
             cornerIsSolid = true;
         }
 

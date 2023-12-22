@@ -4,10 +4,10 @@
 
 #include "Utils.hpp"
 
-int Utils::positiveModulo(int value, unsigned int m) {
-    int mod = value % (int)m;
-    if (mod < 0) {
-        mod += m;
-    }
-    return mod;
-}
+//inline int Utils::positiveModulo(int value, unsigned int m) {
+//    int mod = value % (int)m;
+//    if (mod < 0) {
+//        mod += m;
+//    }
+//    return mod;
+//}

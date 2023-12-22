@@ -19,16 +19,16 @@ void Inventory::shiftHotbarSelectedItem(bool scrollUp) {
 
 Inventory::Inventory(bool creative) {
     if (creative) {
-        for (int i = 0; i < Block::BLOCK_COUNT; i++) {
-            m_items[i] = ItemStack(static_cast<Block::ID>(i), ItemStack::MAX_STACK_SIZE);
+        for (int i = 0; i < static_cast<int>(Block::BLOCK_COUNT); i++) {
+            m_items[i] = ItemStack(static_cast<Block>(i), ItemStack::MAX_STACK_SIZE);
         }
-        for (int i = Block::BLOCK_COUNT; i < MAX_INVENTORY_SIZE; i++) {
+        for (int i = static_cast<int>(Block::BLOCK_COUNT); i < MAX_INVENTORY_SIZE; i++) {
             m_items[i] = ItemStack(Block::AIR, 0);
         }
     }
 }
 
-Block::ID Inventory::getHeldItem() {
+Block Inventory::getHeldItem() {
     return m_items[m_hotbarSelectedItemIndex + m_hotbarStartIndex].getBlockId();
 }
 

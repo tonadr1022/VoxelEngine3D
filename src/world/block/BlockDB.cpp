@@ -5,7 +5,7 @@
 #include "BlockDB.hpp"
 #include "json/json.hpp"
 
-std::unordered_map<Block::ID, BlockData> BlockDB::data;
+std::unordered_map<Block, BlockData> BlockDB::data;
 
 void BlockDB::loadData(const std::string &filePath) {
     std::filesystem::path jsonPath = filePath + "block_data.json";
@@ -19,7 +19,7 @@ void BlockDB::loadData(const std::string &filePath) {
     for (const auto &[blockName, blockData]: blocks.items()) {
         BlockData blockDataEntry{};
         blockDataEntry.name = blockName;
-        blockDataEntry.id = static_cast<Block::ID>(blockData["id"].get<int>());
+        blockDataEntry.id = static_cast<Block>(blockData["id"].get<int>());
         blockDataEntry.topTexCoords.x = blockData["topTexCoords"][0].get<int>();
         blockDataEntry.topTexCoords.y = blockData["topTexCoords"][1].get<int>();
         blockDataEntry.frontTexCoords.x = blockData["frontTexCoords"][0].get<int>();
@@ -38,6 +38,6 @@ void BlockDB::loadData(const std::string &filePath) {
     }
 }
 
-BlockData &BlockDB::getBlockData(Block::ID id) {
+BlockData &BlockDB::getBlockData(Block id) {
     return data[id];
 }

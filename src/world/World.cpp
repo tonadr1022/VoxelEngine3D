@@ -11,8 +11,9 @@
 #include <algorithm>
 
 
-World::World(Renderer &renderer) : renderer(renderer),
-                                   chunkRenderer(player.camera) {
+World::World(Renderer &renderer, int seed) : renderer(renderer),
+                                             chunkRenderer(player.camera),
+                                             m_terrainGenerator(seed) {
     BlockDB::loadData("../resources/blocks/");
 
     {
@@ -60,7 +61,7 @@ void World::render() {
 
     sortChunksByDistance(chunksToRender, player.getPosition());
 
-    for (auto &chunk : chunksToRender) {
+    for (auto &chunk: chunksToRender) {
         chunkRenderer.render(chunk);
     }
 
@@ -101,15 +102,15 @@ void World::loadChunks() {
         int maxY = playerChunkKeyPos.y + i;
         for (int chunkX = minX; chunkX <= maxX && !foundChunk; chunkX++) {
             for (int chunkY = minY; chunkY <= maxY && !foundChunk; chunkY++) {
-                    ChunkKey chunkKey = {chunkX, chunkY};
-                    auto it = chunkMap.find(chunkKey);
-                    if (it == chunkMap.end()) {
-                        const Ref<Chunk> chunk = std::make_shared<Chunk>(
-                                glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
-                        m_terrainGenerator.generateTerrainFor(chunk);
-                        chunkMap.emplace(chunkKey, chunk);
-                        foundChunk = true;
-                    }
+                ChunkKey chunkKey = {chunkX, chunkY};
+                auto it = chunkMap.find(chunkKey);
+                if (it == chunkMap.end()) {
+                    const Ref<Chunk> chunk = std::make_shared<Chunk>(
+                            glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
+                    m_terrainGenerator.generateTerrainFor(chunk);
+                    chunkMap.emplace(chunkKey, chunk);
+                    foundChunk = true;
+                }
             }
         }
     }
@@ -157,6 +158,7 @@ void World::unloadChunks() {
 }
 
 void World::updateChunkMeshes() {
+    Timer t("mesh");
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
     for (int i = 1; i <= m_renderDistance; i++) {
         int minX = playerChunkKeyPos.x - i;
@@ -172,9 +174,11 @@ void World::updateChunkMeshes() {
                 if (chunk->chunkMeshState == ChunkMeshState::BUILT) continue;
                 if (!chunkManager.hasAllNeighborsFullyGenerated(chunkKey)) continue;
                 chunkManager.buildChunkMesh(chunkKey);
+                return;
             }
         }
     }
+    std::cout << "didnt build" << std::endl;
 }
 
 bool compareVec3(glm::vec3 a, glm::vec3 b) {
@@ -193,7 +197,7 @@ void World::castPlayerAimRay(Ray ray) {
         glm::ivec3 blockPos = {floor(rayEnd.x), floor(rayEnd.y), floor(rayEnd.z)};
         try {
             Block block = chunkManager.getBlock(blockPos);
-            if (block.id == Block::AIR) {
+            if (block == Block::AIR) {
                 lastAirBlockPos = blockPos;
                 rayEnd += directionIncrement;
                 continue;
@@ -226,7 +230,7 @@ void World::castPlayerAimRay(Ray ray) {
                 return;
             }
 
-            chunkManager.setBlock({blockPos.x, blockPos.y, blockPos.z}, Block(Block::AIR));
+            chunkManager.setBlock({blockPos.x, blockPos.y, blockPos.z}, Block::AIR);
             player.blockBreakStage = 0;
             lastRayCastBlockPos = NULL_VECTOR;
             isFirstAction = false;

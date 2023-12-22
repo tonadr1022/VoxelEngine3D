@@ -76,7 +76,7 @@ void Player::renderDebugGui() {
 
     std::string blockName = BlockDB::getBlockData(inventory.getHeldItem()).name;
     ImGui::Text("Block Type: %s", blockName.c_str());
-    ImGui::Text("Block ID: %d", inventory.getHeldItem());
+ImGui::Text("Block ID: %d", static_cast<int>(inventory.getHeldItem()));
 
     ImGui::SliderFloat("Movement Speed", &m_movementSpeed, 1.0f, 300.0f);
 }

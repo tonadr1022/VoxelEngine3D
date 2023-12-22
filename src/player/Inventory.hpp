@@ -20,7 +20,7 @@ public:
 
     void shiftHotbarStartIndex(bool shiftUp);
 
-    Block::ID getHeldItem();
+    Block getHeldItem();
 
     static constexpr int HOTBAR_SIZE = 10;
     static constexpr int MAX_INVENTORY_SIZE = 100;

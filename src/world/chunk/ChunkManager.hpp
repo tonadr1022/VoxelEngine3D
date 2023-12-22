@@ -33,8 +33,6 @@ public:
 
     static ChunkKey getChunkKeyByWorldLocation(int x, int y);
 
-    static ChunkKey calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey chunkKey);
-
     bool hasAllNeighbors(ChunkKey chunkKey);
 
     bool hasAllNeighborsFullyGenerated(ChunkKey chunkKey);

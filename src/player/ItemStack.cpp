@@ -5,8 +5,8 @@
 #include "ItemStack.hpp"
 #include "Inventory.hpp"
 
-Block::ID ItemStack::getBlockId() const {
-    return m_blockId;
+Block ItemStack::getBlockId() const {
+    return m_block;
 }
 
 int ItemStack::getQuantity() const {
@@ -33,19 +33,19 @@ bool ItemStack::isFull() const {
     return m_quantity == MAX_STACK_SIZE;
 }
 
-void ItemStack::setBlockId(Block::ID blockId) {
-    ItemStack::m_blockId = blockId;
+void ItemStack::setBlock(Block block) {
+    ItemStack::m_block = block;
 }
 
 void ItemStack::clear() {
-    m_blockId = Block::ID::AIR;
+    m_block = Block::AIR;
     m_quantity = 0;
 }
 
-ItemStack::ItemStack(Block::ID blockId, int quantity) : m_blockId(blockId), m_quantity(quantity) {}
+ItemStack::ItemStack(Block block, int quantity) : m_block(block), m_quantity(quantity) {}
 
 ItemStack::ItemStack() {
-    m_blockId = Block::ID::AIR;
+    m_block = Block::AIR;
     m_quantity = 0;
 }
 

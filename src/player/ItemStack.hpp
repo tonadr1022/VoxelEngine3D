@@ -10,13 +10,13 @@
 
 class ItemStack {
 public:
-    ItemStack(Block::ID blockId, int quantity);
+    ItemStack(Block block, int quantity);
 
     ItemStack();
 
-    [[nodiscard]] Block::ID getBlockId() const;
+    [[nodiscard]] Block getBlockId() const;
 
-    int getQuantity() const;
+    [[nodiscard]] int getQuantity() const;
 
     void setQuantity(int quantity);
 
@@ -24,22 +24,19 @@ public:
 
     void removeQuantity(int quantity);
 
-    bool isEmpty() const;
+    [[nodiscard]] bool isEmpty() const;
 
-    bool isFull() const;
+    [[nodiscard]] bool isFull() const;
 
-    void setBlockId(Block::ID blockId);
+    void setBlock(Block block);
 
     void clear();
 
     constexpr static int MAX_STACK_SIZE = 64;
 
 private:
-    Block::ID m_blockId;
+    Block m_block;
     int m_quantity;
-
-
 };
-
 
 #endif //VOXEL_ENGINE_ITEMSTACK_HPP

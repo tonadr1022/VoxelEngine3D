@@ -9,7 +9,7 @@
 #include "../../EngineConfig.hpp"
 
 struct BlockData {
-    Block::ID id;
+    Block id;
     std::string name;
 
     glm::ivec2 topTexCoords;
@@ -25,9 +25,9 @@ struct BlockData {
 class BlockDB {
 public:
     static void loadData(const std::string& filePath);
-    static BlockData& getBlockData(Block::ID id);
+    static BlockData& getBlockData(Block id);
 private:
-    static std::unordered_map<Block::ID, BlockData> data;
+    static std::unordered_map<Block, BlockData> data;
 };
 
 

@@ -12,7 +12,7 @@ Application::Application() : window(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT,
     instancePtr = this;
     window.lockCursor();
 
-    world = std::make_shared<World>(renderer);
+    world = std::make_shared<World>(renderer, 2);
 }
 
 Application::~Application() {

@@ -48,20 +48,6 @@ ChunkKey ChunkManager::getChunkKeyByWorldLocation(int x, int y) {
                     static_cast<int>(std::floor(static_cast<float>(y) / CHUNK_WIDTH))};
 }
 
-ChunkKey
-ChunkManager::calculateNeighborChunkKey(HorizontalDirection direction, ChunkKey chunkKey) {
-    switch (direction) {
-        case HorizontalDirection::LEFT:
-            return ChunkKey{chunkKey.x, chunkKey.y - 1};
-        case HorizontalDirection::RIGHT:
-            return ChunkKey{chunkKey.x, chunkKey.y + 1};
-        case HorizontalDirection::FRONT:
-            return ChunkKey{chunkKey.x + 1, chunkKey.y};
-        case HorizontalDirection::BACK:
-            return ChunkKey{chunkKey.x - 1, chunkKey.y};
-    }
-}
-
 void ChunkManager::buildChunkMesh(ChunkKey chunkKey) {
     if (!chunkExists(chunkKey)) {
         throw std::runtime_error(
@@ -70,27 +56,7 @@ void ChunkManager::buildChunkMesh(ChunkKey chunkKey) {
     }
     const Ref<Chunk> &chunk = getChunk(chunkKey);
 
-    ChunkKey leftNeighborChunkKey = calculateNeighborChunkKey(
-            HorizontalDirection::LEFT, chunkKey);
-    ChunkKey rightNeighborChunkKey = calculateNeighborChunkKey(
-            HorizontalDirection::RIGHT, chunkKey);
-    ChunkKey frontNeighborChunkKey = calculateNeighborChunkKey(
-            HorizontalDirection::FRONT, chunkKey);
-    ChunkKey backNeighborChunkKey = calculateNeighborChunkKey(
-            HorizontalDirection::BACK, chunkKey);
-
-    if (!chunkExists(leftNeighborChunkKey) ||
-        !chunkExists(rightNeighborChunkKey) ||
-        !chunkExists(frontNeighborChunkKey) ||
-        !chunkExists(backNeighborChunkKey)) {
-        return;
-    }
-    const Ref<Chunk> &leftNeighborChunk = getChunk(leftNeighborChunkKey);
-    const Ref<Chunk> &rightNeighborChunk = getChunk(rightNeighborChunkKey);
-    const Ref<Chunk> &frontNeighborChunk = getChunk(frontNeighborChunkKey);
-    const Ref<Chunk> &backNeighborChunk = getChunk(backNeighborChunkKey);
-    chunk->buildMesh(*this, leftNeighborChunk, rightNeighborChunk, frontNeighborChunk,
-                     backNeighborChunk);
+    chunk->buildMesh(*this);
 }
 
 void ChunkManager::updateChunkMesh(ChunkKey chunkKey) {

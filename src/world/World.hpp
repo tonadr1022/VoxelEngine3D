@@ -16,7 +16,7 @@
 
 class World {
 public:
-    explicit World(Renderer &renderer);
+    explicit World(Renderer &renderer, int seed);
 
     ~World();
 

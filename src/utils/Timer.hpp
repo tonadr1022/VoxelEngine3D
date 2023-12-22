@@ -9,12 +9,14 @@
 
 class Timer {
 public:
-    Timer(const std::string& message = "");
+    explicit Timer(const std::string& message = "", bool print = true);
     ~Timer();
+    float stop();
 
 
 private:
     const std::string& m_message;
+    const bool m_shouldPrint;
     std::chrono::time_point<std::chrono::high_resolution_clock> m_startTime;
 };
 
