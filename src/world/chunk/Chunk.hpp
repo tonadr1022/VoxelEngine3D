@@ -26,8 +26,6 @@ enum class ChunkState {
 
 class ChunkManager;
 
-class Chunklet;
-
 class Chunk : public std::enable_shared_from_this<Chunk> {
 public:
     Chunk() = delete;
@@ -51,9 +49,6 @@ public:
     static inline int XY(glm::ivec2 &pos) {
         return pos.x + pos.y * CHUNK_WIDTH;
     }
-
-
-    void buildMesh(ChunkManager &chunkManager);
 
     void unload();
 
@@ -99,7 +94,7 @@ public:
 
 
 private:
-    std::array<Block, CHUNK_VOLUME> m_blocks;
+    Block m_blocks[CHUNK_VOLUME]{};
 
     ChunkMesh mesh;
     glm::ivec2 m_location;
@@ -129,6 +124,11 @@ private:
     glm::ivec2 m_position;
     int m_seed;
 };
+
+//class ChunkMeshInfo : public ChunkInfo {
+//public:
+//    ChunkMeshInfo(Ref<Chunk> chunk[27]);
+//};
 
 
 #endif //VOXEL_ENGINE_CHUNK_HPP

@@ -6,6 +6,7 @@
 #include "Chunk.hpp"
 #include "../block/BlockDB.hpp"
 #include "ChunkManager.hpp"
+#include "../../utils/Timer.hpp"
 
 
 namespace {
@@ -168,12 +169,14 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, const Ref<Chunk> &
                                                      adjacentBlockPosInChunk.z);
 
     } else {
-        return BlockMethods::isTransparent(chunk->getBlock(adjacentBlockPosInChunk.x, adjacentBlockPosInChunk.y,
-                               adjacentBlockPosInChunk.z));
+        return BlockMethods::isTransparent(
+                chunk->getBlock(adjacentBlockPosInChunk.x, adjacentBlockPosInChunk.y,
+                                adjacentBlockPosInChunk.z));
     }
 }
 
 void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk) {
+    Timer t("construct chunk mesh");
     clearData();
     AdjacentBlockPositions adjacentBlockPositions{};
     ChunkKey chunkKey = chunk->getChunkKey();
@@ -183,6 +186,9 @@ void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk) {
     const Ref<Chunk> &backNeighborChunk = chunkManager.getChunk({chunkKey.x - 1, chunkKey.y});
 
     for (int z = 0; z < CHUNK_HEIGHT; z++) {
+        if (chunk->numSolidBlocksInLayers[z] == 0) {
+            continue;
+        }
         for (int x = 0; x < CHUNK_WIDTH; x++) {
             for (int y = 0; y < CHUNK_WIDTH; y++) {
                 Block block = chunk->getBlock(x, y, z);
@@ -193,7 +199,7 @@ void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk) {
                 adjacentBlockPositions.update(x, y, z);
                 for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
                     auto face = static_cast<BlockFace>(faceIndex);
-                    glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[static_cast<int>(face)];
+                    glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[faceIndex];
                     if (shouldAddFace(adjacentBlockPos, chunk, leftNeighborChunk,
                                       rightNeighborChunk, frontNeighborChunk,
                                       backNeighborChunk)) {
@@ -213,10 +219,8 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face
     int textureX = 0;
     int textureY = 0;
     std::array<int, 20> faceVertices{};
-
     OcclusionLevels occlusionLevels = getOcclusionLevels(blockPosInChunk, face, chunk,
                                                          chunkManager);
-
     switch (face) {
         case BlockFace::FRONT:
             faceVertices = frontFace;
@@ -254,23 +258,14 @@ void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face
     auto baseVertexIndex = vertices.size();
     int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
     for (int i = 0; i < 20; i += 5) {
-        std::bitset<5> xPosBits(faceVertices[i] + blockPosInChunk.x);
-        std::bitset<5> yPosBits(faceVertices[i + 1] + blockPosInChunk.y);
-        std::bitset<9> zPosBits(faceVertices[i + 2] + blockPosInChunk.z);
-        std::bitset<3> occlusionLevel(occlusionLevels[i / 5]);
-        std::bitset<1> uBit(faceVertices[i + 3]);
-        std::bitset<1> vBit(faceVertices[i + 4]);
-        std::bitset<8> textureIndexBits(textureIndex);
-
         uint32_t encodedValue =
-                (xPosBits.to_ulong() << 27) |
-                (yPosBits.to_ulong() << 22) |
-                (zPosBits.to_ulong() << 13) |
-                (occlusionLevel.to_ulong() << 10) |
-                (uBit.to_ulong() << 9) |
-                (vBit.to_ulong() << 8) |
-                (textureIndexBits.to_ulong() << 0);
-
+                ((faceVertices[i] + blockPosInChunk.x) << 27) |
+                ((faceVertices[i + 1] + blockPosInChunk.y) << 22) |
+                ((faceVertices[i + 2] + blockPosInChunk.z) << 13) |
+                (occlusionLevels[i / 5] << 10) |
+                (faceVertices[i + 3] << 9) |
+                (faceVertices[i + 4] << 8) |
+                (textureIndex << 0);
         vertices.push_back(encodedValue);
     }
 
@@ -326,21 +321,19 @@ ChunkMesh::getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, const
         bool side1IsSolid = false;
         bool side2IsSolid = false;
         bool cornerIsSolid = false;
-        // side 1
-        glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
 
+        glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
         Block side1Block = chunk->getBlock(side1Pos, chunkManager);
         if (side1Block != Block::AIR) {
             side1IsSolid = true;
         }
-        // side 2
-        glm::ivec3 side2Pos = blockPosInChunk + faceLightingAdjacency[1];
 
+        glm::ivec3 side2Pos = blockPosInChunk + faceLightingAdjacency[1];
         Block side2Block = chunk->getBlock(side2Pos, chunkManager);
         if (side2Block != Block::AIR) {
             side2IsSolid = true;
         }
-        // corner
+
         glm::ivec3 cornerPos = blockPosInChunk + faceLightingAdjacency[2];
         Block cornerBlock = chunk->getBlock(cornerPos, chunkManager);
         if (cornerBlock != Block::AIR) {

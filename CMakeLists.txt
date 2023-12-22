@@ -102,6 +102,8 @@ set(SOURCE_FILES
         src/input/Mouse.cpp
         src/input/Mouse.hpp
         src/input/KeyPress.hpp
+        src/world/save/WorldSave.cpp
+        src/world/save/WorldSave.hpp
 )
 
 include_directories("dependencies")

@@ -12,11 +12,12 @@
 #include "../physics/Ray.hpp"
 #include "../EngineConfig.hpp"
 #include "generation/TerrainGenerator.hpp"
+#include "save/WorldSave.hpp"
 #include <glm/gtx/hash.hpp>
 
 class World {
 public:
-    explicit World(Renderer &renderer, int seed);
+    explicit World(Renderer &renderer, int seed, const std::string &savePath);
 
     ~World();
 
@@ -39,8 +40,10 @@ public:
     void renderDebugGui();
 
 private:
-    glm::ivec3 lastRayCastBlockPos = NULL_VECTOR;
-    glm::ivec3 prevLastRayCastBlockPos = NULL_VECTOR;
+    void saveData();
+
+    glm::ivec3 m_lastRayCastBlockPos = NULL_VECTOR;
+    glm::ivec3 m_prevLastRayCastBlockPos = NULL_VECTOR;
 
     void loadChunks();
 
@@ -64,11 +67,13 @@ private:
 
     int m_renderDistance = 12;
 
-    Renderer renderer;
+    Renderer m_renderer;
 
-    ChunkManager chunkManager;
+    ChunkManager m_chunkManager;
 
     TerrainGenerator m_terrainGenerator;
+
+    WorldSave m_worldSave;
 
     std::unordered_map<glm::ivec2, std::unique_ptr<ChunkLoadInfo>> m_loadInfoMap;
 

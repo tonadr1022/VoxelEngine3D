@@ -12,7 +12,7 @@ Application::Application() : window(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT,
     instancePtr = this;
     window.lockCursor();
 
-    world = std::make_shared<World>(renderer, 2);
+    m_world = std::make_unique<World>(renderer, 2, "default.wld");
 }
 
 Application::~Application() {
@@ -26,7 +26,7 @@ void Application::run() {
     const double dt = 1 / 60.0;
     double currentTime = window.getTime();
 
-    while (!window.shouldClose()) {
+    while (m_running) {
 
         Keyboard::update();
         Mouse::update();
@@ -35,26 +35,25 @@ void Application::run() {
 
         window.beginFrame();
 
-        world->update();
+        m_world->update();
 
         double newTime = window.getTime();
         double frameTime = newTime - currentTime;
         currentTime = newTime;
 
-        world->player.perFrameUpdate();
+        m_world->player.perFrameUpdate();
         while (frameTime > 0.0) {
             auto deltaTime = static_cast<float>(std::min(frameTime, dt));
             frameTime -= deltaTime;
             time += deltaTime;
-            world->player.update(deltaTime);
+            m_world->player.update(deltaTime);
         }
 
         debugGui.beginFrame();
-        world->render();
+        m_world->render();
         debugGui.endFrame();
 
         window.swapBuffers();
-
     }
 }
 
@@ -62,7 +61,7 @@ void Application::onKeyEvent(int key, int scancode, int action, int mods) {
     bool isPressed = action == GLFW_PRESS;
     bool isReleased = action == GLFW_RELEASE;
     if (isPressed && key == GLFW_KEY_ESCAPE) {
-        window.close();
+        m_running = false;
     }
     if (isPressed) {
         Keyboard::press(key);
@@ -72,7 +71,7 @@ void Application::onKeyEvent(int key, int scancode, int action, int mods) {
 }
 
 void Application::onScrollEvent(double xoffset, double yoffset) {
-    world->player.processScrollInput(yoffset);
+    m_world->player.processScrollInput(yoffset);
 }
 
 void Application::onMouseButtonEvent(int button, int action, int mods) {
@@ -98,7 +97,7 @@ void Application::onCursorPositionEvent(double xpos, double ypos) {
 
     if (!Keyboard::isPressed(GLFW_KEY_B)) {
         window.lockCursor();
-        world->player.onCursorUpdate(xOffset, yOffset);
+        m_world->player.onCursorUpdate(xOffset, yOffset);
     } else {
         window.unlockCursor();
     }
@@ -106,7 +105,7 @@ void Application::onCursorPositionEvent(double xpos, double ypos) {
 
 void Application::onResizeEvent(int width, int height) {
     float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
-    world->player.camera.updateProjectionMatrix(aspectRatio);
+    m_world->player.camera.updateProjectionMatrix(aspectRatio);
 }
 
 

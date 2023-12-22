@@ -51,18 +51,22 @@ ChunkKey ChunkManager::getChunkKeyByWorldLocation(int x, int y) {
 void ChunkManager::buildChunkMesh(ChunkKey chunkKey) {
     if (!chunkExists(chunkKey)) {
         throw std::runtime_error(
-                "Chunk not found at: " + std::to_string(chunkKey.x) + ", " +
+                "Cannot mesh, chunk not found at: " + std::to_string(chunkKey.x) + ", " +
                 std::to_string(chunkKey.y) + "\n");
     }
     const Ref<Chunk> &chunk = getChunk(chunkKey);
-
-    chunk->buildMesh(*this);
+    chunk->getMesh().construct(*this, chunk);
+    chunk->chunkMeshState = ChunkMeshState::BUILT;
 }
 
-void ChunkManager::updateChunkMesh(ChunkKey chunkKey) {
+void ChunkManager::remeshChunk(ChunkKey chunkKey) {
     const Ref<Chunk> &chunk = getChunk(chunkKey);
-    chunk->unload();
-    buildChunkMesh(chunkKey);
+    ChunkMesh &mesh = chunk->getMesh();
+    mesh.clearData();
+    mesh.clearBuffers();
+    chunk->chunkMeshState = ChunkMeshState::UNBUILT;
+    mesh.construct(*this, chunk);
+    chunk->chunkMeshState = ChunkMeshState::BUILT;
 }
 
 
@@ -144,7 +148,7 @@ void ChunkManager::remeshChunksToRemesh() {
         std::cout << "remeshing " << m_chunksToRemesh.size() << " chunks" << std::endl;
     }
     for (auto &chunkKey: m_chunksToRemesh) {
-        updateChunkMesh(chunkKey);
+        remeshChunk(chunkKey);
     }
     m_chunksToRemesh.clear();
 }

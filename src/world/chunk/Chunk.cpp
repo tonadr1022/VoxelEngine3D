@@ -9,17 +9,12 @@
 Chunk::Chunk(glm::ivec2 location) : m_location(location), chunkMeshState(ChunkMeshState::UNBUILT),
                                     chunkState(ChunkState::UNGENERATED), m_chunkKey(
                 ChunkManager::getChunkKeyByWorldLocation(location.x, location.y)) {
-    m_blocks.fill(Block::AIR);
+    std::fill_n(m_blocks, CHUNK_VOLUME, Block::AIR);
     m_maxTerrainHeights.fill(0);
     numSolidBlocksInLayers.fill(0);
 }
 
-void
-Chunk::buildMesh(ChunkManager &chunkManager) {
-    const Ref<Chunk> &sharedThis = std::make_shared<Chunk>(*this);
-    mesh.construct(chunkManager, sharedThis);
-    chunkMeshState = ChunkMeshState::BUILT;
-}
+Chunk::~Chunk() = default;
 
 void Chunk::unload() {
     mesh.clearData();
@@ -87,8 +82,6 @@ Block Chunk::getBlock(glm::ivec3 &position, ChunkManager &chunkManager) {
 ChunkKey Chunk::getChunkKey() {
     return m_chunkKey;
 }
-
-Chunk::~Chunk() = default;
 
 ChunkLoadInfo::ChunkLoadInfo(const glm::ivec2 &pos, int seed) : m_position(pos), m_seed(seed) {}
 

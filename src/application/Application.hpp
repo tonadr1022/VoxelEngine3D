@@ -39,8 +39,9 @@ private:
 
     Window window;
     Renderer renderer;
+    bool m_running = true;
 
-    std::shared_ptr<World> world;
+    std::unique_ptr<World> m_world;
 
 };
 

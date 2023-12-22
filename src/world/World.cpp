@@ -11,9 +11,12 @@
 #include <algorithm>
 
 
-World::World(Renderer &renderer, int seed) : renderer(renderer),
-                                             chunkRenderer(player.camera),
-                                             m_terrainGenerator(seed) {
+World::World(Renderer &renderer, int seed, const std::string &savePath) : m_worldSave(savePath),
+                                                                          m_renderer(renderer),
+                                                                          chunkRenderer(
+                                                                                  player.camera),
+                                                                          m_terrainGenerator(seed),
+                                                                          m_center(0, 0, 0) {
     BlockDB::loadData("../resources/blocks/");
 
     {
@@ -50,6 +53,7 @@ World::~World() {
     for (auto &thread: m_chunkLoadThreads) {
         thread.join();
     }
+    saveData();
 }
 
 void sortChunksByDistance(std::vector<Ref<Chunk>> &chunks, const glm::vec3 &playerPos) {
@@ -61,7 +65,7 @@ void sortChunksByDistance(std::vector<Ref<Chunk>> &chunks, const glm::vec3 &play
 
 void World::render() {
     chunkRenderer.start();
-    ChunkMap &chunkMap = chunkManager.getChunkMap();
+    ChunkMap &chunkMap = m_chunkManager.getChunkMap();
     std::vector<Ref<Chunk>> chunksToRender;
     for (auto &chunkEntry: chunkMap) {
         if (chunkEntry.second->chunkMeshState == ChunkMeshState::BUILT) {
@@ -76,11 +80,11 @@ void World::render() {
     }
 
     // render block break and outline if a block is being aimed at
-    if (static_cast<const glm::vec3>(lastRayCastBlockPos) != NULL_VECTOR) {
-        renderer.renderBlockOutline(player.camera, lastRayCastBlockPos);
-        renderer.renderBlockBreak(player.camera, lastRayCastBlockPos, player.blockBreakStage);
+    if (static_cast<const glm::vec3>(m_lastRayCastBlockPos) != NULL_VECTOR) {
+        m_renderer.renderBlockOutline(player.camera, m_lastRayCastBlockPos);
+        m_renderer.renderBlockBreak(player.camera, m_lastRayCastBlockPos, player.blockBreakStage);
     }
-    renderer.renderCrossHair();
+    m_renderer.renderCrossHair();
     renderDebugGui();
 }
 
@@ -90,7 +94,7 @@ void World::update() {
     updateChunks();
     unloadChunks();
     castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
-    chunkManager.remeshChunksToRemesh();
+    m_chunkManager.remeshChunksToRemesh();
 }
 
 
@@ -104,7 +108,7 @@ void World::loadChunks() {
     int secondPassLoadDistance = firstPassLoadDistance - 1;
 
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-    ChunkMap &chunkMap = chunkManager.getChunkMap();
+    ChunkMap &chunkMap = m_chunkManager.getChunkMap();
 
     bool foundChunk = false;
     for (int i = 1; i <= firstPassLoadDistance && !foundChunk; i++) {
@@ -142,8 +146,8 @@ void World::loadChunks() {
                 auto it = chunkMap.find(chunkKey);
                 if (it != chunkMap.end() &&
                     it->second->chunkState == ChunkState::TERRAIN_GENERATED &&
-                    chunkManager.hasAllNeighbors(chunkKey)) {
-                    m_terrainGenerator.generateStructuresFor(chunkManager, it->second);
+                    m_chunkManager.hasAllNeighbors(chunkKey)) {
+                    m_terrainGenerator.generateStructuresFor(m_chunkManager, it->second);
                     foundChunk = true;
                 }
             }
@@ -155,7 +159,7 @@ void World::unloadChunks() {
     std::unordered_set<ChunkKey> chunksToUnload;
     int unloadDistanceChunks = m_renderDistance + 8;
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-    ChunkMap &chunkMap = chunkManager.getChunkMap();
+    ChunkMap &chunkMap = m_chunkManager.getChunkMap();
     for (auto it = chunkMap.begin(); it != chunkMap.end();) {
         ChunkKey chunkKey = it->first;
         const Ref<Chunk> &chunk = it->second;
@@ -183,12 +187,12 @@ void World::updateChunkMeshes() {
             for (int chunkY = minY; chunkY <= maxY; chunkY++) {
                 ChunkKey chunkKey = {chunkX, chunkY};
 //                std::lock_guard<std::mutex> lock(m_mainMutex);
-                if (!chunkManager.chunkExists(chunkKey)) continue;
-                const Ref<Chunk> &chunk = chunkManager.getChunk(chunkKey);
+                if (!m_chunkManager.chunkExists(chunkKey)) continue;
+                const Ref<Chunk> &chunk = m_chunkManager.getChunk(chunkKey);
                 if (chunk->chunkState != ChunkState::FULLY_GENERATED) continue;
                 if (chunk->chunkMeshState == ChunkMeshState::BUILT) continue;
-                if (!chunkManager.hasAllNeighborsFullyGenerated(chunkKey)) continue;
-                chunkManager.buildChunkMesh(chunkKey);
+                if (!m_chunkManager.hasAllNeighborsFullyGenerated(chunkKey)) continue;
+                m_chunkManager.buildChunkMesh(chunkKey);
                 return;
             }
         }
@@ -211,7 +215,7 @@ void World::castPlayerAimRay(Ray ray) {
     while (glm::distance(rayStart, rayEnd) < 10.0f) {
         glm::ivec3 blockPos = {floor(rayEnd.x), floor(rayEnd.y), floor(rayEnd.z)};
         try {
-            Block block = chunkManager.getBlock(blockPos);
+            Block block = m_chunkManager.getBlock(blockPos);
             if (block == Block::AIR) {
                 lastAirBlockPos = blockPos;
                 rayEnd += directionIncrement;
@@ -221,8 +225,8 @@ void World::castPlayerAimRay(Ray ray) {
             return;
         }
 
-        prevLastRayCastBlockPos = lastRayCastBlockPos;
-        lastRayCastBlockPos = blockPos;
+        m_prevLastRayCastBlockPos = m_lastRayCastBlockPos;
+        m_lastRayCastBlockPos = blockPos;
 
         // calculate block break stage. 10 stages. 0 is no break, 10 is fully broken
         auto duration = std::chrono::steady_clock::now() - lastTime;
@@ -234,7 +238,7 @@ void World::castPlayerAimRay(Ray ray) {
         // breaking block
         if (Mouse::isPressed(GLFW_MOUSE_BUTTON_LEFT)) {
             // check if player switched block aimed at. if so, reset time and break stage and return
-            if (!compareVec3(lastRayCastBlockPos, prevLastRayCastBlockPos)) {
+            if (!compareVec3(m_lastRayCastBlockPos, m_prevLastRayCastBlockPos)) {
                 player.blockBreakStage = 0;
                 lastTime = std::chrono::steady_clock::now();
                 return;
@@ -245,9 +249,9 @@ void World::castPlayerAimRay(Ray ray) {
                 return;
             }
 
-            chunkManager.setBlock({blockPos.x, blockPos.y, blockPos.z}, Block::AIR);
+            m_chunkManager.setBlock({blockPos.x, blockPos.y, blockPos.z}, Block::AIR);
             player.blockBreakStage = 0;
-            lastRayCastBlockPos = NULL_VECTOR;
+            m_lastRayCastBlockPos = NULL_VECTOR;
             isFirstAction = false;
         }
             // placing block
@@ -256,7 +260,7 @@ void World::castPlayerAimRay(Ray ray) {
                                   std::chrono::milliseconds(PLACING_DELAY_MS)) {
                 return;
             }
-            chunkManager.setBlock(lastAirBlockPos, Block(player.inventory.getHeldItem()));
+            m_chunkManager.setBlock(lastAirBlockPos, Block(player.inventory.getHeldItem()));
             isFirstAction = false;
 
             // not placing or breaking, reset
@@ -270,7 +274,7 @@ void World::castPlayerAimRay(Ray ray) {
     }
     lastTime = std::chrono::steady_clock::now();
     player.blockBreakStage = 0;
-    lastRayCastBlockPos = NULL_VECTOR;
+    m_lastRayCastBlockPos = NULL_VECTOR;
 }
 
 int World::getRenderDistance() const {
@@ -316,5 +320,9 @@ void World::renderDebugGui() {
     player.renderDebugGui();
 
     ImGui::End();
+}
+
+void World::saveData() {
+    m_worldSave.saveData();
 }
 

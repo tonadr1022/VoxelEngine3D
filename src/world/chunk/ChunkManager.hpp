@@ -17,7 +17,7 @@ class ChunkManager {
 public:
     ChunkManager();
 
-    void updateChunkMesh(ChunkKey chunkKey);
+    void remeshChunk(ChunkKey chunkKey);
 
     void buildChunkMesh(ChunkKey chunkKey);
 
