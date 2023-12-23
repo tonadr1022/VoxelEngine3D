@@ -26,7 +26,28 @@ enum class ChunkState {
 
 class ChunkManager;
 
-class Chunk : public std::enable_shared_from_this<Chunk> {
+static inline int XYZ(int x, int y, int z) {
+    return z * CHUNK_AREA + y * CHUNK_WIDTH + x;
+}
+
+static inline int XYZ(glm::ivec3 pos) {
+    return pos.z * CHUNK_AREA + pos.y * CHUNK_WIDTH + pos.x;
+}
+
+static inline int XY(int x, int y) {
+    return x + y * CHUNK_WIDTH;
+}
+
+static inline int XY(glm::ivec2 &pos) {
+    return pos.x + pos.y * CHUNK_WIDTH;
+}
+
+static inline int MESH_XYZ(int x, int y, int z) {
+    return (z + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH +
+            (y+1) * CHUNK_MESH_INFO_CHUNK_WIDTH + (x+1);
+}
+
+class Chunk {
 public:
     Chunk() = delete;
 
@@ -34,21 +55,7 @@ public:
 
     explicit Chunk(glm::ivec2 location);
 
-    static inline int XYZ(int x, int y, int z) {
-        return z * CHUNK_AREA + y * CHUNK_WIDTH + x;
-    }
-
-    static inline int XYZ(glm::ivec3 pos) {
-        return pos.z * CHUNK_AREA + pos.y * CHUNK_WIDTH + pos.x;
-    }
-
-    static inline int XY(int x, int y) {
-        return x + y * CHUNK_WIDTH;
-    }
-
-    static inline int XY(glm::ivec2 &pos) {
-        return pos.x + pos.y * CHUNK_WIDTH;
-    }
+    explicit Chunk(ChunkKey chunkKey);
 
     void unload();
 
@@ -59,7 +66,8 @@ public:
     }
 
     inline Block getBlock(int x, int y, int z) const {
-        return m_blocks[XYZ(x, y, z)]; }
+        return m_blocks[XYZ(x, y, z)];
+    }
 
     inline Block getBlock(const glm::ivec3 &pos) const { return m_blocks[XYZ(pos)]; }
 
@@ -88,13 +96,13 @@ public:
 
     std::array<int, CHUNK_HEIGHT> numSolidBlocksInLayers{};
 
-    ChunkKey getChunkKey();
+    inline ChunkKey chunkKey() const { return m_chunkKey; };
 
     std::array<int, CHUNK_AREA> m_maxTerrainHeights{};
 
+    Block m_blocks[CHUNK_VOLUME]{};
 
 private:
-    Block m_blocks[CHUNK_VOLUME]{};
 
     ChunkMesh mesh;
     glm::ivec2 m_location;
@@ -113,22 +121,34 @@ public:
 
 class ChunkLoadInfo : public ChunkInfo {
 public:
-    ChunkLoadInfo(const glm::ivec2 &pos, int seed);
+    ChunkLoadInfo(ChunkKey chunkKey, int seed);
 
     void process() override;
 
-    void applyTerrain(Chunk *(&chk)[WORLD_HEIGHT]);
+    void applyTerrain(const Ref<Chunk> &chunk);
 
 private:
-    Block m_result[CHUNK_INFO_SIZE * WORLD_HEIGHT]{};
-    glm::ivec2 m_position;
+    Block m_blocks[CHUNK_VOLUME]{};
     int m_seed;
+    ChunkKey m_chunkKey;
 };
 
-//class ChunkMeshInfo : public ChunkInfo {
-//public:
-//    ChunkMeshInfo(Ref<Chunk> chunk[27]);
-//};
+class ChunkMeshInfo : public ChunkInfo {
+public:
+    explicit ChunkMeshInfo(Ref<Chunk> chunk[9]);
+
+    void process() override;
+
+    void applyMesh(const Ref<Chunk> &chunk);
+
+private:
+    Block m_blocks[CHUNK_MESH_INFO_SIZE]{};
+    std::vector<uint32_t> m_vertices;
+    std::vector<unsigned int> m_indices;
+    ChunkKey m_chunkKey;
+
+
+};
 
 
 #endif //VOXEL_ENGINE_CHUNK_HPP

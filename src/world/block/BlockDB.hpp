@@ -27,7 +27,7 @@ public:
     static void loadData(const std::string& filePath);
     static BlockData& getBlockData(Block id);
 private:
-    static std::unordered_map<Block, BlockData> data;
+    static std::vector<BlockData> data;
 };
 
 

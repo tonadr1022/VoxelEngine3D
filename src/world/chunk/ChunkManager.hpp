@@ -35,13 +35,30 @@ public:
 
     bool hasAllNeighbors(ChunkKey chunkKey);
 
+
     bool hasAllNeighborsFullyGenerated(ChunkKey chunkKey);
+
+    inline bool hasChunksToRemesh() {
+        return !m_chunksToRemesh.empty();
+    }
 
     static constexpr std::array<glm::ivec2, 8> NEIGHBOR_CHUNK_KEY_OFFSETS = {
             glm::ivec2{-1, -1},
             glm::ivec2{-1, 0},
             glm::ivec2{-1, 1},
             glm::ivec2{0, -1},
+            glm::ivec2{0, 1},
+            glm::ivec2{1, -1},
+            glm::ivec2{1, 0},
+            glm::ivec2{1, 1}
+    };
+
+    static constexpr std::array<glm::ivec2, 9> NEIGHBOR_ARRAY_OFFSETS = {
+            glm::ivec2{-1, -1},
+            glm::ivec2{-1, 0},
+            glm::ivec2{-1, 1},
+            glm::ivec2{0, -1},
+            glm::ivec2{0, 0},
             glm::ivec2{0, 1},
             glm::ivec2{1, -1},
             glm::ivec2{1, 0},

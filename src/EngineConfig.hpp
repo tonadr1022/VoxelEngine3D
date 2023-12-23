@@ -37,6 +37,11 @@
 #include <atomic>
 #include <future>
 #include <chrono>
+#include <queue>
+#include <condition_variable>
+#include <random>
+#include <algorithm>
+#include <list>
 
 
 template<typename T>

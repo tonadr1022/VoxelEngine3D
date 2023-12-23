@@ -153,7 +153,7 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, const Ref<Chunk> &
     if (adjacentBlockPosInChunk.z < 0) return false;
 
     // check if adjacent block is vertically out of bounds, if so add face
-    if (adjacentBlockPosInChunk.z > CHUNK_HEIGHT) return true;
+    if (adjacentBlockPosInChunk.z >= CHUNK_HEIGHT) return true;
 
     if (adjacentBlockPosInChunk.x < 0) {
         return !backNeighborChunk->hasNonAirBlockAt(CHUNK_WIDTH - 1, adjacentBlockPosInChunk.y,
@@ -176,10 +176,9 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, const Ref<Chunk> &
 }
 
 void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk) {
-    Timer t("construct chunk mesh");
     clearData();
     AdjacentBlockPositions adjacentBlockPositions{};
-    ChunkKey chunkKey = chunk->getChunkKey();
+    ChunkKey chunkKey = chunk->chunkKey();
     const Ref<Chunk> &leftNeighborChunk = chunkManager.getChunk({chunkKey.x, chunkKey.y - 1});
     const Ref<Chunk> &rightNeighborChunk = chunkManager.getChunk({chunkKey.x, chunkKey.y + 1});
     const Ref<Chunk> &frontNeighborChunk = chunkManager.getChunk({chunkKey.x + 1, chunkKey.y});

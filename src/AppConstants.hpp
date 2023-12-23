@@ -5,6 +5,8 @@
 #ifndef VOXEL_ENGINE_APPCONSTANTS_HPP
 #define VOXEL_ENGINE_APPCONSTANTS_HPP
 
+#include "EngineConfig.hpp"
+
 constexpr int DEFAULT_WINDOW_HEIGHT = 900;
 constexpr int DEFAULT_WINDOW_WIDTH = 1200;
 constexpr int CHUNK_WIDTH = 16;
@@ -16,9 +18,9 @@ constexpr int MINING_DELAY_MS = 500;
 constexpr int PLACING_DELAY_MS = 200;
 constexpr glm::vec3 NULL_VECTOR = glm::vec3(-1, -1, -1);
 
-constexpr int WORLD_HEIGHT = 8;
-constexpr int CHUNK_SIZE = 32;
-constexpr int CHUNK_INFO_SIZE = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
+
+constexpr int CHUNK_MESH_INFO_CHUNK_WIDTH = CHUNK_WIDTH + 2;
+constexpr int CHUNK_MESH_INFO_SIZE = CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_HEIGHT;
 
 enum class HorizontalDirection {
     LEFT = 0,
