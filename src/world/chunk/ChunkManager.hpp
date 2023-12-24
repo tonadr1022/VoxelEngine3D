@@ -27,7 +27,9 @@ public:
 
     void setBlock(glm::ivec3 position, Block block);
 
-    bool chunkExists(ChunkKey chunkKey);
+    inline bool chunkExists(ChunkKey chunkKey) {
+        return chunkMap.find(chunkKey) != chunkMap.end();
+    }
 
     ChunkMap &getChunkMap();
 

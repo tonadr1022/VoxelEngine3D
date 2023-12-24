@@ -185,9 +185,9 @@ void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk) {
     const Ref<Chunk> &backNeighborChunk = chunkManager.getChunk({chunkKey.x - 1, chunkKey.y});
 
     for (int z = 0; z < CHUNK_HEIGHT; z++) {
-        if (chunk->numSolidBlocksInLayers[z] == 0) {
-            continue;
-        }
+//        if (chunk->numSolidBlocksInLayers[z] == 0) {
+//            continue;
+//        }
         for (int x = 0; x < CHUNK_WIDTH; x++) {
             for (int y = 0; y < CHUNK_WIDTH; y++) {
                 Block block = chunk->getBlock(x, y, z);

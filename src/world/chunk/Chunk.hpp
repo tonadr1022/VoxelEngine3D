@@ -84,21 +84,21 @@ public:
 
     ChunkMesh &getMesh();
 
-    inline int getMaxTerrainHeightAt(int x, int y) {
-        return m_maxTerrainHeights[XY(x, y)];
-    };
-
-    inline void setMaxTerrainHeightAt(int x, int y, int z) {
-        m_maxTerrainHeights[XY(x, y)] = z;
-    };
+//    inline int getMaxTerrainHeightAt(int x, int y) {
+//        return m_maxTerrainHeights[XY(x, y)];
+//    };
+//
+//    inline void setMaxTerrainHeightAt(int x, int y, int z) {
+//        m_maxTerrainHeights[XY(x, y)] = z;
+//    };
 
     void markDirty();
 
-    std::array<int, CHUNK_HEIGHT> numSolidBlocksInLayers{};
+//    std::array<int, CHUNK_HEIGHT> numSolidBlocksInLayers{};
 
     inline ChunkKey chunkKey() const { return m_chunkKey; };
 
-    std::array<int, CHUNK_AREA> m_maxTerrainHeights{};
+//    std::array<int, CHUNK_AREA> m_maxTerrainHeights{};
 
     Block m_blocks[CHUNK_VOLUME]{};
 

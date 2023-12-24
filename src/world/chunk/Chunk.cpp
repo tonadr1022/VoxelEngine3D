@@ -10,7 +10,7 @@
 Chunk::Chunk(glm::ivec2 location) : m_location(location), chunkMeshState(ChunkMeshState::UNBUILT),
                                     chunkState(ChunkState::UNGENERATED), m_chunkKey(
                 ChunkManager::getChunkKeyByWorldLocation(location.x, location.y)) {
-    std::fill_n(m_blocks, CHUNK_VOLUME, Block::AIR);
+//    std::fill_n(m_blocks, CHUNK_VOLUME, Block::AIR);
 //    m_maxTerrainHeights.fill(0);
 //    numSolidBlocksInLayers.fill(0);
 }
@@ -34,13 +34,13 @@ void Chunk::unload() {
 
 
 void Chunk::setBlock(int x, int y, int z, Block block) {
-    Block oldBlockId = getBlock(x, y, z);
-    Block newBlockId = block;
-    if (oldBlockId != Block::AIR && block == Block::AIR) {
-        numSolidBlocksInLayers[z]--;
-    } else if (oldBlockId == Block::AIR && newBlockId != Block::AIR) {
-        numSolidBlocksInLayers[z]++;
-    }
+//    Block oldBlockId = getBlock(x, y, z);
+//    Block newBlockId = block;
+//    if (oldBlockId != Block::AIR && block == Block::AIR) {
+//        numSolidBlocksInLayers[z]--;
+//    } else if (oldBlockId == Block::AIR && newBlockId != Block::AIR) {
+//        numSolidBlocksInLayers[z]++;
+//    }
     m_blocks[XYZ(x, y, z)] = block;
 }
 
@@ -74,7 +74,6 @@ Block Chunk::getBlock(glm::ivec3 &position, ChunkManager &chunkManager) {
         position.y >= CHUNK_WIDTH) {
         glm::ivec3 worldLocation = glm::ivec3(m_location, 0) + position;
         Block block = chunkManager.getBlock(worldLocation);
-
         return block;
     } else {
         Block block = getBlock(position);
@@ -83,7 +82,6 @@ Block Chunk::getBlock(glm::ivec3 &position, ChunkManager &chunkManager) {
 }
 
 ChunkLoadInfo::ChunkLoadInfo(ChunkKey chunkKey, int seed) : m_chunkKey(chunkKey), m_seed(seed) {
-
 }
 
 void ChunkLoadInfo::process() {

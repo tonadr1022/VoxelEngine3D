@@ -23,7 +23,7 @@ void TerrainGenerator::generateTerrainFor(const Ref<Chunk> &chunk) {
     for (int i = 0; i < CHUNK_AREA; i++) {
         heights[i] = (int) floor(heightMap[i] * 64) + 100;
         highest = std::max(highest, heights[i]);
-        chunk->m_maxTerrainHeights[i] = heights[i];
+//        chunk->m_maxTerrainHeights[i] = heights[i];
     }
 
     for (int z = 0; z <= highest; z++) {
@@ -50,7 +50,8 @@ void TerrainGenerator::generateStructuresFor(ChunkManager &chunkManager, const R
 
     for (int x = 0; x < CHUNK_WIDTH; x++) {
         for (int y = 0; y < CHUNK_WIDTH; y++) {
-            int height = chunk->getMaxTerrainHeightAt(x, y);
+//            int height = chunk->getMaxTerrainHeightAt(x, y);
+            int height = 200;
             if (chunk->getBlock(x, y, height) == Block::GRASS) {
                 float r = ((float) rand() / (RAND_MAX));
                 if (r > 0.995f) {

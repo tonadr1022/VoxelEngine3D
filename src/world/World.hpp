@@ -32,6 +32,7 @@ public:
     void renderDebugGui();
 
 private:
+
     void castPlayerAimRay(Ray ray);
 
     void saveData();

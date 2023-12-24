@@ -17,10 +17,6 @@ const Ref<Chunk> &ChunkManager::getChunk(ChunkKey chunkKey) {
     return it->second;
 }
 
-bool ChunkManager::chunkExists(ChunkKey chunkKey) {
-    return chunkMap.find(chunkKey) != chunkMap.end();
-}
-
 ChunkMap &ChunkManager::getChunkMap() {
     return chunkMap;
 }
