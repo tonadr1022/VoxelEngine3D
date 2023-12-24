@@ -58,28 +58,23 @@ void Chunk::markDirty() {
     chunkState = ChunkState::CHANGED;
 }
 
-bool Chunk::hasNonAirBlockAt(int x, int y, int z) const {
-    return getBlock(x, y, z) != Block::AIR;
-}
-
-
-Block Chunk::getBlock(glm::ivec3 &position, ChunkManager &chunkManager) {
-    if (position.z < 0) return Block::AIR;
-
-    if (position.z >= CHUNK_HEIGHT) {
-        return Block::AIR;
-    }
-
-    if (position.x < 0 || position.x >= CHUNK_WIDTH || position.y < 0 ||
-        position.y >= CHUNK_WIDTH) {
-        glm::ivec3 worldLocation = glm::ivec3(m_location, 0) + position;
-        Block block = chunkManager.getBlock(worldLocation);
-        return block;
-    } else {
-        Block block = getBlock(position);
-        return block;
-    }
-}
+//Block Chunk::getBlock(glm::ivec3 &position, ChunkManager &chunkManager) {
+//    if (position.z < 0) return Block::AIR;
+//
+//    if (position.z >= CHUNK_HEIGHT) {
+//        return Block::AIR;
+//    }
+//
+//    if (position.x < 0 || position.x >= CHUNK_WIDTH || position.y < 0 ||
+//        position.y >= CHUNK_WIDTH) {
+//        glm::ivec3 worldLocation = glm::ivec3(m_location, 0) + position;
+//        Block block = chunkManager.getBlock(worldLocation);
+//        return block;
+//    } else {
+//        Block block = getBlock(position);
+//        return block;
+//    }
+//}
 
 ChunkLoadInfo::ChunkLoadInfo(ChunkKey chunkKey, int seed) : m_chunkKey(chunkKey), m_seed(seed) {
 }
@@ -119,12 +114,12 @@ void ChunkLoadInfo::process() {
     m_done = true;
 }
 
-void ChunkLoadInfo::applyTerrain(const Ref<Chunk> &chunk) {
+void ChunkLoadInfo::applyTerrain(Chunk *chunk) {
     std::copy(m_blocks, m_blocks + CHUNK_VOLUME, chunk->m_blocks);
     chunk->chunkState = ChunkState::FULLY_GENERATED;
 }
 
-ChunkMeshInfo::ChunkMeshInfo(Ref<Chunk> *chunks) : m_chunkKey(chunks[4]->chunkKey()) {
+ChunkMeshInfo::ChunkMeshInfo(Chunk *(&chunks)[9]) : m_chunkKey(chunks[4]->chunkKey()) {
     // copy the edges of neighboring chunks into array
     // we know all exist
 
@@ -209,7 +204,7 @@ void ChunkMeshInfo::process() {
     m_done = true;
 }
 
-void ChunkMeshInfo::applyMesh(const Ref<Chunk> &chunk) {
+void ChunkMeshInfo::applyMesh(Chunk *chunk) {
     chunk->getMesh().vertices = std::move(m_vertices);
     chunk->getMesh().indices = std::move(m_indices);
     chunk->chunkMeshState = ChunkMeshState::BUILT;

@@ -65,22 +65,22 @@ public:
         return x < 0 || x >= CHUNK_WIDTH || y < 0 || y >= CHUNK_WIDTH || z < 0 || z >= CHUNK_HEIGHT;
     }
 
-    inline Block getBlock(int x, int y, int z) const {
+    [[nodiscard]] inline Block getBlock(int x, int y, int z) const {
         return m_blocks[XYZ(x, y, z)];
     }
 
     inline Block getBlock(const glm::ivec3 &pos) const { return m_blocks[XYZ(pos)]; }
 
-    Block getBlock(glm::ivec3 &position, ChunkManager &chunkManager);
-
-    bool hasNonAirBlockAt(int x, int y, int z) const;
+    [[nodiscard]] inline bool hasNonAirBlockAt(int x, int y, int z) const {
+        return m_blocks[XYZ(x, y, z)] != Block::AIR;
+    }
 
     ChunkMeshState chunkMeshState;
     ChunkState chunkState;
 
     glm::ivec2 &getLocation();
 
-    inline glm::vec3 location() const { return {m_location.x, m_location.y, 0}; };
+//    inline glm::vec3 location() const { return {m_location.x, m_location.y, 0}; };
 
     ChunkMesh &getMesh();
 
@@ -125,7 +125,7 @@ public:
 
     void process() override;
 
-    void applyTerrain(const Ref<Chunk> &chunk);
+    void applyTerrain(Chunk *chunk);
 
 private:
     Block m_blocks[CHUNK_VOLUME]{};
@@ -139,7 +139,7 @@ public:
 
     void process() override;
 
-    void applyStructures(const Ref<Chunk> &chunk);
+    void applyStructures(Chunk &chunk);
 private:
     Block m_blocks[CHUNK_VOLUME]{};
     int m_seed;
@@ -148,11 +148,11 @@ private:
 
 class ChunkMeshInfo : public ChunkInfo {
 public:
-    explicit ChunkMeshInfo(Ref<Chunk> chunk[9]);
+    explicit ChunkMeshInfo(Chunk *(&chunks)[9]);
 
     void process() override;
 
-    void applyMesh(const Ref<Chunk> &chunk);
+    void applyMesh(Chunk *chunk);
 
 private:
     Block m_blocks[CHUNK_MESH_INFO_SIZE]{};

@@ -6,6 +6,7 @@
 #include "../Config.hpp"
 #include "block/BlockDB.hpp"
 #include "../input/Mouse.hpp"
+#include "../utils/Utils.hpp"
 #include "../utils/Timer.hpp"
 #include <algorithm>
 
@@ -20,10 +21,13 @@ World::World(Renderer &renderer, int seed, const std::string &savePath)
         return rcmpChunkKey_impl(std::forward<decltype(PH1)>(PH1),
                                  std::forward<decltype(PH2)>(PH2));
     };
+    const size_t loadVectorSize =
+            ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
+    m_chunksToLoadVector.reserve(loadVectorSize);
 
     BlockDB::loadData("../resources/blocks/");
 
-    for (int i = 0; i < std::thread::hardware_concurrency(); i++) {
+    for (int i = 0; i < m_numLoadingThreads; i++) {
         m_chunkLoadThreads.emplace_back(&World::loadChunksWorker, this);
         m_chunkLoadThreads.emplace_back(&World::updateChunkMeshes, this);
     }
@@ -42,9 +46,13 @@ void World::render() {
     chunkRenderer.start();
 
     for (auto &chunkKey: m_renderSet) {
-        const Ref<Chunk> &chunk = m_chunkManager.getChunk(chunkKey);
-        chunkRenderer.render(chunk);
+//        const Ref<Chunk> &chunk = m_chunkManager.getChunk(chunkKey);
+        if (chunkExists(chunkKey)) {
+            chunkRenderer.render(*m_chunkMap.at(chunkKey));
+        }
     }
+//        chunkRenderer.render(chunk);
+//    }
 
     // render block break and outline if a block is being aimed at
     if (static_cast<const glm::vec3>(m_lastRayCastBlockPos) != NULL_VECTOR) {
@@ -56,112 +64,112 @@ void World::render() {
 }
 
 void World::update() {
-    m_xyChanged = false;
-    ChunkKey playerChunkKey = player.getChunkKeyPos();
-    auto newCenter = glm::ivec3(playerChunkKey.x, playerChunkKey.y, 0);
+//    std::cout << "mesh ready list size:       " << m_chunksReadyToMeshList.size() << std::endl;
+//    std::cout << "render set size:            " << m_renderSet.size() << std::endl;
+//    std::cout << "in mesh range vector size:  " << m_chunksInMeshRangeVector.size() << std::endl;
+//    std::cout << "mesh info map size:         " << m_chunkMeshInfoMap.size() << std::endl;
+//    std::cout << "chunks to load vector size: " << m_chunksToLoadVector.size() << std::endl;
+//    std::cout << "load info map size:         " << m_chunkTerrainLoadInfoMap.size() << std::endl;
+//    std::cout << "\n";
 
+    m_xyChanged = false;
+
+    // update center and whether position changed
+    ChunkKey playerChunkKey = player.getChunkKeyPos();
+    auto newCenter = glm::ivec2(playerChunkKey.x, playerChunkKey.y);
     if (newCenter != m_center) {
         m_xyChanged = true;
         m_center = newCenter;
     }
 
-    {
-        Timer timer("update", false);
-        ChunkMap &chunkMap = m_chunkManager.getChunkMap();
-        std::cout << "chunkMap size: " << chunkMap.size() << std::endl;
-
+    if (m_xyChanged) {
         // create chunks in range (not terrain generated at this point)
         int loadDistance = m_renderDistance + 2;
-        glm::ivec2 pos = {m_center.x, m_center.y};
-        for (int x = pos.x - loadDistance; x <= pos.x + loadDistance; x++) {
-            for (int y = pos.y - loadDistance; y <= pos.x + loadDistance; y++) {
+        for (int x = m_center.x - loadDistance; x <= m_center.x + loadDistance; x++) {
+            for (int y = m_center.y - loadDistance; y <= m_center.y + loadDistance; y++) {
                 ChunkKey chunkKey = {x, y};
-                if (chunkMap.find(chunkKey) != chunkMap.end()) continue; // skip non existent chunks
-//                chunkMap.emplace(chunkKey, std::make_shared<Chunk>(chunkKey));
-                {
-//                    Timer t("emplace");
-                    chunkMap.emplace(chunkKey, std::make_shared<Chunk>(
-                            glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH)));
-                }
+                if (chunkExists(chunkKey)) continue; // skip non existent chunks
+                m_chunkMap.emplace(chunkKey, std::make_unique<Chunk>(chunkKey));
             }
         }
 
-        float dur = timer.stop();
-        if (dur > 30.0f) {
-            std::cout << "create chunks took " << dur << " milliseconds" << std::endl;
-        }
-    }
-
-    if (m_xyChanged) {
         unloadChunks();
     }
 
     castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
 
+    // chunk updates
+
     // if have chunks to remesh, lock
-    if (m_chunkManager.hasChunksToRemesh()) {
-        std::lock_guard<std::mutex> lock(m_mainMutex);
-        m_chunkManager.remeshChunksToRemesh();
-    }
-
-    {
-        std::lock_guard<std::mutex> lock(m_mainMutex);
-        updateChunkLoadList();
-        updateChunkMeshList();
-        m_conditionVariable.notify_all();
-    }
+//    if (m_chunkManager.hasChunksToRemesh()) {
+//        std::lock_guard<std::mutex> lock(m_mainMutex);
+//        m_chunkManager.remeshChunksToRemesh();
+//    }
 
 
+    std::lock_guard<std::mutex> lock(m_mainMutex);
+    updateChunkLoadList();
+    updateChunkMeshList();
+    m_conditionVariable.notify_all();
 }
 
 void World::updateChunkLoadList() {
-//    Timer t("updateChunkLoadList", false);
-    for (auto chunkKeyIter = m_chunkTerrainLoadInfoMap.begin();
-         chunkKeyIter != m_chunkTerrainLoadInfoMap.end();) {
-        if (chunkKeyIter->second->m_done) {
-            if (m_chunkManager.chunkExists(chunkKeyIter->first)) {
-                const Ref<Chunk> &chunk = m_chunkManager.getChunk(chunkKeyIter->first);
-                chunkKeyIter->second->applyTerrain(chunk);
+    {
+//        Timer t("updateChunkLoadList", false);
+
+        for (auto chunkKeyIter = m_chunkTerrainLoadInfoMap.begin();
+             chunkKeyIter != m_chunkTerrainLoadInfoMap.end();) {
+            if (chunkKeyIter->second->m_done) {
+                if (chunkExists(chunkKeyIter->first)) {
+                    chunkKeyIter->second->applyTerrain(getChunkRawPtr(chunkKeyIter->first));
+                }
                 chunkKeyIter = m_chunkTerrainLoadInfoMap.erase(chunkKeyIter);
+            } else {
+                chunkKeyIter++;
             }
-        } else {
-            chunkKeyIter++;
         }
-    }
-//    if (m_xyChanged) {
-    int loadDistance = m_renderDistance + 2;
-    for (int x = m_center.x - loadDistance; x <= m_center.x + loadDistance; x++) {
-        for (int y = m_center.y - loadDistance; y <= m_center.y + loadDistance; y++) {
-            ChunkKey chunkKey = {x, y};
-            if (!m_chunkManager.chunkExists(chunkKey) ||
-                m_chunkManager.getChunk(chunkKey)->chunkState ==
-                ChunkState::FULLY_GENERATED ||
-                m_chunkTerrainLoadInfoMap.find(chunkKey) != m_chunkTerrainLoadInfoMap.end())
-                continue; // skip non existent chunks, ineligible chunks, and chunks already loading
-            m_chunksToLoadVector.emplace_back(chunkKey);
-            m_chunkTerrainLoadInfoMap.emplace(chunkKey,
-                                              std::make_unique<ChunkLoadInfo>(chunkKey,
-                                                                              m_seed));
-        }
+
+//        auto dur = t.stop();
+//        if (dur > 0.1) {
+//            std::cout << "updateChunkLoadList: " << dur << std::endl;
 //        }
     }
-//    if (!m_chunksToLoadVector.empty()) {
-//        std::cout << "chunks to load: " << m_chunksToLoadVector.size() << std::endl;
-//        std::sort(m_chunksToLoadVector.begin(), m_chunksToLoadVector.end(), rcmpChunkKey);
-//    }
-//    float time = t.stop();
-//    if (time > 1.0f) {
-//        std::cout << "updateChunkLoadList took " << time << " milliseconds" << std::endl;
-//    }
+//    if (m_xyChanged) {
+    {
+        Timer t("load vector", false);
+    int loadDistance = m_renderDistance + 2;
+    int x, y;
+    for (x = m_center.x - loadDistance; x <= m_center.x + loadDistance; x++) {
+        for (y = m_center.y - loadDistance; y <= m_center.y + loadDistance; y++) {
+            ChunkKey chunkKey = {x, y};
+            if (!chunkExists(chunkKey)) continue;
+
+            if (m_chunkMap.at(chunkKey)->chunkState != ChunkState::FULLY_GENERATED &&
+                !m_chunkTerrainLoadInfoMap.count(chunkKey)) {
+                m_chunksToLoadVector.emplace_back(chunkKey);
+                m_chunkTerrainLoadInfoMap.emplace(chunkKey,
+                                                  std::make_unique<ChunkLoadInfo>(chunkKey,
+                                                                                  m_seed));
+            }
+        }
+        std::sort(m_chunksToLoadVector.begin(), m_chunksToLoadVector.end(), rcmpChunkKey);
+    }
+
+    auto dur = t.stop();
+    if (dur > 0.1) {
+        std::cout << "load vector: " << dur << std::endl;
+    }
+
+    }
 }
 
 void World::updateChunkMeshList() {
-//    Timer t("updateChunkMeshList", false);
+    // apply meshes regardless of whether pos changed
     for (auto chunkKeyIter = m_chunkMeshInfoMap.begin();
          chunkKeyIter != m_chunkMeshInfoMap.end();) {
         if (chunkKeyIter->second->m_done) {
-            if (m_chunkManager.chunkExists(chunkKeyIter->first)) {
-                const Ref<Chunk> &chunk = m_chunkManager.getChunk(chunkKeyIter->first);
+            if (chunkExists(chunkKeyIter->first)) {
+                Chunk *chunk = getChunkRawPtr(chunkKeyIter->first);
                 chunkKeyIter->second->applyMesh(chunk);
                 if (!chunk->getMesh().vertices.empty()) {
                     m_renderSet.insert(chunkKeyIter->first);
@@ -173,133 +181,71 @@ void World::updateChunkMeshList() {
         }
     }
 //    if (m_xyChanged) {
+    auto k = ChunkKey{-448 / CHUNK_WIDTH, 128 / CHUNK_WIDTH};
     m_chunksInMeshRangeVector.clear();
     // add chunks that can be meshed into vector
-    auto center = player.getChunkKeyPos();
-    for (int x = center.x - m_renderDistance; x <= m_renderDistance; x++) {
-        for (int y = center.y - m_renderDistance; y <= m_renderDistance; y++) {
-            ChunkKey chunkKey = {center.x + x, center.y + y};
-            if (!m_chunkManager.chunkExists(chunkKey)) continue; // skip non existent chunks
-            const Ref<Chunk> &chunk = m_chunkManager.getChunk(chunkKey);
-            if (chunk->chunkState != ChunkState::FULLY_GENERATED)
+    int x, y;
+    ChunkKey chunkKey{};
+    for (x = m_center.x - m_renderDistance; x <= m_center.x + m_renderDistance; x++) {
+        for (y = m_center.y - m_renderDistance; y <= m_center.y + m_renderDistance; y++) {
+            chunkKey = {x, y};
+            if (!chunkExists(chunkKey)) continue; // skip non existent chunks
+            Chunk *chunk = getChunkRawPtr(chunkKey);
+            if (chunk->chunkState != ChunkState::FULLY_GENERATED) {
                 continue; // skip ineligible chunks
-            if (chunk->chunkMeshState == ChunkMeshState::BUILT)
+            }
+            if (chunk->chunkMeshState == ChunkMeshState::BUILT) {
                 continue; // skip built chunks
-            if (m_chunkMeshInfoMap.find(chunkKey) != m_chunkMeshInfoMap.end())
+            }
+            if (m_chunkMeshInfoMap.find(chunkKey) != m_chunkMeshInfoMap.end()) {
                 continue; // skip chunks already meshing
+            }
             m_chunksInMeshRangeVector.emplace_back(chunkKey);
         }
     }
-//        m_chunksReadyToMeshList.sort(rcmpChunkKey);
-
-    {
-        glm::ivec2 offset;
-        int i;
-        Ref<Chunk> chunks[9];
-        for (auto chunkKeyIter = m_chunksInMeshRangeVector.begin();
-             chunkKeyIter != m_chunksInMeshRangeVector.end();) {
-            bool hasAllNeighbors = m_chunkManager.hasAllNeighborsFullyGenerated(*chunkKeyIter);
-            if (hasAllNeighbors) {
-                for (i = 0; i < 9; i++) {
-                    offset = ChunkManager::NEIGHBOR_ARRAY_OFFSETS[i];
-                    chunks[i] = m_chunkManager.getChunk({offset.x + chunkKeyIter->x,
-                                                         offset.y + chunkKeyIter->y});
-                }
-                m_chunkMeshInfoMap.emplace(*chunkKeyIter, std::make_unique<ChunkMeshInfo>(chunks));
-                auto pos = std::lower_bound(m_chunksReadyToMeshList.begin(),
-                                            m_chunksReadyToMeshList.end(), *chunkKeyIter,
-                                            rcmpChunkKey);
-                m_chunksReadyToMeshList.insert(pos, *chunkKeyIter);
-                chunkKeyIter = m_chunksInMeshRangeVector.erase(chunkKeyIter);
-            } else {
-                ++chunkKeyIter;
-            }
-        }
-//        float duration = timer.stop();
-//        if (duration > 1.0f) {
-//            std::cout << "f took " << duration << " milliseconds" << std::endl;
-//        }
-    }
-//    float time = t.stop();
-//    if (time > 1.0f) {
-//        std::cout << "updateChunkMeshList took " << time << " milliseconds" << std::endl;
+    m_chunksReadyToMeshList.sort(rcmpChunkKey);
 //    }
-}
 
-
-void World::loadChunks() {
-    while (true) {
-        int firstPassLoadDistance = m_renderDistance + 2;
-        int secondPassLoadDistance = firstPassLoadDistance - 1;
-
-        ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-        ChunkMap &chunkMap = m_chunkManager.getChunkMap();
-        int numTerrainBuilt = 0;
-        for (int i = 1; i <= firstPassLoadDistance; i++) {
-            int minX = playerChunkKeyPos.x - i;
-            int maxX = playerChunkKeyPos.x + i;
-            int minY = playerChunkKeyPos.y - i;
-            int maxY = playerChunkKeyPos.y + i;
-            for (int chunkX = minX; chunkX <= maxX; chunkX++) {
-                for (int chunkY = minY; chunkY <= maxY && numTerrainBuilt < 10; chunkY++) {
-                    ChunkKey chunkKey = {chunkX, chunkY};
-                    std::unique_lock<std::mutex> lock(m_mainMutex);
-                    auto it = m_chunkManager.getChunkMap().find(chunkKey);
-                    if (it == m_chunkManager.getChunkMap().end()) {
-                        const Ref<Chunk> chunk = std::make_shared<Chunk>(
-                                glm::vec2(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH));
-                        m_chunkManager.getChunkMap().emplace(chunkKey, chunk);
-                        lock.unlock();
-                        m_terrainGenerator.generateTerrainFor(chunk);
-                        numTerrainBuilt++;
-                    } else {
-                        lock.unlock();
-                    }
-                }
+    glm::ivec2 offset;
+    int i;
+    Chunk *chunks[9];
+    for (auto chunkKeyIter = m_chunksInMeshRangeVector.begin();
+         chunkKeyIter != m_chunksInMeshRangeVector.end();) {
+        bool hasAllNeighbors = hasAllNeighborsFullyGenerated(*chunkKeyIter);
+        if (hasAllNeighbors) {
+            for (i = 0; i < 9; i++) {
+                offset = NEIGHBOR_ARRAY_OFFSETS[i];
+                chunks[i] = getChunkRawPtr(
+                        {offset.x + chunkKeyIter->x, offset.y + chunkKeyIter->y});
             }
-        }
-
-        if (numTerrainBuilt == 0) return;
-        numTerrainBuilt = 0;
-        for (int i = 1; i <= secondPassLoadDistance; i++) {
-            int minX = playerChunkKeyPos.x - i;
-            int maxX = playerChunkKeyPos.x + i;
-            int minY = playerChunkKeyPos.y - i;
-            int maxY = playerChunkKeyPos.y + i;
-            for (int chunkX = minX; chunkX <= maxX; chunkX++) {
-                for (int chunkY = minY; chunkY <= maxY && numTerrainBuilt < 10; chunkY++) {
-                    ChunkKey chunkKey = {chunkX, chunkY};
-                    std::lock_guard<std::mutex> lock(m_mainMutex);
-                    auto it = chunkMap.find(chunkKey);
-                    if (it != chunkMap.end() &&
-                        it->second->chunkState == ChunkState::TERRAIN_GENERATED &&
-                        m_chunkManager.hasAllNeighbors(chunkKey)) {
-                        m_terrainGenerator.generateStructuresFor(m_chunkManager, it->second);
-                        numTerrainBuilt++;
-                    }
-                }
+            m_chunkMeshInfoMap.emplace(*chunkKeyIter, std::make_unique<ChunkMeshInfo>(chunks));
+            auto pos = std::lower_bound(m_chunksReadyToMeshList.begin(),
+                                        m_chunksReadyToMeshList.end(), *chunkKeyIter,
+                                        rcmpChunkKey);
+            m_chunksReadyToMeshList.insert(pos, *chunkKeyIter);
+            chunkKeyIter = m_chunksInMeshRangeVector.erase(chunkKeyIter);
+        } else {
+            if (*chunkKeyIter == k) {
+                std::cout << "not all neighbors\n";
             }
+            ++chunkKeyIter;
         }
     }
 }
 
 void World::unloadChunks() {
     std::unordered_set<ChunkKey> chunksToUnload;
-    int unloadDistanceChunks = m_renderDistance + 3;
+    int unloadDistanceChunks = m_renderDistance + 4;
     ChunkKey playerChunkKeyPos = player.getChunkKeyPos();
-    ChunkMap &chunkMap = m_chunkManager.getChunkMap();
-    for (auto it = chunkMap.begin(); it != chunkMap.end();) {
+    for (auto it = m_chunkMap.begin(); it != m_chunkMap.end();) {
         ChunkKey chunkKey = it->first;
-        const Ref<Chunk> &chunk = it->second;
         if (chunkKey.x < playerChunkKeyPos.x - unloadDistanceChunks ||
             chunkKey.x > playerChunkKeyPos.x + unloadDistanceChunks ||
             chunkKey.y < playerChunkKeyPos.y - unloadDistanceChunks ||
             chunkKey.y > playerChunkKeyPos.y + unloadDistanceChunks) {
-            chunk->unload();
-            std::cout << it->first.x << ", " << it->first.y << " unloaded\n";
-            it = chunkMap.erase(it);
-            std::cout << "new it: " << it->first.x << ", " << it->first.y << std::endl;
+            it->second->unload();
             m_renderSet.erase(chunkKey);
+            it = m_chunkMap.erase(it);
         } else {
             ++it;
         }
@@ -312,7 +258,8 @@ void World::updateChunkMeshes() {
         std::unique_lock<std::mutex> lock(m_mainMutex);
         m_conditionVariable.wait(lock, [this]() {
             return !m_isRunning ||
-                   (m_numRunningThreads < m_numLoadingThreads && !m_chunksReadyToMeshList.empty());
+                   (m_numRunningThreads < m_numLoadingThreads &&
+                    !m_chunksReadyToMeshList.empty());
         });
         if (!m_isRunning) return;
         chunkKey = m_chunksReadyToMeshList.back();
@@ -328,6 +275,7 @@ void World::updateChunkMeshes() {
 
 void World::loadChunksWorker() {
     ChunkKey chunkKey{};
+//    static int count = 0;
     while (true) {
         std::unique_lock<std::mutex> lock(m_mainMutex);
         m_conditionVariable.wait(lock, [this]() {
@@ -335,7 +283,8 @@ void World::loadChunksWorker() {
                    (m_numRunningThreads < m_numLoadingThreads && !m_chunksToLoadVector.empty());
         });
         if (!m_isRunning) return;
-
+//        count++;
+//        std::cout << "load worker count: " << count << ", " << m_numRunningThreads << std::endl;
         chunkKey = m_chunksToLoadVector.back();
         m_chunksToLoadVector.pop_back();
         lock.unlock();
@@ -361,7 +310,7 @@ void World::castPlayerAimRay(Ray ray) {
     while (glm::distance(rayStart, rayEnd) < 10.0f) {
         glm::ivec3 blockPos = {floor(rayEnd.x), floor(rayEnd.y), floor(rayEnd.z)};
         try {
-            Block block = m_chunkManager.getBlock(blockPos);
+            Block block = getBlockFromWorldPosition(blockPos);
             if (block == Block::AIR) {
                 lastAirBlockPos = blockPos;
                 rayEnd += directionIncrement;
@@ -395,7 +344,7 @@ void World::castPlayerAimRay(Ray ray) {
                 return;
             }
 
-            m_chunkManager.setBlock({blockPos.x, blockPos.y, blockPos.z}, Block::AIR);
+            setBlockFromWorldPosition({blockPos.x, blockPos.y, blockPos.z}, Block::AIR);
             player.blockBreakStage = 0;
             m_lastRayCastBlockPos = NULL_VECTOR;
             isFirstAction = false;
@@ -406,7 +355,7 @@ void World::castPlayerAimRay(Ray ray) {
                                   std::chrono::milliseconds(PLACING_DELAY_MS)) {
                 return;
             }
-            m_chunkManager.setBlock(lastAirBlockPos, Block(player.inventory.getHeldItem()));
+            setBlockFromWorldPosition(lastAirBlockPos, Block(player.inventory.getHeldItem()));
             isFirstAction = false;
 
             // not placing or breaking, reset
@@ -451,3 +400,40 @@ void World::saveData() {
     m_worldSave.saveData();
 }
 
+
+bool World::hasAllNeighbors(ChunkKey chunkKey) {
+    return std::all_of(NEIGHBOR_CHUNK_KEY_OFFSETS.begin(), NEIGHBOR_CHUNK_KEY_OFFSETS.end(),
+                       [&](glm::ivec2 offset) {
+                           return chunkExists(
+                                   ChunkKey{chunkKey.x + offset.x, chunkKey.y + offset.y});
+                       });
+}
+
+bool World::hasAllNeighborsFullyGenerated(ChunkKey chunkKey) {
+    return std::all_of(NEIGHBOR_CHUNK_KEY_OFFSETS.begin(), NEIGHBOR_CHUNK_KEY_OFFSETS.end(),
+                       [&](glm::ivec2 offset) {
+                           auto neighborChunkKey = ChunkKey{chunkKey.x + offset.x,
+                                                            chunkKey.y + offset.y};
+                           return chunkExists(neighborChunkKey) &&
+                                  m_chunkMap.at(neighborChunkKey)->chunkState ==
+                                  ChunkState::FULLY_GENERATED;
+                       });
+}
+
+void World::setBlockFromWorldPosition(glm::ivec3 position, Block block) {
+    auto chunkKey = ChunkManager::getChunkKeyByWorldLocation(position.x, position.y);
+    Chunk *chunk = getChunkRawPtr(chunkKey);
+    int chunkX = Utils::positiveModulo(position.x, CHUNK_WIDTH);
+    int chunkY = Utils::positiveModulo(position.y, CHUNK_WIDTH);
+
+    chunk->setBlock(chunkX, chunkY, position.z, block);
+//    handleChunkUpdates(chunk, chunkKey, chunkX, chunkY);
+}
+
+Block World::getBlockFromWorldPosition(glm::ivec3 position) {
+    auto chunkKey = getChunkKeyByWorldLocation(position.x, position.y);
+    Chunk *chunk = getChunkRawPtr(chunkKey);
+    int chunkX = Utils::positiveModulo(position.x, CHUNK_WIDTH);
+    int chunkY = Utils::positiveModulo(position.y, CHUNK_WIDTH);
+    return chunk->getBlock(chunkX, chunkY, position.z);
+}

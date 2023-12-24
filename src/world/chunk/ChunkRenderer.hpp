@@ -17,11 +17,11 @@ public:
 
     ~ChunkRenderer();
 
-    static void createGPUResources(const Ref<Chunk> &chunk);
+    static void createGPUResources(Chunk &chunk);
 
 //    static void destroyGPUResources(Chunk &chunk);
 
-    void render(const Ref<Chunk> &chunk);
+    void render(Chunk &chunk);
 
     void start();
 

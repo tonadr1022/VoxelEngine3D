@@ -12,10 +12,10 @@ ChunkRenderer::ChunkRenderer(Camera &camera) : camera(camera), shader(ShaderMana
         "chunk")), textureAtlasID(ResourceManager::getTexture("texture_atlas")) {
 }
 
-void ChunkRenderer::render(const Ref<Chunk> &chunk) {
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(chunk->getLocation(), 0.0f));
+void ChunkRenderer::render(Chunk &chunk) {
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(chunk.getLocation(), 0.0f));
     shader->setMat4("u_Model", model);
-    ChunkMesh &mesh = chunk->getMesh();
+    ChunkMesh &mesh = chunk.getMesh();
 
     if (!mesh.isBuffered) {
         createGPUResources(chunk);
@@ -33,8 +33,8 @@ void ChunkRenderer::render(const Ref<Chunk> &chunk) {
     }
 }
 
-void ChunkRenderer::createGPUResources(const Ref<Chunk> &chunk) {
-    ChunkMesh &mesh = chunk->getMesh();
+void ChunkRenderer::createGPUResources(Chunk &chunk) {
+    ChunkMesh &mesh = chunk.getMesh();
 
     glGenVertexArrays(1, &mesh.VAO);
     glBindVertexArray(mesh.VAO);

@@ -11,71 +11,43 @@
 #include "../../EngineConfig.hpp"
 
 
-using ChunkMap = std::unordered_map<ChunkKey, std::shared_ptr<Chunk>>;
+//using ChunkMap = std::unordered_map<ChunkKey, std::shared_ptr<Chunk>>;
 
 class ChunkManager {
 public:
     ChunkManager();
 
-    void remeshChunk(ChunkKey chunkKey);
+//    void remeshChunk(ChunkKey chunkKey);
 
-    void buildChunkMesh(ChunkKey chunkKey);
+//    void buildChunkMesh(ChunkKey chunkKey);
 
-    const Ref<Chunk> &getChunk(ChunkKey chunkKey);
+//    const Ref<Chunk> &getChunk(ChunkKey chunkKey);
 
-    Block getBlock(glm::ivec3 position);
+//    Block getBlock(glm::ivec3 position);
 
-    void setBlock(glm::ivec3 position, Block block);
+//    void setBlock(glm::ivec3 position, Block block);
 
-    inline bool chunkExists(ChunkKey chunkKey) {
-        return chunkMap.find(chunkKey) != chunkMap.end();
-    }
+//    inline bool chunkExists(ChunkKey chunkKey) {
+//        return chunkMap.find(chunkKey) != chunkMap.end();
+//    }
 
-    ChunkMap &getChunkMap();
+//    ChunkMap &getChunkMap();
 
     static ChunkKey getChunkKeyByWorldLocation(int x, int y);
-
-    bool hasAllNeighbors(ChunkKey chunkKey);
-
-
-    bool hasAllNeighborsFullyGenerated(ChunkKey chunkKey);
 
     inline bool hasChunksToRemesh() {
         return !m_chunksToRemesh.empty();
     }
 
-    static constexpr std::array<glm::ivec2, 8> NEIGHBOR_CHUNK_KEY_OFFSETS = {
-            glm::ivec2{-1, -1},
-            glm::ivec2{-1, 0},
-            glm::ivec2{-1, 1},
-            glm::ivec2{0, -1},
-            glm::ivec2{0, 1},
-            glm::ivec2{1, -1},
-            glm::ivec2{1, 0},
-            glm::ivec2{1, 1}
-    };
+//    void handleChunkUpdates(const Ref<Chunk> &chunk, ChunkKey chunkKey, int chunkX, int chunkY);
 
-    static constexpr std::array<glm::ivec2, 9> NEIGHBOR_ARRAY_OFFSETS = {
-            glm::ivec2{-1, -1},
-            glm::ivec2{-1, 0},
-            glm::ivec2{-1, 1},
-            glm::ivec2{0, -1},
-            glm::ivec2{0, 0},
-            glm::ivec2{0, 1},
-            glm::ivec2{1, -1},
-            glm::ivec2{1, 0},
-            glm::ivec2{1, 1}
-    };
-
-    void handleChunkUpdates(const Ref<Chunk> &chunk, ChunkKey chunkKey, int chunkX, int chunkY);
-
-    void remeshChunksToRemesh();
+//    void remeshChunksToRemesh();
 
     void addChunkToRemesh(ChunkKey chunkKey);
 
 private:
 
-    ChunkMap chunkMap;
+//    ChunkMap chunkMap;
     std::unordered_set<ChunkKey> m_chunksToRemesh;
 
 

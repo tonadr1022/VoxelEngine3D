@@ -66,23 +66,23 @@ void TerrainGenerator::generateStructuresFor(ChunkManager &chunkManager, const R
 
 void TerrainGenerator::makeTree(ChunkManager &chunkManager, const Ref<Chunk> &chunk,
                                 const glm::ivec3 &position) {
-    glm::ivec2 chunkLocation = chunk->getLocation();
-    for (int i = 0; i < 10; i++) {
-        chunkManager.setBlock(
-                {chunkLocation.x + position.x, chunkLocation.y + position.y, position.z + i},
-                Block::OAK_WOOD);
-    }
-    // leaves
-    for (int x = -2; x <= 2; x++) {
-        for (int y = -2; y <= 2; y++) {
-            for (int z = 8; z <= 12; z++) {
-                chunkManager.setBlock(
-                        {chunkLocation.x + position.x + x, chunkLocation.y + position.y + y,
-                         position.z + z},
-                        Block::OAK_LEAVES);
-            }
-        }
-    }
+//    glm::ivec2 chunkLocation = chunk->getLocation();
+//    for (int i = 0; i < 10; i++) {
+//        chunkManager.setBlock(
+//                {chunkLocation.x + position.x, chunkLocation.y + position.y, position.z + i},
+//                Block::OAK_WOOD);
+//    }
+//    // leaves
+//    for (int x = -2; x <= 2; x++) {
+//        for (int y = -2; y <= 2; y++) {
+//            for (int z = 8; z <= 12; z++) {
+//                chunkManager.setBlock(
+//                        {chunkLocation.x + position.x + x, chunkLocation.y + position.y + y,
+//                         position.z + z},
+//                        Block::OAK_LEAVES);
+//            }
+//        }
+//    }
 }
 
 TerrainGenerator::TerrainGenerator(int seed) : m_seed(seed) {}

@@ -41,8 +41,8 @@ public:
 
 
 private:
-    void addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face, const Ref<Chunk> &chunk,
-                 ChunkManager &chunkManager);
+//    void addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face, const Ref<Chunk> &chunk,
+//                 ChunkManager &chunkManager);
 
     static bool shouldAddFace(glm::ivec3 &blockPosInChunk, const Ref<Chunk> &chunk,
                               const Ref<Chunk> &leftNeighborChunk,
@@ -50,9 +50,9 @@ private:
                               const Ref<Chunk> &frontNeighborChunk,
                               const Ref<Chunk> &backNeighborChunk);
 
-    static OcclusionLevels
-    getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, const Ref<Chunk> &chunk,
-                       ChunkManager &chunkManager);
+//    static OcclusionLevels
+//    getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, const Ref<Chunk> &chunk,
+//                       ChunkManager &chunkManager);
 
     constexpr static OcclusionLevels NO_OCCLUSION = {3, 3, 3, 3};
 };

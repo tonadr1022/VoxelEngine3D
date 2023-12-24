@@ -175,117 +175,117 @@ ChunkMesh::shouldAddFace(glm::ivec3 &adjacentBlockPosInChunk, const Ref<Chunk> &
     }
 }
 
-void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk) {
-    clearData();
-    AdjacentBlockPositions adjacentBlockPositions{};
-    ChunkKey chunkKey = chunk->chunkKey();
-    const Ref<Chunk> &leftNeighborChunk = chunkManager.getChunk({chunkKey.x, chunkKey.y - 1});
-    const Ref<Chunk> &rightNeighborChunk = chunkManager.getChunk({chunkKey.x, chunkKey.y + 1});
-    const Ref<Chunk> &frontNeighborChunk = chunkManager.getChunk({chunkKey.x + 1, chunkKey.y});
-    const Ref<Chunk> &backNeighborChunk = chunkManager.getChunk({chunkKey.x - 1, chunkKey.y});
-
-    for (int z = 0; z < CHUNK_HEIGHT; z++) {
-//        if (chunk->numSolidBlocksInLayers[z] == 0) {
-//            continue;
+//void ChunkMesh::construct(ChunkManager &chunkManager, const Ref<Chunk> &chunk) {
+//    clearData();
+//    AdjacentBlockPositions adjacentBlockPositions{};
+//    ChunkKey chunkKey = chunk->chunkKey();
+//    const Ref<Chunk> &leftNeighborChunk = chunkManager.getChunk({chunkKey.x, chunkKey.y - 1});
+//    const Ref<Chunk> &rightNeighborChunk = chunkManager.getChunk({chunkKey.x, chunkKey.y + 1});
+//    const Ref<Chunk> &frontNeighborChunk = chunkManager.getChunk({chunkKey.x + 1, chunkKey.y});
+//    const Ref<Chunk> &backNeighborChunk = chunkManager.getChunk({chunkKey.x - 1, chunkKey.y});
+//
+//    for (int z = 0; z < CHUNK_HEIGHT; z++) {
+////        if (chunk->numSolidBlocksInLayers[z] == 0) {
+////            continue;
+////        }
+//        for (int x = 0; x < CHUNK_WIDTH; x++) {
+//            for (int y = 0; y < CHUNK_WIDTH; y++) {
+//                Block block = chunk->getBlock(x, y, z);
+//                if (block == Block::AIR) {
+//                    continue;
+//                }
+//                glm::ivec3 pos = {x, y, z};
+//                adjacentBlockPositions.update(x, y, z);
+//                for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
+//                    auto face = static_cast<BlockFace>(faceIndex);
+//                    glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[faceIndex];
+//                    if (shouldAddFace(adjacentBlockPos, chunk, leftNeighborChunk,
+//                                      rightNeighborChunk, frontNeighborChunk,
+//                                      backNeighborChunk)) {
+//                        // calculate ambient occlusion level for each vertex of this face
+//                        addFace(pos, block, face, chunk, chunkManager);
+//                    }
+//                }
+//            }
 //        }
-        for (int x = 0; x < CHUNK_WIDTH; x++) {
-            for (int y = 0; y < CHUNK_WIDTH; y++) {
-                Block block = chunk->getBlock(x, y, z);
-                if (block == Block::AIR) {
-                    continue;
-                }
-                glm::ivec3 pos = {x, y, z};
-                adjacentBlockPositions.update(x, y, z);
-                for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
-                    auto face = static_cast<BlockFace>(faceIndex);
-                    glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[faceIndex];
-                    if (shouldAddFace(adjacentBlockPos, chunk, leftNeighborChunk,
-                                      rightNeighborChunk, frontNeighborChunk,
-                                      backNeighborChunk)) {
-                        // calculate ambient occlusion level for each vertex of this face
-                        addFace(pos, block, face, chunk, chunkManager);
-                    }
-                }
-            }
-        }
-    }
-}
-
-void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face,
-                        const Ref<Chunk> &chunk,
-                        ChunkManager &chunkManager) {
-    BlockData &blockData = BlockDB::getBlockData(block);
-    int textureX = 0;
-    int textureY = 0;
-    std::array<int, 20> faceVertices{};
-    OcclusionLevels occlusionLevels = getOcclusionLevels(blockPosInChunk, face, chunk,
-                                                         chunkManager);
-    switch (face) {
-        case BlockFace::FRONT:
-            faceVertices = frontFace;
-            textureX = blockData.frontTexCoords.x;
-            textureY = blockData.frontTexCoords.y;
-            break;
-        case BlockFace::BACK:
-            faceVertices = backFace;
-            textureX = blockData.backTexCoords.x;
-            textureY = blockData.backTexCoords.y;
-            break;
-        case BlockFace::LEFT:
-            faceVertices = leftFace;
-            textureX = blockData.leftTexCoords.x;
-            textureY = blockData.leftTexCoords.y;
-            break;
-        case BlockFace::RIGHT:
-            faceVertices = rightFace;
-            textureX = blockData.rightTexCoords.x;
-            textureY = blockData.rightTexCoords.y;
-            break;
-        case BlockFace::TOP:
-            faceVertices = topFace;
-            textureX = blockData.topTexCoords.x;
-            textureY = blockData.topTexCoords.y;
-            break;
-        case BlockFace::BOTTOM:
-            faceVertices = bottomFace;
-            textureX = blockData.bottomTexCoords.x;
-            textureY = blockData.bottomTexCoords.y;
-            break;
-        default:
-            break;
-    }
-    auto baseVertexIndex = vertices.size();
-    int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
-    for (int i = 0; i < 20; i += 5) {
-        uint32_t encodedValue =
-                ((faceVertices[i] + blockPosInChunk.x) << 27) |
-                ((faceVertices[i + 1] + blockPosInChunk.y) << 22) |
-                ((faceVertices[i + 2] + blockPosInChunk.z) << 13) |
-                (occlusionLevels[i / 5] << 10) |
-                (faceVertices[i + 3] << 9) |
-                (faceVertices[i + 4] << 8) |
-                (textureIndex << 0);
-        vertices.push_back(encodedValue);
-    }
-
-    // check whether to flip quad based on AO
-    if (occlusionLevels[0] + occlusionLevels[3] > occlusionLevels[1] + occlusionLevels[2]) {
-        indices.push_back(baseVertexIndex + 2);
-        indices.push_back(baseVertexIndex + 0);
-        indices.push_back(baseVertexIndex + 3);
-        indices.push_back(baseVertexIndex + 3);
-        indices.push_back(baseVertexIndex + 0);
-        indices.push_back(baseVertexIndex + 1);
-    } else {
-        indices.push_back(baseVertexIndex);
-        indices.push_back(baseVertexIndex + 1);
-        indices.push_back(baseVertexIndex + 2);
-        indices.push_back(baseVertexIndex + 2);
-        indices.push_back(baseVertexIndex + 1);
-        indices.push_back(baseVertexIndex + 3);
-    }
-}
-
+//    }
+//}
+//
+//void ChunkMesh::addFace(glm::ivec3 &blockPosInChunk, Block block, BlockFace face,
+//                        const Ref<Chunk> &chunk,
+//                        ChunkManager &chunkManager) {
+//    BlockData &blockData = BlockDB::getBlockData(block);
+//    int textureX = 0;
+//    int textureY = 0;
+//    std::array<int, 20> faceVertices{};
+//    OcclusionLevels occlusionLevels = getOcclusionLevels(blockPosInChunk, face, chunk,
+//                                                         chunkManager);
+//    switch (face) {
+//        case BlockFace::FRONT:
+//            faceVertices = frontFace;
+//            textureX = blockData.frontTexCoords.x;
+//            textureY = blockData.frontTexCoords.y;
+//            break;
+//        case BlockFace::BACK:
+//            faceVertices = backFace;
+//            textureX = blockData.backTexCoords.x;
+//            textureY = blockData.backTexCoords.y;
+//            break;
+//        case BlockFace::LEFT:
+//            faceVertices = leftFace;
+//            textureX = blockData.leftTexCoords.x;
+//            textureY = blockData.leftTexCoords.y;
+//            break;
+//        case BlockFace::RIGHT:
+//            faceVertices = rightFace;
+//            textureX = blockData.rightTexCoords.x;
+//            textureY = blockData.rightTexCoords.y;
+//            break;
+//        case BlockFace::TOP:
+//            faceVertices = topFace;
+//            textureX = blockData.topTexCoords.x;
+//            textureY = blockData.topTexCoords.y;
+//            break;
+//        case BlockFace::BOTTOM:
+//            faceVertices = bottomFace;
+//            textureX = blockData.bottomTexCoords.x;
+//            textureY = blockData.bottomTexCoords.y;
+//            break;
+//        default:
+//            break;
+//    }
+//    auto baseVertexIndex = vertices.size();
+//    int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
+//    for (int i = 0; i < 20; i += 5) {
+//        uint32_t encodedValue =
+//                ((faceVertices[i] + blockPosInChunk.x) << 27) |
+//                ((faceVertices[i + 1] + blockPosInChunk.y) << 22) |
+//                ((faceVertices[i + 2] + blockPosInChunk.z) << 13) |
+//                (occlusionLevels[i / 5] << 10) |
+//                (faceVertices[i + 3] << 9) |
+//                (faceVertices[i + 4] << 8) |
+//                (textureIndex << 0);
+//        vertices.push_back(encodedValue);
+//    }
+//
+//    // check whether to flip quad based on AO
+//    if (occlusionLevels[0] + occlusionLevels[3] > occlusionLevels[1] + occlusionLevels[2]) {
+//        indices.push_back(baseVertexIndex + 2);
+//        indices.push_back(baseVertexIndex + 0);
+//        indices.push_back(baseVertexIndex + 3);
+//        indices.push_back(baseVertexIndex + 3);
+//        indices.push_back(baseVertexIndex + 0);
+//        indices.push_back(baseVertexIndex + 1);
+//    } else {
+//        indices.push_back(baseVertexIndex);
+//        indices.push_back(baseVertexIndex + 1);
+//        indices.push_back(baseVertexIndex + 2);
+//        indices.push_back(baseVertexIndex + 2);
+//        indices.push_back(baseVertexIndex + 1);
+//        indices.push_back(baseVertexIndex + 3);
+//    }
+//}
+//
 void ChunkMesh::clearData() {
     vertices.clear();
     indices.clear();
@@ -306,46 +306,46 @@ void ChunkMesh::clearBuffers() {
     }
     isBuffered = false;
 }
-
-OcclusionLevels
-ChunkMesh::getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, const Ref<Chunk> &chunk,
-                              ChunkManager &chunkManager) {
-
-    // source: https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
-
-    OcclusionLevels occlusionLevels = NO_OCCLUSION;
-    auto &faceLightingAdjacencies = lightingAdjacencies[static_cast<int>(face)];
-    for (int faceVertexIndex = 0; faceVertexIndex < 4; faceVertexIndex++) {
-        auto &faceLightingAdjacency = faceLightingAdjacencies[faceVertexIndex];
-        bool side1IsSolid = false;
-        bool side2IsSolid = false;
-        bool cornerIsSolid = false;
-
-        glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
-        Block side1Block = chunk->getBlock(side1Pos, chunkManager);
-        if (side1Block != Block::AIR) {
-            side1IsSolid = true;
-        }
-
-        glm::ivec3 side2Pos = blockPosInChunk + faceLightingAdjacency[1];
-        Block side2Block = chunk->getBlock(side2Pos, chunkManager);
-        if (side2Block != Block::AIR) {
-            side2IsSolid = true;
-        }
-
-        glm::ivec3 cornerPos = blockPosInChunk + faceLightingAdjacency[2];
-        Block cornerBlock = chunk->getBlock(cornerPos, chunkManager);
-        if (cornerBlock != Block::AIR) {
-            cornerIsSolid = true;
-        }
-
-        if (side1IsSolid && side2IsSolid) {
-            occlusionLevels[faceVertexIndex] = 0;
-        } else {
-            occlusionLevels[faceVertexIndex] =
-                    3 - (side1IsSolid + side2IsSolid + cornerIsSolid);
-        }
-    }
-
-    return occlusionLevels;
-}
+//
+//OcclusionLevels
+//ChunkMesh::getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, const Ref<Chunk> &chunk,
+//                              ChunkManager &chunkManager) {
+//
+//    // source: https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
+//
+//    OcclusionLevels occlusionLevels = NO_OCCLUSION;
+//    auto &faceLightingAdjacencies = lightingAdjacencies[static_cast<int>(face)];
+//    for (int faceVertexIndex = 0; faceVertexIndex < 4; faceVertexIndex++) {
+//        auto &faceLightingAdjacency = faceLightingAdjacencies[faceVertexIndex];
+//        bool side1IsSolid = false;
+//        bool side2IsSolid = false;
+//        bool cornerIsSolid = false;
+//
+//        glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
+//        Block side1Block = chunk->getBlock(side1Pos, chunkManager);
+//        if (side1Block != Block::AIR) {
+//            side1IsSolid = true;
+//        }
+//
+//        glm::ivec3 side2Pos = blockPosInChunk + faceLightingAdjacency[1];
+//        Block side2Block = chunk->getBlock(side2Pos, chunkManager);
+//        if (side2Block != Block::AIR) {
+//            side2IsSolid = true;
+//        }
+//
+//        glm::ivec3 cornerPos = blockPosInChunk + faceLightingAdjacency[2];
+//        Block cornerBlock = chunk->getBlock(cornerPos, chunkManager);
+//        if (cornerBlock != Block::AIR) {
+//            cornerIsSolid = true;
+//        }
+//
+//        if (side1IsSolid && side2IsSolid) {
+//            occlusionLevels[faceVertexIndex] = 0;
+//        } else {
+//            occlusionLevels[faceVertexIndex] =
+//                    3 - (side1IsSolid + side2IsSolid + cornerIsSolid);
+//        }
+//    }
+//
+//    return occlusionLevels;
+//}
