@@ -11,16 +11,16 @@ Chunk::Chunk(glm::ivec2 location) : m_location(location), chunkMeshState(ChunkMe
                                     chunkState(ChunkState::UNGENERATED), m_chunkKey(
                 ChunkManager::getChunkKeyByWorldLocation(location.x, location.y)) {
     std::fill_n(m_blocks, CHUNK_VOLUME, Block::AIR);
-    m_maxTerrainHeights.fill(0);
-    numSolidBlocksInLayers.fill(0);
+//    m_maxTerrainHeights.fill(0);
+//    numSolidBlocksInLayers.fill(0);
 }
 
 Chunk::Chunk(ChunkKey chunkKey) : m_location(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH),
                                   chunkMeshState(ChunkMeshState::UNBUILT),
                                   chunkState(ChunkState::UNGENERATED), m_chunkKey(chunkKey) {
-    std::fill_n(m_blocks, CHUNK_VOLUME, Block::AIR);
-    m_maxTerrainHeights.fill(0);
-    numSolidBlocksInLayers.fill(0);
+//    std::fill_n(m_blocks, CHUNK_VOLUME, Block::AIR);
+//    m_maxTerrainHeights.fill(0);
+//    numSolidBlocksInLayers.fill(0);
 }
 
 Chunk::~Chunk() = default;
@@ -118,10 +118,12 @@ void ChunkLoadInfo::process() {
             }
         }
     }
+    m_done = true;
 }
 
 void ChunkLoadInfo::applyTerrain(const Ref<Chunk> &chunk) {
     std::copy(m_blocks, m_blocks + CHUNK_VOLUME, chunk->m_blocks);
+    chunk->chunkState = ChunkState::FULLY_GENERATED;
 }
 
 ChunkMeshInfo::ChunkMeshInfo(Ref<Chunk> *chunks) : m_chunkKey(chunks[4]->chunkKey()) {

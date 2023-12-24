@@ -23,23 +23,17 @@ public:
 
     void update();
 
-    void castPlayerAimRay(Ray ray);
-
     void render();
 
     Player player;
 
     ChunkRenderer chunkRenderer;
 
-    int getRenderDistance() const;
-
-    void setRenderDistance(int renderDistance);
-
-    void initialize(const std::function<void()> &callback);
-
     void renderDebugGui();
 
 private:
+    void castPlayerAimRay(Ray ray);
+
     void saveData();
 
     glm::ivec3 m_lastRayCastBlockPos = NULL_VECTOR;
@@ -54,6 +48,8 @@ private:
     void updateChunkMeshes();
 
     void updateChunkLoadList();
+
+    void updateChunkMeshList();
 
 
     std::vector<ChunkKey> m_chunksToUnload;
@@ -85,7 +81,10 @@ private:
     std::unordered_set<ChunkKey> m_renderSet;
 
     std::vector<ChunkKey> m_chunksToLoadVector;
-    std::unordered_map<ChunkKey, std::unique_ptr<ChunkLoadInfo>> m_chunkLoadInfoMap;
+    std::unordered_map<ChunkKey, std::unique_ptr<ChunkLoadInfo>> m_chunkTerrainLoadInfoMap;
+
+    std::vector<ChunkKey> m_chunksToGenerateStructuresVector;
+    std::unordered_map<ChunkKey, std::unique_ptr<ChunkGenerateStructuresInfo>> m_chunkGenerateStructuresInfoMap;
 
     unsigned int m_numLoadingThreads;
 
@@ -146,6 +145,8 @@ private:
     glm::ivec3 m_center;
 
     bool m_xyChanged = false;
+
+    int m_seed;
 
 };
 

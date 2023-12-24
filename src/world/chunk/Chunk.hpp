@@ -133,6 +133,19 @@ private:
     ChunkKey m_chunkKey;
 };
 
+class ChunkGenerateStructuresInfo : public ChunkInfo {
+public:
+    explicit ChunkGenerateStructuresInfo(ChunkKey chunkKey);
+
+    void process() override;
+
+    void applyStructures(const Ref<Chunk> &chunk);
+private:
+    Block m_blocks[CHUNK_VOLUME]{};
+    int m_seed;
+    ChunkKey m_chunkKey;
+};
+
 class ChunkMeshInfo : public ChunkInfo {
 public:
     explicit ChunkMeshInfo(Ref<Chunk> chunk[9]);
@@ -146,8 +159,6 @@ private:
     std::vector<uint32_t> m_vertices;
     std::vector<unsigned int> m_indices;
     ChunkKey m_chunkKey;
-
-
 };
 
 
