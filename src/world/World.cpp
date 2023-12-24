@@ -115,8 +115,6 @@ void World::update() {
 
 void World::updateChunkLoadList() {
     {
-//        Timer t("updateChunkLoadList", false);
-
         for (auto chunkKeyIter = m_chunkTerrainLoadInfoMap.begin();
              chunkKeyIter != m_chunkTerrainLoadInfoMap.end();) {
             if (chunkKeyIter->second->m_done) {
@@ -128,38 +126,32 @@ void World::updateChunkLoadList() {
                 chunkKeyIter++;
             }
         }
-
-//        auto dur = t.stop();
-//        if (dur > 0.1) {
-//            std::cout << "updateChunkLoadList: " << dur << std::endl;
-//        }
     }
-//    if (m_xyChanged) {
-    {
-        Timer t("load vector", false);
-    int loadDistance = m_renderDistance + 2;
-    int x, y;
-    for (x = m_center.x - loadDistance; x <= m_center.x + loadDistance; x++) {
-        for (y = m_center.y - loadDistance; y <= m_center.y + loadDistance; y++) {
-            ChunkKey chunkKey = {x, y};
-            if (!chunkExists(chunkKey)) continue;
+    if (m_xyChanged) {
+        {
+            Timer t("load vector", false);
+            int loadDistance = m_renderDistance + 2;
+            ChunkKey chunkKey{};
+            for (chunkKey.x = m_center.x - loadDistance;
+                 chunkKey.x <= m_center.x + loadDistance; chunkKey.x++) {
+                for (chunkKey.y = m_center.y - loadDistance;
+                     chunkKey.y <= m_center.y + loadDistance; chunkKey.y++) {
+                    if (m_chunkMap.at(chunkKey)->chunkState != ChunkState::FULLY_GENERATED &&
+                        !m_chunkTerrainLoadInfoMap.count(chunkKey)) {
+                        m_chunksToLoadVector.emplace_back(chunkKey);
+                        m_chunkTerrainLoadInfoMap.emplace(chunkKey,
+                                                          std::make_unique<ChunkLoadInfo>(chunkKey,
+                                                                                          m_seed));
+                    }
+                }
+                std::sort(m_chunksToLoadVector.begin(), m_chunksToLoadVector.end(), rcmpChunkKey);
+            }
 
-            if (m_chunkMap.at(chunkKey)->chunkState != ChunkState::FULLY_GENERATED &&
-                !m_chunkTerrainLoadInfoMap.count(chunkKey)) {
-                m_chunksToLoadVector.emplace_back(chunkKey);
-                m_chunkTerrainLoadInfoMap.emplace(chunkKey,
-                                                  std::make_unique<ChunkLoadInfo>(chunkKey,
-                                                                                  m_seed));
+            auto dur = t.stop();
+            if (dur > 0) {
+                std::cout << "load vector: " << dur << std::endl;
             }
         }
-        std::sort(m_chunksToLoadVector.begin(), m_chunksToLoadVector.end(), rcmpChunkKey);
-    }
-
-    auto dur = t.stop();
-    if (dur > 0.1) {
-        std::cout << "load vector: " << dur << std::endl;
-    }
-
     }
 }
 

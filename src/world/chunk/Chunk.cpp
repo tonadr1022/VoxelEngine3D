@@ -58,24 +58,6 @@ void Chunk::markDirty() {
     chunkState = ChunkState::CHANGED;
 }
 
-//Block Chunk::getBlock(glm::ivec3 &position, ChunkManager &chunkManager) {
-//    if (position.z < 0) return Block::AIR;
-//
-//    if (position.z >= CHUNK_HEIGHT) {
-//        return Block::AIR;
-//    }
-//
-//    if (position.x < 0 || position.x >= CHUNK_WIDTH || position.y < 0 ||
-//        position.y >= CHUNK_WIDTH) {
-//        glm::ivec3 worldLocation = glm::ivec3(m_location, 0) + position;
-//        Block block = chunkManager.getBlock(worldLocation);
-//        return block;
-//    } else {
-//        Block block = getBlock(position);
-//        return block;
-//    }
-//}
-
 ChunkLoadInfo::ChunkLoadInfo(ChunkKey chunkKey, int seed) : m_chunkKey(chunkKey), m_seed(seed) {
 }
 

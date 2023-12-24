@@ -103,7 +103,6 @@ public:
     Block m_blocks[CHUNK_VOLUME]{};
 
 private:
-
     ChunkMesh mesh;
     glm::ivec2 m_location;
     ChunkKey m_chunkKey;
