@@ -8,50 +8,50 @@
 #include "../../EngineConfig.hpp"
 
 enum class Block : uint8_t {
-    AIR = 0,
-    DIRT, // 1
-    GRASS, // 2
-    STONE, // 3
-    GRAVEL, // 4
-    BEDROCK,   // 5
-    SAND, // 6
-    OAK_WOOD, // 7
-    OAK_LEAVES, // 8
-    COBBLESTONE, // 9
-    SNOWY_GRASS_BLOCK, // 10
-    ICE_BLOCK, // 11
-    WATER, // 12
-    CRAFTING_TABLE, // 13
-    GLOWSTONE, // 14
-    JUNGLE_WOOD, // 15
-    JUNGLE_LEAVES, // 16
-    BIRCH_WOOD, // 17
-    BIRCH_LEAVES, // 18
-    SPRUCE_WOOD, // 19
-    SPRUCE_LEAVES, // 20
-    COAL_ORE, // 21
-    IRON_ORE, // 22
-    REDSTONE_ORE, // 23
-    GOLD_ORE, // 24
-    DIAMOND_ORE, // 25
-    EMERALD_ORE, // 26
-    LAPIS_ORE, // 27
-    CLAY, // 28
-    SUGAR_CANE, // 29
-    CACTUS, // 30
-    OAK_PLANKS, // 31
-    BIRCH_PLANKS, // 32
-    JUNGLE_PLANKS, // 33
-    SPRUCE_PLANKS, // 34
-    BLOCK_COUNT,
+  AIR = 0,
+  DIRT, // 1
+  GRASS, // 2
+  STONE, // 3
+  GRAVEL, // 4
+  BEDROCK,   // 5
+  SAND, // 6
+  OAK_WOOD, // 7
+  OAK_LEAVES, // 8
+  COBBLESTONE, // 9
+  SNOWY_GRASS_BLOCK, // 10
+  ICE_BLOCK, // 11
+  WATER, // 12
+  CRAFTING_TABLE, // 13
+  GLOWSTONE, // 14
+  JUNGLE_WOOD, // 15
+  JUNGLE_LEAVES, // 16
+  BIRCH_WOOD, // 17
+  BIRCH_LEAVES, // 18
+  SPRUCE_WOOD, // 19
+  SPRUCE_LEAVES, // 20
+  COAL_ORE, // 21
+  IRON_ORE, // 22
+  REDSTONE_ORE, // 23
+  GOLD_ORE, // 24
+  DIAMOND_ORE, // 25
+  EMERALD_ORE, // 26
+  LAPIS_ORE, // 27
+  CLAY, // 28
+  SUGAR_CANE, // 29
+  CACTUS, // 30
+  OAK_PLANKS, // 31
+  BIRCH_PLANKS, // 32
+  JUNGLE_PLANKS, // 33
+  SPRUCE_PLANKS, // 34
+  BLOCK_COUNT,
 };
 
 //typedef uint8_t Block;
 
 namespace BlockMethods {
-    inline bool isTransparent(Block block) {
-        return block == Block::AIR || block == Block::WATER;
-    }
+inline bool isTransparent(Block block) {
+  return block == Block::AIR || block == Block::WATER;
+}
 }
 
 #endif //VOXEL_ENGINE_BLOCK_HPP

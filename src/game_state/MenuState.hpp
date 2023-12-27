@@ -5,10 +5,8 @@
 #ifndef VOXEL_ENGINE_MENUSTATE_HPP
 #define VOXEL_ENGINE_MENUSTATE_HPP
 
-
 class MenuState {
 
 };
-
 
 #endif //VOXEL_ENGINE_MENUSTATE_HPP

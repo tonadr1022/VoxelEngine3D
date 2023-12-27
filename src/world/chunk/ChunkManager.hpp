@@ -5,7 +5,6 @@
 #ifndef VOXEL_ENGINE_CHUNKMANAGER_HPP
 #define VOXEL_ENGINE_CHUNKMANAGER_HPP
 
-
 #include "Chunk.hpp"
 #include "../../EngineConfig.hpp"
 
@@ -13,8 +12,8 @@
 //using ChunkMap = std::unordered_map<ChunkKey, std::shared_ptr<Chunk>>;
 
 class ChunkManager {
-public:
-    ChunkManager();
+ public:
+  ChunkManager();
 
 //    void remeshChunk(ChunkKey chunkKey);
 
@@ -43,13 +42,12 @@ public:
 
 //    void addChunkToRemesh(ChunkKey chunkKey);
 
-private:
+ private:
 
 //    ChunkMap chunkMap;
 //    std::unordered_set<glm::ivec2> m_chunksToRemesh;
 
 
 };
-
 
 #endif //VOXEL_ENGINE_CHUNKMANAGER_HPP

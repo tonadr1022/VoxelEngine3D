@@ -13,35 +13,25 @@
 #include "../EngineConfig.hpp"
 #include "Window.hpp"
 
-
 class Application {
-public:
-    Application();
+ public:
+  Application();
+  ~Application();
+  static Application &Instance() { return *instancePtr; }
 
-    ~Application();
+  void run();
+  void onKeyEvent(int key, int scancode, int action, int mods);
+  void onMouseButtonEvent(int button, int action, int mods);
+  void onCursorPositionEvent(double xpos, double ypos);
+  void onScrollEvent(double xoffset, double yoffset);
+  void onResizeEvent(int width, int height);
 
-    static Application &Instance() { return *instancePtr; }
-
-    void run();
-
-    void onKeyEvent(int key, int scancode, int action, int mods);
-
-    void onMouseButtonEvent(int button, int action, int mods);
-
-    void onCursorPositionEvent(double xpos, double ypos);
-
-    void onScrollEvent(double xoffset, double yoffset);
-
-    void onResizeEvent(int width, int height);
-
-private:
-    static Application *instancePtr;
-
-    Window window;
-    Renderer renderer;
-    bool m_running = true;
-
-    std::unique_ptr<World> m_world;
+ private:
+  static Application *instancePtr;
+  Window window;
+  Renderer renderer;
+  bool m_running = true;
+  std::unique_ptr<World> m_world;
 
 };
 

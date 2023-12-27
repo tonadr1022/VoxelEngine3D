@@ -10,30 +10,22 @@
 #include "../../camera/Camera.hpp"
 #include "../../EngineConfig.hpp"
 
-
 class ChunkRenderer {
-public:
-    explicit ChunkRenderer(Camera &camera);
+ public:
+  explicit ChunkRenderer(Camera &camera);
 
-    ~ChunkRenderer();
+  ~ChunkRenderer();
 
-    static void createGPUResources(Chunk &chunk);
+  static void createGPUResources(Chunk &chunk);
+  void render(Chunk &chunk);
+  void start();
+  void updateShaderUniforms();
 
-//    static void destroyGPUResources(Chunk &chunk);
-
-    void render(Chunk &chunk);
-
-    void start();
-
-    void updateShaderUniforms();
-
-private:
-    unsigned int textureAtlasID;
-    Camera &camera;
-    std::shared_ptr<Shader> shader;
-
+ private:
+  unsigned int textureAtlasID;
+  Camera &camera;
+  std::shared_ptr<Shader> shader;
 
 };
-
 
 #endif //VOXEL_ENGINE_CHUNKRENDERER_HPP

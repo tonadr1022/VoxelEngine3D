@@ -10,38 +10,28 @@
 #include "../EngineConfig.hpp"
 
 class Player {
-public:
-    Player();
+ public:
+  Player();
 
-    glm::vec3 &getPosition();
+  glm::vec3 &getPosition();
+  glm::ivec2 getChunkPosition();
+  void update(float deltaTime);
+  void perFrameUpdate();
+  void processScrollInput(double yoffset);
+  void renderDebugGui();
+  void onCursorUpdate(double xOffset, double yOffset);
 
-    glm::ivec2 getChunkPosition();
+  Inventory inventory{true};
+  Camera camera;
+  int blockBreakStage = 0;
 
-    void update(float deltaTime);
+ private:
 
-    void perFrameUpdate();
+  void processKeyInput(float deltaTime);
 
-    int blockBreakStage = 0;
+  glm::vec3 position = glm::vec3(0.0f, 0.0f, 150.0f);
 
-    Inventory inventory{true};
-
-    void processScrollInput(double yoffset);
-
-    Camera camera;
-
-    void renderDebugGui();
-
-    void onCursorUpdate(double xOffset, double yOffset);
-
-private:
-
-
-    void processKeyInput(float deltaTime);
-
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, 150.0f);
-
-    float m_movementSpeed = 100.0f;
+  float m_movementSpeed = 100.0f;
 };
-
 
 #endif //VOXEL_ENGINE_PLAYER_HPP

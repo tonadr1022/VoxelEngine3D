@@ -11,24 +11,23 @@
 #include "BlockBreakRenderer.hpp"
 
 class Renderer {
-public:
-    explicit Renderer();
+ public:
+  explicit Renderer();
 
-    void renderCrossHair() const;
-    void renderBlockOutline(Camera &camera, glm::ivec3 blockPosition);
-    void renderBlockBreak(Camera &camera, glm::ivec3 blockPosition, int breakStage);
+  void renderCrossHair() const;
+  void renderBlockOutline(Camera &camera, glm::ivec3 blockPosition);
+  void renderBlockBreak(Camera &camera,
+                        glm::ivec3 blockPosition,
+                        int breakStage);
 
-private:
-    BlockOutlineRenderer m_blockOutlineRenderer;
-    BlockBreakRenderer m_blockBreakRenderer;
-    CrossHair crossHair;
+ private:
+  BlockOutlineRenderer m_blockOutlineRenderer;
+  BlockBreakRenderer m_blockBreakRenderer;
+  CrossHair crossHair;
 
-    void compileShaders();
-    void loadTextures();
-
-
+  void compileShaders();
+  void loadTextures();
 
 };
-
 
 #endif //VOXEL_ENGINE_RENDERER_HPP

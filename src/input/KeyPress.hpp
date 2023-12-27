@@ -6,7 +6,7 @@
 #define VOXEL_ENGINE_KEYPRESS_HPP
 
 struct KeyPress {
-    bool current, previous;
+  bool current, previous;
 };
 
 #endif //VOXEL_ENGINE_KEYPRESS_HPP

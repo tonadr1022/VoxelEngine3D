@@ -8,15 +8,14 @@
 #include "../camera/Camera.hpp"
 
 class BlockOutlineRenderer {
-public:
-    BlockOutlineRenderer();
-    void render(glm::vec3 blockPosition, Camera &camera) const;
+ public:
+  BlockOutlineRenderer();
+  void render(glm::vec3 blockPosition, Camera &camera) const;
 
-    unsigned int VAO, VBO, EBO;
+  unsigned int VAO, VBO, EBO;
 
-private:
+ private:
 
 };
-
 
 #endif //VOXEL_ENGINE_BLOCKOUTLINERENDERER_HPP

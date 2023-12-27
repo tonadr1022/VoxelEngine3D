@@ -5,15 +5,12 @@
 #ifndef VOXEL_ENGINE_HOTBAR_HPP
 #define VOXEL_ENGINE_HOTBAR_HPP
 
-
 class Hotbar {
-public:
+ public:
 
-
-private:
-    unsigned int VAO, VBO;
+ private:
+  unsigned int VAO, VBO;
 
 };
-
 
 #endif //VOXEL_ENGINE_HOTBAR_HPP

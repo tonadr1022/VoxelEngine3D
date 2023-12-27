@@ -8,11 +8,10 @@
 #include "../EngineConfig.hpp"
 
 struct Image {
-    GLsizei width, height;
-    std::vector<uint8_t> pixels;
+  GLsizei width, height;
+  std::vector<uint8_t> pixels;
 
-    [[nodiscard]] Image subImage(glm::ivec2 offset, glm::ivec2 size) const;
+  [[nodiscard]] Image subImage(glm::ivec2 offset, glm::ivec2 size) const;
 };
-
 
 #endif //VOXEL_ENGINE_IMAGE_HPP

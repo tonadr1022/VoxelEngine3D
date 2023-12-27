@@ -6,8 +6,8 @@
 #define VOXEL_ENGINE_IEVENT_HPP
 
 class IEvent {
-public:
-    virtual void handle() = 0;
+ public:
+  virtual void handle() = 0;
 };
 
 #endif //VOXEL_ENGINE_IEVENT_HPP

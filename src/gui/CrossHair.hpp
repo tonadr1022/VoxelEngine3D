@@ -8,12 +8,11 @@
 #include "../EngineConfig.hpp"
 
 class CrossHair {
-public:
-    CrossHair();
-    unsigned int VAO, VBO;
+ public:
+  CrossHair();
+  unsigned int VAO, VBO;
 
-    void render() const;
+  void render() const;
 };
-
 
 #endif //VOXEL_ENGINE_CROSSHAIR_HPP

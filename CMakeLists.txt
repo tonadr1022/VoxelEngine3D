@@ -5,9 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 set_property(TARGET PROPERTY CXX_STANDARD 17)
 
-set()
-
 #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+
+if (UNIX AND NOT APPLE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=core-avx2")
+endif ()
 
 include_directories("dependencies")
 include_directories("shaders")
@@ -62,7 +64,6 @@ set(SOURCE_FILES
         src/resources/ResourceManager.hpp
         src/world/chunk/ChunkManager.cpp
         src/world/chunk/ChunkManager.hpp
-        src/world/chunk/ChunkKey.hpp
         src/world/block/BlockDB.cpp
         src/world/block/BlockDB.hpp
         src/physics/Ray.hpp
@@ -83,8 +84,6 @@ set(SOURCE_FILES
         src/input/Keyboard.hpp
         src/renderer/Renderer2D.cpp
         src/renderer/Renderer2D.hpp
-        src/renderer/GuiRenderer.cpp
-        src/renderer/GuiRenderer.hpp
         src/debug_gui/DebugGui.cpp
         src/debug_gui/DebugGui.hpp
         src/gui/Hotbar.cpp

@@ -8,19 +8,16 @@
 #include "Shader.hpp"
 
 class ShaderManager {
-public:
+ public:
 
-    static void addShader(std::shared_ptr<Shader> shader, const std::string &name);
+  static void addShader(std::shared_ptr<Shader> shader,
+                        const std::string &name);
+  static void useShader(const std::string &name);
+  static std::shared_ptr<Shader> getShader(const std::string &name);
 
-    static void useShader(const std::string &name);
-
-    static std::shared_ptr<Shader> getShader(const std::string &name);
-
-private:
-    static std::unordered_map<std::string, std::shared_ptr<Shader>> shaders;
-
+ private:
+  static std::unordered_map<std::string, std::shared_ptr<Shader>> shaders;
 
 };
-
 
 #endif //VOXEL_ENGINE_SHADERMANAGER_HPP

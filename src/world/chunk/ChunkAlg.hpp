@@ -10,14 +10,16 @@
 #include "../../world/block/Block.hpp"
 #include "ChunkMesh.hpp"
 
-
 namespace ChunkAlg {
 
-    using OcclusionLevels = std::array<uint8_t, 4>;
+using OcclusionLevels = std::array<uint8_t, 4>;
 
-    extern void constructMesh(const Block (&blocks)[CHUNK_MESH_INFO_SIZE], std::vector<uint32_t> &vertices, std::vector<unsigned int> &indices);
-    extern OcclusionLevels getOcclusionLevels(glm::ivec3 &blockPosInChunk, BlockFace face, const Block (&blocks)[CHUNK_MESH_INFO_SIZE]);
+extern void constructMesh(const Block (&blocks)[CHUNK_MESH_INFO_SIZE],
+                          std::vector<uint32_t> &vertices,
+                          std::vector<unsigned int> &indices);
+extern OcclusionLevels getOcclusionLevels(glm::ivec3 &blockPosInChunk,
+                                          BlockFace face,
+                                          const Block (&blocks)[CHUNK_MESH_INFO_SIZE]);
 };
-
 
 #endif //VOXEL_ENGINE_CHUNKALG_HPP

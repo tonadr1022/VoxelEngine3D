@@ -5,7 +5,6 @@
 #ifndef VOXEL_ENGINE_ENGINECONFIG_HPP
 #define VOXEL_ENGINE_ENGINECONFIG_HPP
 
-
 #include <glad/glad.h>
 #include <glm/gtc/noise.hpp>
 #include <glm/glm.hpp>
@@ -46,12 +45,10 @@
 #include <algorithm>
 #include <list>
 
-
 template<typename T>
 using Ref = std::shared_ptr<T>;
 
 template<typename T>
 using Scope = std::unique_ptr<T>;
-
 
 #endif //VOXEL_ENGINE_ENGINECONFIG_HPP

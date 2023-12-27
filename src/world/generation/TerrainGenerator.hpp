@@ -12,18 +12,18 @@ class Chunk;
 class ChunkManager;
 
 class TerrainGenerator {
-public:
-    explicit TerrainGenerator(int seed);
+ public:
+  explicit TerrainGenerator(int seed);
+  void generateTerrainFor(const Ref<Chunk> &chunk);
+  void generateStructuresFor(ChunkManager &chunkManager,
+                             const Ref<Chunk> &chunk);
 
-    void generateTerrainFor(const Ref<Chunk> &chunk) ;
+  void makeTree(ChunkManager &chunkManager,
+                const Ref<Chunk> &chunk,
+                const glm::ivec3 &position);
 
-    void generateStructuresFor(ChunkManager &chunkManager, const Ref<Chunk> &chunk);
-
-    void makeTree(ChunkManager &chunkManager,const Ref<Chunk>& chunk, const glm::ivec3 &position);
-
-private:
-    int m_seed;
+ private:
+  int m_seed;
 };
-
 
 #endif //VOXEL_ENGINE_TERRAINGENERATOR_HPP

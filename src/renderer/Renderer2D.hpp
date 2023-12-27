@@ -5,14 +5,11 @@
 #ifndef VOXEL_ENGINE_RENDERER2D_HPP
 #define VOXEL_ENGINE_RENDERER2D_HPP
 
-
 class Renderer2D {
-public:
+ public:
 
-private:
-
+ private:
 
 };
-
 
 #endif //VOXEL_ENGINE_RENDERER2D_HPP

@@ -5,22 +5,18 @@
 #ifndef VOXEL_ENGINE_IGAMESTATE_HPP
 #define VOXEL_ENGINE_IGAMESTATE_HPP
 
+class IGameState {
+ public:
+  virtual void update() = 0;
+  virtual void render() = 0;
 
-#include "../core/ISingleton.hpp"
+  virtual IGameState instance() = 0;
 
-class IGameState : public ISingleton {
-public:
-    virtual void update() = 0;
-    virtual void render() = 0;
+ private:
 
-    virtual IGameState instance() = 0;
-
-private:
-
-protected:
-    IGameState() {}
+ protected:
+  IGameState() {}
 
 };
-
 
 #endif //VOXEL_ENGINE_IGAMESTATE_HPP

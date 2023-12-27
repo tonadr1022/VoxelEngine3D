@@ -5,11 +5,11 @@
 #include "Config.hpp"
 
 bool Config::getUseAmbientOcclusion() {
-    return useAmbientOcclusion;
+  return useAmbientOcclusion;
 }
 
 void Config::setUseAmbientOcclusion(bool pUseAmbientOcclusion) {
-    Config::useAmbientOcclusion = pUseAmbientOcclusion;
+  Config::useAmbientOcclusion = pUseAmbientOcclusion;
 }
 
 bool Config::useAmbientOcclusion = true;
