@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 set_property(TARGET PROPERTY CXX_STANDARD 17)
 
+set()
+
 #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 include_directories("dependencies")
