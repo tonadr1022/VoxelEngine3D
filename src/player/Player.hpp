@@ -6,7 +6,6 @@
 #define VOXEL_ENGINE_PLAYER_HPP
 
 #include "../camera/Camera.hpp"
-#include "../world/chunk/ChunkKey.hpp"
 #include "Inventory.hpp"
 #include "../EngineConfig.hpp"
 
@@ -16,7 +15,7 @@ public:
 
     glm::vec3 &getPosition();
 
-    [[nodiscard]] ChunkKey getChunkKeyPos() const;
+    glm::ivec2 getChunkPosition();
 
     void update(float deltaTime);
 

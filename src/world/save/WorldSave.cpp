@@ -28,6 +28,6 @@ void WorldSave::saveData() {
     // save chunks into file
 }
 
-void WorldSave::commitChunkData(ChunkKey key, Block *data) {
-    m_chunkData[key] = std::copy(data, data + CHUNK_VOLUME, new Block[CHUNK_VOLUME]);
+void WorldSave::commitChunkData(const glm::ivec2 &pos, Block *data) {
+    m_chunkData[pos] = std::copy(data, data + CHUNK_VOLUME, new Block[CHUNK_VOLUME]);
 }

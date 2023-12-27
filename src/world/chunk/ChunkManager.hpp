@@ -7,7 +7,6 @@
 
 
 #include "Chunk.hpp"
-#include "ChunkKey.hpp"
 #include "../../EngineConfig.hpp"
 
 
@@ -33,22 +32,21 @@ public:
 
 //    ChunkMap &getChunkMap();
 
-    static ChunkKey getChunkKeyByWorldLocation(int x, int y);
 
-    inline bool hasChunksToRemesh() {
-        return !m_chunksToRemesh.empty();
-    }
+//    inline bool hasChunksToRemesh() {
+//        return !m_chunksToRemesh.empty();
+//    }
 
 //    void handleChunkUpdates(const Ref<Chunk> &chunk, ChunkKey chunkKey, int chunkX, int chunkY);
 
 //    void remeshChunksToRemesh();
 
-    void addChunkToRemesh(ChunkKey chunkKey);
+//    void addChunkToRemesh(ChunkKey chunkKey);
 
 private:
 
 //    ChunkMap chunkMap;
-    std::unordered_set<ChunkKey> m_chunksToRemesh;
+//    std::unordered_set<glm::ivec2> m_chunksToRemesh;
 
 
 };

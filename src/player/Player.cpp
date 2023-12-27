@@ -13,10 +13,6 @@ glm::vec3 &Player::getPosition() {
     return position;
 }
 
-ChunkKey Player::getChunkKeyPos() const {
-    return {static_cast<int>(position.x / CHUNK_WIDTH), static_cast<int>(position.y / CHUNK_WIDTH)};
-}
-
 void Player::processKeyInput(float deltaTime) {
     glm::vec3 &front = camera.getFront();
     glm::vec3 globalUp = Camera::getGlobalUp();
@@ -83,4 +79,8 @@ ImGui::Text("Block ID: %d", static_cast<int>(inventory.getHeldItem()));
 
 void Player::onCursorUpdate(double xOffset, double yOffset) {
     camera.onCursorUpdate(xOffset, yOffset);
+}
+
+glm::ivec2 Player::getChunkPosition() {
+    return {static_cast<int>(position.x / CHUNK_WIDTH), static_cast<int>(position.y / CHUNK_WIDTH)};
 }

@@ -39,10 +39,7 @@ ChunkManager::ChunkManager() = default;
 //    handleChunkUpdates(chunk, chunkKey, chunkX, chunkY);
 //}
 
-ChunkKey ChunkManager::getChunkKeyByWorldLocation(int x, int y) {
-    return ChunkKey{static_cast<int>(std::floor(static_cast<float>(x) / CHUNK_WIDTH)),
-                    static_cast<int>(std::floor(static_cast<float>(y) / CHUNK_WIDTH))};
-}
+
 
 //void ChunkManager::buildChunkMesh(ChunkKey chunkKey) {
 //    if (!chunkExists(chunkKey)) {
@@ -69,9 +66,9 @@ ChunkKey ChunkManager::getChunkKeyByWorldLocation(int x, int y) {
 
 
 
-void ChunkManager::addChunkToRemesh(ChunkKey chunkKey) {
-    m_chunksToRemesh.insert(chunkKey);
-}
+//void ChunkManager::addChunkToRemesh(ChunkKey chunkKey) {
+//    m_chunksToRemesh.insert(chunkKey);
+//}
 
 //void ChunkManager::handleChunkUpdates(const Ref<Chunk> &chunk, ChunkKey chunkKey, int chunkX,
 //                                      int chunkY) {
