@@ -126,7 +126,7 @@ class ChunkMeshInfo : public ChunkInfo {
 
  private:
   Block m_blocks[CHUNK_MESH_INFO_SIZE]{};
-  std::vector<uint32_t> m_vertices;
+  std::vector<ChunkVertex> m_vertices;
   std::vector<unsigned int> m_indices;
   glm::ivec2 m_pos;
 };

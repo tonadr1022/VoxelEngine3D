@@ -38,3 +38,7 @@ cmake-build-debug
 cmake-build-debug-wsl
 cmake-build-release
 cmake-build-release-wsl
+.vs
+x64-Debug
+x64-Release
+CMakeSettings.json

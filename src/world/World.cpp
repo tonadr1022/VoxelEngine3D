@@ -364,6 +364,7 @@ void World::renderDebugGui() {
   ImGuiIO &io = ImGui::GetIO();
 
   ImGui::Begin("Debug");
+
   ImGui::Text("Framerate: %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
               io.Framerate);
 
@@ -379,15 +380,6 @@ void World::renderDebugGui() {
               m_lastRayCastBlockPos.y, m_lastRayCastBlockPos.z);
 
   ImGui::Text("Running Threads: %d", static_cast<int>(m_numRunningThreads));
-
-  if (!m_renderSet.empty()) {
-    auto first = m_renderSet.begin();
-    Chunk *chunk = m_chunkMap.at(*first).get();
-    int vertices = chunk->getMesh().vertices.size();
-    int indices = chunk->getMesh().indices.size();
-    ImGui::Text("Vertices: %d", vertices);
-    ImGui::Text("Indices: %d", indices);
-  }
 
   player.renderDebugGui();
 
