@@ -55,7 +55,6 @@ public:
 
     explicit Chunk(glm::ivec2 location);
 
-    explicit Chunk(ChunkKey chunkKey);
 
     void unload();
 
@@ -78,34 +77,18 @@ public:
     ChunkMeshState chunkMeshState;
     ChunkState chunkState;
 
-    glm::ivec2 &getLocation();
-
 //    inline glm::vec3 location() const { return {m_location.x, m_location.y, 0}; };
 
     ChunkMesh &getMesh();
 
-//    inline int getMaxTerrainHeightAt(int x, int y) {
-//        return m_maxTerrainHeights[XY(x, y)];
-//    };
-//
-//    inline void setMaxTerrainHeightAt(int x, int y, int z) {
-//        m_maxTerrainHeights[XY(x, y)] = z;
-//    };
-
     void markDirty();
 
-//    std::array<int, CHUNK_HEIGHT> numSolidBlocksInLayers{};
-
-    inline ChunkKey chunkKey() const { return m_chunkKey; };
-
-//    std::array<int, CHUNK_AREA> m_maxTerrainHeights{};
-
     Block m_blocks[CHUNK_VOLUME]{};
+    glm::ivec2 m_pos;
+    glm::ivec2 m_worldPos;
 
 private:
     ChunkMesh mesh;
-    glm::ivec2 m_location;
-    ChunkKey m_chunkKey;
 };
 
 
@@ -120,7 +103,7 @@ public:
 
 class ChunkLoadInfo : public ChunkInfo {
 public:
-    ChunkLoadInfo(ChunkKey chunkKey, int seed);
+    ChunkLoadInfo(glm::ivec2 pos, int seed);
 
     void process() override;
 
@@ -129,12 +112,12 @@ public:
 private:
     Block m_blocks[CHUNK_VOLUME]{};
     int m_seed;
-    ChunkKey m_chunkKey;
+    glm::ivec2 m_pos;
 };
 
 class ChunkGenerateStructuresInfo : public ChunkInfo {
 public:
-    explicit ChunkGenerateStructuresInfo(ChunkKey chunkKey);
+    explicit ChunkGenerateStructuresInfo(glm::ivec2 pos, int seed);
 
     void process() override;
 
@@ -142,7 +125,7 @@ public:
 private:
     Block m_blocks[CHUNK_VOLUME]{};
     int m_seed;
-    ChunkKey m_chunkKey;
+    glm::ivec2 m_pos;
 };
 
 class ChunkMeshInfo : public ChunkInfo {
@@ -157,7 +140,7 @@ private:
     Block m_blocks[CHUNK_MESH_INFO_SIZE]{};
     std::vector<uint32_t> m_vertices;
     std::vector<unsigned int> m_indices;
-    ChunkKey m_chunkKey;
+    glm::ivec2 m_pos;
 };
 
 

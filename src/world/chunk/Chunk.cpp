@@ -7,20 +7,10 @@
 #include "../../utils/Timer.hpp"
 #include "ChunkAlg.hpp"
 
-Chunk::Chunk(glm::ivec2 location) : m_location(location), chunkMeshState(ChunkMeshState::UNBUILT),
-                                    chunkState(ChunkState::UNGENERATED), m_chunkKey(
-                ChunkManager::getChunkKeyByWorldLocation(location.x, location.y)) {
-//    std::fill_n(m_blocks, CHUNK_VOLUME, Block::AIR);
-//    m_maxTerrainHeights.fill(0);
-//    numSolidBlocksInLayers.fill(0);
-}
-
-Chunk::Chunk(ChunkKey chunkKey) : m_location(chunkKey.x * CHUNK_WIDTH, chunkKey.y * CHUNK_WIDTH),
-                                  chunkMeshState(ChunkMeshState::UNBUILT),
-                                  chunkState(ChunkState::UNGENERATED), m_chunkKey(chunkKey) {
-//    std::fill_n(m_blocks, CHUNK_VOLUME, Block::AIR);
-//    m_maxTerrainHeights.fill(0);
-//    numSolidBlocksInLayers.fill(0);
+Chunk::Chunk(glm::ivec2 pos)
+        : m_pos(pos), m_worldPos(pos * CHUNK_WIDTH),
+          chunkMeshState(ChunkMeshState::UNBUILT),
+          chunkState(ChunkState::UNGENERATED) {
 }
 
 Chunk::~Chunk() = default;
@@ -34,18 +24,7 @@ void Chunk::unload() {
 
 
 void Chunk::setBlock(int x, int y, int z, Block block) {
-//    Block oldBlockId = getBlock(x, y, z);
-//    Block newBlockId = block;
-//    if (oldBlockId != Block::AIR && block == Block::AIR) {
-//        numSolidBlocksInLayers[z]--;
-//    } else if (oldBlockId == Block::AIR && newBlockId != Block::AIR) {
-//        numSolidBlocksInLayers[z]++;
-//    }
     m_blocks[XYZ(x, y, z)] = block;
-}
-
-glm::ivec2 &Chunk::getLocation() {
-    return m_location;
 }
 
 ChunkMesh &Chunk::getMesh() {
@@ -58,17 +37,17 @@ void Chunk::markDirty() {
     chunkState = ChunkState::CHANGED;
 }
 
-ChunkLoadInfo::ChunkLoadInfo(ChunkKey chunkKey, int seed) : m_chunkKey(chunkKey), m_seed(seed) {
+ChunkLoadInfo::ChunkLoadInfo(glm::ivec2 pos, int seed) : m_pos(pos), m_seed(seed) {
 }
 
 void ChunkLoadInfo::process() {
-    auto chunkLocation = glm::ivec2(m_chunkKey.x, m_chunkKey.y) * CHUNK_WIDTH;
+    auto chunkWorldPos = glm::ivec2(m_pos.x * CHUNK_WIDTH, m_pos.y * CHUNK_WIDTH);
 
     FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
     fastNoise->SetSeed(m_seed);
     fastNoise->SetFractalOctaves(4);
     fastNoise->SetFrequency(1.0f / 300.0f);
-    float *heightMap = fastNoise->GetSimplexFractalSet(chunkLocation.x, chunkLocation.y, 0,
+    float *heightMap = fastNoise->GetSimplexFractalSet(chunkWorldPos.x, chunkWorldPos.y, 0,
                                                        CHUNK_WIDTH, CHUNK_WIDTH, 1);
 
     int heights[CHUNK_AREA];
@@ -101,7 +80,7 @@ void ChunkLoadInfo::applyTerrain(Chunk *chunk) {
     chunk->chunkState = ChunkState::FULLY_GENERATED;
 }
 
-ChunkMeshInfo::ChunkMeshInfo(Chunk *(&chunks)[9]) : m_chunkKey(chunks[4]->chunkKey()) {
+ChunkMeshInfo::ChunkMeshInfo(Chunk *(&chunks)[9]) : m_pos(chunks[4]->m_pos) {
     // copy the edges of neighboring chunks into array
     // we know all exist
 
@@ -182,7 +161,7 @@ ChunkMeshInfo::ChunkMeshInfo(Chunk *(&chunks)[9]) : m_chunkKey(chunks[4]->chunkK
 }
 
 void ChunkMeshInfo::process() {
-    ChunkAlg::constructMesh(m_blocks, m_chunkKey, m_vertices, m_indices);
+    ChunkAlg::constructMesh(m_blocks, m_vertices, m_indices);
     m_done = true;
 }
 

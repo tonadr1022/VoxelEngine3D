@@ -5,16 +5,15 @@
 #include "TerrainGenerator.hpp"
 #include "../chunk/Chunk.hpp"
 #include "../chunk/ChunkManager.hpp"
-#include "../utils/Timer.hpp"
 
 void TerrainGenerator::generateTerrainFor(const Ref<Chunk> &chunk) {
-    glm::ivec2 chunkLocation = chunk->getLocation();
+
 
     FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
     fastNoise->SetSeed(m_seed);
     fastNoise->SetFractalOctaves(4);
     fastNoise->SetFrequency(1.0f / 300.0f);
-    float *heightMap = fastNoise->GetSimplexFractalSet(chunkLocation.x, chunkLocation.y, 0,
+    float *heightMap = fastNoise->GetSimplexFractalSet(chunk->m_pos.x, chunk->m_pos.y, 0,
                                                        CHUNK_WIDTH, CHUNK_WIDTH, 1);
 
     int heights[CHUNK_AREA];
@@ -46,8 +45,6 @@ void TerrainGenerator::generateTerrainFor(const Ref<Chunk> &chunk) {
 }
 
 void TerrainGenerator::generateStructuresFor(ChunkManager &chunkManager, const Ref<Chunk> &chunk) {
-    glm::ivec2 chunkLocation = chunk->getLocation();
-
     for (int x = 0; x < CHUNK_WIDTH; x++) {
         for (int y = 0; y < CHUNK_WIDTH; y++) {
 //            int height = chunk->getMaxTerrainHeightAt(x, y);

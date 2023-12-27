@@ -13,7 +13,7 @@ ChunkRenderer::ChunkRenderer(Camera &camera) : camera(camera), shader(ShaderMana
 }
 
 void ChunkRenderer::render(Chunk &chunk) {
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(chunk.getLocation(), 0.0f));
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(chunk.m_worldPos, 0.0f));
     shader->setMat4("u_Model", model);
     ChunkMesh &mesh = chunk.getMesh();
 

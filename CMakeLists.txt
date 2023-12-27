@@ -7,28 +7,30 @@ set_property(TARGET PROPERTY CXX_STANDARD 17)
 
 #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
-include_directories(src/vendor)
+include_directories("dependencies")
+include_directories("shaders")
+include_directories("resources")
 
 set(SOURCE_FILES
-                src/main.cpp
+        src/main.cpp
         src/application/Application.cpp
         src/application/Application.hpp
-                src/glad.c
-        src/vendor/imgui/imgui.cpp
-        src/vendor/imgui/imgui_demo.cpp
-        src/vendor/imgui/imgui_draw.cpp
-        src/vendor/imgui/imgui_widgets.cpp
-        src/vendor/imgui/imgui_impl_glfw.cpp
-        src/vendor/imgui/imgui_impl_opengl3.cpp
-        src/vendor/imgui/imgui_tables.cpp
-        src/vendor/imgui/imgui_widgets.cpp
-        src/vendor/FastNoiseSIMD/FastNoiseSIMD.cpp
-        src/vendor/FastNoiseSIMD/FastNoiseSIMD_internal.cpp
-        src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx2.cpp
-        src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse2.cpp
-        src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx512.cpp
-        src/vendor/FastNoiseSIMD/FastNoiseSIMD_neon.cpp
-        src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.cpp
+        dependencies/glad/glad.c
+        dependencies/imgui/imgui.cpp
+        dependencies/imgui/imgui_demo.cpp
+        dependencies/imgui/imgui_draw.cpp
+        dependencies/imgui/imgui_widgets.cpp
+        dependencies/imgui/imgui_impl_glfw.cpp
+        dependencies/imgui/imgui_impl_opengl3.cpp
+        dependencies/imgui/imgui_tables.cpp
+        dependencies/imgui/imgui_widgets.cpp
+        dependencies/FastNoiseSIMD/FastNoiseSIMD.cpp
+        dependencies/FastNoiseSIMD/FastNoiseSIMD_internal.cpp
+        dependencies/FastNoiseSIMD/FastNoiseSIMD_avx2.cpp
+        dependencies/FastNoiseSIMD/FastNoiseSIMD_sse2.cpp
+        dependencies/FastNoiseSIMD/FastNoiseSIMD_avx512.cpp
+        dependencies/FastNoiseSIMD/FastNoiseSIMD_neon.cpp
+        dependencies/FastNoiseSIMD/FastNoiseSIMD_sse41.cpp
         src/AppConstants.hpp
         src/camera/Camera.cpp
         src/camera/Camera.hpp
@@ -108,15 +110,12 @@ set(SOURCE_FILES
         src/world/chunk/ChunkAlg.hpp
 )
 
-include_directories("dependencies")
-include_directories("shaders")
-include_directories("resources")
+add_executable(voxel_engine ${SOURCE_FILES})
 
-add_subdirectory(dependencies/external/glfw)
-add_subdirectory(dependencies/external/glm)
+add_subdirectory(dependencies/glfw)
+add_subdirectory(dependencies/glm)
 
 find_package(OpenGL REQUIRED)
 
-add_executable(voxel_engine ${SOURCE_FILES})
 
-target_link_libraries(voxel_engine ${OPENGL_LIBRARIES} glfw)
+target_link_libraries(voxel_engine ${OPENGL_LIBRARIES} glfw glm)

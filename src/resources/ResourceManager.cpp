@@ -3,9 +3,7 @@
 //
 
 #define STB_IMAGE_IMPLEMENTATION
-
 #include "ResourceManager.hpp"
-#include "../vendor/stb_image/stb_image.h"
 #include "Image.hpp"
 
 std::unordered_map<std::string, unsigned int> ResourceManager::textures;
@@ -98,8 +96,8 @@ Image ResourceManager::loadImage(const std::string &imagePath, bool flipVertical
     if (!data) {
         throw std::runtime_error("Failed to load texture: " + imagePath);
     }
-    stbi_image_free(data);
 
-    return Image{width, height,
-                 std::vector<uint8_t>(data, data + width * height * 4)};
+    Image image{width, height, std::vector<uint8_t>(data, data + width * height * 4)};
+    stbi_image_free(data);
+    return image;
 }

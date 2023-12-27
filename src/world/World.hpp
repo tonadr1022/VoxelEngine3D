@@ -15,8 +15,7 @@
 #include "save/WorldSave.hpp"
 #include <glm/gtx/hash.hpp>
 
-using ChunkMap = std::unordered_map<ChunkKey, Scope<Chunk>>;
-
+using ChunkMap = std::unordered_map<glm::ivec2, Scope<Chunk>>;
 
 static constexpr std::array<glm::ivec2, 8> NEIGHBOR_CHUNK_KEY_OFFSETS = {
         glm::ivec2{-1, -1},
@@ -63,28 +62,27 @@ private:
 
     void setBlockFromWorldPosition(glm::ivec3 position, Block block);
 
-    static inline ChunkKey getChunkKeyByWorldLocation(int x, int y) {
-        return ChunkKey{static_cast<int>(std::floor(static_cast<float>(x) / CHUNK_WIDTH)),
-                        static_cast<int>(std::floor(static_cast<float>(y) / CHUNK_WIDTH))};
+    static inline glm::ivec2 chunkPosFromWorldPos(int x, int y) {
+        return {x / CHUNK_WIDTH, y / CHUNK_WIDTH};
     }
 
-    static inline ChunkKey getChunkKeyByWorldLocation(const glm::ivec3 &position) {
-        return getChunkKeyByWorldLocation(position.x, position.y);
+    static inline glm::ivec2 chunkPosFromWorldPos(glm::ivec2 pos) {
+        return {pos.x / CHUNK_WIDTH, pos.y / CHUNK_WIDTH};
     }
 
-    inline Chunk *getChunkRawPtr(ChunkKey chunkKey) {
-        return m_chunkMap[chunkKey].get();
+    inline Chunk *getChunkRawPtr(const glm::ivec2 &pos) {
+        return m_chunkMap[pos].get();
     }
 
     ChunkMap m_chunkMap;
 
-    inline bool chunkExists(ChunkKey chunkKey) {
-        return m_chunkMap.find(chunkKey) != m_chunkMap.end();
+    inline bool chunkExists(const glm::ivec2 &pos) {
+        return m_chunkMap.find(pos) != m_chunkMap.end();
     }
 
-    bool hasAllNeighbors(ChunkKey chunkKey);
+    bool hasAllNeighbors(const glm::ivec2 &pos);
 
-    bool hasAllNeighborsFullyGenerated(ChunkKey chunkKey);
+    bool hasAllNeighborsFullyGenerated(const glm::ivec2 &pos);
 
     void castPlayerAimRay(Ray ray);
 
@@ -106,7 +104,7 @@ private:
     void updateChunkMeshList();
 
 
-    std::vector<ChunkKey> m_chunksToUnload;
+    std::vector<glm::ivec2> m_chunksToUnload;
 
 
     std::mutex m_mainMutex;
@@ -127,17 +125,17 @@ private:
 
     WorldSave m_worldSave;
 
-    std::vector<ChunkKey> m_chunksInMeshRangeVector;
-    std::unordered_map<ChunkKey, std::unique_ptr<ChunkMeshInfo>> m_chunkMeshInfoMap;
-    std::list<ChunkKey> m_chunksReadyToMeshList;
+    std::vector<glm::ivec2> m_chunksInMeshRangeVector;
+    std::unordered_map<glm::ivec2, std::unique_ptr<ChunkMeshInfo>> m_chunkMeshInfoMap;
+    std::list<glm::ivec2> m_chunksReadyToMeshList;
 
-    std::unordered_set<ChunkKey> m_renderSet;
+    std::unordered_set<glm::ivec2> m_renderSet;
 
-    std::vector<ChunkKey> m_chunksToLoadVector;
-    std::unordered_map<ChunkKey, std::unique_ptr<ChunkLoadInfo>> m_chunkTerrainLoadInfoMap;
+    std::vector<glm::ivec2> m_chunksToLoadVector;
+    std::unordered_map<glm::ivec2, std::unique_ptr<ChunkLoadInfo>> m_chunkTerrainLoadInfoMap;
 
-    std::vector<ChunkKey> m_chunksToGenerateStructuresVector;
-    std::unordered_map<ChunkKey, std::unique_ptr<ChunkGenerateStructuresInfo>> m_chunkGenerateStructuresInfoMap;
+    std::vector<glm::ivec2> m_chunksToGenerateStructuresVector;
+    std::unordered_map<glm::ivec2, std::unique_ptr<ChunkGenerateStructuresInfo>> m_chunkGenerateStructuresInfoMap;
 
     unsigned int m_numLoadingThreads;
 
@@ -150,23 +148,6 @@ private:
         return glm::length(glm::vec2(l) - (glm::vec2)m_center) >
                glm::length(glm::vec2(r) - (glm::vec2)m_center);
     }
-
-    inline bool rcmpChunkKey_impl(const ChunkKey &l, const ChunkKey &r) const {
-        return glm::length(glm::vec2(l.x, l.y) - (glm::vec2)m_center) >
-               glm::length(glm::vec2(r.x, r.y) - (glm::vec2)m_center);
-    }
-
-    inline bool cmpChunkKey_impl(const ChunkKey &l, const ChunkKey &r) const {
-        return glm::length(glm::vec2(l.x, l.y) - (glm::vec2)m_center) <
-               glm::length(glm::vec2(r.x, r.y) - (glm::vec2)m_center);
-    }
-
-    std::function<bool(const ChunkKey &, const ChunkKey &)> cmpChunkKey = [this](auto &&PH1,
-                                                                                 auto &&PH2) {
-        return cmpChunkKey_impl(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
-    };
-
-    std::function<bool(const ChunkKey &, const ChunkKey &)> rcmpChunkKey;
 
     std::function<bool(const glm::ivec2 &, const glm::ivec2 &)> cmpVec2 = [this](auto &&PH1,
                                                                                  auto &&PH2) {

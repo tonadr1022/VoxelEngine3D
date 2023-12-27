@@ -138,12 +138,10 @@ struct AdjacentBlockPositions {
 };
 
 
-void ChunkAlg::constructMesh(const Block (&blocks)[82944], ChunkKey chunkKey,
-                             std::vector<uint32_t> &vertices, std::vector<unsigned int> &indices) {
+void ChunkAlg::constructMesh(const Block (&blocks)[82944], std::vector<uint32_t> &vertices,
+                             std::vector<unsigned int> &indices) {
     vertices.clear();
     indices.clear();
-
-
 
     int x, y, z, faceIndex, textureX, textureY;
     std::array<int, 20> faceVertices{};

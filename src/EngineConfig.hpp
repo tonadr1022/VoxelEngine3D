@@ -5,6 +5,7 @@
 #ifndef VOXEL_ENGINE_ENGINECONFIG_HPP
 #define VOXEL_ENGINE_ENGINECONFIG_HPP
 
+
 #include <glad/glad.h>
 #include <glm/gtc/noise.hpp>
 #include <glm/glm.hpp>
@@ -17,6 +18,7 @@
 #include <imgui/imgui_impl_opengl3.h>
 
 #include <FastNoiseSIMD/FastNoiseSIMD.h>
+#include <stb_image/stb_image.h>
 
 #include <utility>
 #include <memory>

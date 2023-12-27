@@ -5,7 +5,7 @@
 #ifndef VOXEL_ENGINE_BLOCK_HPP
 #define VOXEL_ENGINE_BLOCK_HPP
 
-#include "../EngineConfig.hpp"
+#include "../../EngineConfig.hpp"
 
 enum class Block : uint8_t {
     AIR = 0,

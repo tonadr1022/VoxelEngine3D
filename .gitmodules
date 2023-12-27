@@ -1,6 +1,0 @@
-[submodule "dependencies/external/glfw"]
-	path = dependencies/external/glfw
-	url = https://github.com/glfw/glfw.git
-[submodule "dependencies/external/glm"]
-	path = dependencies/external/glm
-	url = git@github.com:g-truc/glm.git
