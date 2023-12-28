@@ -60,7 +60,7 @@ void World::render() {
 }
 
 void World::update() {
-//  std::cout << "chunksToLoadVector size: " << m_chunksToLoadVector.size()
+//    std::cout << "chunksToLoadVector size: " << m_chunksToLoadVector.size()
 //            << std::endl;
 //  std::cout << "chunksReadyToMeshList size: "
 //            << m_chunksReadyToMeshList.size() << std::endl;
@@ -88,7 +88,6 @@ void World::update() {
 
   if (m_xyChanged) {
     // create chunks in range (not terrain generated at this point)
-
     glm::ivec2 pos;
     for (pos.x = m_center.x - m_loadDistance;
          pos.x <= m_center.x + m_loadDistance;
@@ -137,7 +136,7 @@ void World::updateChunkLoadList() {
     }
   }
 
-  if (m_xyChanged) {
+  if (m_xyChanged || m_renderSet.empty()) {
     glm::ivec2 pos;
     for (pos.x = m_center.x - m_loadDistance;
          pos.x <= m_center.x + m_loadDistance; pos.x++) {
@@ -168,21 +167,23 @@ void World::updateChunkStructureGenList() {
     }
   }
 
-  m_chunksInStructureGenRangeVector.clear();
-  glm::ivec2 pos;
-  for (pos.x = m_center.x - m_structureLoadDistance;
-       pos.x <= m_center.x + m_structureLoadDistance; pos.x++) {
-    for (pos.y = m_center.y - m_structureLoadDistance;
-         pos.y <= m_center.y + m_structureLoadDistance; pos.y++) {
-      if (m_chunkMap.at(pos)->chunkState == ChunkState::TERRAIN_GENERATED
-          && !m_chunkStructureGenInfoMap.count(pos)) {
-        m_chunksInStructureGenRangeVector.emplace_back(pos);
+  if (m_xyChanged || m_renderSet.empty()) {
+    m_chunksInStructureGenRangeVector.clear();
+    glm::ivec2 pos;
+    for (pos.x = m_center.x - m_structureLoadDistance;
+         pos.x <= m_center.x + m_structureLoadDistance; pos.x++) {
+      for (pos.y = m_center.y - m_structureLoadDistance;
+           pos.y <= m_center.y + m_structureLoadDistance; pos.y++) {
+        if (m_chunkMap.at(pos)->chunkState == ChunkState::TERRAIN_GENERATED
+            && !m_chunkStructureGenInfoMap.count(pos)) {
+          m_chunksInStructureGenRangeVector.emplace_back(pos);
+        }
       }
     }
+    std::sort(m_chunksInStructureGenRangeVector.begin(),
+              m_chunksInStructureGenRangeVector.end(),
+              rcmpVec2);
   }
-  std::sort(m_chunksInStructureGenRangeVector.begin(),
-            m_chunksInStructureGenRangeVector.end(),
-            rcmpVec2);
 
   for (auto posIt = m_chunksInStructureGenRangeVector.begin();
        posIt != m_chunksInStructureGenRangeVector.end();) {
@@ -252,7 +253,7 @@ void World::updateChunkMeshList() {
     }
   }
 
-  if (m_xyChanged) {
+  if (m_xyChanged || m_renderSet.empty()) {
     m_chunksInMeshRangeVector.clear();
     // add chunks that can be meshed into vector
     glm::ivec2 pos;

@@ -156,16 +156,16 @@ Block ChunkMeshBuilder::getBlock(int x, int y, int z) {
   Block block;
   // adj block in -1, -1 chunk (Chunk 0)
   if (x < 0 && y < 0) {
-    block = m_chunk0.getBlock(CHUNK_WIDTH-1, CHUNK_WIDTH-1, z);
+    block = m_chunk0.getBlock(CHUNK_WIDTH - 1, CHUNK_WIDTH - 1, z);
   }
     // adj block in -1, 1 chunk (Chunk 2)
   else if (x < 0 && y >= CHUNK_WIDTH) {
-    block = m_chunk2.getBlock(CHUNK_WIDTH-1, 0, z);
+    block = m_chunk2.getBlock(CHUNK_WIDTH - 1, 0, z);
   }
 
     // adj block in 1, -1 chunk (Chunk 6)
   else if (x >= CHUNK_WIDTH && y < 0) {
-    block = m_chunk6.getBlock(0, CHUNK_WIDTH-1, z);
+    block = m_chunk6.getBlock(0, CHUNK_WIDTH - 1, z);
   }
 
     // adj block in 1, 1 chunk (Chunk 8)
@@ -175,7 +175,7 @@ Block ChunkMeshBuilder::getBlock(int x, int y, int z) {
 
     // adj block in -1, 0 chunk (Chunk 1)
   else if (x < 0) {
-    block = m_chunk1.getBlock(CHUNK_WIDTH-1, y, z);
+    block = m_chunk1.getBlock(CHUNK_WIDTH - 1, y, z);
   }
 
     // adj block in 1, 0 chunk (Chunk 7)
@@ -185,7 +185,7 @@ Block ChunkMeshBuilder::getBlock(int x, int y, int z) {
 
     // adj block in 0, -1 chunk (Chunk 3)
   else if (y < 0) {
-    block = m_chunk3.getBlock(x, CHUNK_WIDTH-1, z);
+    block = m_chunk3.getBlock(x, CHUNK_WIDTH - 1, z);
   }
 
     // adj block in 0, 1 chunk (Chunk 5)
@@ -221,6 +221,14 @@ ChunkMeshBuilder::ChunkMeshBuilder(const Chunk &chunk0, const Chunk &chunk1,
  */
 void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &vertices,
                                      std::vector<unsigned int> &indices) {
+  if (m_chunk0.chunkState != ChunkState::FULLY_GENERATED ||
+      m_chunk1.chunkState != ChunkState::FULLY_GENERATED || m_chunk2.chunkState != ChunkState::FULLY_GENERATED
+      || m_chunk3.chunkState != ChunkState::FULLY_GENERATED || m_chunk4.chunkState != ChunkState::FULLY_GENERATED
+      || m_chunk5.chunkState != ChunkState::FULLY_GENERATED || m_chunk6.chunkState != ChunkState::FULLY_GENERATED
+      || m_chunk7.chunkState != ChunkState::FULLY_GENERATED || m_chunk8.chunkState != ChunkState::FULLY_GENERATED) {
+    return;
+  }
+
   int x, y, z, faceIndex, textureX, textureY;
   std::array<int, 20> faceVertices{};
 

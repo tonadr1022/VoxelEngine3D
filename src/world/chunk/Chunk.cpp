@@ -7,10 +7,8 @@
 #include "ChunkAlg.hpp"
 #include "ChunkMeshBuilder.hpp"
 
-Chunk::Chunk(glm::ivec2 pos)
-    : m_pos(pos), m_worldPos(pos * CHUNK_WIDTH),
-      chunkMeshState(ChunkMeshState::UNBUILT),
-      chunkState(ChunkState::UNGENERATED) {
+Chunk::Chunk(glm::ivec2 pos) : m_pos(pos), m_worldPos(pos * CHUNK_WIDTH),
+                               chunkMeshState(ChunkMeshState::UNBUILT), chunkState(ChunkState::UNGENERATED) {
 }
 
 Chunk::~Chunk() = default;
@@ -35,22 +33,19 @@ void Chunk::markDirty() {
   chunkState = ChunkState::CHANGED;
 }
 
-ChunkLoadInfo::ChunkLoadInfo(glm::ivec2 pos, int seed) : m_pos(pos),
-                                                         m_seed(seed) {
+ChunkLoadInfo::ChunkLoadInfo(glm::ivec2 pos, int seed)
+    : m_pos(pos), m_seed(seed) {
 }
 
 void ChunkLoadInfo::process() {
-  auto chunkWorldPos = glm::ivec2(m_pos.x * CHUNK_WIDTH,
-                                  m_pos.y * CHUNK_WIDTH);
+  auto chunkWorldPos = glm::ivec2(m_pos.x * CHUNK_WIDTH, m_pos.y * CHUNK_WIDTH);
 
   FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
   fastNoise->SetSeed(m_seed);
   fastNoise->SetFractalOctaves(4);
   fastNoise->SetFrequency(1.0f / 300.0f);
-  float *heightMap = fastNoise->GetSimplexFractalSet(chunkWorldPos.x,
-                                                     chunkWorldPos.y, 0,
-                                                     CHUNK_WIDTH, CHUNK_WIDTH,
-                                                     1);
+  float *heightMap = fastNoise->GetSimplexFractalSet(chunkWorldPos.x, chunkWorldPos.y, 0, CHUNK_WIDTH,
+                                                     CHUNK_WIDTH, 1);
 
   int heights[CHUNK_AREA];
   int highest = 0;
@@ -82,25 +77,11 @@ void ChunkLoadInfo::applyTerrain(Chunk *chunk) {
   chunk->chunkState = ChunkState::TERRAIN_GENERATED;
 }
 
-ChunkMeshInfo::ChunkMeshInfo(const Chunk &chunk0,
-                             const Chunk &chunk1,
-                             const Chunk &chunk2,
-                             const Chunk &chunk3,
-                             const Chunk &chunk4,
-                             const Chunk &chunk5,
-                             const Chunk &chunk6,
-                             const Chunk &chunk7,
+ChunkMeshInfo::ChunkMeshInfo(const Chunk &chunk0, const Chunk &chunk1, const Chunk &chunk2, const Chunk &chunk3,
+                             const Chunk &chunk4, const Chunk &chunk5, const Chunk &chunk6, const Chunk &chunk7,
                              const Chunk &chunk8)
     : m_pos(chunk4.m_pos),
-      m_chunk_mesh_builder(chunk0,
-                           chunk1,
-                           chunk2,
-                           chunk3,
-                           chunk4,
-                           chunk5,
-                           chunk6,
-                           chunk7,
-                           chunk8) {
+      m_chunk_mesh_builder(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8) {
 
 }
 
@@ -115,27 +96,12 @@ void ChunkMeshInfo::applyMesh(Chunk *chunk) {
   chunk->chunkMeshState = ChunkMeshState::BUILT;
 }
 
-ChunkGenerateStructuresInfo::ChunkGenerateStructuresInfo(Chunk &chunk0,
-                                                         Chunk &chunk1,
-                                                         Chunk &chunk2,
-                                                         Chunk &chunk3,
-                                                         Chunk &chunk4,
-                                                         Chunk &chunk5,
-                                                         Chunk &chunk6,
-                                                         Chunk &chunk7,
+ChunkGenerateStructuresInfo::ChunkGenerateStructuresInfo(Chunk &chunk0, Chunk &chunk1, Chunk &chunk2, Chunk &chunk3,
+                                                         Chunk &chunk4, Chunk &chunk5, Chunk &chunk6, Chunk &chunk7,
                                                          Chunk &chunk8,
                                                          int seed)
-    : m_pos(chunk4.m_pos),
-      m_terrainGenerator(chunk0,
-                         chunk1,
-                         chunk2,
-                         chunk3,
-                         chunk4,
-                         chunk5,
-                         chunk6,
-                         chunk7,
-                         chunk8,
-                         seed) {
+    : m_pos(chunk4.m_pos), m_terrainGenerator(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6,
+                                              chunk7, chunk8, seed) {
 
 }
 void ChunkGenerateStructuresInfo::process() {
