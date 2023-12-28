@@ -79,7 +79,7 @@ void ChunkLoadInfo::process() {
 
 void ChunkLoadInfo::applyTerrain(Chunk *chunk) {
   std::copy(m_blocks, m_blocks + CHUNK_VOLUME, chunk->m_blocks);
-  chunk->chunkState = ChunkState::FULLY_GENERATED;
+  chunk->chunkState = ChunkState::TERRAIN_GENERATED;
 }
 
 ChunkMeshInfo::ChunkMeshInfo(const Chunk &chunk0,
@@ -91,7 +91,16 @@ ChunkMeshInfo::ChunkMeshInfo(const Chunk &chunk0,
                              const Chunk &chunk6,
                              const Chunk &chunk7,
                              const Chunk &chunk8)
-    : m_pos(chunk4.m_pos), m_chunk_mesh_builder(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8) {
+    : m_pos(chunk4.m_pos),
+      m_chunk_mesh_builder(chunk0,
+                           chunk1,
+                           chunk2,
+                           chunk3,
+                           chunk4,
+                           chunk5,
+                           chunk6,
+                           chunk7,
+                           chunk8) {
 
 }
 
@@ -106,12 +115,32 @@ void ChunkMeshInfo::applyMesh(Chunk *chunk) {
   chunk->chunkMeshState = ChunkMeshState::BUILT;
 }
 
-ChunkGenerateStructuresInfo::ChunkGenerateStructuresInfo(glm::ivec2 pos,
-                                                         int seed) {
+ChunkGenerateStructuresInfo::ChunkGenerateStructuresInfo(Chunk &chunk0,
+                                                         Chunk &chunk1,
+                                                         Chunk &chunk2,
+                                                         Chunk &chunk3,
+                                                         Chunk &chunk4,
+                                                         Chunk &chunk5,
+                                                         Chunk &chunk6,
+                                                         Chunk &chunk7,
+                                                         Chunk &chunk8,
+                                                         int seed)
+    : m_pos(chunk4.m_pos),
+      m_terrainGenerator(chunk0,
+                         chunk1,
+                         chunk2,
+                         chunk3,
+                         chunk4,
+                         chunk5,
+                         chunk6,
+                         chunk7,
+                         chunk8,
+                         seed) {
 
 }
 void ChunkGenerateStructuresInfo::process() {
-
+  m_terrainGenerator.generateStructures();
+  m_done = true;
 }
 
 void ChunkGenerateStructuresInfo::applyStructures(Chunk *chunk) {

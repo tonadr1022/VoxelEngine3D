@@ -9,8 +9,7 @@
 #include "ChunkMeshBuilder.hpp"
 #include "../../AppConstants.hpp"
 #include "../../EngineConfig.hpp"
-
-
+#include "../generation/TerrainGenerator.hpp"
 
 enum class ChunkMeshState {
   BUILT = 0,
@@ -112,14 +111,22 @@ class ChunkLoadInfo : public ChunkInfo {
 
 class ChunkGenerateStructuresInfo : public ChunkInfo {
  public:
-  explicit ChunkGenerateStructuresInfo(glm::ivec2 pos, int seed);
+  explicit ChunkGenerateStructuresInfo(Chunk &chunk0,
+                                       Chunk &chunk1,
+                                       Chunk &chunk2,
+                                       Chunk &chunk3,
+                                       Chunk &chunk4,
+                                       Chunk &chunk5,
+                                       Chunk &chunk6,
+                                       Chunk &chunk7,
+                                       Chunk &chunk8, int seed);
 
   void process() override;
   void applyStructures(Chunk *chunk);
 
  private:
-  Block m_blocks[CHUNK_VOLUME]{};
-  int m_seed;
+  TerrainGenerator m_terrainGenerator;
+//  Block m_blocks[CHUNK_VOLUME]{};
   glm::ivec2 m_pos;
 };
 
@@ -133,7 +140,6 @@ class ChunkMeshInfo : public ChunkInfo {
 
   void process() override;
   void applyMesh(Chunk *chunk);
-
 
  private:
   ChunkMeshBuilder m_chunk_mesh_builder;

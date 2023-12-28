@@ -42,6 +42,7 @@ class World {
  private:
   Block getBlockFromWorldPosition(glm::ivec3 position);
   void setBlockFromWorldPosition(glm::ivec3 position, Block block);
+  void setRenderDistance(int renderDistance);
 
   static inline glm::ivec2 chunkPosFromWorldPos(int x, int y) {
     return glm::ivec2{static_cast<int>(std::floor(static_cast<float>(x) / CHUNK_WIDTH)),
@@ -63,17 +64,27 @@ class World {
   }
 
   bool hasAllNeighbors(const glm::ivec2 &pos);
-  bool hasAllNeighborsFullyGenerated(const glm::ivec2 &pos);
+  bool hasAllNeighborsInState(const glm::ivec2 &pos, ChunkState state);
+  bool hasAllNeighborsInStates(const glm::ivec2 &pos, ChunkState state1, ChunkState state2);
   void castPlayerAimRay(Ray ray);
   void saveData();
 
-  void loadChunksWorker();
+
   void unloadChunks();
-  void updateChunkMeshes();
+
   void updateChunkLoadList();
+  void updateChunkStructureGenList();
   void updateChunkMeshList();
 
+  void generateTerrainWorker();
+  void generateStructuresWorker();
+  void generateChunkMeshWorker();
+
   int m_renderDistance = 16;
+  int m_loadDistance = m_renderDistance + 2;
+  int m_structureLoadDistance = m_renderDistance + 1;
+  int m_unloadDistance = m_renderDistance + 4;
+
   glm::ivec2 m_center;
   bool m_xyChanged = false;
   int m_seed;
@@ -83,7 +94,6 @@ class World {
   ChunkMap m_chunkMap;
   Renderer m_renderer;
   ChunkManager m_chunkManager;
-  TerrainGenerator m_terrainGenerator;
   WorldSave m_worldSave;
 
   std::mutex m_mainMutex;
@@ -93,17 +103,22 @@ class World {
   std::atomic_uint m_numRunningThreads;
   unsigned int m_numLoadingThreads;
 
+
+  std::vector<glm::ivec2> m_chunksToLoadVector;
+  std::unordered_map<glm::ivec2, std::unique_ptr<ChunkLoadInfo>>
+      m_chunkTerrainLoadInfoMap;
+
+  std::vector<glm::ivec2> m_chunksInStructureGenRangeVector;
+  std::unordered_map<glm::ivec2, std::unique_ptr<ChunkGenerateStructuresInfo>> m_chunkStructureGenInfoMap;
+  std::list<glm::ivec2> m_chunksReadyToGenStructuresList;
+
   std::vector<glm::ivec2> m_chunksInMeshRangeVector;
   std::unordered_map<glm::ivec2, std::unique_ptr<ChunkMeshInfo>>
       m_chunkMeshInfoMap;
   std::list<glm::ivec2> m_chunksReadyToMeshList;
+
+
   std::unordered_set<glm::ivec2> m_renderSet;
-  std::vector<glm::ivec2> m_chunksToLoadVector;
-  std::unordered_map<glm::ivec2, std::unique_ptr<ChunkLoadInfo>>
-      m_chunkTerrainLoadInfoMap;
-  std::vector<glm::ivec2> m_chunksToGenerateStructuresVector;
-  std::unordered_map<glm::ivec2, std::unique_ptr<ChunkGenerateStructuresInfo>>
-      m_chunkGenerateStructuresInfoMap;
 
   inline bool cmpVec2_impl(const glm::ivec2 &l, const glm::ivec2 &r) const {
     return glm::length(glm::vec2(l) - (glm::vec2)m_center) <
