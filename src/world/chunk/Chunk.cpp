@@ -4,8 +4,8 @@
 
 #include "Chunk.hpp"
 #include "ChunkManager.hpp"
-#include "../../utils/Timer.hpp"
 #include "ChunkAlg.hpp"
+#include "ChunkMeshBuilder.hpp"
 
 Chunk::Chunk(glm::ivec2 pos)
     : m_pos(pos), m_worldPos(pos * CHUNK_WIDTH),
@@ -82,90 +82,21 @@ void ChunkLoadInfo::applyTerrain(Chunk *chunk) {
   chunk->chunkState = ChunkState::FULLY_GENERATED;
 }
 
-ChunkMeshInfo::ChunkMeshInfo(Chunk *(&chunks)[9]) : m_pos(chunks[4]->m_pos) {
-  // copy the edges of neighboring chunks into array
-  // we know all exist
+ChunkMeshInfo::ChunkMeshInfo(const Chunk &chunk0,
+                             const Chunk &chunk1,
+                             const Chunk &chunk2,
+                             const Chunk &chunk3,
+                             const Chunk &chunk4,
+                             const Chunk &chunk5,
+                             const Chunk &chunk6,
+                             const Chunk &chunk7,
+                             const Chunk &chunk8)
+    : m_pos(chunk4.m_pos), m_chunk_mesh_builder(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8) {
 
-  /*
-   * Neighbor Chunks Array Structure
-   *
-   * \------------------ x
-   *  \  0  3  6
-   *   \  1  4  7
-   *    \  2  5  8
-   *     y
-   */
-  int copyFromBlockIndex, newMeshIndex, chunkIndex, x, y, z;
-#define SET m_blocks[newMeshIndex] = chunks[chunkIndex]->m_blocks[copyFromBlockIndex];
-
-// as arg to MESH_XYZ, CHUNK_WIDTH corresponds to CHUNK_WIDTH - 1 + 1
-// TODO: fix chunk height - 1. on linux and windows, get malloc invalid size error when using
-//  CHUNK_HEIGHT. For now, it's fine to have one less height in the world
-  for (z = 0; z < CHUNK_HEIGHT - 1; z++) {
-    // Chunk 0 {x: -1, y: -1}: need the column x=15, y=15, 0 <= z <= 256
-    chunkIndex = 0;
-    copyFromBlockIndex = XYZ(CHUNK_WIDTH - 1, CHUNK_WIDTH - 1, z);
-    newMeshIndex = MESH_XYZ(-1, -1, z);
-    SET;
-
-    // Chunk 2 {x: -1, y: 1}: need column x=15, y=0, 0 <= z <= 256
-    chunkIndex = 2;
-    copyFromBlockIndex = XYZ(CHUNK_WIDTH - 1, 0, z);
-    newMeshIndex = MESH_XYZ(-1, CHUNK_WIDTH, z);
-    SET;
-
-    // Chunk 6 {x: 1, y: -1}: need column x=0, y=15, 0 <= z <= 256
-    chunkIndex = 6;
-    copyFromBlockIndex = XYZ(0, CHUNK_WIDTH - 1, z);
-    newMeshIndex = MESH_XYZ(CHUNK_WIDTH, -1, z);
-    SET;
-
-    // Chunk 8 {x: 1, y: 1}: need column x=0, y=0, 0 <= z <= 256
-    chunkIndex = 8;
-    copyFromBlockIndex = XYZ(0, 0, z);
-    newMeshIndex = MESH_XYZ(CHUNK_WIDTH, CHUNK_WIDTH, z);
-    SET;
-
-    for (x = 0; x < CHUNK_WIDTH; x++) {
-      // Chunk 3 {x: 0, y: -1}: need rectangle 0 <= x <= 15, y = 15, 0 <= z <= 256
-      chunkIndex = 3;
-      copyFromBlockIndex = XYZ(x, CHUNK_WIDTH - 1, z);
-      newMeshIndex = MESH_XYZ(x, -1, z);
-      SET;
-
-      // Chunk 5 {x: 0, y: 1}: need rectangle 0 <= x <= 15, y = 0, 0 <= z <= 256
-      chunkIndex = 5;
-      copyFromBlockIndex = XYZ(x, 0, z);
-      newMeshIndex = MESH_XYZ(x, CHUNK_WIDTH, z);
-      SET;
-
-      for (y = 0; y < CHUNK_WIDTH; y++) {
-        // Chunk 4 {x: 0, y: 0}: 0 <= x <= 15, 0 <= y <= 15, 0 <= z <= 256
-        chunkIndex = 4;
-        copyFromBlockIndex = XYZ(x, y, z);
-        newMeshIndex = MESH_XYZ(x, y, z);
-        SET;
-      }
-    }
-
-    for (y = 0; y < CHUNK_WIDTH; y++) {
-      // Chunk 1 {x: -1, y: 0}: need the rectangle 0 <= y <= 15, x = 15, 0 <= z <= 256
-      chunkIndex = 1;
-      copyFromBlockIndex = XYZ(CHUNK_WIDTH - 1, y, z);
-      newMeshIndex = MESH_XYZ(-1, y, z);
-      SET;
-
-      // Chunk 7 {x: 1, y: 0}: need rectangle 0 <= y <= 15, x = 0, 0 <= z <= 256
-      chunkIndex = 7;
-      copyFromBlockIndex = XYZ(0, y, z);
-      newMeshIndex = MESH_XYZ(CHUNK_WIDTH, y, z);
-      SET;
-    }
-  }
 }
 
 void ChunkMeshInfo::process() {
-  ChunkAlg::constructMesh(m_blocks, m_vertices, m_indices);
+  m_chunk_mesh_builder.constructMesh(m_vertices, m_indices);
   m_done = true;
 }
 
@@ -173,4 +104,16 @@ void ChunkMeshInfo::applyMesh(Chunk *chunk) {
   chunk->getMesh().vertices = std::move(m_vertices);
   chunk->getMesh().indices = std::move(m_indices);
   chunk->chunkMeshState = ChunkMeshState::BUILT;
+}
+
+ChunkGenerateStructuresInfo::ChunkGenerateStructuresInfo(glm::ivec2 pos,
+                                                         int seed) {
+
+}
+void ChunkGenerateStructuresInfo::process() {
+
+}
+
+void ChunkGenerateStructuresInfo::applyStructures(Chunk *chunk) {
+
 }

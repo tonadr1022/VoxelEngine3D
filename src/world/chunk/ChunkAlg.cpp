@@ -37,83 +37,107 @@ constexpr std::array<int, 20> bottomFace{
 
 constexpr std::array<std::array<std::array<glm::ivec3, 3>, 4>, 6>
     lightingAdjacencies = {{
-        // front face
-        {{
-            // Bottom Left
-            {glm::ivec3(1, 0, -1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, -1)},
-            // Bottom Right
-            {glm::ivec3(1, 0, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
-            // Top Left
-            {glm::ivec3(1, 0, 1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, 1)},
-            // Top Right
-            {glm::ivec3(1, 0, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
-        }},
-        // back face
-        {{
-            // 0, 0, 0
-            {glm::ivec3(-1, 0, -1), glm::ivec3(-1, -1, 0),
-             glm::ivec3(-1, -1, -1)},
-            // 0, 0, 1
-            {glm::ivec3(-1, 0, 1), glm::ivec3(-1, -1, 0),
-             glm::ivec3(-1, -1, 1)},
-            // 0, 1, 0
-            {glm::ivec3(-1, 0, -1), glm::ivec3(-1, 1, 0),
-             glm::ivec3(-1, 1, -1)},
-            // 0, 1, 1
-            {glm::ivec3(-1, 1, 0), glm::ivec3(-1, 0, 1), glm::ivec3(-1, 1, 1)},
-        }},
-        // left face
-        {{
-            // 0, 0, 0
-            {glm::ivec3(0, -1, -1), glm::ivec3(-1, -1, 0),
-             glm::ivec3(-1, -1, -1)},
-            // 1, 0, 0
-            {glm::ivec3(0, -1, -1), glm::ivec3(1, -1, 0),
-             glm::ivec3(1, -1, -1)},
-            // 0, 0, 1
-            {glm::ivec3(-1, -1, 0), glm::ivec3(0, -1, 1),
-             glm::ivec3(-1, -1, 1)},
-            // 1, 0, 1
-            {glm::ivec3(0, -1, 1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, 1)},
-        }},
-        // right face
-        {{
-            // 0, 1, 0
-            {glm::ivec3(0, 1, -1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, -1)},
-            // 0, 1, 1
-            {glm::ivec3(0, 1, 1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, 1)},
-            // 1, 1, 0
-            {glm::ivec3(0, 1, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
-            // 1, 1, 1
-            {glm::ivec3(0, 1, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
-        }},
-        // top face
-        {{
-            // 0, 0, 1
-            {glm::ivec3(0, -1, 1), glm::ivec3(-1, 0, 1), glm::ivec3(-1, -1, 1)},
-            // 1, 0, 1
-            {glm::ivec3(0, -1, 1), glm::ivec3(1, 0, 1), glm::ivec3(1, -1, 1)},
-            // 0, 1, 1
-            {glm::ivec3(0, 1, 1), glm::ivec3(-1, 0, 1), glm::ivec3(-1, 1, 1)},
-            // 1, 1, 1
-            {glm::ivec3(0, 1, 1), glm::ivec3(1, 0, 1), glm::ivec3(1, 1, 1)},
-        }},
+                               // front face
+                               {{
+                                    // Bottom Left
+                                    {glm::ivec3(1, 0, -1), glm::ivec3(1, -1, 0),
+                                     glm::ivec3(1, -1, -1)},
+                                    // Bottom Right
+                                    {glm::ivec3(1, 0, -1), glm::ivec3(1, 1, 0),
+                                     glm::ivec3(1, 1, -1)},
+                                    // Top Left
+                                    {glm::ivec3(1, 0, 1), glm::ivec3(1, -1, 0),
+                                     glm::ivec3(1, -1, 1)},
+                                    // Top Right
+                                    {glm::ivec3(1, 0, 1), glm::ivec3(1, 1, 0),
+                                     glm::ivec3(1, 1, 1)},
+                                }},
+                               // back face
+                               {{
+                                    // 0, 0, 0
+                                    {glm::ivec3(-1, 0, -1),
+                                     glm::ivec3(-1, -1, 0),
+                                     glm::ivec3(-1, -1, -1)},
+                                    // 0, 0, 1
+                                    {glm::ivec3(-1, 0, 1),
+                                     glm::ivec3(-1, -1, 0),
+                                     glm::ivec3(-1, -1, 1)},
+                                    // 0, 1, 0
+                                    {glm::ivec3(-1, 0, -1),
+                                     glm::ivec3(-1, 1, 0),
+                                     glm::ivec3(-1, 1, -1)},
+                                    // 0, 1, 1
+                                    {glm::ivec3(-1, 1, 0), glm::ivec3(-1, 0, 1),
+                                     glm::ivec3(-1, 1, 1)},
+                                }},
+                               // left face
+                               {{
+                                    // 0, 0, 0
+                                    {glm::ivec3(0, -1, -1),
+                                     glm::ivec3(-1, -1, 0),
+                                     glm::ivec3(-1, -1, -1)},
+                                    // 1, 0, 0
+                                    {glm::ivec3(0, -1, -1),
+                                     glm::ivec3(1, -1, 0),
+                                     glm::ivec3(1, -1, -1)},
+                                    // 0, 0, 1
+                                    {glm::ivec3(-1, -1, 0),
+                                     glm::ivec3(0, -1, 1),
+                                     glm::ivec3(-1, -1, 1)},
+                                    // 1, 0, 1
+                                    {glm::ivec3(0, -1, 1), glm::ivec3(1, -1, 0),
+                                     glm::ivec3(1, -1, 1)},
+                                }},
+                               // right face
+                               {{
+                                    // 0, 1, 0
+                                    {glm::ivec3(0, 1, -1), glm::ivec3(-1, 1, 0),
+                                     glm::ivec3(-1, 1, -1)},
+                                    // 0, 1, 1
+                                    {glm::ivec3(0, 1, 1), glm::ivec3(-1, 1, 0),
+                                     glm::ivec3(-1, 1, 1)},
+                                    // 1, 1, 0
+                                    {glm::ivec3(0, 1, -1), glm::ivec3(1, 1, 0),
+                                     glm::ivec3(1, 1, -1)},
+                                    // 1, 1, 1
+                                    {glm::ivec3(0, 1, 1), glm::ivec3(1, 1, 0),
+                                     glm::ivec3(1, 1, 1)},
+                                }},
+                               // top face
+                               {{
+                                    // 0, 0, 1
+                                    {glm::ivec3(0, -1, 1), glm::ivec3(-1, 0, 1),
+                                     glm::ivec3(-1, -1, 1)},
+                                    // 1, 0, 1
+                                    {glm::ivec3(0, -1, 1), glm::ivec3(1, 0, 1),
+                                     glm::ivec3(1, -1, 1)},
+                                    // 0, 1, 1
+                                    {glm::ivec3(0, 1, 1), glm::ivec3(-1, 0, 1),
+                                     glm::ivec3(-1, 1, 1)},
+                                    // 1, 1, 1
+                                    {glm::ivec3(0, 1, 1), glm::ivec3(1, 0, 1),
+                                     glm::ivec3(1, 1, 1)},
+                                }},
 
-        // bottom face
-        {{
-            // 0, 0, 0
-            {glm::ivec3(0, -1, -1), glm::ivec3(-1, 0, -1),
-             glm::ivec3(-1, -1, -1)},
-            // 0, 1, 0
-            {glm::ivec3(0, 1, -1), glm::ivec3(-1, 0, -1),
-             glm::ivec3(-1, 1, -1)},
-            // 1, 0, 0
-            {glm::ivec3(0, -1, -1), glm::ivec3(1, 0, -1),
-             glm::ivec3(1, -1, -1)},
-            // 1, 1, 0
-            {glm::ivec3(0, 1, -1), glm::ivec3(1, 0, -1), glm::ivec3(1, 1, -1)},
-        }},
-    }};
+                               // bottom face
+                               {{
+                                    // 0, 0, 0
+                                    {glm::ivec3(0, -1, -1),
+                                     glm::ivec3(-1, 0, -1),
+                                     glm::ivec3(-1, -1, -1)},
+                                    // 0, 1, 0
+                                    {glm::ivec3(0, 1, -1),
+                                     glm::ivec3(-1, 0, -1),
+                                     glm::ivec3(-1, 1, -1)},
+                                    // 1, 0, 0
+                                    {glm::ivec3(0, -1, -1),
+                                     glm::ivec3(1, 0, -1),
+                                     glm::ivec3(1, -1, -1)},
+                                    // 1, 1, 0
+                                    {glm::ivec3(0, 1, -1), glm::ivec3(1, 0, -1),
+                                     glm::ivec3(1, 1, -1)},
+                                }},
+                           }};
 }  // namespace
 
 struct AdjacentBlockPositions {
@@ -129,147 +153,323 @@ struct AdjacentBlockPositions {
   }
 };
 
-void ChunkAlg::constructMesh(const Block (&blocks)[CHUNK_MESH_INFO_SIZE],
+
+Block getBlock(const Chunk &chunk0,
+               const Chunk &chunk1,
+               const Chunk &chunk2,
+               const Chunk &chunk3,
+               const Chunk &chunk4,
+               const Chunk &chunk5,
+               const Chunk &chunk6,
+               const Chunk &chunk7,
+               const Chunk &chunk8, int x, int y, int z) {
+  Block block;
+  // adj block in -1, -1 chunk (Chunk 0)
+  if (x < 0 && y < 0) {
+    block = chunk0.getBlock(CHUNK_WIDTH, CHUNK_WIDTH, z);
+  }
+    // adj block in -1, 1 chunk (Chunk 2)
+  else if (x < 0 && y > CHUNK_WIDTH) {
+    block = chunk2.getBlock(CHUNK_WIDTH, 0, z);
+  }
+
+    // adj block in 1, -1 chunk (Chunk 6)
+  else if (x > CHUNK_WIDTH && y < 0) {
+    block = chunk6.getBlock(0, CHUNK_WIDTH, z);
+  }
+
+    // adj block in 1, 1 chunk (Chunk 8)
+  else if (x > CHUNK_WIDTH && y > CHUNK_WIDTH) {
+    block = chunk8.getBlock(0, 0, z);
+  }
+
+    // adj block in -1, 0 chunk (Chunk 1)
+  else if (x < 0) {
+    block = chunk1.getBlock(CHUNK_WIDTH, y, z);
+  }
+
+    // adj block in 1, 0 chunk (Chunk 7)
+  else if (x > CHUNK_WIDTH) {
+    block = chunk7.getBlock(0, y, z);
+  }
+
+    // adj block in 0, -1 chunk (Chunk 3)
+  else if (y < 0) {
+    block = chunk3.getBlock(x, CHUNK_WIDTH, z);
+  }
+
+  // adj block in 0, 1 chunk (Chunk 5)
+  else if (y > CHUNK_WIDTH) {
+    block = chunk5.getBlock(x, 0, z);
+  }
+  // in middle chunk (mesh building chunk)
+  else {
+    block = chunk4.getBlock(x, y, z);
+  }
+
+  return block;
+}
+
+/*
+ * Neighbor Chunks Array Structure
+ *
+ * \------------------ x
+ *  \  0  3  6
+ *   \  1  4  7
+ *    \  2  5  8
+ *     y
+ */
+void ChunkAlg::constructMesh(const Chunk &chunk0,
+                             const Chunk &chunk1,
+                             const Chunk &chunk2,
+                             const Chunk &chunk3,
+                             const Chunk &chunk4,
+                             const Chunk &chunk5,
+                             const Chunk &chunk6,
+                             const Chunk &chunk7,
+                             const Chunk &chunk8,
                              std::vector<ChunkVertex> &vertices,
                              std::vector<unsigned int> &indices) {
-  vertices.clear();
-  indices.clear();
-
-  int x, y, z, faceIndex, textureX, textureY;
-  std::array<int, 20> faceVertices{};
-
-  AdjacentBlockPositions adjacentBlockPositions{};
-  // TODO: fix level 255. random blocks appear, so data isn't set properly for
-  // it
-  for (z = 0; z < CHUNK_HEIGHT - 1; z++) {
-    for (x = 0; x < CHUNK_WIDTH; x++) {
-      for (y = 0; y < CHUNK_WIDTH; y++) {
-        Block block = blocks[MESH_XYZ(x, y, z)];
-        if (block == Block::AIR) continue;
-        adjacentBlockPositions.update(x, y, z);
-        glm::ivec3 blockPos = {x, y, z};
-        for (faceIndex = 0; faceIndex < 6; faceIndex++) {
-          glm::ivec3 adjacentBlockPos =
-              adjacentBlockPositions.positions[faceIndex];
-          if (adjacentBlockPos.z < 0 || adjacentBlockPos.z >= CHUNK_HEIGHT)
-            continue;
-
-          Block adjacentBlock = blocks[MESH_XYZ(
-              adjacentBlockPos.x, adjacentBlockPos.y, adjacentBlockPos.z)];
-          if (adjacentBlock != Block::AIR) continue;
-
-          auto face = static_cast<BlockFace>(faceIndex);
-          BlockData &blockData = BlockDB::getBlockData(block);
-          OcclusionLevels occlusionLevels =
-              ChunkAlg::getOcclusionLevels(blockPos, face, blocks);
-          switch (face) {
-            case BlockFace::FRONT:
-              faceVertices = frontFace;
-              textureX = blockData.frontTexCoords.x;
-              textureY = blockData.frontTexCoords.y;
-              break;
-            case BlockFace::BACK:
-              faceVertices = backFace;
-              textureX = blockData.backTexCoords.x;
-              textureY = blockData.backTexCoords.y;
-              break;
-            case BlockFace::LEFT:
-              faceVertices = leftFace;
-              textureX = blockData.leftTexCoords.x;
-              textureY = blockData.leftTexCoords.y;
-              break;
-            case BlockFace::RIGHT:
-              faceVertices = rightFace;
-              textureX = blockData.rightTexCoords.x;
-              textureY = blockData.rightTexCoords.y;
-              break;
-            case BlockFace::TOP:
-              faceVertices = topFace;
-              textureX = blockData.topTexCoords.x;
-              textureY = blockData.topTexCoords.y;
-              break;
-            case BlockFace::BOTTOM:
-              faceVertices = bottomFace;
-              textureX = blockData.bottomTexCoords.x;
-              textureY = blockData.bottomTexCoords.y;
-              break;
-            default:
-              break;
-          }
-          auto baseVertexIndex = vertices.size();
-          int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
-          for (int i = 0; i < 20; i += 5) {
-            ChunkVertex v = {
-                glm::vec3(blockPos.x + faceVertices[i],
-                          blockPos.y + faceVertices[i + 1],
-                          blockPos.z + faceVertices[i + 2]),
-                glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
-                occlusionLevels[i / 5], textureIndex};
-            vertices.push_back(v);
-          }
-
-          // check whether to flip quad based on AO
-          if (occlusionLevels[0] + occlusionLevels[3] >
-              occlusionLevels[1] + occlusionLevels[2]) {
-            indices.push_back(baseVertexIndex + 2);
-            indices.push_back(baseVertexIndex + 0);
-            indices.push_back(baseVertexIndex + 3);
-            indices.push_back(baseVertexIndex + 3);
-            indices.push_back(baseVertexIndex + 0);
-            indices.push_back(baseVertexIndex + 1);
-          } else {
-            indices.push_back(baseVertexIndex);
-            indices.push_back(baseVertexIndex + 1);
-            indices.push_back(baseVertexIndex + 2);
-            indices.push_back(baseVertexIndex + 2);
-            indices.push_back(baseVertexIndex + 1);
-            indices.push_back(baseVertexIndex + 3);
-          }
-        }
-      }
-    }
-  }
+//  vertices.clear();
+//  indices.clear();
+//
+//  int x, y, z, faceIndex, textureX, textureY;
+//  std::array<int, 20> faceVertices{};
+//
+//  AdjacentBlockPositions adjacentBlockPositions{};
+//  // TODO: fix level 255. random blocks appear, so data isn't set properly for
+//  // it
+//  for (z = 0; z < CHUNK_HEIGHT - 1; z++) {
+//    for (x = 0; x < CHUNK_WIDTH; x++) {
+//      for (y = 0; y < CHUNK_WIDTH; y++) {
+//        Block block = chunk4.getBlock(x, y, z);
+//        if (block == Block::AIR) continue;
+//        adjacentBlockPositions.update(x, y, z);
+//        glm::ivec3 blockPos = {x, y, z};
+//        for (faceIndex = 0; faceIndex < 6; faceIndex++) {
+//          glm::ivec3 adjacentBlockPos =
+//              adjacentBlockPositions.positions[faceIndex];
+//          if (adjacentBlockPos.z < 0 || adjacentBlockPos.z >= CHUNK_HEIGHT)
+//            continue;
+//
+//          Block adjacentBlock = getBlock(chunk0, chunk1, chunk2, chunk3)
+//
+//
+//          if (adjacentBlock != Block::AIR) continue;
+//
+//          auto face = static_cast<BlockFace>(faceIndex);
+//          BlockData &blockData = BlockDB::getBlockData(block);
+//          OcclusionLevels occlusionLevels =
+//              ChunkAlg::getOcclusionLevels(blockPos, face, blocks);
+//          switch (face) {
+//            case BlockFace::FRONT:faceVertices = frontFace;
+//              textureX = blockData.frontTexCoords.x;
+//              textureY = blockData.frontTexCoords.y;
+//              break;
+//            case BlockFace::BACK:faceVertices = backFace;
+//              textureX = blockData.backTexCoords.x;
+//              textureY = blockData.backTexCoords.y;
+//              break;
+//            case BlockFace::LEFT:faceVertices = leftFace;
+//              textureX = blockData.leftTexCoords.x;
+//              textureY = blockData.leftTexCoords.y;
+//              break;
+//            case BlockFace::RIGHT:faceVertices = rightFace;
+//              textureX = blockData.rightTexCoords.x;
+//              textureY = blockData.rightTexCoords.y;
+//              break;
+//            case BlockFace::TOP:faceVertices = topFace;
+//              textureX = blockData.topTexCoords.x;
+//              textureY = blockData.topTexCoords.y;
+//              break;
+//            case BlockFace::BOTTOM:faceVertices = bottomFace;
+//              textureX = blockData.bottomTexCoords.x;
+//              textureY = blockData.bottomTexCoords.y;
+//              break;
+//            default:break;
+//          }
+//          auto baseVertexIndex = vertices.size();
+//          int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
+//          for (int i = 0; i < 20; i += 5) {
+//            ChunkVertex v = {
+//                glm::vec3(blockPos.x + faceVertices[i],
+//                          blockPos.y + faceVertices[i + 1],
+//                          blockPos.z + faceVertices[i + 2]),
+//                glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
+//                static_cast<float>(occlusionLevels[i / 5]), static_cast<float>(textureIndex)};
+//            vertices.push_back(v);
+//          }
+//
+//          // check whether to flip quad based on AO
+//          if (occlusionLevels[0] + occlusionLevels[3] >
+//              occlusionLevels[1] + occlusionLevels[2]) {
+//            indices.push_back(baseVertexIndex + 2);
+//            indices.push_back(baseVertexIndex + 0);
+//            indices.push_back(baseVertexIndex + 3);
+//            indices.push_back(baseVertexIndex + 3);
+//            indices.push_back(baseVertexIndex + 0);
+//            indices.push_back(baseVertexIndex + 1);
+//          } else {
+//            indices.push_back(baseVertexIndex);
+//            indices.push_back(baseVertexIndex + 1);
+//            indices.push_back(baseVertexIndex + 2);
+//            indices.push_back(baseVertexIndex + 2);
+//            indices.push_back(baseVertexIndex + 1);
+//            indices.push_back(baseVertexIndex + 3);
+//          }
+//        }
+//      }
+//    }
+//  }
+//
+//
+//  vertices.clear();
+//  indices.clear();
+//
+//  int x, y, z, faceIndex, textureX, textureY;
+//  std::array<int, 20> faceVertices{};
+//
+//  AdjacentBlockPositions adjacentBlockPositions{};
+//  // TODO: fix level 255. random blocks appear, so data isn't set properly for
+//  // it
+//  for (z = 0; z < CHUNK_HEIGHT - 1; z++) {
+//    for (x = 0; x < CHUNK_WIDTH; x++) {
+//      for (y = 0; y < CHUNK_WIDTH; y++) {
+//        Block block = blocks[MESH_XYZ(x, y, z)];
+//        if (block == Block::AIR) continue;
+//        adjacentBlockPositions.update(x, y, z);
+//        glm::ivec3 blockPos = {x, y, z};
+//        for (faceIndex = 0; faceIndex < 6; faceIndex++) {
+//          glm::ivec3 adjacentBlockPos =
+//              adjacentBlockPositions.positions[faceIndex];
+//          if (adjacentBlockPos.z < 0 || adjacentBlockPos.z >= CHUNK_HEIGHT)
+//            continue;
+//
+//          Block adjacentBlock = blocks[MESH_XYZ(
+//              adjacentBlockPos.x, adjacentBlockPos.y, adjacentBlockPos.z)];
+//          if (adjacentBlock != Block::AIR) continue;
+//
+//          auto face = static_cast<BlockFace>(faceIndex);
+//          BlockData &blockData = BlockDB::getBlockData(block);
+//          OcclusionLevels occlusionLevels =
+//              ChunkAlg::getOcclusionLevels(blockPos, face, blocks);
+//          switch (face) {
+//            case BlockFace::FRONT:
+//              faceVertices = frontFace;
+//              textureX = blockData.frontTexCoords.x;
+//              textureY = blockData.frontTexCoords.y;
+//              break;
+//            case BlockFace::BACK:
+//              faceVertices = backFace;
+//              textureX = blockData.backTexCoords.x;
+//              textureY = blockData.backTexCoords.y;
+//              break;
+//            case BlockFace::LEFT:
+//              faceVertices = leftFace;
+//              textureX = blockData.leftTexCoords.x;
+//              textureY = blockData.leftTexCoords.y;
+//              break;
+//            case BlockFace::RIGHT:
+//              faceVertices = rightFace;
+//              textureX = blockData.rightTexCoords.x;
+//              textureY = blockData.rightTexCoords.y;
+//              break;
+//            case BlockFace::TOP:
+//              faceVertices = topFace;
+//              textureX = blockData.topTexCoords.x;
+//              textureY = blockData.topTexCoords.y;
+//              break;
+//            case BlockFace::BOTTOM:
+//              faceVertices = bottomFace;
+//              textureX = blockData.bottomTexCoords.x;
+//              textureY = blockData.bottomTexCoords.y;
+//              break;
+//            default:
+//              break;
+//          }
+//          auto baseVertexIndex = vertices.size();
+//          int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
+//          for (int i = 0; i < 20; i += 5) {
+//            ChunkVertex v = {
+//                glm::vec3(blockPos.x + faceVertices[i],
+//                          blockPos.y + faceVertices[i + 1],
+//                          blockPos.z + faceVertices[i + 2]),
+//                glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
+//                occlusionLevels[i / 5], textureIndex};
+//            vertices.push_back(v);
+//          }
+//
+//          // check whether to flip quad based on AO
+//          if (occlusionLevels[0] + occlusionLevels[3] >
+//              occlusionLevels[1] + occlusionLevels[2]) {
+//            indices.push_back(baseVertexIndex + 2);
+//            indices.push_back(baseVertexIndex + 0);
+//            indices.push_back(baseVertexIndex + 3);
+//            indices.push_back(baseVertexIndex + 3);
+//            indices.push_back(baseVertexIndex + 0);
+//            indices.push_back(baseVertexIndex + 1);
+//          } else {
+//            indices.push_back(baseVertexIndex);
+//            indices.push_back(baseVertexIndex + 1);
+//            indices.push_back(baseVertexIndex + 2);
+//            indices.push_back(baseVertexIndex + 2);
+//            indices.push_back(baseVertexIndex + 1);
+//            indices.push_back(baseVertexIndex + 3);
+//          }
+//        }
+//      }
+//    }
+//  }
 }
 
 OcclusionLevels ChunkAlg::getOcclusionLevels(
     glm::ivec3 &blockPosInChunk, BlockFace face,
-    const Block (&blocks)[CHUNK_MESH_INFO_SIZE]) {
+    const Chunk &chunk0,
+    const Chunk &chunk1,
+    const Chunk &chunk2,
+    const Chunk &chunk3,
+    const Chunk &chunk4,
+    const Chunk &chunk5,
+    const Chunk &chunk6,
+    const Chunk &chunk7,
+    const Chunk &chunk8) {
   // source:
   // https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
 
-  OcclusionLevels occlusionLevels = {3, 3, 3, 3};
-
-  auto &faceLightingAdjacencies = lightingAdjacencies[static_cast<int>(face)];
-  for (int faceVertexIndex = 0; faceVertexIndex < 4; faceVertexIndex++) {
-    auto &faceLightingAdjacency = faceLightingAdjacencies[faceVertexIndex];
-    bool side1IsSolid = false;
-    bool side2IsSolid = false;
-    bool cornerIsSolid = false;
-
-    glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
-    Block side1Block = blocks[MESH_XYZ(side1Pos.x, side1Pos.y, side1Pos.z)];
-    if (side1Block != Block::AIR) {
-      side1IsSolid = true;
-    }
-
-    glm::ivec3 side2Pos = blockPosInChunk + faceLightingAdjacency[1];
-    Block side2Block = blocks[MESH_XYZ(side2Pos.x, side2Pos.y, side2Pos.z)];
-    if (side2Block != Block::AIR) {
-      side2IsSolid = true;
-    }
-
-    glm::ivec3 cornerPos = blockPosInChunk + faceLightingAdjacency[2];
-    Block cornerBlock = blocks[MESH_XYZ(cornerPos.x, cornerPos.y, cornerPos.z)];
-    if (cornerBlock != Block::AIR) {
-      cornerIsSolid = true;
-    }
-
-    if (side1IsSolid && side2IsSolid) {
-      occlusionLevels[faceVertexIndex] = 0;
-    } else {
-      occlusionLevels[faceVertexIndex] =
-          3 - (side1IsSolid + side2IsSolid + cornerIsSolid);
-    }
-  }
-  return occlusionLevels;
+//  OcclusionLevels occlusionLevels = {3, 3, 3, 3};
+//
+//  auto &faceLightingAdjacencies = lightingAdjacencies[static_cast<int>(face)];
+//  for (int faceVertexIndex = 0; faceVertexIndex < 4; faceVertexIndex++) {
+//    auto &faceLightingAdjacency = faceLightingAdjacencies[faceVertexIndex];
+//    bool side1IsSolid = false;
+//    bool side2IsSolid = false;
+//    bool cornerIsSolid = false;
+//
+//    glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
+//    Block side1Block = blocks[MESH_XYZ(side1Pos.x, side1Pos.y, side1Pos.z)];
+//    if (side1Block != Block::AIR) {
+//      side1IsSolid = true;
+//    }
+//
+//    glm::ivec3 side2Pos = blockPosInChunk + faceLightingAdjacency[1];
+//    Block side2Block = blocks[MESH_XYZ(side2Pos.x, side2Pos.y, side2Pos.z)];
+//    if (side2Block != Block::AIR) {
+//      side2IsSolid = true;
+//    }
+//
+//    glm::ivec3 cornerPos = blockPosInChunk + faceLightingAdjacency[2];
+//    Block cornerBlock = blocks[MESH_XYZ(cornerPos.x, cornerPos.y, cornerPos.z)];
+//    if (cornerBlock != Block::AIR) {
+//      cornerIsSolid = true;
+//    }
+//
+//    if (side1IsSolid && side2IsSolid) {
+//      occlusionLevels[faceVertexIndex] = 0;
+//    } else {
+//      occlusionLevels[faceVertexIndex] =
+//          3 - (side1IsSolid + side2IsSolid + cornerIsSolid);
+//    }
+//  }
+//  return occlusionLevels;
+return {3, 3, 3, 3};
 }

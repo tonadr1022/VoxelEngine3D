@@ -96,23 +96,9 @@ void World::update() {
   static int i = 0;
 
   std::lock_guard<std::mutex> lock(m_mainMutex);
-  {
-    Timer t1("update chunk load list", false);
-    updateChunkLoadList();
-    auto dur = t1.stop();
-    if (dur > 1) {
-      std::cout << "update chunk load list: " << dur << std::endl;
-    }
-  }
+  updateChunkLoadList();
+  updateChunkMeshList();
 
-  {
-    Timer t2("update chunkmesh list", false);
-    updateChunkMeshList();
-    auto dur = t2.stop();
-    if (dur > 1) {
-      std::cout << "update chunkmesh list: " << dur << std::endl;
-    }
-  }
   m_conditionVariable.notify_all();
 }
 
@@ -194,20 +180,48 @@ void World::updateChunkMeshList() {
     m_chunksReadyToMeshList.sort(rcmpVec2);
   }
 
-  glm::ivec2 offset;
-  int i;
-  Chunk *chunks[9];
   for (auto chunkKeyIter = m_chunksInMeshRangeVector.begin();
        chunkKeyIter != m_chunksInMeshRangeVector.end();) {
     if (hasAllNeighborsFullyGenerated(*chunkKeyIter)) {
-      for (i = 0; i < 9; i++) {
-        offset = NEIGHBOR_ARRAY_OFFSETS[i];
-        chunks[i] = getChunkRawPtr(
-            {offset.x + chunkKeyIter->x, offset.y + chunkKeyIter->y});
-      }
+
+
+/*
+ * Neighbor Chunks Array Structure
+ *
+ * \------------------ x
+ *  \  0  3  6
+ *   \  1  4  7
+ *    \  2  5  8
+ *     y
+ */
+      const Chunk
+          &chunk0 = *getChunkRawPtr({chunkKeyIter->x - 1, chunkKeyIter->y - 1});
+      const Chunk
+          &chunk1 = *getChunkRawPtr({chunkKeyIter->x - 1, chunkKeyIter->y});
+      const Chunk
+          &chunk2 = *getChunkRawPtr({chunkKeyIter->x - 1, chunkKeyIter->y + 1});
+      const Chunk
+          &chunk3 = *getChunkRawPtr({chunkKeyIter->x, chunkKeyIter->y - 1});
+      const Chunk &chunk4 = *getChunkRawPtr({chunkKeyIter->x, chunkKeyIter->y});
+      const Chunk
+          &chunk5 = *getChunkRawPtr({chunkKeyIter->x, chunkKeyIter->y + 1});
+      const Chunk
+          &chunk6 = *getChunkRawPtr({chunkKeyIter->x + 1, chunkKeyIter->y - 1});
+      const Chunk
+          &chunk7 = *getChunkRawPtr({chunkKeyIter->x + 1, chunkKeyIter->y});
+      const Chunk
+          &chunk8 = *getChunkRawPtr({chunkKeyIter->x + 1, chunkKeyIter->y + 1});
 
       m_chunkMeshInfoMap.emplace(*chunkKeyIter,
-                                 std::make_unique<ChunkMeshInfo>(chunks));
+                                 std::make_unique<ChunkMeshInfo>(chunk0,
+                                                                 chunk1,
+                                                                 chunk2,
+                                                                 chunk3,
+                                                                 chunk4,
+                                                                 chunk5,
+                                                                 chunk6,
+                                                                 chunk7,
+                                                                 chunk8));
       auto insertPos = std::lower_bound(m_chunksReadyToMeshList.begin(),
                                         m_chunksReadyToMeshList.end(),
                                         *chunkKeyIter,

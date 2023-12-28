@@ -6,8 +6,11 @@
 #define VOXEL_ENGINE_CHUNK_HPP
 
 #include "ChunkMesh.hpp"
+#include "ChunkMeshBuilder.hpp"
 #include "../../AppConstants.hpp"
 #include "../../EngineConfig.hpp"
+
+
 
 enum class ChunkMeshState {
   BUILT = 0,
@@ -84,7 +87,10 @@ class Chunk {
 
 class ChunkInfo {
  public:
-  ChunkInfo() : m_done(false) {}
+  ChunkInfo() : m_done(false) {
+  }
+
+  virtual ~ChunkInfo() = default;
 
   virtual void process() = 0;
 
@@ -109,7 +115,7 @@ class ChunkGenerateStructuresInfo : public ChunkInfo {
   explicit ChunkGenerateStructuresInfo(glm::ivec2 pos, int seed);
 
   void process() override;
-  void applyStructures(Chunk &chunk);
+  void applyStructures(Chunk *chunk);
 
  private:
   Block m_blocks[CHUNK_VOLUME]{};
@@ -119,13 +125,19 @@ class ChunkGenerateStructuresInfo : public ChunkInfo {
 
 class ChunkMeshInfo : public ChunkInfo {
  public:
-  explicit ChunkMeshInfo(Chunk *(&chunks)[9]);
+  explicit ChunkMeshInfo(const Chunk &chunk0, const Chunk &chunk1,
+                         const Chunk &chunk2, const Chunk &chunk3,
+                         const Chunk &chunk4, const Chunk &chunk5,
+                         const Chunk &chunk6, const Chunk &chunk7,
+                         const Chunk &chunk8);
 
   void process() override;
   void applyMesh(Chunk *chunk);
 
+
  private:
-  Block m_blocks[CHUNK_MESH_INFO_SIZE]{};
+  ChunkMeshBuilder m_chunk_mesh_builder;
+
   std::vector<ChunkVertex> m_vertices;
   std::vector<unsigned int> m_indices;
   glm::ivec2 m_pos;

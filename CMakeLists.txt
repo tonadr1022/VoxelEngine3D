@@ -113,6 +113,8 @@ set(SOURCE_FILES
         src/world/save/WorldSave.hpp
         src/world/chunk/ChunkAlg.cpp
         src/world/chunk/ChunkAlg.hpp
+        src/world/chunk/ChunkMeshBuilder.cpp
+        src/world/chunk/ChunkMeshBuilder.hpp
 )
 
 add_executable(voxel_engine ${SOURCE_FILES})
