@@ -161,6 +161,8 @@ void World::updateChunkStructureGenList() {
   for (auto chunkKeyIter = m_chunkStructureGenInfoMap.begin();
        chunkKeyIter != m_chunkStructureGenInfoMap.end();) {
     if (chunkKeyIter->second->m_done) {
+      // must erase from height map before reassigning chunkKeyIter.
+      m_heightMapsMap.erase(chunkKeyIter->first);
       chunkKeyIter = m_chunkStructureGenInfoMap.erase(chunkKeyIter);
     } else {
       chunkKeyIter++;
@@ -377,7 +379,9 @@ void World::generateTerrainWorker() {
     m_chunksToLoadVector.pop_back();
     lock.unlock();
     m_numRunningThreads++;
-    m_chunkTerrainLoadInfoMap.at(pos)->process();
+    Scope<std::array<int, CHUNK_AREA>> heights = m_chunkTerrainLoadInfoMap.at(pos)->process();
+    std::lock_guard<std::mutex> lock2(m_mainMutex);
+    m_heightMapsMap.emplace(pos, std::move(heights));
     m_numRunningThreads--;
   }
 }
@@ -395,9 +399,10 @@ void World::generateStructuresWorker() {
 
     pos = m_chunksReadyToGenStructuresList.back();
     m_chunksReadyToGenStructuresList.pop_back();
+    const std::array<int, CHUNK_AREA> &heightMap = *m_heightMapsMap.at(pos).get();
     lock.unlock();
     m_numRunningThreads++;
-    m_chunkStructureGenInfoMap.at(pos)->process();
+    m_chunkStructureGenInfoMap.at(pos)->process(heightMap);
     m_numRunningThreads--;
   }
 }
@@ -513,15 +518,6 @@ void World::renderDebugGui() {
 
 void World::saveData() {
   m_worldSave.saveData();
-}
-
-bool World::hasAllNeighbors(const glm::ivec2 &pos) {
-  return std::all_of(NEIGHBOR_CHUNK_KEY_OFFSETS.begin(),
-                     NEIGHBOR_CHUNK_KEY_OFFSETS.end(),
-                     [&](glm::ivec2 offset) {
-                       return chunkExists({pos.x + offset.x, pos.y + offset.y});
-                     }
-  );
 }
 
 bool World::hasAllNeighborsInState(const glm::ivec2 &pos, ChunkState state) {

@@ -7,6 +7,7 @@
 
 #include "../../EngineConfig.hpp"
 #include "../block/Block.hpp"
+#include "../../AppConstants.hpp"
 
 class Chunk;
 
@@ -23,7 +24,7 @@ class TerrainGenerator {
                             Chunk &chunk6,
                             Chunk &chunk7,
                             Chunk &chunk8, int seed);
-  void generateStructures();
+  void generateStructures(const std::array<int, CHUNK_AREA> &heightMap);
   void generateStructuresFor(ChunkManager &chunkManager,
                              const Ref<Chunk> &chunk);
 

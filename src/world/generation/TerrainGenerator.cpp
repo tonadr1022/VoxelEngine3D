@@ -6,15 +6,12 @@
 #include "../chunk/Chunk.hpp"
 #include "../chunk/ChunkManager.hpp"
 
-void TerrainGenerator::generateStructures() {
+void TerrainGenerator::generateStructures(const std::array<int, CHUNK_AREA> &heightMap) {
   auto chunkWorldPos = m_chunk4.m_worldPos;
+
+
   FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
   fastNoise->SetSeed(m_seed);
-  fastNoise->SetFractalOctaves(4);
-  fastNoise->SetFrequency(1.0f / 300.0f);
-  float *heightMap = fastNoise->GetSimplexFractalSet(chunkWorldPos.x, chunkWorldPos.y, 0, CHUNK_WIDTH,
-                                                     CHUNK_WIDTH, 1);
-
   fastNoise->SetFrequency(1.0f);
   // vals are from -1 to 1
   float *treeMap = fastNoise->GetWhiteNoiseSet(chunkWorldPos.x, chunkWorldPos.y, 0, CHUNK_WIDTH,
@@ -26,18 +23,12 @@ void TerrainGenerator::generateStructures() {
 //
 //    }
 //  }
-  int heights[CHUNK_AREA];
-  int highest = 0;
 
-  for (int i = 0; i < CHUNK_AREA; i++) {
-    heights[i] = (int) floor(heightMap[i] * 64) + 100;
-    highest = std::max(highest, heights[i]);
-  }
 
   int heightMapIndex = 0;
   for (int x = 0; x < CHUNK_WIDTH; x++) {
     for (int y = 0; y < CHUNK_WIDTH; y++) {
-      int height = heights[heightMapIndex];
+      int height = heightMap[heightMapIndex];
       // + 1 since tree map vals are [-1,1]
       // 1 / 100 prob for now
       bool structureExists = static_cast<int>((treeMap[heightMapIndex] + 1) * 100.0f) == 0;

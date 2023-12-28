@@ -63,7 +63,7 @@ class World {
     return m_chunkMap.find(pos) != m_chunkMap.end();
   }
 
-  bool hasAllNeighbors(const glm::ivec2 &pos);
+
   bool hasAllNeighborsInState(const glm::ivec2 &pos, ChunkState state);
   bool hasAllNeighborsInStates(const glm::ivec2 &pos, ChunkState state1, ChunkState state2);
   void castPlayerAimRay(Ray ray);
@@ -107,6 +107,7 @@ class World {
   std::vector<glm::ivec2> m_chunksToLoadVector;
   std::unordered_map<glm::ivec2, std::unique_ptr<ChunkLoadInfo>>
       m_chunkTerrainLoadInfoMap;
+  std::unordered_map<glm::ivec2, std::unique_ptr<std::array<int, CHUNK_AREA>>> m_heightMapsMap;
 
   std::vector<glm::ivec2> m_chunksInStructureGenRangeVector;
   std::unordered_map<glm::ivec2, std::unique_ptr<ChunkGenerateStructuresInfo>> m_chunkStructureGenInfoMap;

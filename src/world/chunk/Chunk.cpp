@@ -37,7 +37,7 @@ ChunkLoadInfo::ChunkLoadInfo(glm::ivec2 pos, int seed)
     : m_pos(pos), m_seed(seed) {
 }
 
-void ChunkLoadInfo::process() {
+Scope<std::array<int, CHUNK_AREA>> ChunkLoadInfo::process() {
   auto chunkWorldPos = glm::ivec2(m_pos.x * CHUNK_WIDTH, m_pos.y * CHUNK_WIDTH);
 
   FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
@@ -47,19 +47,20 @@ void ChunkLoadInfo::process() {
   float *heightMap = fastNoise->GetSimplexFractalSet(chunkWorldPos.x, chunkWorldPos.y, 0, CHUNK_WIDTH,
                                                      CHUNK_WIDTH, 1);
 
-  int heights[CHUNK_AREA];
+
+  Scope<std::array<int, CHUNK_AREA>> heights = std::make_unique<std::array<int, CHUNK_AREA>>();
   int highest = 0;
 
   for (int i = 0; i < CHUNK_AREA; i++) {
-    heights[i] = (int) floor(heightMap[i] * 64) + 100;
-    highest = std::max(highest, heights[i]);
+    (*heights)[i] = (int) floor(heightMap[i] * 64) + 100;
+    highest = std::max(highest, (*heights)[i]);
   }
 
   for (int z = 0; z <= highest; z++) {
     int heightMapIndex = 0;
     for (int x = 0; x < CHUNK_WIDTH; x++) {
       for (int y = 0; y < CHUNK_WIDTH; y++) {
-        int height = heights[heightMapIndex];
+        int height = (*heights)[heightMapIndex];
         if (z < height) {
           m_blocks[XYZ(x, y, z)] = Block::DIRT;
         } else if (z == height) {
@@ -70,6 +71,7 @@ void ChunkLoadInfo::process() {
     }
   }
   m_done = true;
+  return heights;
 }
 
 void ChunkLoadInfo::applyTerrain(Chunk *chunk) {
@@ -82,7 +84,6 @@ ChunkMeshInfo::ChunkMeshInfo(const Chunk &chunk0, const Chunk &chunk1, const Chu
                              const Chunk &chunk8)
     : m_pos(chunk4.m_pos),
       m_chunk_mesh_builder(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8) {
-
 }
 
 void ChunkMeshInfo::process() {
@@ -104,8 +105,8 @@ ChunkGenerateStructuresInfo::ChunkGenerateStructuresInfo(Chunk &chunk0, Chunk &c
                                               chunk7, chunk8, seed) {
 
 }
-void ChunkGenerateStructuresInfo::process() {
-  m_terrainGenerator.generateStructures();
+void ChunkGenerateStructuresInfo::process(const std::array<int, CHUNK_AREA> &heightMap) {
+  m_terrainGenerator.generateStructures(heightMap);
   m_done = true;
 }
 

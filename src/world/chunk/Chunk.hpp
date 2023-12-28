@@ -91,7 +91,6 @@ class ChunkInfo {
 
   virtual ~ChunkInfo() = default;
 
-  virtual void process() = 0;
 
   std::atomic_bool m_done;
 };
@@ -100,7 +99,7 @@ class ChunkLoadInfo : public ChunkInfo {
  public:
   ChunkLoadInfo(glm::ivec2 pos, int seed);
 
-  void process() override;
+  Scope<std::array<int, CHUNK_AREA>> process();
   void applyTerrain(Chunk *chunk);
 
  private:
@@ -121,7 +120,7 @@ class ChunkGenerateStructuresInfo : public ChunkInfo {
                                        Chunk &chunk7,
                                        Chunk &chunk8, int seed);
 
-  void process() override;
+  void process(const std::array<int, CHUNK_AREA> &heightMap);
   void applyStructures(Chunk *chunk);
 
  private:
@@ -138,7 +137,7 @@ class ChunkMeshInfo : public ChunkInfo {
                          const Chunk &chunk6, const Chunk &chunk7,
                          const Chunk &chunk8);
 
-  void process() override;
+  void process();
   void applyMesh(Chunk *chunk);
 
  private:
