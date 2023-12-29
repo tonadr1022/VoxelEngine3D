@@ -7,7 +7,7 @@
 #include "../AppConstants.hpp"
 
 void BlockBreakRenderer::render(glm::vec3 blockPosition,
-                                Camera &camera,
+                               const Camera &camera,
                                 int breakStage) const {
   int textureX = 15 - breakStage;
   int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + TEXTURE_Y_INDEX;

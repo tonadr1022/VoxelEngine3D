@@ -14,8 +14,8 @@ glm::vec3 &Player::getPosition() {
 }
 
 void Player::processKeyInput(float deltaTime) {
-  glm::vec3 &front = camera.getFront();
-  glm::vec3 globalUp = Camera::getGlobalUp();
+  const glm::vec3 &front = camera.getFront();
+  const glm::vec3 globalUp = Camera::getGlobalUp();
 
   float multiplier = m_movementSpeed * deltaTime;
 

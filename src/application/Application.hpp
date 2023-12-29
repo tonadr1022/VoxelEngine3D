@@ -28,8 +28,8 @@ class Application {
 
  private:
   static Application *instancePtr;
-  Window window;
-  Renderer renderer;
+  Window m_window;
+  Renderer m_renderer;
   bool m_running = true;
   Scope<World> m_world;
 

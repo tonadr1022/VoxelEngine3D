@@ -200,10 +200,8 @@ Block ChunkMeshBuilder::getBlock(int x, int y, int z) {
   return block;
 }
 
-ChunkMeshBuilder::ChunkMeshBuilder(const Chunk &chunk0, const Chunk &chunk1,
-                                   const Chunk &chunk2, const Chunk &chunk3,
-                                   const Chunk &chunk4, const Chunk &chunk5,
-                                   const Chunk &chunk6, const Chunk &chunk7,
+ChunkMeshBuilder::ChunkMeshBuilder(const Chunk &chunk0, const Chunk &chunk1, const Chunk &chunk2, const Chunk &chunk3,
+                                   const Chunk &chunk4, const Chunk &chunk5, const Chunk &chunk6, const Chunk &chunk7,
                                    const Chunk &chunk8)
     : m_chunk0(chunk0), m_chunk1(chunk1), m_chunk2(chunk2), m_chunk3(chunk3),
       m_chunk4(chunk4), m_chunk5(chunk5), m_chunk6(chunk6), m_chunk7(chunk7),
@@ -219,8 +217,8 @@ ChunkMeshBuilder::ChunkMeshBuilder(const Chunk &chunk0, const Chunk &chunk1,
  *    \  2  5  8
  *     y
  */
-void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &vertices,
-                                     std::vector<unsigned int> &indices) {
+void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> (&vertices)[3],
+                                     std::vector<unsigned int> (&indices)[3]) {
   if (m_chunk0.chunkState != ChunkState::FULLY_GENERATED ||
       m_chunk1.chunkState != ChunkState::FULLY_GENERATED || m_chunk2.chunkState != ChunkState::FULLY_GENERATED
       || m_chunk3.chunkState != ChunkState::FULLY_GENERATED || m_chunk4.chunkState != ChunkState::FULLY_GENERATED
@@ -252,9 +250,11 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &vertices,
                                          adjacentBlockPos.y,
                                          adjacentBlockPos.z);
 
-          if (adjacentBlock != Block::AIR) continue;
+          BlockData &adjBlockData = BlockDB::getBlockData(adjacentBlock);
+          if (!adjBlockData.isTransparent) continue;
 
           auto face = static_cast<BlockFace>(faceIndex);
+
           BlockData &blockData = BlockDB::getBlockData(block);
           OcclusionLevels occlusionLevels = getOcclusionLevels(blockPos, face);
           switch (face) {
@@ -284,7 +284,10 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &vertices,
               break;
             default:break;
           }
-          auto baseVertexIndex = vertices.size();
+          auto &insertVertices = blockData.isTransparent ? vertices[1] : vertices[0];
+          auto &insertIndices = blockData.isTransparent ? indices[1] : indices[0];
+
+          auto baseVertexIndex = insertVertices.size();
           int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
           for (int i = 0; i < 20; i += 5) {
             ChunkVertex v = {
@@ -294,25 +297,25 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &vertices,
                 glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
                 static_cast<float>(occlusionLevels[i / 5]),
                 static_cast<float>(textureIndex)};
-            vertices.push_back(v);
+            insertVertices.push_back(v);
           }
 
           // check whether to flip quad based on AO
           if (occlusionLevels[0] + occlusionLevels[3] >
               occlusionLevels[1] + occlusionLevels[2]) {
-            indices.push_back(baseVertexIndex + 2);
-            indices.push_back(baseVertexIndex + 0);
-            indices.push_back(baseVertexIndex + 3);
-            indices.push_back(baseVertexIndex + 3);
-            indices.push_back(baseVertexIndex + 0);
-            indices.push_back(baseVertexIndex + 1);
+            insertIndices.push_back(baseVertexIndex + 2);
+            insertIndices.push_back(baseVertexIndex + 0);
+            insertIndices.push_back(baseVertexIndex + 3);
+            insertIndices.push_back(baseVertexIndex + 3);
+            insertIndices.push_back(baseVertexIndex + 0);
+            insertIndices.push_back(baseVertexIndex + 1);
           } else {
-            indices.push_back(baseVertexIndex);
-            indices.push_back(baseVertexIndex + 1);
-            indices.push_back(baseVertexIndex + 2);
-            indices.push_back(baseVertexIndex + 2);
-            indices.push_back(baseVertexIndex + 1);
-            indices.push_back(baseVertexIndex + 3);
+            insertIndices.push_back(baseVertexIndex);
+            insertIndices.push_back(baseVertexIndex + 1);
+            insertIndices.push_back(baseVertexIndex + 2);
+            insertIndices.push_back(baseVertexIndex + 2);
+            insertIndices.push_back(baseVertexIndex + 1);
+            insertIndices.push_back(baseVertexIndex + 3);
           }
         }
       }
@@ -320,7 +323,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &vertices,
   }
 }
 
-OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(glm::ivec3 &blockPosInChunk,
+OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(const glm::ivec3 &blockPosInChunk,
                                                      BlockFace face) {
   // source:
   // https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/

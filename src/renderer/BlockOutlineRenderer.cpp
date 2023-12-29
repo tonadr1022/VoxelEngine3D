@@ -50,7 +50,7 @@ BlockOutlineRenderer::BlockOutlineRenderer() : VAO(0), VBO(0), EBO(0) {
 }
 
 void BlockOutlineRenderer::render(glm::vec3 blockPosition,
-                                  Camera &camera) const {
+                                  const Camera &camera) const {
   glm::mat4 model = glm::mat4(1.0f);
   model = glm::translate(model, blockPosition);
   model = glm::scale(model, glm::vec3(1.005f));

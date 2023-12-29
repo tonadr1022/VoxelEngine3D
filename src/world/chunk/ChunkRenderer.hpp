@@ -12,19 +12,18 @@
 
 class ChunkRenderer {
  public:
-  explicit ChunkRenderer(Camera &camera);
+  ChunkRenderer();
 
   ~ChunkRenderer();
 
-  static void createGPUResources(Chunk &chunk);
+  static void createGPUResources(ChunkMesh &mesh);
   static void updateGPUResources(ChunkMesh &mesh);
-  void render(Chunk &chunk);
-  void start();
-  void updateShaderUniforms();
+  void render(ChunkMesh &mesh, const glm::ivec2 &worldPos);
+  void start(const Camera &camera);
+  void updateShaderUniforms(const Camera &camera);
 
  private:
   unsigned int textureAtlasID;
-  Camera &camera;
   std::shared_ptr<Shader> shader;
 
 };

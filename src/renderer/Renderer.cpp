@@ -5,19 +5,17 @@
 #include "Renderer.hpp"
 #include "../shaders/ShaderManager.hpp"
 #include "../resources/ResourceManager.hpp"
+#include "../world/World.hpp"
 
-Renderer::Renderer() {
-  compileShaders();
-  loadTextures();
-}
+Renderer::Renderer() = default;
 
-void Renderer::renderBlockOutline(Camera &camera, glm::ivec3 blockPosition) {
+void Renderer::renderBlockOutline(const Camera &camera, glm::ivec3 blockPosition) const {
   m_blockOutlineRenderer.render(blockPosition, camera);
 }
 
-void Renderer::renderBlockBreak(Camera &camera,
+void Renderer::renderBlockBreak(const Camera &camera,
                                 glm::ivec3 blockPosition,
-                                int breakStage) {
+                                int breakStage) const {
   m_blockBreakRenderer.render(blockPosition, camera, breakStage);
 }
 
@@ -25,30 +23,20 @@ void Renderer::renderCrossHair() const {
   crossHair.render();
 }
 
-void Renderer::compileShaders() {
-  std::shared_ptr<Shader>
-      chunkShader = std::make_shared<Shader>("../shaders/ChunkVert.glsl",
-                                             "../shaders/ChunkFrag.glsl");
-  std::shared_ptr<Shader>
-      outlineShader = std::make_shared<Shader>("../shaders/OutlineVert.glsl",
-                                               "../shaders/OutlineFrag.glsl",
-                                               "../shaders/OutlineGeom.glsl");
-  std::shared_ptr<Shader> blockBreakShader = std::make_shared<Shader>(
-      "../shaders/BlockBreakVert.glsl", "../shaders/BlockBreakFrag.glsl");
-  std::shared_ptr<Shader> crossHairShader = std::make_shared<Shader>(
-      "../shaders/CrossHairVert.glsl", "../shaders/CrossHairFrag.glsl");
+void Renderer::renderWorld(const World &world) {
+  m_chunkRenderer.start(world.player.camera);
+  for (auto &pos : world.getOpaqueRenderSet()) {
+    Chunk *chunk = world.getChunkRawPtr(pos);
+    if (!chunk) continue;
+    m_chunkRenderer.render(chunk->m_meshes[0], chunk->m_worldPos);
+  }
 
-  ShaderManager::addShader(chunkShader, "chunk");
-  ShaderManager::addShader(outlineShader, "outline");
-  ShaderManager::addShader(blockBreakShader, "blockBreak");
-  ShaderManager::addShader(crossHairShader, "crosshair");
-}
-
-void Renderer::loadTextures() {
-  ResourceManager::makeTexture2dArray(
-      "../resources/textures/default_pack_512.png",
-      "texture_atlas",
-      true);
+  // render block break and outline if a block is being aimed at
+  if (static_cast<const glm::vec3>(world.getLastRayCastBlockPos()) != NULL_VECTOR) {
+    renderBlockOutline(world.player.camera, world.getLastRayCastBlockPos());
+    renderBlockBreak(world.player.camera, world.getLastRayCastBlockPos(), world.player.blockBreakStage);
+  }
+  renderCrossHair();
 }
 
 

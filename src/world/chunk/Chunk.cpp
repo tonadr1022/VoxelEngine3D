@@ -13,18 +13,16 @@ Chunk::Chunk(glm::ivec2 pos) : m_pos(pos), m_worldPos(pos * CHUNK_WIDTH),
 Chunk::~Chunk() = default;
 
 void Chunk::unload() {
-  mesh.clearData();
-  mesh.clearBuffers();
+  for (auto & mesh : m_meshes) {
+    mesh.clearBuffers();
+    mesh.clearData();
+  }
   chunkState = ChunkState::UNDEFINED;
   chunkMeshState = ChunkMeshState::UNBUILT;
 }
 
 void Chunk::setBlock(int x, int y, int z, Block block) {
   m_blocks[XYZ(x, y, z)] = block;
-}
-
-ChunkMesh &Chunk::getMesh() {
-  return mesh;
 }
 
 void Chunk::markDirty() {
@@ -45,7 +43,6 @@ Scope<std::array<int, CHUNK_AREA>> ChunkLoadInfo::process() {
   fastNoise->SetFrequency(1.0f / 300.0f);
   float *heightMap = fastNoise->GetSimplexFractalSet(chunkWorldPos.x, chunkWorldPos.y, 0, CHUNK_WIDTH,
                                                      CHUNK_WIDTH, 1);
-
 
   Scope<std::array<int, CHUNK_AREA>> heights = std::make_unique<std::array<int, CHUNK_AREA>>();
   int highest = 0;
@@ -81,18 +78,22 @@ void ChunkLoadInfo::applyTerrain(Chunk *chunk) {
 ChunkMeshInfo::ChunkMeshInfo(const Chunk &chunk0, const Chunk &chunk1, const Chunk &chunk2, const Chunk &chunk3,
                              const Chunk &chunk4, const Chunk &chunk5, const Chunk &chunk6, const Chunk &chunk7,
                              const Chunk &chunk8)
-    : m_pos(chunk4.m_pos),
-      m_chunk_mesh_builder(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8) {
-}
+    : m_pos(chunk4.m_pos), m_chunk0(chunk0), m_chunk1(chunk1), m_chunk2(chunk2), m_chunk3(chunk3),
+      m_chunk4(chunk4), m_chunk5(chunk5), m_chunk6(chunk6), m_chunk7(chunk7),
+      m_chunk8(chunk8) {}
 
 void ChunkMeshInfo::process() {
-  m_chunk_mesh_builder.constructMesh(m_vertices, m_indices);
+  ChunkMeshBuilder meshBuilder(m_chunk0, m_chunk1, m_chunk2, m_chunk3,
+                               m_chunk4, m_chunk5, m_chunk6, m_chunk7, m_chunk8);
+  meshBuilder.constructMesh(m_vertices, m_indices);
   m_done = true;
 }
 
 void ChunkMeshInfo::applyMesh(Chunk *chunk) {
-  chunk->getMesh().vertices = std::move(m_vertices);
-  chunk->getMesh().indices = std::move(m_indices);
+  for (short i = 0; i < 3; i++) {
+    chunk->m_meshes[i].vertices= std::move(m_vertices[i]);
+    chunk->m_meshes[i].indices = std::move(m_indices[i]);
+  }
   chunk->chunkMeshState = ChunkMeshState::BUILT;
 }
 

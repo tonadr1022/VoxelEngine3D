@@ -53,7 +53,7 @@ class Chunk {
 
   void unload();
   void setBlock(int x, int y, int z, Block block);
-  ChunkMesh &getMesh();
+
   void markDirty();
 
   static inline bool outOfBounds(int x, int y, int z) {
@@ -80,8 +80,14 @@ class Chunk {
   glm::ivec2 m_pos;
   glm::ivec2 m_worldPos;
 
+  ChunkMesh m_meshes[3];
+
  private:
-  ChunkMesh mesh;
+
+  /**
+   * @brief index 0 is opaque, 1 is transparent, 2 is other (floral etc)
+   */
+
 };
 
 class ChunkInfo {
@@ -140,10 +146,18 @@ class ChunkMeshInfo : public ChunkInfo {
   void applyMesh(Chunk *chunk);
 
  private:
-  ChunkMeshBuilder m_chunk_mesh_builder;
+  const Chunk &m_chunk0;
+  const Chunk &m_chunk1;
+  const Chunk &m_chunk2;
+  const Chunk &m_chunk3;
+  const Chunk &m_chunk4;
+  const Chunk &m_chunk5;
+  const Chunk &m_chunk6;
+  const Chunk &m_chunk7;
+  const Chunk &m_chunk8;
 
-  std::vector<ChunkVertex> m_vertices;
-  std::vector<unsigned int> m_indices;
+  std::vector<ChunkVertex> m_vertices[3];
+  std::vector<unsigned int> m_indices[3];
   glm::ivec2 m_pos;
 };
 

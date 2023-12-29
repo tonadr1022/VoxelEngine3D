@@ -17,11 +17,11 @@ class Camera {
   void setPosition(glm::vec3 position);
   void updateViewMatrix();
   void updateProjectionMatrix(float aspectRatio);
-  inline glm::vec3 &getPosition() { return m_position; }
-  inline glm::mat4 &getViewMatrix() { return m_viewMatrix; }
-  inline glm::mat4 &getProjectionMatrix() { return m_projectionMatrix; }
-  inline glm::vec3 &getFront() { return m_front; }
-  static inline glm::vec3 &getGlobalUp() { return const_cast<glm::vec3 &>(globalUp); }
+  [[nodiscard]] inline const glm::vec3 &getPosition() const { return m_position; }
+  [[nodiscard]] inline const glm::mat4 &getViewMatrix() const { return m_viewMatrix; }
+  [[nodiscard]] inline const glm::mat4 &getProjectionMatrix() const { return m_projectionMatrix; }
+  [[nodiscard]] inline const glm::vec3 &getFront() const { return m_front; }
+  static const inline glm::vec3 &getGlobalUp() { return const_cast<glm::vec3 &>(globalUp); }
 
  private:
   void updateCameraVectors();

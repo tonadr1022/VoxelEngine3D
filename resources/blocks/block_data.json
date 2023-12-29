@@ -62,7 +62,7 @@
         "leftTexCoords": [3, 15],
         "rightTexCoords": [3, 15],
         "bottomTexCoords": [3, 15],
-        "isTransparent": false,
+        "isTransparent": true,
         "isCollidable": true
     },
     "Jungle Wood": {
@@ -194,7 +194,7 @@
         "leftTexCoords": [3, 14],
         "rightTexCoords": [3, 14],
         "bottomTexCoords": [3, 14],
-        "isTransparent": false,
+        "isTransparent": true,
         "isCollidable": true
     },
     "Birch Wood": {
@@ -216,7 +216,7 @@
         "leftTexCoords": [0, 14],
         "rightTexCoords": [0, 14],
         "bottomTexCoords": [0, 14],
-        "isTransparent": false,
+        "isTransparent": true,
         "isCollidable": true
     },
     "Spruce Wood": {
@@ -238,7 +238,7 @@
         "leftTexCoords": [0, 15],
         "rightTexCoords": [0, 15],
         "bottomTexCoords": [0, 15],
-        "isTransparent": false,
+        "isTransparent": true,
         "isCollidable": true
     },
     "Coal Ore": {

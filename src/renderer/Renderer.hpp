@@ -9,24 +9,26 @@
 #include "../gui/CrossHair.hpp"
 #include "BlockOutlineRenderer.hpp"
 #include "BlockBreakRenderer.hpp"
+#include "../world/chunk/ChunkRenderer.hpp"
+
+class World;
 
 class Renderer {
  public:
   explicit Renderer();
 
   void renderCrossHair() const;
-  void renderBlockOutline(Camera &camera, glm::ivec3 blockPosition);
-  void renderBlockBreak(Camera &camera,
+  void renderBlockOutline(const Camera &camera, glm::ivec3 blockPosition) const;
+  void renderBlockBreak(const Camera &camera,
                         glm::ivec3 blockPosition,
-                        int breakStage);
+                        int breakStage) const;
+  void renderWorld(const World &world);
 
  private:
   BlockOutlineRenderer m_blockOutlineRenderer;
   BlockBreakRenderer m_blockBreakRenderer;
+  ChunkRenderer m_chunkRenderer;
   CrossHair crossHair;
-
-  void compileShaders();
-  void loadTextures();
 
 };
 

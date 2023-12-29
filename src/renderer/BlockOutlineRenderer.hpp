@@ -10,7 +10,7 @@
 class BlockOutlineRenderer {
  public:
   BlockOutlineRenderer();
-  void render(glm::vec3 blockPosition, Camera &camera) const;
+  void render(glm::vec3 blockPosition, const Camera &camera) const;
 
   unsigned int VAO, VBO, EBO;
 

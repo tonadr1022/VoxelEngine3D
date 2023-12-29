@@ -10,6 +10,7 @@
 
 class ResourceManager {
  public:
+  static bool texturesLoaded;
   static void makeTexture(const std::string &texturePath,
                           const std::string &textureName,
                           bool flipVertically = false);
@@ -17,12 +18,12 @@ class ResourceManager {
                                  const std::string &textureName,
                                  bool flipVertically = false);
   static unsigned int getTexture(const std::string &textureName);
+  static void loadTextures();
   static Image loadImage(const std::string &imagePath,
                          bool flipVertically = false);
 
  private:
   static std::unordered_map<std::string, unsigned int> textures;
-
 };
 
 #endif //VOXEL_ENGINE_RESOURCEMANAGER_HPP

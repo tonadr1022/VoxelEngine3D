@@ -39,12 +39,12 @@ void ResourceManager::makeTexture(const std::string &texturePath,
 }
 
 unsigned int ResourceManager::getTexture(const std::string &textureName) {
+  if (!ResourceManager::texturesLoaded) ResourceManager::loadTextures();
   auto it = textures.find(textureName);
   if (it != textures.end()) {
     return it->second;
   }
   throw std::runtime_error("Texture not found: " + textureName);
-
 }
 
 void
@@ -124,3 +124,15 @@ Image ResourceManager::loadImage(const std::string &imagePath,
   stbi_image_free(data);
   return image;
 }
+void ResourceManager::loadTextures() {
+  if (texturesLoaded) return;
+  makeTexture2dArray(
+      "../resources/textures/default_pack_512.png",
+      "texture_atlas",
+      true);
+
+  texturesLoaded = true;
+}
+
+bool ResourceManager::texturesLoaded = false;
+

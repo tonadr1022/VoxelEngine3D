@@ -8,21 +8,21 @@
 #include "../../resources/ResourceManager.hpp"
 #include "../../shaders/ShaderManager.hpp"
 
-ChunkRenderer::ChunkRenderer(Camera &camera)
-    : camera(camera),
-      shader(ShaderManager::getShader("chunk")),
-      textureAtlasID(ResourceManager::getTexture("texture_atlas")) {}
+ChunkRenderer::ChunkRenderer() {
+  shader = ShaderManager::getShader("chunk");
+  textureAtlasID = ResourceManager::getTexture("texture_atlas");
+}
 
-void ChunkRenderer::render(Chunk &chunk) {
-  glm::mat4 model =
-      glm::translate(glm::mat4(1.0f), glm::vec3(chunk.m_worldPos, 0.0f));
+ChunkRenderer::~ChunkRenderer() = default;
+
+void ChunkRenderer::render(ChunkMesh &mesh, const glm::ivec2 &worldPos) {
+  glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(worldPos, 0.0f));
   shader->setMat4("u_Model", model);
-  ChunkMesh &mesh = chunk.getMesh();
   if (mesh.needsUpdate) {
     updateGPUResources(mesh);
     mesh.needsUpdate = false;
   } else if (!mesh.isBuffered) {
-    createGPUResources(chunk);
+    createGPUResources(mesh);
     mesh.isBuffered = true;
   }
   glBindVertexArray(mesh.VAO);
@@ -38,9 +38,8 @@ void ChunkRenderer::render(Chunk &chunk) {
   }
 }
 
-void ChunkRenderer::createGPUResources(Chunk &chunk) {
-  ChunkMesh &mesh = chunk.getMesh();
-
+void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
+  if (mesh.vertices.empty()) return;
   glGenVertexArrays(1, &mesh.VAO);
   glBindVertexArray(mesh.VAO);
 
@@ -77,15 +76,16 @@ void ChunkRenderer::createGPUResources(Chunk &chunk) {
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 }
 
-void ChunkRenderer::start() {
-  updateShaderUniforms();
+void ChunkRenderer::start(const Camera &camera) {
+  updateShaderUniforms(camera);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D_ARRAY, textureAtlasID);
 }
 
-void ChunkRenderer::updateShaderUniforms() {
+void ChunkRenderer::updateShaderUniforms(const Camera &camera) {
   shader->use();
   shader->setBool("u_UseAmbientOcclusion", Config::getUseAmbientOcclusion());
   shader->setInt("u_Texture", 0);
@@ -94,6 +94,7 @@ void ChunkRenderer::updateShaderUniforms() {
 }
 
 void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
+  if (mesh.vertices.empty()) return;
   glBindVertexArray(mesh.VAO);
 
   glDeleteBuffers(1, &mesh.VBO);
@@ -137,6 +138,6 @@ void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 }
 
-ChunkRenderer::~ChunkRenderer() = default;

@@ -11,7 +11,7 @@
 class BlockBreakRenderer {
  public:
   BlockBreakRenderer();
-  void render(glm::vec3 blockPosition, Camera &camera, int breakStage) const;
+  void render(glm::vec3 blockPosition, const Camera &camera, int breakStage) const;
 
   unsigned int VAO{}, VBO{}, EBO{};
   static constexpr int TEXTURE_Y_INDEX = 1;

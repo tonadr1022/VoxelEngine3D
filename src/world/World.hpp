@@ -11,7 +11,6 @@
 #include "../physics/Ray.hpp"
 #include "../player/Player.hpp"
 #include "../renderer/Renderer.hpp"
-#include "chunk/ChunkRenderer.hpp"
 #include "generation/TerrainGenerator.hpp"
 #include "save/WorldSave.hpp"
 
@@ -32,11 +31,15 @@ class World {
   ~World();
 
   void update();
-  void render();
   void renderDebugGui();
-
+  inline const std::unordered_set<glm::ivec2> &getOpaqueRenderSet() const { return m_renderSet[0]; }
   Player player;
-  ChunkRenderer chunkRenderer;
+
+  inline Chunk *getChunkRawPtr(const glm::ivec2 &pos) const{
+    if (!chunkExists(pos)) return nullptr;
+    return m_chunkMap.at(pos).get();
+  }
+  inline const glm::ivec3& getLastRayCastBlockPos() const {return m_lastRayCastBlockPos; }
 
  private:
   Block getBlockFromWorldPosition(glm::ivec3 position);
@@ -53,11 +56,7 @@ class World {
         static_cast<int>(std::floor(static_cast<float>(pos.y) / CHUNK_WIDTH))};
   }
 
-  inline Chunk *getChunkRawPtr(const glm::ivec2 &pos) {
-    return m_chunkMap[pos].get();
-  }
-
-  inline bool chunkExists(const glm::ivec2 &pos) {
+  inline bool chunkExists(const glm::ivec2 &pos) const {
     return m_chunkMap.find(pos) != m_chunkMap.end();
   }
 
@@ -126,7 +125,8 @@ class World {
   std::unordered_set<glm::ivec2> m_chunkDirectlyUpdateSet;
 
 
-  std::unordered_set<glm::ivec2> m_renderSet;
+  std::unordered_set<glm::ivec2> m_renderSet[3];
+  std::vector<glm::ivec2> m_transparentRenderVector;
 
   inline bool cmpVec2_impl(const glm::ivec2 &l, const glm::ivec2 &r) const {
     return glm::length(glm::vec2(l) - (glm::vec2)m_center) <

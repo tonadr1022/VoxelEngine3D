@@ -16,20 +16,14 @@ using OcclusionLevels = std::array<uint8_t, 4>;
 
 class ChunkMeshBuilder {
  public:
-  ChunkMeshBuilder(const Chunk &chunk0,
-                   const Chunk &chunk1,
-                   const Chunk &chunk2,
-                   const Chunk &chunk3,
-                   const Chunk &chunk4,
-                   const Chunk &chunk5,
-                   const Chunk &chunk6,
-                   const Chunk &chunk7,
+  ChunkMeshBuilder(const Chunk &chunk0, const Chunk &chunk1, const Chunk &chunk2, const Chunk &chunk3,
+                   const Chunk &chunk4, const Chunk &chunk5, const Chunk &chunk6, const Chunk &chunk7,
                    const Chunk &chunk8);
 
-  void constructMesh(std::vector<ChunkVertex> &vertices,
-                     std::vector<unsigned int> &indices);
+  void constructMesh(std::vector<ChunkVertex> (&vertices)[3],
+                     std::vector<unsigned int> (&indices)[3]);
 
-  OcclusionLevels getOcclusionLevels(glm::ivec3 &blockPosInChunk,
+  OcclusionLevels getOcclusionLevels(const glm::ivec3 &blockPosInChunk,
                                      BlockFace face);
 
  private:

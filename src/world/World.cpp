@@ -7,12 +7,10 @@
 #include "block/BlockDB.hpp"
 #include "../input/Mouse.hpp"
 #include "../utils/Utils.hpp"
-#include "../utils/Timer.hpp"
 #include <algorithm>
 
 World::World(Renderer &renderer, int seed, const std::string &savePath)
     : m_worldSave(savePath), m_renderer(renderer),
-      chunkRenderer(player.camera),
       m_center(INT_MAX), m_numRunningThreads(0),
       m_numLoadingThreads(std::thread::hardware_concurrency()),
       m_seed(seed) {
@@ -38,25 +36,6 @@ World::~World() {
     thread.join();
   }
   saveData();
-}
-
-void World::render() {
-  chunkRenderer.start();
-  for (auto &chunkKey : m_renderSet) {
-    if (chunkExists(chunkKey)) {
-      chunkRenderer.render(*m_chunkMap.at(chunkKey));
-    }
-  }
-
-  // render block break and outline if a block is being aimed at
-  if (static_cast<const glm::vec3>(m_lastRayCastBlockPos) != NULL_VECTOR) {
-    m_renderer.renderBlockOutline(player.camera, m_lastRayCastBlockPos);
-    m_renderer.renderBlockBreak(player.camera,
-                                m_lastRayCastBlockPos,
-                                player.blockBreakStage);
-  }
-  m_renderer.renderCrossHair();
-  renderDebugGui();
 }
 
 void World::update() {
@@ -135,7 +114,7 @@ void World::updateChunkLoadList() {
     }
   }
 
-  if (m_xyChanged || m_renderSet.empty()) {
+  if (m_xyChanged || m_renderSet[0].empty()) {
     glm::ivec2 pos;
     for (pos.x = m_center.x - m_loadDistance;
          pos.x <= m_center.x + m_loadDistance; pos.x++) {
@@ -168,7 +147,7 @@ void World::updateChunkStructureGenList() {
     }
   }
 
-  if (m_xyChanged || m_renderSet.empty()) {
+  if (m_xyChanged || m_renderSet[0].empty()) {
     m_chunksInStructureGenRangeVector.clear();
     glm::ivec2 pos;
     for (pos.x = m_center.x - m_structureLoadDistance;
@@ -243,8 +222,10 @@ void World::updateChunkMeshList() {
       if (chunkExists(posIt->first)) {
         Chunk *chunk = getChunkRawPtr(posIt->first);
         posIt->second->applyMesh(chunk);
-        if (!chunk->getMesh().vertices.empty()) {
-          m_renderSet.insert(posIt->first);
+        for (short i = 0; i < 3; i++) {
+          if (!chunk->m_meshes[i].vertices.empty()) {
+            m_renderSet[i].insert(posIt->first);
+          }
         }
       }
       // delete from map regardless of whether chunk exists
@@ -254,7 +235,7 @@ void World::updateChunkMeshList() {
     }
   }
 
-  if (m_xyChanged || m_renderSet.empty()) {
+  if (m_xyChanged || m_renderSet[0].empty()) {
     m_chunksInMeshRangeVector.clear();
     // add chunks that can be meshed into vector
     glm::ivec2 pos;
@@ -330,7 +311,9 @@ void World::unloadChunks() {
         pos.y < m_center.y - m_unloadDistance ||
         pos.y > m_center.y + m_unloadDistance) {
       it->second->unload();
-      m_renderSet.erase(pos);
+      m_renderSet[0].erase(pos);
+      m_renderSet[1].erase(pos);
+      m_renderSet[2].erase(pos);
       it = m_chunkMap.erase(it);
     } else {
       ++it;
@@ -516,7 +499,7 @@ void World::renderDebugGui() {
   bool useAmbientOcclusion = Config::getUseAmbientOcclusion();
   if (ImGui::Checkbox("Ambient Occlusion", &useAmbientOcclusion)) {
     Config::setUseAmbientOcclusion(useAmbientOcclusion);
-    chunkRenderer.updateShaderUniforms();
+//    m_renderer.updateShaderUniforms();
   }
 
   ImGui::Text("lastRayCastBlockPos: %d, %d, %d", m_lastRayCastBlockPos.x,
@@ -632,26 +615,22 @@ void World::processDirectChunkUpdates() {
     const Chunk &chunk1 = *getChunkRawPtr({pos.x - 1, pos.y});
     const Chunk &chunk2 = *getChunkRawPtr({pos.x - 1, pos.y + 1});
     const Chunk &chunk3 = *getChunkRawPtr({pos.x, pos.y - 1});
-    const Chunk &chunk4 = *getChunkRawPtr({pos.x, pos.y});
+    Chunk &chunk4 = *getChunkRawPtr({pos.x, pos.y}); // not const since this chunk is re-meshing
     const Chunk &chunk5 = *getChunkRawPtr({pos.x, pos.y + 1});
     const Chunk &chunk6 = *getChunkRawPtr({pos.x + 1, pos.y - 1});
     const Chunk &chunk7 = *getChunkRawPtr({pos.x + 1, pos.y});
     const Chunk &chunk8 = *getChunkRawPtr({pos.x + 1, pos.y + 1});
 
     ChunkMeshBuilder mesh_builder(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8);
-    std::vector<ChunkVertex> vertices;
-    std::vector<unsigned int> indices;
+    std::vector<ChunkVertex> vertices[3];
+    std::vector<unsigned int> indices[3];
     mesh_builder.constructMesh(vertices, indices);
-    ChunkMesh &mesh = m_chunkMap.at(pos)->getMesh();
-    std::cout << "old vertices size " << mesh.vertices.size() << std::endl;
-    std::cout << "old indices size " << mesh.indices.size() << std::endl;
 
-    mesh.vertices = std::move(vertices);
-    mesh.indices = std::move(indices);
-    mesh.needsUpdate = true;
-    std::cout << "processed update for : " << pos.x << " " << pos.y << std::endl;
-    std::cout << "new vertices size " << mesh.vertices.size() << std::endl;
-    std::cout << "new indices size " << mesh.indices.size() << std::endl;
+    for (short i = 0; i < 3; i++) {
+      chunk4.m_meshes[i].vertices = std::move(vertices[i]);
+      chunk4.m_meshes[i].indices = std::move(indices[i]);
+      chunk4.m_meshes[i].needsUpdate = true;
+    }
   }
   m_chunkDirectlyUpdateSet.clear();
 }

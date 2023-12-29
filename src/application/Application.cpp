@@ -4,17 +4,22 @@
 
 #include "Application.hpp"
 #include "../debug_gui/DebugGui.hpp"
+#include "../shaders/ShaderManager.hpp"
+#include "../resources/ResourceManager.hpp"
 
 Application *Application::instancePtr = nullptr;
 
-Application::Application() : window(DEFAULT_WINDOW_WIDTH,
+Application::Application() : m_window(DEFAULT_WINDOW_WIDTH,
                                     DEFAULT_WINDOW_HEIGHT,
                                     "Voxel Engine") {
   assert(instancePtr == nullptr && "Only one instance of Application allowed");
   instancePtr = this;
-  window.lockCursor();
+  m_window.lockCursor();
 
-  m_world = std::make_unique<World>(renderer, 2, "default.wld");
+  ResourceManager::loadTextures();
+  ShaderManager::compileShaders();
+
+  m_world = std::make_unique<World>(m_renderer, 2, "default.wld");
 }
 
 Application::~Application() {
@@ -22,24 +27,24 @@ Application::~Application() {
 }
 
 void Application::run() {
-  DebugGui debugGui(window.getContext(), window.getGlslVersion());
+  DebugGui debugGui(m_window.getContext(), m_window.getGlslVersion());
 
   double time = 0.0;
   const double dt = 1 / 60.0;
-  double currentTime = window.getTime();
+  double currentTime = m_window.getTime();
 
   while (m_running) {
 
     Keyboard::update();
     Mouse::update();
 
-    window.pollEvents();
+    m_window.pollEvents();
 
-    window.beginFrame();
+    m_window.beginFrame();
 
     m_world->update();
 
-    double newTime = window.getTime();
+    double newTime = m_window.getTime();
     double frameTime = newTime - currentTime;
     currentTime = newTime;
 
@@ -52,10 +57,11 @@ void Application::run() {
     }
 
     debugGui.beginFrame();
-    m_world->render();
+    m_renderer.renderWorld(*m_world);
+    m_world->renderDebugGui();
     debugGui.endFrame();
 
-    window.swapBuffers();
+    m_window.swapBuffers();
   }
 }
 
@@ -98,10 +104,10 @@ void Application::onCursorPositionEvent(double xpos, double ypos) {
   lastY = ypos;
 
   if (!Keyboard::isPressed(GLFW_KEY_B)) {
-    window.lockCursor();
+    m_window.lockCursor();
     m_world->player.onCursorUpdate(xOffset, yOffset);
   } else {
-    window.unlockCursor();
+    m_window.unlockCursor();
   }
 }
 
