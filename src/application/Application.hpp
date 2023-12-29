@@ -31,7 +31,7 @@ class Application {
   Window window;
   Renderer renderer;
   bool m_running = true;
-  std::unique_ptr<World> m_world;
+  Scope<World> m_world;
 
 };
 

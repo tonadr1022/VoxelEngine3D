@@ -3,7 +3,6 @@
 //
 
 #include "Chunk.hpp"
-#include "ChunkManager.hpp"
 #include "ChunkAlg.hpp"
 #include "ChunkMeshBuilder.hpp"
 

@@ -17,6 +17,7 @@ class ChunkRenderer {
   ~ChunkRenderer();
 
   static void createGPUResources(Chunk &chunk);
+  static void updateGPUResources(ChunkMesh &mesh);
   void render(Chunk &chunk);
   void start();
   void updateShaderUniforms();

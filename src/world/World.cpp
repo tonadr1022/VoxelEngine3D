@@ -112,19 +112,18 @@ void World::update() {
 //        m_chunkManager.remeshChunksToRemesh();
 //    }
   static int i = 0;
+  processDirectChunkUpdates();
 
   std::lock_guard<std::mutex> lock(m_mainMutex);
   updateChunkLoadList();
   updateChunkStructureGenList();
   updateChunkMeshList();
-
   m_conditionVariable.notify_all();
 }
 
 void World::updateChunkLoadList() {
   // apply terrain and update map regardless of whether pos changed
-  for (auto chunkKeyIter = m_chunkTerrainLoadInfoMap.begin();
-       chunkKeyIter != m_chunkTerrainLoadInfoMap.end();) {
+  for (auto chunkKeyIter = m_chunkTerrainLoadInfoMap.begin(); chunkKeyIter != m_chunkTerrainLoadInfoMap.end();) {
     if (chunkKeyIter->second->m_done) {
       if (chunkExists(chunkKeyIter->first)) {
         chunkKeyIter->second->applyTerrain(getChunkRawPtr(chunkKeyIter->first));
@@ -304,20 +303,11 @@ void World::updateChunkMeshList() {
       const Chunk &chunk7 = *getChunkRawPtr({posIt->x + 1, posIt->y});
       const Chunk &chunk8 = *getChunkRawPtr({posIt->x + 1, posIt->y + 1});
 
-      m_chunkMeshInfoMap.emplace(*posIt,
-                                 std::make_unique<ChunkMeshInfo>(chunk0,
-                                                                 chunk1,
-                                                                 chunk2,
-                                                                 chunk3,
-                                                                 chunk4,
-                                                                 chunk5,
-                                                                 chunk6,
-                                                                 chunk7,
-                                                                 chunk8));
-      auto insertPos = std::lower_bound(m_chunksReadyToMeshList.begin(),
-                                        m_chunksReadyToMeshList.end(),
-                                        *posIt,
-                                        rcmpVec2);
+      m_chunkMeshInfoMap.emplace(*posIt, std::make_unique<ChunkMeshInfo>(chunk0, chunk1, chunk2, chunk3,
+                                                                         chunk4, chunk5, chunk6, chunk7, chunk8));
+
+      auto insertPos =
+          std::lower_bound(m_chunksReadyToMeshList.begin(), m_chunksReadyToMeshList.end(), *posIt, rcmpVec2);
       m_chunksReadyToMeshList.insert(insertPos, *posIt);
       posIt = m_chunksInMeshRangeVector.erase(posIt);
     } else {
@@ -325,6 +315,12 @@ void World::updateChunkMeshList() {
     }
   }
 }
+
+//void World::updateChunkUpdateList() {
+//  for (auto chunkKeyIter = m_chunkUpdateVector.begin(); chunkKeyIter != m_chunkUpdateVector.end();) {
+//
+//  }
+//}
 
 void World::unloadChunks() {
   for (auto it = m_chunkMap.begin(); it != m_chunkMap.end();) {
@@ -340,28 +336,6 @@ void World::unloadChunks() {
       ++it;
     }
   }
-}
-
-void World::generateChunkMeshWorker() {
-  glm::ivec2 pos;
-  while (m_isRunning) {
-    std::unique_lock<std::mutex> lock(m_mainMutex);
-    m_conditionVariable.wait(lock, [this]() {
-      return !m_isRunning ||
-          (m_numRunningThreads < m_numLoadingThreads &&
-              !m_chunksReadyToMeshList.empty());
-    });
-    if (!m_isRunning) return;
-
-    pos = m_chunksReadyToMeshList.back();
-    m_chunksReadyToMeshList.pop_back();
-
-    lock.unlock();
-    m_numRunningThreads++;
-    m_chunkMeshInfoMap.at(pos)->process();
-    m_numRunningThreads--;
-  }
-
 }
 
 void World::generateTerrainWorker() {
@@ -396,13 +370,52 @@ void World::generateStructuresWorker() {
               && !m_chunksReadyToGenStructuresList.empty());
     });
     if (!m_isRunning) return;
-
     pos = m_chunksReadyToGenStructuresList.back();
     m_chunksReadyToGenStructuresList.pop_back();
     const std::array<int, CHUNK_AREA> &heightMap = *m_heightMapsMap.at(pos).get();
     lock.unlock();
     m_numRunningThreads++;
     m_chunkStructureGenInfoMap.at(pos)->process(heightMap);
+    m_numRunningThreads--;
+  }
+}
+
+void World::generateChunkMeshWorker() {
+  glm::ivec2 pos;
+  while (m_isRunning) {
+    std::unique_lock<std::mutex> lock(m_mainMutex);
+    m_conditionVariable.wait(lock, [this]() {
+      return !m_isRunning ||
+          (m_numRunningThreads < m_numLoadingThreads &&
+              !m_chunksReadyToMeshList.empty());
+    });
+    if (!m_isRunning) return;
+
+    pos = m_chunksReadyToMeshList.back();
+    m_chunksReadyToMeshList.pop_back();
+
+    lock.unlock();
+    m_numRunningThreads++;
+    m_chunkMeshInfoMap.at(pos)->process();
+    m_numRunningThreads--;
+  }
+}
+
+void World::meshUpdateWorker() {
+  glm::ivec2 pos;
+  while (m_isRunning) {
+    std::unique_lock<std::mutex> lock(m_mainMutex);
+    m_conditionVariable.wait(lock, [this]() {
+      return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads && !m_chunkUpdateVector.empty());
+    });
+    if (!m_isRunning) return;
+
+    pos = m_chunkUpdateVector.back();
+    m_chunkUpdateVector.pop_back();
+
+    lock.unlock();
+    m_numRunningThreads++;
+    m_chunkUpdateInfoMap.at(pos)->process();
     m_numRunningThreads--;
   }
 }
@@ -457,7 +470,7 @@ void World::castPlayerAimRay(Ray ray) {
         return;
       }
 
-      setBlockFromWorldPosition({blockPos.x, blockPos.y, blockPos.z},
+      setBlockWithUpdate({blockPos.x, blockPos.y, blockPos.z},
                                 Block::AIR);
       player.blockBreakStage = 0;
       m_lastRayCastBlockPos = NULL_VECTOR;
@@ -469,7 +482,7 @@ void World::castPlayerAimRay(Ray ray) {
           std::chrono::milliseconds(PLACING_DELAY_MS)) {
         return;
       }
-      setBlockFromWorldPosition(lastAirBlockPos,
+      setBlockWithUpdate(lastAirBlockPos,
                                 Block(player.inventory.getHeldItem()));
       isFirstAction = false;
 
@@ -531,16 +544,7 @@ bool World::hasAllNeighborsInState(const glm::ivec2 &pos, ChunkState state) {
                      });
 }
 
-void World::setBlockFromWorldPosition(glm::ivec3 pos, Block block) {
-  // todo fix args here
-  auto chunkPos = chunkPosFromWorldPos(pos.x, pos.y);
-  Chunk *chunk = getChunkRawPtr(chunkPos);
-  int chunkX = Utils::positiveModulo(pos.x, CHUNK_WIDTH);
-  int chunkY = Utils::positiveModulo(pos.y, CHUNK_WIDTH);
 
-  chunk->setBlock(chunkX, chunkY, pos.z, block);
-//    handleChunkUpdates(chunk, chunkKey, chunkX, chunkY);
-}
 
 Block World::getBlockFromWorldPosition(glm::ivec3 position) {
   auto chunkPos = chunkPosFromWorldPos(position.x, position.y);
@@ -567,8 +571,87 @@ bool World::hasAllNeighborsInStates(const glm::ivec2 &pos,
                            (m_chunkMap.at(neighborPos)->chunkState == state1
                                || m_chunkMap.at(neighborPos)->chunkState
                                    == state2);
-                        });
+                     });
 
 }
+void World::setBlockWithUpdate(int worldX, int worldY, int worldZ, Block block) {
+  auto chunkPos = chunkPosFromWorldPos(worldX, worldY);
+  int chunkX = Utils::positiveModulo(worldX, CHUNK_WIDTH);
+  int chunkY = Utils::positiveModulo(worldY, CHUNK_WIDTH);
+  Chunk &chunk = *m_chunkMap.at(chunkPos).get();
+  chunk.setBlock(chunkX, chunkY, worldZ, block);
 
+  /*
+ * Neighbor Chunks Array Structure
+ *
+ * \------------------ x
+ *  \  0  3  6
+ *   \  1  4  7
+ *    \  2  5  8
+ *     y
+ */
+  if (chunkX == 0) {   // block in (0, any) of chunk4, need to update 1
+    m_chunkDirectlyUpdateSet.insert({chunkPos.x - 1, chunkPos.y});
+    if (chunkY == 0) {   // block in 0, 0 of chunk 4, need to update 0
+      m_chunkDirectlyUpdateSet.insert({chunkPos.x - 1, chunkPos.y - 1});
+    } else if (chunkY == 15) {   // block in (0, 15) of chunk 4, need to update 2
+      m_chunkDirectlyUpdateSet.insert({chunkPos.x - 1, chunkPos.y + 1});
+    }
+  }
 
+  if (chunkX == 15) { // block in (15, any) of chunk 4, need to update 7
+    m_chunkDirectlyUpdateSet.insert({chunkPos.x + 1, chunkPos.y});
+    if (chunkY == 0) { // block in (15, 0) of chunk 4, need to update 6
+      m_chunkDirectlyUpdateSet.insert({chunkPos.x + 1, chunkPos.y - 1});
+    } else if (chunkY == 15) { // block in (15, 15) of chunk 4, need to update 8
+      m_chunkDirectlyUpdateSet.insert({chunkPos.x + 1, chunkPos.y + 1});
+    }
+  }
+
+  if (chunkY == 0) { // block in (any, 0) of chunk 4, need to update chunk 3
+    m_chunkDirectlyUpdateSet.insert({chunkPos.x, chunkPos.y - 1});
+  } else if (chunkY == 15) { // block in (any, 15) of chunk 4, need to update 5
+    m_chunkDirectlyUpdateSet.insert({chunkPos.x, chunkPos.y + 1});
+  }
+
+  m_chunkDirectlyUpdateSet.insert({chunkPos.x, chunkPos.y});
+}
+
+void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
+  setBlockWithUpdate(worldPos.x, worldPos.y, worldPos.z, block);
+}
+
+void World::processDirectChunkUpdates() {
+  if (m_chunkDirectlyUpdateSet.empty()) return;
+
+  for (const glm::ivec2 &pos : m_chunkDirectlyUpdateSet) {
+
+    if (!chunkExists(pos) || m_chunkMap.at(pos)->chunkMeshState != ChunkMeshState::BUILT) continue;
+
+    const Chunk &chunk0 = *getChunkRawPtr({pos.x - 1, pos.y - 1});
+    const Chunk &chunk1 = *getChunkRawPtr({pos.x - 1, pos.y});
+    const Chunk &chunk2 = *getChunkRawPtr({pos.x - 1, pos.y + 1});
+    const Chunk &chunk3 = *getChunkRawPtr({pos.x, pos.y - 1});
+    const Chunk &chunk4 = *getChunkRawPtr({pos.x, pos.y});
+    const Chunk &chunk5 = *getChunkRawPtr({pos.x, pos.y + 1});
+    const Chunk &chunk6 = *getChunkRawPtr({pos.x + 1, pos.y - 1});
+    const Chunk &chunk7 = *getChunkRawPtr({pos.x + 1, pos.y});
+    const Chunk &chunk8 = *getChunkRawPtr({pos.x + 1, pos.y + 1});
+
+    ChunkMeshBuilder mesh_builder(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8);
+    std::vector<ChunkVertex> vertices;
+    std::vector<unsigned int> indices;
+    mesh_builder.constructMesh(vertices, indices);
+    ChunkMesh &mesh = m_chunkMap.at(pos)->getMesh();
+    std::cout << "old vertices size " << mesh.vertices.size() << std::endl;
+    std::cout << "old indices size " << mesh.indices.size() << std::endl;
+
+    mesh.vertices = std::move(vertices);
+    mesh.indices = std::move(indices);
+    mesh.needsUpdate = true;
+    std::cout << "processed update for : " << pos.x << " " << pos.y << std::endl;
+    std::cout << "new vertices size " << mesh.vertices.size() << std::endl;
+    std::cout << "new indices size " << mesh.indices.size() << std::endl;
+  }
+  m_chunkDirectlyUpdateSet.clear();
+}

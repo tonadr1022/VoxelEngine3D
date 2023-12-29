@@ -125,7 +125,6 @@ class ChunkGenerateStructuresInfo : public ChunkInfo {
 
  private:
   TerrainGenerator m_terrainGenerator;
-//  Block m_blocks[CHUNK_VOLUME]{};
   glm::ivec2 m_pos;
 };
 

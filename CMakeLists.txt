@@ -66,8 +66,6 @@ set(SOURCE_FILES
         src/world/chunk/ChunkRenderer.hpp
         src/resources/ResourceManager.cpp
         src/resources/ResourceManager.hpp
-        src/world/chunk/ChunkManager.cpp
-        src/world/chunk/ChunkManager.hpp
         src/world/block/BlockDB.cpp
         src/world/block/BlockDB.hpp
         src/physics/Ray.hpp
