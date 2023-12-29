@@ -39,22 +39,22 @@ World::~World() {
 }
 
 void World::update() {
-//    std::cout << "chunksToLoadVector size: " << m_chunksToLoadVector.size()
-//            << std::endl;
-//  std::cout << "chunksReadyToMeshList size: "
-//            << m_chunksReadyToMeshList.size() << std::endl;
-//  std::cout << "chunksReadyToGenStructuresList size: "
-//            << m_chunksReadyToGenStructuresList.size() << std::endl;
-//  std::cout << "chunksInStructureGenRangeVector size: "
-//            << m_chunksInStructureGenRangeVector.size() << std::endl;
-//  std::cout << "chunksInMeshRangeVector size: "
-//            << m_chunksInMeshRangeVector.size() << std::endl;
-//  std::cout << "chunkTerrainLoadInfoMap size: "
-//            << m_chunkTerrainLoadInfoMap.size() << std::endl;
-//  std::cout << "chunkStructureGenInfoMap size: "
-//            << m_chunkStructureGenInfoMap.size() << std::endl;
-//  std::cout << "chunkMeshInfoMap size: " << m_chunkMeshInfoMap.size()
-//            << std::endl;
+    std::cout << "chunksToLoadVector size: " << m_chunksToLoadVector.size()
+            << std::endl;
+  std::cout << "chunksReadyToMeshList size: "
+            << m_chunksReadyToMeshList.size() << std::endl;
+  std::cout << "chunksReadyToGenStructuresList size: "
+            << m_chunksReadyToGenStructuresList.size() << std::endl;
+  std::cout << "chunksInStructureGenRangeVector size: "
+            << m_chunksInStructureGenRangeVector.size() << std::endl;
+  std::cout << "chunksInMeshRangeVector size: "
+            << m_chunksInMeshRangeVector.size() << std::endl;
+  std::cout << "chunkTerrainLoadInfoMap size: "
+            << m_chunkTerrainLoadInfoMap.size() << std::endl;
+  std::cout << "chunkStructureGenInfoMap size: "
+            << m_chunkStructureGenInfoMap.size() << std::endl;
+  std::cout << "chunkMeshInfoMap size: " << m_chunkMeshInfoMap.size()
+            << std::endl;
 
   m_xyChanged = false;
   // update center and whether position changed

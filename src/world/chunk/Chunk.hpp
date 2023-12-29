@@ -60,17 +60,11 @@ class Chunk {
     return x < 0 || x >= CHUNK_WIDTH || y < 0 || y >= CHUNK_WIDTH || z < 0
         || z >= CHUNK_HEIGHT;
   }
-
   [[nodiscard]] inline Block getBlock(int x, int y, int z) const {
     return m_blocks[XYZ(x, y, z)];
   }
-
   [[nodiscard]] inline Block getBlock(const glm::ivec3 &pos) const {
     return m_blocks[XYZ(pos)];
-  }
-
-  [[nodiscard]] inline bool hasNonAirBlockAt(int x, int y, int z) const {
-    return m_blocks[XYZ(x, y, z)] != Block::AIR;
   }
 
   ChunkMeshState chunkMeshState;
@@ -80,14 +74,10 @@ class Chunk {
   glm::ivec2 m_pos;
   glm::ivec2 m_worldPos;
 
-  ChunkMesh m_meshes[3];
-
- private:
-
   /**
    * @brief index 0 is opaque, 1 is transparent, 2 is other (floral etc)
    */
-
+  ChunkMesh m_meshes[3];
 };
 
 class ChunkInfo {
