@@ -51,7 +51,6 @@ class Chunk {
   explicit Chunk(glm::ivec2 location);
   ~Chunk();
 
-  void unload();
   void setBlock(int x, int y, int z, Block block);
 
   void markDirty();
@@ -77,7 +76,8 @@ class Chunk {
   /**
    * @brief index 0 is opaque, 1 is transparent, 2 is other (floral etc)
    */
-  ChunkMesh m_meshes[3];
+  ChunkMesh m_opaqueMesh;
+  ChunkMesh m_transparentMesh;
 };
 
 class ChunkInfo {
@@ -146,8 +146,10 @@ class ChunkMeshInfo : public ChunkInfo {
   const Chunk &m_chunk7;
   const Chunk &m_chunk8;
 
-  std::vector<ChunkVertex> m_vertices[3];
-  std::vector<unsigned int> m_indices[3];
+  std::vector<ChunkVertex> m_opaqueVertices;
+  std::vector<ChunkVertex> m_transparentVertices;
+  std::vector<unsigned int> m_opaqueIndices;
+  std::vector<unsigned int> m_transparentIndices;
   glm::ivec2 m_pos;
 };
 

@@ -39,7 +39,7 @@ World::~World() {
 }
 
 void World::update() {
-    std::cout << "chunksToLoadVector size: " << m_chunksToLoadVector.size()
+  std::cout << "chunksToLoadVector size: " << m_chunksToLoadVector.size()
             << std::endl;
   std::cout << "chunksReadyToMeshList size: "
             << m_chunksReadyToMeshList.size() << std::endl;
@@ -114,7 +114,7 @@ void World::updateChunkLoadList() {
     }
   }
 
-  if (m_xyChanged || m_renderSet[0].empty()) {
+  if (m_xyChanged || m_opaqueRenderSet.empty()) {
     glm::ivec2 pos;
     for (pos.x = m_center.x - m_loadDistance;
          pos.x <= m_center.x + m_loadDistance; pos.x++) {
@@ -147,7 +147,7 @@ void World::updateChunkStructureGenList() {
     }
   }
 
-  if (m_xyChanged || m_renderSet[0].empty()) {
+  if (m_xyChanged || m_opaqueRenderSet.empty()) {
     m_chunksInStructureGenRangeVector.clear();
     glm::ivec2 pos;
     for (pos.x = m_center.x - m_structureLoadDistance;
@@ -222,11 +222,8 @@ void World::updateChunkMeshList() {
       if (chunkExists(posIt->first)) {
         Chunk *chunk = getChunkRawPtr(posIt->first);
         posIt->second->applyMesh(chunk);
-        for (short i = 0; i < 3; i++) {
-          if (!chunk->m_meshes[i].vertices.empty()) {
-            m_renderSet[i].insert(posIt->first);
-          }
-        }
+        if (!chunk->m_opaqueMesh.vertices.empty()) m_opaqueRenderSet.insert(posIt->first);
+        if (!chunk->m_transparentMesh.vertices.empty()) m_transparentRenderSet.insert(posIt->first);
       }
       // delete from map regardless of whether chunk exists
       posIt = m_chunkMeshInfoMap.erase(posIt);
@@ -235,7 +232,7 @@ void World::updateChunkMeshList() {
     }
   }
 
-  if (m_xyChanged || m_renderSet[0].empty()) {
+  if (m_xyChanged || m_opaqueRenderSet.empty()) {
     m_chunksInMeshRangeVector.clear();
     // add chunks that can be meshed into vector
     glm::ivec2 pos;
@@ -310,10 +307,8 @@ void World::unloadChunks() {
         pos.x > m_center.x + m_unloadDistance ||
         pos.y < m_center.y - m_unloadDistance ||
         pos.y > m_center.y + m_unloadDistance) {
-      it->second->unload();
-      m_renderSet[0].erase(pos);
-      m_renderSet[1].erase(pos);
-      m_renderSet[2].erase(pos);
+      m_opaqueRenderSet.erase(pos);
+      m_transparentRenderSet.erase(pos);
       it = m_chunkMap.erase(it);
     } else {
       ++it;
@@ -454,7 +449,7 @@ void World::castPlayerAimRay(Ray ray) {
       }
 
       setBlockWithUpdate({blockPos.x, blockPos.y, blockPos.z},
-                                Block::AIR);
+                         Block::AIR);
       player.blockBreakStage = 0;
       m_lastRayCastBlockPos = NULL_VECTOR;
       isFirstAction = false;
@@ -466,7 +461,7 @@ void World::castPlayerAimRay(Ray ray) {
         return;
       }
       setBlockWithUpdate(lastAirBlockPos,
-                                Block(player.inventory.getHeldItem()));
+                         Block(player.inventory.getHeldItem()));
       isFirstAction = false;
 
       // not placing or breaking, reset
@@ -526,8 +521,6 @@ bool World::hasAllNeighborsInState(const glm::ivec2 &pos, ChunkState state) {
                            m_chunkMap.at(neighborPos)->chunkState == state;
                      });
 }
-
-
 
 Block World::getBlockFromWorldPosition(glm::ivec3 position) {
   auto chunkPos = chunkPosFromWorldPos(position.x, position.y);
@@ -622,15 +615,15 @@ void World::processDirectChunkUpdates() {
     const Chunk &chunk8 = *getChunkRawPtr({pos.x + 1, pos.y + 1});
 
     ChunkMeshBuilder mesh_builder(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8);
-    std::vector<ChunkVertex> vertices[3];
-    std::vector<unsigned int> indices[3];
-    mesh_builder.constructMesh(vertices, indices);
-
-    for (short i = 0; i < 3; i++) {
-      chunk4.m_meshes[i].vertices = std::move(vertices[i]);
-      chunk4.m_meshes[i].indices = std::move(indices[i]);
-      chunk4.m_meshes[i].needsUpdate = true;
-    }
+    std::vector<ChunkVertex> opaqueVertices, transparentVertices;
+    std::vector<unsigned int> opaqueIndices, transparentIndices;
+    mesh_builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
+    chunk4.m_opaqueMesh.vertices = std::move(opaqueVertices);
+    chunk4.m_opaqueMesh.indices = std::move(opaqueIndices);
+    chunk4.m_transparentMesh.vertices = std::move(transparentVertices);
+    chunk4.m_transparentMesh.indices = std::move(transparentIndices);
+    chunk4.m_opaqueMesh.needsUpdate = true;
+    chunk4.m_transparentMesh.needsUpdate = true;
   }
   m_chunkDirectlyUpdateSet.clear();
 }

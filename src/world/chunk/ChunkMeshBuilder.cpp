@@ -217,8 +217,10 @@ ChunkMeshBuilder::ChunkMeshBuilder(const Chunk &chunk0, const Chunk &chunk1, con
  *    \  2  5  8
  *     y
  */
-void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> (&vertices)[3],
-                                     std::vector<unsigned int> (&indices)[3]) {
+void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
+                                     std::vector<unsigned int> &opaqueIndices,
+                                     std::vector<ChunkVertex> &transparentVertices,
+                                     std::vector<unsigned int> &transparentIndices) {
   if (m_chunk0.chunkState != ChunkState::FULLY_GENERATED ||
       m_chunk1.chunkState != ChunkState::FULLY_GENERATED || m_chunk2.chunkState != ChunkState::FULLY_GENERATED
       || m_chunk3.chunkState != ChunkState::FULLY_GENERATED || m_chunk4.chunkState != ChunkState::FULLY_GENERATED
@@ -284,38 +286,64 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> (&vertices)[3],
               break;
             default:break;
           }
-          auto &insertVertices = blockData.isTransparent ? vertices[1] : vertices[0];
-          auto &insertIndices = blockData.isTransparent ? indices[1] : indices[0];
+//          auto &insertVertices = blockData.isTransparent ? transparentVertices : opaqueVertices;
+//          auto &insertIndices = blockData.isTransparent ? transparentIndices : opaqueIndices;
+          if (blockData.isTransparent) {
+            auto baseVertexIndex = transparentVertices.size();
+            int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
+            for (int i = 0; i < 20; i += 5) {
 
-          auto baseVertexIndex = insertVertices.size();
-          int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
-          for (int i = 0; i < 20; i += 5) {
-            ChunkVertex v = {
-                glm::vec3(blockPos.x + faceVertices[i],
-                          blockPos.y + faceVertices[i + 1],
-                          blockPos.z + faceVertices[i + 2]),
-                glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
-                static_cast<float>(occlusionLevels[i / 5]),
-                static_cast<float>(textureIndex)};
-            insertVertices.push_back(v);
-          }
+              ChunkVertex v = { glm::vec3(blockPos.x + faceVertices[i], blockPos.y + faceVertices[i + 1],
+                                       blockPos.z + faceVertices[i + 2]), glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
+                             static_cast<float>(occlusionLevels[i / 5]), static_cast<float>(textureIndex)};
+              transparentVertices.push_back(v);
+            }
 
-          // check whether to flip quad based on AO
-          if (occlusionLevels[0] + occlusionLevels[3] >
-              occlusionLevels[1] + occlusionLevels[2]) {
-            insertIndices.push_back(baseVertexIndex + 2);
-            insertIndices.push_back(baseVertexIndex + 0);
-            insertIndices.push_back(baseVertexIndex + 3);
-            insertIndices.push_back(baseVertexIndex + 3);
-            insertIndices.push_back(baseVertexIndex + 0);
-            insertIndices.push_back(baseVertexIndex + 1);
+            // check whether to flip quad based on AO
+            if (occlusionLevels[0] + occlusionLevels[3] >
+                occlusionLevels[1] + occlusionLevels[2]) {
+              transparentIndices.push_back(baseVertexIndex + 2);
+              transparentIndices.push_back(baseVertexIndex + 0);
+              transparentIndices.push_back(baseVertexIndex + 3);
+              transparentIndices.push_back(baseVertexIndex + 3);
+              transparentIndices.push_back(baseVertexIndex + 0);
+              transparentIndices.push_back(baseVertexIndex + 1);
+            } else {
+              transparentIndices.push_back(baseVertexIndex);
+              transparentIndices.push_back(baseVertexIndex + 1);
+              transparentIndices.push_back(baseVertexIndex + 2);
+              transparentIndices.push_back(baseVertexIndex + 2);
+              transparentIndices.push_back(baseVertexIndex + 1);
+              transparentIndices.push_back(baseVertexIndex + 3);
+            }
           } else {
-            insertIndices.push_back(baseVertexIndex);
-            insertIndices.push_back(baseVertexIndex + 1);
-            insertIndices.push_back(baseVertexIndex + 2);
-            insertIndices.push_back(baseVertexIndex + 2);
-            insertIndices.push_back(baseVertexIndex + 1);
-            insertIndices.push_back(baseVertexIndex + 3);
+            auto baseVertexIndex = opaqueVertices.size();
+            int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
+            for (int i = 0; i < 20; i += 5) {
+              ChunkVertex v = { glm::vec3(blockPos.x + faceVertices[i], blockPos.y + faceVertices[i + 1],
+                                       blockPos.z + faceVertices[i + 2]), glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
+                             static_cast<float>(occlusionLevels[i / 5]), static_cast<float>(textureIndex)};
+              opaqueVertices.push_back(v);
+
+              // check whether to flip quad based on AO
+              if (occlusionLevels[0] + occlusionLevels[3] >
+                  occlusionLevels[1] + occlusionLevels[2]) {
+                opaqueIndices.push_back(baseVertexIndex + 2);
+                opaqueIndices.push_back(baseVertexIndex + 0);
+                opaqueIndices.push_back(baseVertexIndex + 3);
+                opaqueIndices.push_back(baseVertexIndex + 3);
+                opaqueIndices.push_back(baseVertexIndex + 0);
+                opaqueIndices.push_back(baseVertexIndex + 1);
+              } else {
+                opaqueIndices.push_back(baseVertexIndex);
+                opaqueIndices.push_back(baseVertexIndex + 1);
+                opaqueIndices.push_back(baseVertexIndex + 2);
+                opaqueIndices.push_back(baseVertexIndex + 2);
+                opaqueIndices.push_back(baseVertexIndex + 1);
+                opaqueIndices.push_back(baseVertexIndex + 3);
+              }
+            }
+
           }
         }
       }

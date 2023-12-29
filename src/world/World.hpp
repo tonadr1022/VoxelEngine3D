@@ -18,12 +18,12 @@ using ChunkMap = std::unordered_map<glm::ivec2, Scope<Chunk>>;
 
 static constexpr std::array<glm::ivec2, 8> NEIGHBOR_CHUNK_KEY_OFFSETS = {
     glm::ivec2{-1, -1}, glm::ivec2{-1, 0}, glm::ivec2{-1, 1}, glm::ivec2{0, -1},
-    glm::ivec2{0, 1},   glm::ivec2{1, -1}, glm::ivec2{1, 0},  glm::ivec2{1, 1}};
+    glm::ivec2{0, 1}, glm::ivec2{1, -1}, glm::ivec2{1, 0}, glm::ivec2{1, 1}};
 
 static constexpr std::array<glm::ivec2, 9> NEIGHBOR_ARRAY_OFFSETS = {
     glm::ivec2{-1, -1}, glm::ivec2{-1, 0}, glm::ivec2{-1, 1},
-    glm::ivec2{0, -1},  glm::ivec2{0, 0},  glm::ivec2{0, 1},
-    glm::ivec2{1, -1},  glm::ivec2{1, 0},  glm::ivec2{1, 1}};
+    glm::ivec2{0, -1}, glm::ivec2{0, 0}, glm::ivec2{0, 1},
+    glm::ivec2{1, -1}, glm::ivec2{1, 0}, glm::ivec2{1, 1}};
 
 class World {
  public:
@@ -32,14 +32,15 @@ class World {
 
   void update();
   void renderDebugGui();
-  inline const std::unordered_set<glm::ivec2> &getOpaqueRenderSet() const { return m_renderSet[0]; }
+  inline const std::unordered_set<glm::ivec2> &getOpaqueRenderSet() const { return m_opaqueRenderSet; }
+  inline const std::vector<glm::ivec2> &getTransparentRenderVector() const { return m_transparentRenderVector; }
   Player player;
 
-  inline Chunk *getChunkRawPtr(const glm::ivec2 &pos) const{
+  inline Chunk *getChunkRawPtr(const glm::ivec2 &pos) const {
     if (!chunkExists(pos)) return nullptr;
     return m_chunkMap.at(pos).get();
   }
-  inline const glm::ivec3& getLastRayCastBlockPos() const {return m_lastRayCastBlockPos; }
+  inline const glm::ivec3 &getLastRayCastBlockPos() const { return m_lastRayCastBlockPos; }
 
  private:
   Block getBlockFromWorldPosition(glm::ivec3 position);
@@ -47,19 +48,18 @@ class World {
 
   static inline glm::ivec2 chunkPosFromWorldPos(int x, int y) {
     return glm::ivec2{static_cast<int>(std::floor(static_cast<float>(x) / CHUNK_WIDTH)),
-        static_cast<int>(std::floor(static_cast<float>(y) / CHUNK_WIDTH))};
+                      static_cast<int>(std::floor(static_cast<float>(y) / CHUNK_WIDTH))};
   }
 
   static inline glm::ivec2 chunkPosFromWorldPos(glm::ivec2 pos) {
     return glm::ivec2{static_cast<int>(
-        std::floor(static_cast<float>(pos.x) / CHUNK_WIDTH)),
-        static_cast<int>(std::floor(static_cast<float>(pos.y) / CHUNK_WIDTH))};
+                          std::floor(static_cast<float>(pos.x) / CHUNK_WIDTH)),
+                      static_cast<int>(std::floor(static_cast<float>(pos.y) / CHUNK_WIDTH))};
   }
 
   inline bool chunkExists(const glm::ivec2 &pos) const {
     return m_chunkMap.find(pos) != m_chunkMap.end();
   }
-
 
   bool hasAllNeighborsInState(const glm::ivec2 &pos, ChunkState state);
   bool hasAllNeighborsInStates(const glm::ivec2 &pos, ChunkState state1, ChunkState state2);
@@ -67,7 +67,6 @@ class World {
   void setBlockWithUpdate(const glm::ivec3 &worldPos, Block block);
   void setBlockWithUpdate(int worldX, int worldY, int worldZ, Block block);
   void saveData();
-
 
   void unloadChunks();
 
@@ -104,7 +103,6 @@ class World {
   std::atomic_uint m_numRunningThreads;
   unsigned int m_numLoadingThreads;
 
-
   std::vector<glm::ivec2> m_chunksToLoadVector;
   std::unordered_map<glm::ivec2, Scope<ChunkLoadInfo>>
       m_chunkTerrainLoadInfoMap;
@@ -124,18 +122,18 @@ class World {
 
   std::unordered_set<glm::ivec2> m_chunkDirectlyUpdateSet;
 
-
-  std::unordered_set<glm::ivec2> m_renderSet[3];
+  std::unordered_set<glm::ivec2> m_opaqueRenderSet;
+  std::unordered_set<glm::ivec2> m_transparentRenderSet;
   std::vector<glm::ivec2> m_transparentRenderVector;
 
   inline bool cmpVec2_impl(const glm::ivec2 &l, const glm::ivec2 &r) const {
-    return glm::length(glm::vec2(l) - (glm::vec2)m_center) <
-           glm::length(glm::vec2(r) - (glm::vec2)m_center);
+    return glm::length(glm::vec2(l) - (glm::vec2) m_center) <
+        glm::length(glm::vec2(r) - (glm::vec2) m_center);
   }
 
   inline bool rcmpVec2_impl(const glm::ivec2 &l, const glm::ivec2 &r) const {
-    return glm::length(glm::vec2(l) - (glm::vec2)m_center) >
-           glm::length(glm::vec2(r) - (glm::vec2)m_center);
+    return glm::length(glm::vec2(l) - (glm::vec2) m_center) >
+        glm::length(glm::vec2(r) - (glm::vec2) m_center);
   }
 
   std::function<bool(const glm::ivec2 &, const glm::ivec2 &)> cmpVec2 =

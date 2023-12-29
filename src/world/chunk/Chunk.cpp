@@ -3,22 +3,17 @@
 //
 
 #include "Chunk.hpp"
-#include "ChunkAlg.hpp"
 #include "ChunkMeshBuilder.hpp"
 
 Chunk::Chunk(glm::ivec2 pos) : m_pos(pos), m_worldPos(pos * CHUNK_WIDTH),
                                chunkMeshState(ChunkMeshState::UNBUILT), chunkState(ChunkState::UNGENERATED) {
 }
 
-Chunk::~Chunk() = default;
-
-void Chunk::unload() {
-  for (auto & mesh : m_meshes) {
-    mesh.clearBuffers();
-    mesh.clearData();
-  }
-  chunkState = ChunkState::UNDEFINED;
-  chunkMeshState = ChunkMeshState::UNBUILT;
+Chunk::~Chunk() {
+  m_transparentMesh.clearBuffers();
+  m_transparentMesh.clearData();
+  m_opaqueMesh.clearBuffers();
+  m_opaqueMesh.clearData();
 }
 
 void Chunk::setBlock(int x, int y, int z, Block block) {
@@ -85,15 +80,15 @@ ChunkMeshInfo::ChunkMeshInfo(const Chunk &chunk0, const Chunk &chunk1, const Chu
 void ChunkMeshInfo::process() {
   ChunkMeshBuilder meshBuilder(m_chunk0, m_chunk1, m_chunk2, m_chunk3,
                                m_chunk4, m_chunk5, m_chunk6, m_chunk7, m_chunk8);
-  meshBuilder.constructMesh(m_vertices, m_indices);
+  meshBuilder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
   m_done = true;
 }
 
 void ChunkMeshInfo::applyMesh(Chunk *chunk) {
-  for (short i = 0; i < 3; i++) {
-    chunk->m_meshes[i].vertices= std::move(m_vertices[i]);
-    chunk->m_meshes[i].indices = std::move(m_indices[i]);
-  }
+  chunk->m_opaqueMesh.vertices = std::move(m_opaqueVertices);
+  chunk->m_opaqueMesh.indices = std::move(m_opaqueIndices);
+  chunk->m_transparentMesh.vertices = std::move(m_transparentVertices);
+  chunk->m_transparentMesh.indices = std::move(m_transparentIndices);
   chunk->chunkMeshState = ChunkMeshState::BUILT;
 }
 

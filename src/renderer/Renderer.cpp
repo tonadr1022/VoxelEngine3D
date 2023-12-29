@@ -28,7 +28,7 @@ void Renderer::renderWorld(const World &world) {
   for (auto &pos : world.getOpaqueRenderSet()) {
     Chunk *chunk = world.getChunkRawPtr(pos);
     if (!chunk) continue;
-    m_chunkRenderer.render(chunk->m_meshes[0], chunk->m_worldPos);
+    m_chunkRenderer.render(chunk->m_opaqueMesh, chunk->m_worldPos);
   }
 
   // render block break and outline if a block is being aimed at
