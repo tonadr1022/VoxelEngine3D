@@ -54,25 +54,10 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
                mesh.indices.size() * sizeof(unsigned int), &mesh.indices[0],
                GL_STATIC_DRAW);
 
-  // position
-  glVertexAttribPointer(0, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(ChunkVertex2),
-                        reinterpret_cast<void *>(offsetof(ChunkVertex2, position)));
+  // vertex data only attribute, must be IPointer
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex2),
+                        reinterpret_cast<void *>(offsetof(ChunkVertex2, vertexData)));
   glEnableVertexAttribArray(0);
-
-  // texCoords
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(ChunkVertex2),
-                        reinterpret_cast<void *>(offsetof(ChunkVertex2, texCoords)));
-  glEnableVertexAttribArray(1);
-
-  // occlusionLevel
-  glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(ChunkVertex2),
-                        reinterpret_cast<void *>(offsetof(ChunkVertex2, occlusionLevel)));
-  glEnableVertexAttribArray(2);
-
-  // texIndex
-  glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(ChunkVertex2),
-                        reinterpret_cast<void *>(offsetof(ChunkVertex2, texIndex)));
-  glEnableVertexAttribArray(3);
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -116,24 +101,10 @@ void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
   mesh.VBO = nVBO;
   mesh.EBO = nEBO;
 
-  // position
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex2), (void *) nullptr);
+  // vertex data only attribute, must be IPointer
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex2),
+                         reinterpret_cast<void *>(offsetof(ChunkVertex2, vertexData)));
   glEnableVertexAttribArray(0);
-
-  // texCoords
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(ChunkVertex2),
-                        reinterpret_cast<void *>(offsetof(ChunkVertex2, texCoords)));
-  glEnableVertexAttribArray(1);
-
-  // occlusionLevel
-  glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(ChunkVertex2),
-                        reinterpret_cast<void *>(offsetof(ChunkVertex2, occlusionLevel)));
-  glEnableVertexAttribArray(2);
-
-  // texIndex
-  glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(ChunkVertex2),
-                        reinterpret_cast<void *>(offsetof(ChunkVertex2, texIndex)));
-  glEnableVertexAttribArray(3);
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);

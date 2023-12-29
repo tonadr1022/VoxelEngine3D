@@ -1,9 +1,9 @@
-#version 400 core
+#version 450 core
 
 layout (location = 0) in uint pos;
-layout (location = 1) in vec2 texCoord;
-layout (location = 2) in float occlusionLevel;
-layout (location = 3) in float texIndex;
+layout (location = 1) in vec2 texCoord2;
+layout (location = 2) in float occlusionLevel2;
+layout (location = 3) in float texIndex2;
 
 out vec3 v_FragPos;
 out vec2 v_TexCoord;
@@ -28,14 +28,25 @@ const int atlasWidth = 16;
 const float textureWidth = 1.0 / float(atlasWidth);
 
 void main() {
-    uint posX = pos & uint(0x1F);
-    uint posY = (pos >> 5) & uint(0x1F);
-    uint posZ = (pos >> 10) & uint(0xFF);
+//    uint32_t packedPos = ((blockPos.x + faceVertices[i]) & 0x1F) |
+//    ((blockPos.y + faceVertices[i+1] & 0x1F) << 5) |
+//    ((blockPos.z + faceVertices[i+2] & 0xFF) << 10) |
+//    ((occlusionLevels[i / 5] & 0x3) << 18) |
+//    ((textureX & 0x1) << 20) |
+//    ((textureY & 0x1) << 21) |
+//    ((textureIndex & 0xFF) << 22);
+    uint posX = bitfieldExtract(pos, 0, 5);
+    uint posY = bitfieldExtract(pos, 5, 5);
+    uint posZ = bitfieldExtract(pos, 10, 8);
+    uint occlusionLevel = bitfieldExtract(pos, 18, 2);
+    int x = int(bitfieldExtract(pos, 20, 1));
+    int y = int(bitfieldExtract(pos, 21, 1));
+    uint texIndex = bitfieldExtract(pos, 22, 8);
 
     vec3 vertexPos = vec3(posX, posY, posZ);
 
-    int x = int(texCoord.x);
-    int y = int(texCoord.y);
+//    int x = int(texCoord.x);
+//    int y = int(texCoord.y);
 
     int textureYIndex = int(texIndex) % 16;
     int textureXIndex = int(texIndex) / 16;

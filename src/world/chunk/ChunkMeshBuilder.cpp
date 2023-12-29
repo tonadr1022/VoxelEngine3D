@@ -294,14 +294,17 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex2> &opaqueVertices,
           int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
           for (int i = 0; i < 20; i += 5) {
             // x between [0, 16] == 5 bits, y between [0, 16] == 5 bits, z between [0, 255] == 8 bits
-            // pack x, y, z into uint32_t
-
-         //   return (x & 0x1F) | ((y & 0x1F) << 5) | ((z & 0xFF) << 10);
-            uint32_t packedPos = ((blockPos.x + faceVertices[i]) & 0x1F) |
-                (((blockPos.y + faceVertices[i+1]) & 0x1F) << 5) |
-                (((blockPos.z + faceVertices[i+2]) & 0xFF) << 10);
-            ChunkVertex2 v = {packedPos,glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
-                             static_cast<float>(occlusionLevels[i / 5]), static_cast<float>(textureIndex)};
+            // occlusion level [0, 3] == 2 bits, textureX [0, 1] == 1 bit, textureY [0, 1] == 1 bit
+            // textureIndex [0, 255] == 8 bits. total 30 bits
+            // pack x, y, z, occlusion level, textureX, textureY, textureIndex into 32 bits
+            uint32_t vertexData = ((blockPos.x + faceVertices[i]) & 0x1F) |
+                ((blockPos.y + faceVertices[i+1] & 0x1F) << 5) |
+                ((blockPos.z + faceVertices[i+2] & 0xFF) << 10) |
+                ((occlusionLevels[i / 5] & 0x3) << 18) |
+                ((faceVertices[i+3] & 0x1) << 20) |
+                ((faceVertices[i+4] & 0x1) << 21) |
+                ((textureIndex & 0xFF) << 22);
+            ChunkVertex2 v = {vertexData};
             vertices.push_back(v);
           }
 
