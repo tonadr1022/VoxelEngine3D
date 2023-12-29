@@ -8,7 +8,6 @@
 void TerrainGenerator::generateStructures(const std::array<int, CHUNK_AREA> &heightMap) {
   auto chunkWorldPos = m_chunk4.m_worldPos;
 
-
   FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
   fastNoise->SetSeed(m_seed);
   fastNoise->SetFrequency(1.0f);
@@ -22,6 +21,10 @@ void TerrainGenerator::generateStructures(const std::array<int, CHUNK_AREA> &hei
       int height = heightMap[heightMapIndex];
       // + 1 since tree map vals are [-1,1]
       // 1 / 100 prob for now
+      if (m_chunk4.getBlock(x, y, height) != Block::GRASS) {
+        heightMapIndex++;
+        continue;
+      }
       bool structureExists = static_cast<int>((treeMap[heightMapIndex] + 1) * 100.0f) == 0;
       if (structureExists) {
         makeTree({x, y, height+1});

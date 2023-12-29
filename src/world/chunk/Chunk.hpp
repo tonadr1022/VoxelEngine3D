@@ -51,7 +51,9 @@ class Chunk {
   explicit Chunk(glm::ivec2 location);
   ~Chunk();
 
-  void setBlock(int x, int y, int z, Block block);
+  inline void setBlock(int x, int y, int z, Block block) {
+    m_blocks[XYZ(x, y, z)] = block;
+  }
 
   void markDirty();
 

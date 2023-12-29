@@ -25,10 +25,20 @@ void Renderer::renderCrossHair() const {
 
 void Renderer::renderWorld(const World &world) {
   m_chunkRenderer.start(world.player.camera);
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
   for (auto &pos : world.getOpaqueRenderSet()) {
     Chunk *chunk = world.getChunkRawPtr(pos);
     if (!chunk) continue;
     m_chunkRenderer.render(chunk->m_opaqueMesh, chunk->m_worldPos);
+  }
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  for (auto &pos : world.getTransparentRenderVector()) {
+    Chunk *chunk = world.getChunkRawPtr(pos);
+    if (!chunk) continue;
+    m_chunkRenderer.render(chunk->m_transparentMesh, chunk->m_worldPos);
   }
 
   // render block break and outline if a block is being aimed at
@@ -37,6 +47,8 @@ void Renderer::renderWorld(const World &world) {
     renderBlockBreak(world.player.camera, world.getLastRayCastBlockPos(), world.player.blockBreakStage);
   }
   renderCrossHair();
+
+  glDisable(GL_BLEND);
 }
 
 

@@ -79,6 +79,7 @@ class World {
   void generateTerrainWorker();
   void generateStructuresWorker();
   void generateChunkMeshWorker();
+  void generateChunksWorker();
   void meshUpdateWorker();
 
   int m_renderDistance = 16;
@@ -125,6 +126,8 @@ class World {
   std::unordered_set<glm::ivec2> m_opaqueRenderSet;
   std::unordered_set<glm::ivec2> m_transparentRenderSet;
   std::vector<glm::ivec2> m_transparentRenderVector;
+
+  void sortTransparentRenderVector();
 
   inline bool cmpVec2_impl(const glm::ivec2 &l, const glm::ivec2 &r) const {
     return glm::length(glm::vec2(l) - (glm::vec2) m_center) <

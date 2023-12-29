@@ -7,6 +7,7 @@
 #include "block/BlockDB.hpp"
 #include "../input/Mouse.hpp"
 #include "../utils/Utils.hpp"
+#include "../utils/Timer.hpp"
 #include <algorithm>
 
 World::World(Renderer &renderer, int seed, const std::string &savePath)
@@ -23,9 +24,10 @@ World::World(Renderer &renderer, int seed, const std::string &savePath)
   BlockDB::loadData("../resources/blocks/");
 
   for (int i = 0; i < m_numLoadingThreads; i++) {
-    m_chunkLoadThreads.emplace_back(&World::generateTerrainWorker, this);
-    m_chunkLoadThreads.emplace_back(&World::generateStructuresWorker, this);
-    m_chunkLoadThreads.emplace_back(&World::generateChunkMeshWorker, this);
+//    m_chunkLoadThreads.emplace_back(&World::generateTerrainWorker, this);
+//    m_chunkLoadThreads.emplace_back(&World::generateStructuresWorker, this);
+//    m_chunkLoadThreads.emplace_back(&World::generateChunkMeshWorker, this);
+    m_chunkLoadThreads.emplace_back(&World::generateChunksWorker, this);
   }
 }
 
@@ -39,25 +41,10 @@ World::~World() {
 }
 
 void World::update() {
-  std::cout << "chunksToLoadVector size: " << m_chunksToLoadVector.size()
-            << std::endl;
-  std::cout << "chunksReadyToMeshList size: "
-            << m_chunksReadyToMeshList.size() << std::endl;
-  std::cout << "chunksReadyToGenStructuresList size: "
-            << m_chunksReadyToGenStructuresList.size() << std::endl;
-  std::cout << "chunksInStructureGenRangeVector size: "
-            << m_chunksInStructureGenRangeVector.size() << std::endl;
-  std::cout << "chunksInMeshRangeVector size: "
-            << m_chunksInMeshRangeVector.size() << std::endl;
-  std::cout << "chunkTerrainLoadInfoMap size: "
-            << m_chunkTerrainLoadInfoMap.size() << std::endl;
-  std::cout << "chunkStructureGenInfoMap size: "
-            << m_chunkStructureGenInfoMap.size() << std::endl;
-  std::cout << "chunkMeshInfoMap size: " << m_chunkMeshInfoMap.size()
-            << std::endl;
+  Timer t("update");
 
   m_xyChanged = false;
-  // update center and whether position changed
+
   auto playerChunkPos = player.getChunkPosition();
   auto newCenter = glm::ivec2(playerChunkPos.x, playerChunkPos.y);
   if (newCenter != m_center) {
@@ -83,14 +70,13 @@ void World::update() {
 
   castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
 
-  // chunk updates
-
-  // if have chunks to remesh, lock
-//    if (m_chunkManager.hasChunksToRemesh()) {
-//        std::lock_guard<std::mutex> lock(m_mainMutex);
-//        m_chunkManager.remeshChunksToRemesh();
-//    }
   static int i = 0;
+  if (i % 20 == 0) {
+    sortTransparentRenderVector();
+    i = 0;
+  }
+  i++;
+
   processDirectChunkUpdates();
 
   std::lock_guard<std::mutex> lock(m_mainMutex);
@@ -379,6 +365,43 @@ void World::generateChunkMeshWorker() {
   }
 }
 
+void World::generateChunksWorker() {
+  glm::ivec2 pos;
+  while (m_isRunning) {
+    std::unique_lock<std::mutex> lock(m_mainMutex);
+    m_conditionVariable.wait(lock, [this]() {
+      return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads && (!m_chunksToLoadVector.empty()
+          || !m_chunksReadyToGenStructuresList.empty() || !m_chunksReadyToMeshList.empty()));
+    });
+    if (!m_isRunning) return;
+    if (!m_chunksToLoadVector.empty()) {
+      pos = m_chunksToLoadVector.back();
+      m_chunksToLoadVector.pop_back();
+      lock.unlock();
+      m_numRunningThreads++;
+      Scope<std::array<int, CHUNK_AREA>> heights = m_chunkTerrainLoadInfoMap.at(pos)->process();
+      std::lock_guard<std::mutex> lock2(m_mainMutex);
+      m_heightMapsMap.emplace(pos, std::move(heights));
+      m_numRunningThreads--;
+    } else if (!m_chunksReadyToGenStructuresList.empty()) {
+      pos = m_chunksReadyToGenStructuresList.back();
+      m_chunksReadyToGenStructuresList.pop_back();
+      const std::array<int, CHUNK_AREA> &heightMap = *m_heightMapsMap.at(pos).get();
+      lock.unlock();
+      m_numRunningThreads++;
+      m_chunkStructureGenInfoMap.at(pos)->process(heightMap);
+      m_numRunningThreads--;
+    } else if (!m_chunksReadyToMeshList.empty()) {
+      pos = m_chunksReadyToMeshList.back();
+      m_chunksReadyToMeshList.pop_back();
+      lock.unlock();
+      m_numRunningThreads++;
+      m_chunkMeshInfoMap.at(pos)->process();
+      m_numRunningThreads--;
+    }
+  }
+}
+
 void World::meshUpdateWorker() {
   glm::ivec2 pos;
   while (m_isRunning) {
@@ -626,4 +649,8 @@ void World::processDirectChunkUpdates() {
     chunk4.m_transparentMesh.needsUpdate = true;
   }
   m_chunkDirectlyUpdateSet.clear();
+}
+void World::sortTransparentRenderVector() {
+  m_transparentRenderVector = std::vector<glm::ivec2>(m_transparentRenderSet.begin(), m_transparentRenderSet.end());
+  std::sort(m_transparentRenderVector.begin(), m_transparentRenderVector.end(), rcmpVec2);
 }

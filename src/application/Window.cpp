@@ -133,14 +133,6 @@ void Window::initializeGlad() {
     std::cout << "Failed to initialize GLAD" << std::endl;
     return;
   }
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_DEPTH_TEST);
-  //    glfwSwapInterval(1); // Enable vsync
-
-
 }
 
 void Window::initializeGlfw(int width, int height, const char *title) {

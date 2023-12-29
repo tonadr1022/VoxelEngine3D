@@ -254,6 +254,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
 
           BlockData &adjBlockData = BlockDB::getBlockData(adjacentBlock);
           if (!adjBlockData.isTransparent) continue;
+          if (adjacentBlock == block) continue;
 
           auto face = static_cast<BlockFace>(faceIndex);
 
@@ -286,69 +287,42 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
               break;
             default:break;
           }
-//          auto &insertVertices = blockData.isTransparent ? transparentVertices : opaqueVertices;
-//          auto &insertIndices = blockData.isTransparent ? transparentIndices : opaqueIndices;
-          if (blockData.isTransparent) {
-            auto baseVertexIndex = transparentVertices.size();
-            int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
-            for (int i = 0; i < 20; i += 5) {
+          auto &vertices = blockData.isTransparent ? transparentVertices : opaqueVertices;
+          auto &indices = blockData.isTransparent ? transparentIndices : opaqueIndices;
 
-              ChunkVertex v = { glm::vec3(blockPos.x + faceVertices[i], blockPos.y + faceVertices[i + 1],
-                                       blockPos.z + faceVertices[i + 2]), glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
+          auto baseVertexIndex = vertices.size();
+          int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
+          for (int i = 0; i < 20; i += 5) {
+            ChunkVertex v = {glm::vec3(blockPos.x + faceVertices[i], blockPos.y + faceVertices[i + 1],
+                                       blockPos.z + faceVertices[i + 2]),
+                             glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
                              static_cast<float>(occlusionLevels[i / 5]), static_cast<float>(textureIndex)};
-              transparentVertices.push_back(v);
-            }
+            vertices.push_back(v);
+          }
 
-            // check whether to flip quad based on AO
-            if (occlusionLevels[0] + occlusionLevels[3] >
-                occlusionLevels[1] + occlusionLevels[2]) {
-              transparentIndices.push_back(baseVertexIndex + 2);
-              transparentIndices.push_back(baseVertexIndex + 0);
-              transparentIndices.push_back(baseVertexIndex + 3);
-              transparentIndices.push_back(baseVertexIndex + 3);
-              transparentIndices.push_back(baseVertexIndex + 0);
-              transparentIndices.push_back(baseVertexIndex + 1);
-            } else {
-              transparentIndices.push_back(baseVertexIndex);
-              transparentIndices.push_back(baseVertexIndex + 1);
-              transparentIndices.push_back(baseVertexIndex + 2);
-              transparentIndices.push_back(baseVertexIndex + 2);
-              transparentIndices.push_back(baseVertexIndex + 1);
-              transparentIndices.push_back(baseVertexIndex + 3);
-            }
+          // check whether to flip quad based on AO
+          if (occlusionLevels[0] + occlusionLevels[3] >
+              occlusionLevels[1] + occlusionLevels[2]) {
+            indices.push_back(baseVertexIndex + 2);
+            indices.push_back(baseVertexIndex + 0);
+            indices.push_back(baseVertexIndex + 3);
+            indices.push_back(baseVertexIndex + 3);
+            indices.push_back(baseVertexIndex + 0);
+            indices.push_back(baseVertexIndex + 1);
           } else {
-            auto baseVertexIndex = opaqueVertices.size();
-            int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
-            for (int i = 0; i < 20; i += 5) {
-              ChunkVertex v = { glm::vec3(blockPos.x + faceVertices[i], blockPos.y + faceVertices[i + 1],
-                                       blockPos.z + faceVertices[i + 2]), glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
-                             static_cast<float>(occlusionLevels[i / 5]), static_cast<float>(textureIndex)};
-              opaqueVertices.push_back(v);
+            indices.push_back(baseVertexIndex);
+            indices.push_back(baseVertexIndex + 1);
+            indices.push_back(baseVertexIndex + 2);
+            indices.push_back(baseVertexIndex + 2);
+            indices.push_back(baseVertexIndex + 1);
+            indices.push_back(baseVertexIndex + 3);
+          }
 
-              // check whether to flip quad based on AO
-              if (occlusionLevels[0] + occlusionLevels[3] >
-                  occlusionLevels[1] + occlusionLevels[2]) {
-                opaqueIndices.push_back(baseVertexIndex + 2);
-                opaqueIndices.push_back(baseVertexIndex + 0);
-                opaqueIndices.push_back(baseVertexIndex + 3);
-                opaqueIndices.push_back(baseVertexIndex + 3);
-                opaqueIndices.push_back(baseVertexIndex + 0);
-                opaqueIndices.push_back(baseVertexIndex + 1);
-              } else {
-                opaqueIndices.push_back(baseVertexIndex);
-                opaqueIndices.push_back(baseVertexIndex + 1);
-                opaqueIndices.push_back(baseVertexIndex + 2);
-                opaqueIndices.push_back(baseVertexIndex + 2);
-                opaqueIndices.push_back(baseVertexIndex + 1);
-                opaqueIndices.push_back(baseVertexIndex + 3);
-              }
-            }
 
           }
         }
       }
     }
-  }
 }
 
 OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(const glm::ivec3 &blockPosInChunk,

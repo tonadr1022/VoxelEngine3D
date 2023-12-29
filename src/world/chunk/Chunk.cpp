@@ -16,9 +16,7 @@ Chunk::~Chunk() {
   m_opaqueMesh.clearData();
 }
 
-void Chunk::setBlock(int x, int y, int z, Block block) {
-  m_blocks[XYZ(x, y, z)] = block;
-}
+
 
 void Chunk::markDirty() {
   chunkMeshState = ChunkMeshState::UNBUILT;
@@ -43,24 +41,51 @@ Scope<std::array<int, CHUNK_AREA>> ChunkLoadInfo::process() {
   int highest = 0;
 
   for (int i = 0; i < CHUNK_AREA; i++) {
-    (*heights)[i] = (int) floor(heightMap[i] * 64) + 100;
+    (*heights)[i] = (int) floor(heightMap[i] * 64) + 70;
     highest = std::max(highest, (*heights)[i]);
   }
-
-  for (int z = 0; z <= highest; z++) {
-    int heightMapIndex = 0;
-    for (int x = 0; x < CHUNK_WIDTH; x++) {
-      for (int y = 0; y < CHUNK_WIDTH; y++) {
-        int height = (*heights)[heightMapIndex];
-        if (z < height) {
-          m_blocks[XYZ(x, y, z)] = Block::DIRT;
-        } else if (z == height) {
-          m_blocks[XYZ(x, y, z)] = Block::GRASS;
-        }
-        heightMapIndex++;
+  int heightMapIndex = 0;
+  int z;
+  for (int x = 0; x < CHUNK_WIDTH; x++) {
+    for (int y = 0; y < CHUNK_WIDTH; y++) {
+      int maxBlockHeight = (*heights)[heightMapIndex];
+      for (z = 0; z < maxBlockHeight - 4; z++) {
+        m_blocks[XYZ(x, y, z)] = Block::STONE;
       }
+      for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
+        m_blocks[XYZ(x, y, z)] = Block::DIRT;
+      }
+      if (maxBlockHeight <= 66) {
+        m_blocks[XYZ(x, y, maxBlockHeight)] = Block::SAND;
+      } else {
+        m_blocks[XYZ(x, y, maxBlockHeight)] = Block::GRASS;
+      }
+
+
+      for (z = maxBlockHeight + 1; z <= 64; z++) {
+        m_blocks[XYZ(x, y, z)] = Block::WATER;
+      }
+
+      heightMapIndex++;
     }
   }
+
+//  for (int z = 0; z <= highest; z++) {
+//    int heightMapIndex = 0;
+//    for (int x = 0; x < CHUNK_WIDTH; x++) {
+//      for (int y = 0; y < CHUNK_WIDTH; y++) {
+//        int height = (*heights)[heightMapIndex];
+//        if (z < height) {
+//          m_blocks[XYZ(x, y, z)] = Block::DIRT;
+//        } else if (z == height) {
+//          m_blocks[XYZ(x, y, z)] = Block::GRASS;
+//        }
+//        heightMapIndex++;
+//      }
+//    }
+//  }
+
+
   m_done = true;
   return heights;
 }
@@ -75,7 +100,8 @@ ChunkMeshInfo::ChunkMeshInfo(const Chunk &chunk0, const Chunk &chunk1, const Chu
                              const Chunk &chunk8)
     : m_pos(chunk4.m_pos), m_chunk0(chunk0), m_chunk1(chunk1), m_chunk2(chunk2), m_chunk3(chunk3),
       m_chunk4(chunk4), m_chunk5(chunk5), m_chunk6(chunk6), m_chunk7(chunk7),
-      m_chunk8(chunk8) {}
+      m_chunk8(chunk8) {
+}
 
 void ChunkMeshInfo::process() {
   ChunkMeshBuilder meshBuilder(m_chunk0, m_chunk1, m_chunk2, m_chunk3,
