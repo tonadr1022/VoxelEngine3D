@@ -217,9 +217,9 @@ ChunkMeshBuilder::ChunkMeshBuilder(const Chunk &chunk0, const Chunk &chunk1, con
  *    \  2  5  8
  *     y
  */
-void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
+void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex2> &opaqueVertices,
                                      std::vector<unsigned int> &opaqueIndices,
-                                     std::vector<ChunkVertex> &transparentVertices,
+                                     std::vector<ChunkVertex2> &transparentVertices,
                                      std::vector<unsigned int> &transparentIndices) {
   if (m_chunk0.chunkState != ChunkState::FULLY_GENERATED ||
       m_chunk1.chunkState != ChunkState::FULLY_GENERATED || m_chunk2.chunkState != ChunkState::FULLY_GENERATED
@@ -293,9 +293,14 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
           auto baseVertexIndex = vertices.size();
           int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
           for (int i = 0; i < 20; i += 5) {
-            ChunkVertex v = {glm::vec3(blockPos.x + faceVertices[i], blockPos.y + faceVertices[i + 1],
-                                       blockPos.z + faceVertices[i + 2]),
-                             glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
+            // x between [0, 16] == 5 bits, y between [0, 16] == 5 bits, z between [0, 255] == 8 bits
+            // pack x, y, z into uint32_t
+
+         //   return (x & 0x1F) | ((y & 0x1F) << 5) | ((z & 0xFF) << 10);
+            uint32_t packedPos = ((blockPos.x + faceVertices[i]) & 0x1F) |
+                (((blockPos.y + faceVertices[i+1]) & 0x1F) << 5) |
+                (((blockPos.z + faceVertices[i+2]) & 0xFF) << 10);
+            ChunkVertex2 v = {packedPos,glm::vec2(faceVertices[i + 3], faceVertices[i + 4]),
                              static_cast<float>(occlusionLevels[i / 5]), static_cast<float>(textureIndex)};
             vertices.push_back(v);
           }

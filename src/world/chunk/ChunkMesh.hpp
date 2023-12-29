@@ -29,7 +29,7 @@ class ChunkMesh {
   void clearData();
   void clearBuffers();
 
-  std::vector<ChunkVertex> vertices;
+  std::vector<ChunkVertex2> vertices;
   std::vector<unsigned int> indices;
   bool isBuffered = false;
   bool needsUpdate = false;

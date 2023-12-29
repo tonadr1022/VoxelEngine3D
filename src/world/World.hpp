@@ -43,7 +43,7 @@ class World {
   inline const glm::ivec3 &getLastRayCastBlockPos() const { return m_lastRayCastBlockPos; }
 
  private:
-  Block getBlockFromWorldPosition(glm::ivec3 position);
+  Block getBlockFromWorldPosition(glm::ivec3 position) const;
   void setRenderDistance(int renderDistance);
 
   static inline glm::ivec2 chunkPosFromWorldPos(int x, int y) {

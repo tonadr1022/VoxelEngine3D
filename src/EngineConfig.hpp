@@ -57,5 +57,11 @@ struct ChunkVertex {
 	float occlusionLevel;
 	float texIndex;
 };
+struct ChunkVertex2 {
+	uint32_t position;
+	glm::vec2 texCoords;
+	float occlusionLevel;
+	float texIndex;
+};
 
 #endif //VOXEL_ENGINE_ENGINECONFIG_HPP

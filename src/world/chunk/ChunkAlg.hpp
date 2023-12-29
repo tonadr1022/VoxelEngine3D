@@ -23,7 +23,7 @@ extern void constructMesh(const Chunk &chunk0,
                           const Chunk &chunk6,
                           const Chunk &chunk7,
                           const Chunk &chunk8,
-                          std::vector<ChunkVertex> &vertices,
+                          std::vector<ChunkVertex2> &vertices,
                           std::vector<unsigned int> &indices);
 
 extern OcclusionLevels getOcclusionLevels(glm::ivec3 &blockPosInChunk,

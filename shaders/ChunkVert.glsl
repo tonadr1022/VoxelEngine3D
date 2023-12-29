@@ -1,6 +1,6 @@
 #version 400 core
 
-layout (location = 0) in vec3 vertexPos;
+layout (location = 0) in uint pos;
 layout (location = 1) in vec2 texCoord;
 layout (location = 2) in float occlusionLevel;
 layout (location = 3) in float texIndex;
@@ -16,18 +16,24 @@ uniform mat4 u_Projection;
 uniform bool u_UseAmbientOcclusion;
 
 uniform vec3 normals[6] = vec3[6](
-vec3(1.0, 0.0, 0.0),  // Front
+vec3(1.0, 0.0, 0.0), // Front
 vec3(-1.0, 0.0, 0.0), // Back
 vec3(0.0, -1.0, 0.0), // Left
-vec3(0.0, 1.0, 0.0),  // Right
-vec3(0.0, 0.0, 1.0),  // Top
-vec3(0.0, 0.0, -1.0)  // Bottom
+vec3(0.0, 1.0, 0.0), // Right
+vec3(0.0, 0.0, 1.0), // Top
+vec3(0.0, 0.0, -1.0)// Bottom
 );
 
 const int atlasWidth = 16;
 const float textureWidth = 1.0 / float(atlasWidth);
 
 void main() {
+    uint posX = pos & uint(0x1F);
+    uint posY = (pos >> 5) & uint(0x1F);
+    uint posZ = (pos >> 10) & uint(0xFF);
+
+    vec3 vertexPos = vec3(posX, posY, posZ);
+
     int x = int(texCoord.x);
     int y = int(texCoord.y);
 

@@ -545,7 +545,7 @@ bool World::hasAllNeighborsInState(const glm::ivec2 &pos, ChunkState state) {
                      });
 }
 
-Block World::getBlockFromWorldPosition(glm::ivec3 position) {
+Block World::getBlockFromWorldPosition(glm::ivec3 position) const {
   auto chunkPos = chunkPosFromWorldPos(position.x, position.y);
   Chunk *chunk = getChunkRawPtr(chunkPos);
   int chunkX = Utils::positiveModulo(position.x, CHUNK_WIDTH);
@@ -638,7 +638,7 @@ void World::processDirectChunkUpdates() {
     const Chunk &chunk8 = *getChunkRawPtr({pos.x + 1, pos.y + 1});
 
     ChunkMeshBuilder mesh_builder(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8);
-    std::vector<ChunkVertex> opaqueVertices, transparentVertices;
+    std::vector<ChunkVertex2> opaqueVertices, transparentVertices;
     std::vector<unsigned int> opaqueIndices, transparentIndices;
     mesh_builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
     chunk4.m_opaqueMesh.vertices = std::move(opaqueVertices);
