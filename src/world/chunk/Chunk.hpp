@@ -148,8 +148,8 @@ class ChunkMeshInfo : public ChunkInfo {
   const Chunk &m_chunk7;
   const Chunk &m_chunk8;
 
-  std::vector<ChunkVertex2> m_opaqueVertices;
-  std::vector<ChunkVertex2> m_transparentVertices;
+  std::vector<uint32_t> m_opaqueVertices;
+  std::vector<uint32_t> m_transparentVertices;
   std::vector<unsigned int> m_opaqueIndices;
   std::vector<unsigned int> m_transparentIndices;
   glm::ivec2 m_pos;

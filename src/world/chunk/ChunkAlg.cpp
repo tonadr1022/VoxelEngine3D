@@ -228,7 +228,7 @@ void ChunkAlg::constructMesh(const Chunk &chunk0,
                              const Chunk &chunk6,
                              const Chunk &chunk7,
                              const Chunk &chunk8,
-                             std::vector<ChunkVertex2> &vertices,
+                             std::vector<uint32_t > &vertices,
                              std::vector<unsigned int> &indices) {
 //  vertices.clear();
 //  indices.clear();

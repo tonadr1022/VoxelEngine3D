@@ -10,6 +10,7 @@ out vec2 v_TexCoord;
 out float v_LightLevel;
 flat out uint v_TexIndex;
 
+uniform float u_Time;
 uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Projection;
@@ -26,15 +27,19 @@ vec3(0.0, 0.0, -1.0)// Bottom
 
 const int atlasWidth = 16;
 const float textureWidth = 1.0 / float(atlasWidth);
+const float waveAmplitude = 0.1;
+const float waveFrequency = 1.0;
+
+
+vec3 applyWave(vec3 vertexPos, uint texIndex) {
+    // use waveDist if texIndex is 127 (water index)
+    float waveDist = mix(0.0, waveAmplitude * sin(float(u_Time) * waveFrequency), (texIndex == 127));
+    vertexPos.z +=waveDist;
+    return vertexPos;
+}
+
 
 void main() {
-//    uint32_t packedPos = ((blockPos.x + faceVertices[i]) & 0x1F) |
-//    ((blockPos.y + faceVertices[i+1] & 0x1F) << 5) |
-//    ((blockPos.z + faceVertices[i+2] & 0xFF) << 10) |
-//    ((occlusionLevels[i / 5] & 0x3) << 18) |
-//    ((textureX & 0x1) << 20) |
-//    ((textureY & 0x1) << 21) |
-//    ((textureIndex & 0xFF) << 22);
     uint posX = bitfieldExtract(pos, 0, 5);
     uint posY = bitfieldExtract(pos, 5, 5);
     uint posZ = bitfieldExtract(pos, 10, 8);
@@ -44,9 +49,7 @@ void main() {
     uint texIndex = bitfieldExtract(pos, 22, 8);
 
     vec3 vertexPos = vec3(posX, posY, posZ);
-
-//    int x = int(texCoord.x);
-//    int y = int(texCoord.y);
+    vertexPos = applyWave(vertexPos, texIndex);
 
     int textureYIndex = int(texIndex) % 16;
     int textureXIndex = int(texIndex) / 16;
@@ -55,6 +58,8 @@ void main() {
     float v = (textureYIndex + y) * textureWidth;
 
     v_FragPos = vec3(u_Model * vec4(vertexPos, 1.0));
+
+
     gl_Position = u_Projection * u_View * u_Model * vec4(vertexPos, 1.0);
     v_TexCoord = vec2(x, y);
     v_TexIndex = int(texIndex);

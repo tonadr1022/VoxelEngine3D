@@ -57,8 +57,4 @@ struct ChunkVertex {
 	float occlusionLevel;
 	float texIndex;
 };
-struct ChunkVertex2 {
-  unsigned int vertexData;
-};
-
 #endif //VOXEL_ENGINE_ENGINECONFIG_HPP

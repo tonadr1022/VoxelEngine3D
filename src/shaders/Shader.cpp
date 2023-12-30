@@ -36,18 +36,17 @@ GLint Shader::makeModule(const std::string &filepath, GLint module_type) {
     char infoLog[512];
     glGetShaderInfoLog(shaderModule, 512, nullptr, infoLog);
     std::cout << "ERROR::SHADER::"
-              << (module_type == GL_VERTEX_SHADER ?
-                  "VERTEX" : module_type == GL_FRAGMENT_SHADER ?
-                             "FRAGMENT" : "GEOMETRY")
-              << "::COMPILATION_FAILED\n" << infoLog << std::endl;
+              << (module_type == GL_VERTEX_SHADER     ? "VERTEX"
+                  : module_type == GL_FRAGMENT_SHADER ? "FRAGMENT"
+                                                      : "GEOMETRY")
+              << "::COMPILATION_FAILED\n"
+              << infoLog << std::endl;
     return -1;
   }
   return shaderModule;
-
 }
 
-Shader::Shader(const std::string &vertexPath,
-               const std::string &fragmentPath,
+Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath,
                const std::string &geometryPath) {
   std::vector<GLint> shaderModules;
 
@@ -74,8 +73,7 @@ Shader::Shader(const std::string &vertexPath,
   if (!success) {
     char errorLog[512];
     glGetProgramInfoLog(shaderProgram, 512, nullptr, errorLog);
-    std::cout << "Shader Program linking error:\n"
-              << errorLog << std::endl;
+    std::cout << "Shader Program linking error:\n" << errorLog << std::endl;
   }
 
   for (GLint shaderModule : shaderModules) {
@@ -83,17 +81,13 @@ Shader::Shader(const std::string &vertexPath,
   }
 }
 
-void Shader::use() const {
-  glUseProgram(shaderProgram);
-}
+void Shader::use() const { glUseProgram(shaderProgram); }
 
-void Shader::unbind() const {
-  glDeleteProgram(shaderProgram);
-}
+void Shader::unbind() const { glDeleteProgram(shaderProgram); }
 
 void Shader::setBool(const std::string &name, bool value) const {
   GLint location = getUniformLocation(name);
-  glUniform1i(location, (int) value);
+  glUniform1i(location, (int)value);
 }
 
 void Shader::setInt(const std::string &name, int value) const {

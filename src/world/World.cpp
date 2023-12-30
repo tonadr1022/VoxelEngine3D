@@ -71,7 +71,7 @@ void World::update() {
   castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
 
   static int i = 0;
-  if (i % 20 == 0) {
+  if (i % 4 == 0) {
     sortTransparentRenderVector();
     i = 0;
   }
@@ -302,68 +302,6 @@ void World::unloadChunks() {
   }
 }
 
-void World::generateTerrainWorker() {
-  glm::ivec2 pos;
-  while (m_isRunning) {
-    std::unique_lock<std::mutex> lock(m_mainMutex);
-    m_conditionVariable.wait(lock, [this]() {
-      return !m_isRunning ||
-          (m_numRunningThreads < m_numLoadingThreads
-              && !m_chunksToLoadVector.empty());
-    });
-    if (!m_isRunning) return;
-
-    pos = m_chunksToLoadVector.back();
-    m_chunksToLoadVector.pop_back();
-    lock.unlock();
-    m_numRunningThreads++;
-    Scope<std::array<int, CHUNK_AREA>> heights = m_chunkTerrainLoadInfoMap.at(pos)->process();
-    std::lock_guard<std::mutex> lock2(m_mainMutex);
-    m_heightMapsMap.emplace(pos, std::move(heights));
-    m_numRunningThreads--;
-  }
-}
-
-void World::generateStructuresWorker() {
-  glm::ivec2 pos;
-  while (m_isRunning) {
-    std::unique_lock<std::mutex> lock(m_mainMutex);
-    m_conditionVariable.wait(lock, [this]() {
-      return !m_isRunning ||
-          (m_numRunningThreads < m_numLoadingThreads
-              && !m_chunksReadyToGenStructuresList.empty());
-    });
-    if (!m_isRunning) return;
-    pos = m_chunksReadyToGenStructuresList.back();
-    m_chunksReadyToGenStructuresList.pop_back();
-    const std::array<int, CHUNK_AREA> &heightMap = *m_heightMapsMap.at(pos).get();
-    lock.unlock();
-    m_numRunningThreads++;
-    m_chunkStructureGenInfoMap.at(pos)->process(heightMap);
-    m_numRunningThreads--;
-  }
-}
-
-void World::generateChunkMeshWorker() {
-  glm::ivec2 pos;
-  while (m_isRunning) {
-    std::unique_lock<std::mutex> lock(m_mainMutex);
-    m_conditionVariable.wait(lock, [this]() {
-      return !m_isRunning ||
-          (m_numRunningThreads < m_numLoadingThreads &&
-              !m_chunksReadyToMeshList.empty());
-    });
-    if (!m_isRunning) return;
-
-    pos = m_chunksReadyToMeshList.back();
-    m_chunksReadyToMeshList.pop_back();
-
-    lock.unlock();
-    m_numRunningThreads++;
-    m_chunkMeshInfoMap.at(pos)->process();
-    m_numRunningThreads--;
-  }
-}
 
 void World::generateChunksWorker() {
   glm::ivec2 pos;
@@ -638,7 +576,7 @@ void World::processDirectChunkUpdates() {
     const Chunk &chunk8 = *getChunkRawPtr({pos.x + 1, pos.y + 1});
 
     ChunkMeshBuilder mesh_builder(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8);
-    std::vector<ChunkVertex2> opaqueVertices, transparentVertices;
+    std::vector<uint32_t > opaqueVertices, transparentVertices;
     std::vector<unsigned int> opaqueIndices, transparentIndices;
     mesh_builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
     chunk4.m_opaqueMesh.vertices = std::move(opaqueVertices);

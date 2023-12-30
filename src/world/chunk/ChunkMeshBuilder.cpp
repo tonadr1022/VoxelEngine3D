@@ -217,9 +217,9 @@ ChunkMeshBuilder::ChunkMeshBuilder(const Chunk &chunk0, const Chunk &chunk1, con
  *    \  2  5  8
  *     y
  */
-void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex2> &opaqueVertices,
+void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
                                      std::vector<unsigned int> &opaqueIndices,
-                                     std::vector<ChunkVertex2> &transparentVertices,
+                                     std::vector<uint32_t> &transparentVertices,
                                      std::vector<unsigned int> &transparentIndices) {
   if (m_chunk0.chunkState != ChunkState::FULLY_GENERATED ||
       m_chunk1.chunkState != ChunkState::FULLY_GENERATED || m_chunk2.chunkState != ChunkState::FULLY_GENERATED
@@ -228,6 +228,11 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex2> &opaqueVertices,
       || m_chunk7.chunkState != ChunkState::FULLY_GENERATED || m_chunk8.chunkState != ChunkState::FULLY_GENERATED) {
     return;
   }
+
+  opaqueVertices.reserve(5000);
+  opaqueIndices.reserve(5000);
+  transparentVertices.reserve(5000);
+  transparentIndices.reserve(5000);
 
   int x, y, z, faceIndex, textureX, textureY;
   std::array<int, 20> faceVertices{};
@@ -298,39 +303,40 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex2> &opaqueVertices,
             // textureIndex [0, 255] == 8 bits. total 30 bits
             // pack x, y, z, occlusion level, textureX, textureY, textureIndex into 32 bits
             uint32_t vertexData = ((blockPos.x + faceVertices[i]) & 0x1F) |
-                ((blockPos.y + faceVertices[i+1] & 0x1F) << 5) |
-                ((blockPos.z + faceVertices[i+2] & 0xFF) << 10) |
+                ((blockPos.y + faceVertices[i + 1] & 0x1F) << 5) |
+                ((blockPos.z + faceVertices[i + 2] & 0xFF) << 10) |
                 ((occlusionLevels[i / 5] & 0x3) << 18) |
-                ((faceVertices[i+3] & 0x1) << 20) |
-                ((faceVertices[i+4] & 0x1) << 21) |
+                ((faceVertices[i + 3] & 0x1) << 20) |
+                ((faceVertices[i + 4] & 0x1) << 21) |
                 ((textureIndex & 0xFF) << 22);
-            ChunkVertex2 v = {vertexData};
-            vertices.push_back(v);
+            vertices.emplace_back(vertexData);
           }
 
           // check whether to flip quad based on AO
           if (occlusionLevels[0] + occlusionLevels[3] >
               occlusionLevels[1] + occlusionLevels[2]) {
-            indices.push_back(baseVertexIndex + 2);
-            indices.push_back(baseVertexIndex + 0);
-            indices.push_back(baseVertexIndex + 3);
-            indices.push_back(baseVertexIndex + 3);
-            indices.push_back(baseVertexIndex + 0);
-            indices.push_back(baseVertexIndex + 1);
+            indices.emplace_back(baseVertexIndex + 2);
+            indices.emplace_back(baseVertexIndex + 0);
+            indices.emplace_back(baseVertexIndex + 3);
+            indices.emplace_back(baseVertexIndex + 3);
+            indices.emplace_back(baseVertexIndex + 0);
+            indices.emplace_back(baseVertexIndex + 1);
           } else {
-            indices.push_back(baseVertexIndex);
-            indices.push_back(baseVertexIndex + 1);
-            indices.push_back(baseVertexIndex + 2);
-            indices.push_back(baseVertexIndex + 2);
-            indices.push_back(baseVertexIndex + 1);
-            indices.push_back(baseVertexIndex + 3);
-          }
-
-
+            indices.emplace_back(baseVertexIndex);
+            indices.emplace_back(baseVertexIndex + 1);
+            indices.emplace_back(baseVertexIndex + 2);
+            indices.emplace_back(baseVertexIndex + 2);
+            indices.emplace_back(baseVertexIndex + 1);
+            indices.emplace_back(baseVertexIndex + 3);
           }
         }
       }
     }
+  }
+  opaqueVertices.shrink_to_fit();
+  transparentVertices.shrink_to_fit();
+  opaqueIndices.shrink_to_fit();
+  transparentIndices.shrink_to_fit();
 }
 
 OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(const glm::ivec3 &blockPosInChunk,

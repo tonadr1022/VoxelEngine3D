@@ -45,7 +45,7 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
 
   glGenBuffers(1, &mesh.VBO);
   glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
-  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(ChunkVertex2),
+  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(uint32_t),
                &mesh.vertices[0], GL_STATIC_DRAW);
 
   glGenBuffers(1, &mesh.EBO);
@@ -55,8 +55,7 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
                GL_STATIC_DRAW);
 
   // vertex data only attribute, must be IPointer
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex2),
-                        reinterpret_cast<void *>(offsetof(ChunkVertex2, vertexData)));
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(uint32_t), (void *) nullptr);
   glEnableVertexAttribArray(0);
 
   glBindVertexArray(0);
@@ -72,6 +71,7 @@ void ChunkRenderer::start(const Camera &camera) {
 
 void ChunkRenderer::updateShaderUniforms(const Camera &camera) {
   shader->use();
+  shader->setFloat("u_Time", static_cast<float>(glfwGetTime()));
   shader->setBool("u_UseAmbientOcclusion", Config::getUseAmbientOcclusion());
   shader->setInt("u_Texture", 0);
   shader->setMat4("u_Projection", camera.getProjectionMatrix());
@@ -88,7 +88,7 @@ void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
   GLuint nVBO;
   glGenBuffers(1, &nVBO);
   glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
-  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(ChunkVertex2),
+  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(uint32_t),
                &mesh.vertices[0], GL_STATIC_DRAW);
 
   GLuint nEBO;
@@ -102,8 +102,7 @@ void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
   mesh.EBO = nEBO;
 
   // vertex data only attribute, must be IPointer
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex2),
-                         reinterpret_cast<void *>(offsetof(ChunkVertex2, vertexData)));
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(uint32_t), (void *) nullptr);
   glEnableVertexAttribArray(0);
 
   glBindVertexArray(0);
