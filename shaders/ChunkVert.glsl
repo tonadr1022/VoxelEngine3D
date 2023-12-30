@@ -10,6 +10,7 @@ out vec2 v_TexCoord;
 out float v_LightLevel;
 flat out uint v_TexIndex;
 
+uniform ivec2 u_ChunkWorldPos;
 uniform float u_Time;
 uniform mat4 u_Model;
 uniform mat4 u_View;
@@ -27,14 +28,32 @@ vec3(0.0, 0.0, -1.0)// Bottom
 
 const int atlasWidth = 16;
 const float textureWidth = 1.0 / float(atlasWidth);
+
+
 const float waveAmplitude = 0.1;
 const float waveFrequency = 1.0;
+const float dist = 1.0;
+const float PI = 3.14285714286;
 
-
+// only applies for texIndex 127 (water)
 vec3 applyWave(vec3 vertexPos, uint texIndex) {
-    // use waveDist if texIndex is 127 (water index)
-    float waveDist = mix(0.0, waveAmplitude * sin(float(u_Time) * waveFrequency), (texIndex == 127));
-    vertexPos.z +=waveDist;
+    vec2 origin1 = vertexPos.xy + vec2(dist, dist) + vec2(u_ChunkWorldPos.x, u_ChunkWorldPos.y);
+    vec2 origin2 = vertexPos.xy + vec2(dist, -dist) + vec2(u_ChunkWorldPos.x, u_ChunkWorldPos.y);
+    vec2 origin3 = vertexPos.xy + vec2(-dist, dist) + vec2(u_ChunkWorldPos.x, u_ChunkWorldPos.y);
+    vec2 origin4 = vertexPos.xy + vec2(-dist, -dist) + vec2(u_ChunkWorldPos.x, u_ChunkWorldPos.y);
+
+    float distance1 = length(origin1);
+    float distance2 = length(origin2);
+    float distance3 = length(origin3);
+    float distance4 = length(origin4);
+
+
+    float wave = sin(3.3 * PI * distance1 * 0.13 + u_Time) * 0.125 +
+    sin(3.2 * PI * distance2 * 0.12 + u_Time) * 0.125 +
+    sin(3.1 * PI * distance3 * 0.24 + u_Time) * 0.125 +
+    sin(3.5 * PI * distance4 * 0.32 + u_Time) * 0.125;
+    float waveDist = mix(0.0, wave, (texIndex == 127));
+    vertexPos.z += waveDist;
     return vertexPos;
 }
 
@@ -69,9 +88,4 @@ void main() {
 
     float occlusion = 0.2 * occlusionLevel * occlusionFactor;
     v_LightLevel = baseLightLevel + occlusion;
-
-    //    float occlusionFactor = 1.0 - step(1, float(u_UseAmbientOcclusion));
-    //    float baseLightLevel = 1.0 - step(0.8, float(u_UseAmbientOcclusion));
-    //    float occlusion = 0.2 * occlusionLevel * occlusionFactor;
-    //    v_LightLevel = baseLightLevel + occlusion;
 }

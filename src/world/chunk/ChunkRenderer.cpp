@@ -18,6 +18,7 @@ ChunkRenderer::~ChunkRenderer() = default;
 void ChunkRenderer::render(ChunkMesh &mesh, const glm::ivec2 &worldPos) {
   glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(worldPos, 0.0f));
   shader->setMat4("u_Model", model);
+  shader->setIVec2("u_ChunkWorldPos", worldPos);
   if (mesh.needsUpdate) {
     updateGPUResources(mesh);
     mesh.needsUpdate = false;
