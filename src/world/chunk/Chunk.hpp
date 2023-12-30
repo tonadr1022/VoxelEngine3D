@@ -10,6 +10,7 @@
 #include "../../AppConstants.hpp"
 #include "../../EngineConfig.hpp"
 #include "../generation/TerrainGenerator.hpp"
+#include "../../renderer/ViewFrustum.hpp"
 
 enum class ChunkMeshState {
   BUILT = 0,
@@ -80,6 +81,8 @@ class Chunk {
    */
   ChunkMesh m_opaqueMesh;
   ChunkMesh m_transparentMesh;
+
+  AABB m_boundingBox;
 };
 
 class ChunkInfo {

@@ -5,9 +5,13 @@
 #include "Chunk.hpp"
 #include "ChunkMeshBuilder.hpp"
 
-Chunk::Chunk(glm::ivec2 pos) : m_pos(pos), m_worldPos(pos * CHUNK_WIDTH),
-                               chunkMeshState(ChunkMeshState::UNBUILT), chunkState(ChunkState::UNGENERATED) {
-}
+Chunk::Chunk(glm::ivec2 pos)
+    : m_pos(pos),
+      m_worldPos(pos * CHUNK_WIDTH),
+      chunkMeshState(ChunkMeshState::UNBUILT),
+      chunkState(ChunkState::UNGENERATED),
+      m_boundingBox({glm::vec3(m_worldPos.x, m_worldPos.y, 0),
+                     glm::vec3(m_worldPos.x + CHUNK_WIDTH, m_worldPos.y + CHUNK_WIDTH, CHUNK_HEIGHT)}) {}
 
 Chunk::~Chunk() {
   m_transparentMesh.clearBuffers();
@@ -15,8 +19,6 @@ Chunk::~Chunk() {
   m_opaqueMesh.clearBuffers();
   m_opaqueMesh.clearData();
 }
-
-
 
 void Chunk::markDirty() {
   chunkMeshState = ChunkMeshState::UNBUILT;
@@ -60,7 +62,6 @@ Scope<std::array<int, CHUNK_AREA>> ChunkLoadInfo::process() {
       } else {
         m_blocks[XYZ(x, y, maxBlockHeight)] = Block::GRASS;
       }
-
 
       for (z = maxBlockHeight + 1; z <= 64; z++) {
         m_blocks[XYZ(x, y, z)] = Block::WATER;

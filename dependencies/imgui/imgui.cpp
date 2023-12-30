@@ -8080,7 +8080,7 @@ ImGuiKeyData* ImGui::GetKeyData(ImGuiContext* ctx, ImGuiKey key)
     if (IsLegacyKey(key) && g.IO.KeyMap[key] != -1)
         key = (ImGuiKey)g.IO.KeyMap[key];  // Remap native->imgui or imgui->native
 #else
-    IM_ASSERT(IsNamedKey(key) && "Support for user key indices was dropped in favor of ImGuiKey. Please update backend & user code.");
+    IM_ASSERT(IsNamedKey(key) && "Support for user key indices was dropped in favor of ImGuiKey. Please updatePlanes backend & user code.");
 #endif
     return &g.IO.KeysData[key - ImGuiKey_KeysData_OFFSET];
 }
@@ -8126,7 +8126,7 @@ const char* ImGui::GetKeyName(ImGuiKey key)
 {
     ImGuiContext& g = *GImGui;
 #ifdef IMGUI_DISABLE_OBSOLETE_KEYIO
-    IM_ASSERT((IsNamedKeyOrModKey(key) || key == ImGuiKey_None) && "Support for user key indices was dropped in favor of ImGuiKey. Please update backend and user code.");
+    IM_ASSERT((IsNamedKeyOrModKey(key) || key == ImGuiKey_None) && "Support for user key indices was dropped in favor of ImGuiKey. Please updatePlanes backend and user code.");
 #else
     if (IsLegacyKey(key))
     {

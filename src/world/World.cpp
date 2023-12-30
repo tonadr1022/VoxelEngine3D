@@ -41,7 +41,7 @@ World::~World() {
 }
 
 void World::update() {
-  Timer t("update");
+  Timer t("updatePlanes");
 
   m_xyChanged = false;
 

@@ -24,12 +24,15 @@ void Renderer::renderCrossHair() const {
 }
 
 void Renderer::renderWorld(const World &world) {
+  m_viewFrustum.updatePlanes(world.player.camera.getProjectionMatrix(), world.player.camera.getViewMatrix());
+
   m_chunkRenderer.start(world.player.camera);
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   for (auto &pos : world.getOpaqueRenderSet()) {
     Chunk *chunk = world.getChunkRawPtr(pos);
     if (!chunk) continue;
+    if (!m_viewFrustum.isBoxInFrustum(chunk->m_boundingBox)) continue;
     m_chunkRenderer.render(chunk->m_opaqueMesh, chunk->m_worldPos);
   }
 
@@ -38,6 +41,7 @@ void Renderer::renderWorld(const World &world) {
   for (auto &pos : world.getTransparentRenderVector()) {
     Chunk *chunk = world.getChunkRawPtr(pos);
     if (!chunk) continue;
+    if (!m_viewFrustum.isBoxInFrustum(chunk->m_boundingBox)) continue;
     m_chunkRenderer.render(chunk->m_transparentMesh, chunk->m_worldPos);
   }
 

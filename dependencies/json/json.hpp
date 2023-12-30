@@ -22706,14 +22706,14 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     }
 
     /// @brief updates a JSON object from another object, overwriting existing keys
-    /// @sa https://json.nlohmann.me/api/basic_json/update/
+    /// @sa https://json.nlohmann.me/api/basic_json/updatePlanes/
     void update(const_reference j, bool merge_objects = false)
     {
         update(j.begin(), j.end(), merge_objects);
     }
 
     /// @brief updates a JSON object from another object, overwriting existing keys
-    /// @sa https://json.nlohmann.me/api/basic_json/update/
+    /// @sa https://json.nlohmann.me/api/basic_json/updatePlanes/
     void update(const_iterator first, const_iterator last, bool merge_objects = false)
     {
         // implicitly convert null value to an empty object
@@ -22726,7 +22726,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
         if (JSON_HEDLEY_UNLIKELY(!is_object()))
         {
-            JSON_THROW(type_error::create(312, detail::concat("cannot use update() with ", type_name()), this));
+            JSON_THROW(type_error::create(312, detail::concat("cannot use updatePlanes() with ", type_name()), this));
         }
 
         // check if range iterators belong to the same JSON object
@@ -22738,7 +22738,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         // passed iterators must belong to objects
         if (JSON_HEDLEY_UNLIKELY(!first.m_object->is_object()))
         {
-            JSON_THROW(type_error::create(312, detail::concat("cannot use update() with ", first.m_object->type_name()), first.m_object));
+            JSON_THROW(type_error::create(312, detail::concat("cannot use updatePlanes() with ", first.m_object->type_name()), first.m_object));
         }
 
         for (auto it = first; it != last; ++it)
