@@ -15,10 +15,14 @@ ChunkRenderer::ChunkRenderer() {
 
 ChunkRenderer::~ChunkRenderer() = default;
 
-void ChunkRenderer::render(ChunkMesh &mesh, const glm::ivec2 &worldPos) {
+void ChunkRenderer::render(ChunkMesh &mesh, const glm::ivec2 &worldPos, float firstBufferTime) {
   glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(worldPos, 0.0f));
   shader->setMat4("u_Model", model);
   shader->setIVec2("u_ChunkWorldPos", worldPos);
+  shader->setFloat("u_FirstBufferTime", firstBufferTime);
+  shader->setFloat("u_Time", static_cast<float>(glfwGetTime()));
+//  std::cout << "first buffer time: " << firstBufferTime << ", time: " << static_cast<float>(glfwGetTime()) << ", diff: " <<
+//  static_cast<float>(glfwGetTime()) - firstBufferTime << std::endl;
   if (mesh.needsUpdate) {
     updateGPUResources(mesh);
     mesh.needsUpdate = false;
@@ -72,7 +76,6 @@ void ChunkRenderer::start(const Camera &camera) {
 
 void ChunkRenderer::updateShaderUniforms(const Camera &camera) {
   shader->use();
-  shader->setFloat("u_Time", static_cast<float>(glfwGetTime()));
   shader->setBool("u_UseAmbientOcclusion", Config::getUseAmbientOcclusion());
   shader->setInt("u_Texture", 0);
   shader->setMat4("u_Projection", camera.getProjectionMatrix());

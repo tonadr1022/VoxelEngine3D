@@ -18,7 +18,7 @@ class ChunkRenderer {
 
   static void createGPUResources(ChunkMesh &mesh);
   static void updateGPUResources(ChunkMesh &mesh);
-  void render(ChunkMesh &mesh, const glm::ivec2 &worldPos);
+  void render(ChunkMesh &mesh, const glm::ivec2 &worldPos, float firstBufferTime);
   void start(const Camera &camera);
   void updateShaderUniforms(const Camera &camera);
 

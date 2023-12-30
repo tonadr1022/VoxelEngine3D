@@ -37,6 +37,10 @@ class World {
   Player player;
 
   inline Chunk *getChunkRawPtr(const glm::ivec2 &pos) const {
+    return m_chunkMap.at(pos).get();
+  }
+
+  inline Chunk *getChunkRawPtrOrNull(const glm::ivec2 &pos) const {
     if (!chunkExists(pos)) return nullptr;
     return m_chunkMap.at(pos).get();
   }
@@ -82,13 +86,15 @@ class World {
   void generateChunksWorker();
   void meshUpdateWorker();
 
+  float m_frameTime = 0;
   int m_renderDistance = 16;
   int m_loadDistance = m_renderDistance + 2;
   int m_structureLoadDistance = m_renderDistance + 1;
-  int m_unloadDistance = m_renderDistance + 4;
+  int m_unloadDistance = m_renderDistance + 6;
 
   glm::ivec2 m_center;
   bool m_xyChanged = false;
+  bool m_renderDistanceChanged = false;
   int m_seed;
   glm::ivec3 m_lastRayCastBlockPos = NULL_VECTOR;
   glm::ivec3 m_prevLastRayCastBlockPos = NULL_VECTOR;

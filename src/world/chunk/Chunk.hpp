@@ -75,6 +75,7 @@ class Chunk {
   Block m_blocks[CHUNK_VOLUME]{};
   glm::ivec2 m_pos;
   glm::ivec2 m_worldPos;
+  float m_firstBufferTime = 0;
 
   /**
    * @brief index 0 is opaque, 1 is transparent, 2 is other (floral etc)

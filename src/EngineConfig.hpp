@@ -51,10 +51,4 @@ using Ref = std::shared_ptr<T>;
 template<typename T>
 using Scope = std::unique_ptr<T>;
 
-struct ChunkVertex {
-	glm::vec3 position;
-	glm::vec2 texCoords;
-	float occlusionLevel;
-	float texIndex;
-};
 #endif //VOXEL_ENGINE_ENGINECONFIG_HPP

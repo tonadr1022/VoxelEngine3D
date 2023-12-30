@@ -3,8 +3,6 @@
 //
 
 #include "Renderer.hpp"
-#include "../shaders/ShaderManager.hpp"
-#include "../resources/ResourceManager.hpp"
 #include "../world/World.hpp"
 
 Renderer::Renderer() = default;
@@ -25,24 +23,23 @@ void Renderer::renderCrossHair() const {
 
 void Renderer::renderWorld(const World &world) {
   m_viewFrustum.updatePlanes(world.player.camera.getProjectionMatrix(), world.player.camera.getViewMatrix());
-
   m_chunkRenderer.start(world.player.camera);
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   for (auto &pos : world.getOpaqueRenderSet()) {
-    Chunk *chunk = world.getChunkRawPtr(pos);
+    Chunk *chunk = world.getChunkRawPtrOrNull(pos);
     if (!chunk) continue;
     if (!m_viewFrustum.isBoxInFrustum(chunk->m_boundingBox)) continue;
-    m_chunkRenderer.render(chunk->m_opaqueMesh, chunk->m_worldPos);
+    if (chunk->m_firstBufferTime == 0) chunk->m_firstBufferTime = static_cast<float>(glfwGetTime());
+    m_chunkRenderer.render(chunk->m_opaqueMesh, chunk->m_worldPos, chunk->m_firstBufferTime);
   }
-
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   for (auto &pos : world.getTransparentRenderVector()) {
-    Chunk *chunk = world.getChunkRawPtr(pos);
+    Chunk *chunk = world.getChunkRawPtrOrNull(pos);
     if (!chunk) continue;
     if (!m_viewFrustum.isBoxInFrustum(chunk->m_boundingBox)) continue;
-    m_chunkRenderer.render(chunk->m_transparentMesh, chunk->m_worldPos);
+    m_chunkRenderer.render(chunk->m_transparentMesh, chunk->m_worldPos, chunk->m_firstBufferTime);
   }
 
   // render block break and outline if a block is being aimed at
