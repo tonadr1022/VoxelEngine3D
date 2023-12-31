@@ -116,8 +116,7 @@ class ChunkTerrainInfo : public ChunkInfo {
 
 class ChunkStructuresInfo : public ChunkInfo {
  public:
-  explicit ChunkStructuresInfo(Chunk &chunk0, Chunk &chunk1, Chunk &chunk2, Chunk &chunk3, Chunk &chunk4,
-                               Chunk &chunk5, Chunk &chunk6, Chunk &chunk7, Chunk &chunk8, int seed);
+  explicit ChunkStructuresInfo(Chunk *chunks[9], int seed);
 
   void generateStructureData();
 
@@ -128,28 +127,17 @@ class ChunkStructuresInfo : public ChunkInfo {
 
 class ChunkMeshInfo : public ChunkInfo {
  public:
-  explicit ChunkMeshInfo(const Chunk &chunk0, const Chunk &chunk1, const Chunk &chunk2, const Chunk &chunk3,
-                         const Chunk &chunk4, const Chunk &chunk5, const Chunk &chunk6, const Chunk &chunk7,
-                         const Chunk &chunk8);
+  explicit ChunkMeshInfo(Chunk *chunks[9]);
   void process();
   void applyMeshDataToMesh(Chunk *chunk);
 
  private:
-  const Chunk &m_chunk0;
-  const Chunk &m_chunk1;
-  const Chunk &m_chunk2;
-  const Chunk &m_chunk3;
-  const Chunk &m_chunk4;
-  const Chunk &m_chunk5;
-  const Chunk &m_chunk6;
-  const Chunk &m_chunk7;
-  const Chunk &m_chunk8;
-
+  Chunk *m_chunks[9]{};
   std::vector<uint32_t> m_opaqueVertices;
   std::vector<uint32_t> m_transparentVertices;
   std::vector<unsigned int> m_opaqueIndices;
   std::vector<unsigned int> m_transparentIndices;
-  glm::ivec2 m_pos;
+  glm::ivec2 m_pos{};
 };
 
 #endif //VOXEL_ENGINE_CHUNK_HPP

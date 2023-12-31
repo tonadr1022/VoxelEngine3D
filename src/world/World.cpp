@@ -157,18 +157,13 @@ void World::updateChunkStructureGenList() {
  *    \  2  5  8
  *     y
  */
-      Chunk &chunk0 = *getChunkRawPtr({posIt->x - 1, posIt->y - 1});
-      Chunk &chunk1 = *getChunkRawPtr({posIt->x - 1, posIt->y});
-      Chunk &chunk2 = *getChunkRawPtr({posIt->x - 1, posIt->y + 1});
-      Chunk &chunk3 = *getChunkRawPtr({posIt->x, posIt->y - 1});
-      Chunk &chunk4 = *getChunkRawPtr({posIt->x, posIt->y});
-      Chunk &chunk5 = *getChunkRawPtr({posIt->x, posIt->y + 1});
-      Chunk &chunk6 = *getChunkRawPtr({posIt->x + 1, posIt->y - 1});
-      Chunk &chunk7 = *getChunkRawPtr({posIt->x + 1, posIt->y});
-      Chunk &chunk8 = *getChunkRawPtr({posIt->x + 1, posIt->y + 1});
+      Chunk *chunks[9] = {nullptr};
+      int index = 0;
+      for (auto &pos2 : NEIGHBOR_ARRAY_OFFSETS) {
+        chunks[index++] = getChunkRawPtr(*posIt + pos2);
+      }
 
-      m_chunkStructuresInfoMap.emplace(*posIt, std::make_unique<
-          ChunkStructuresInfo>(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8, m_seed));
+      m_chunkStructuresInfoMap.emplace(*posIt, std::make_unique<ChunkStructuresInfo>(chunks, m_seed));
 
       auto insertPos = std::lower_bound(
           m_chunksReadyToGenStructuresList.begin(), m_chunksReadyToGenStructuresList.end(), *posIt, rcmpVec2);
@@ -237,18 +232,13 @@ void World::updateChunkMeshList() {
  *    \  2  5  8
  *     y
  */
-      const Chunk &chunk0 = *getChunkRawPtr({posIt->x - 1, posIt->y - 1});
-      const Chunk &chunk1 = *getChunkRawPtr({posIt->x - 1, posIt->y});
-      const Chunk &chunk2 = *getChunkRawPtr({posIt->x - 1, posIt->y + 1});
-      const Chunk &chunk3 = *getChunkRawPtr({posIt->x, posIt->y - 1});
-      const Chunk &chunk4 = *getChunkRawPtr({posIt->x, posIt->y});
-      const Chunk &chunk5 = *getChunkRawPtr({posIt->x, posIt->y + 1});
-      const Chunk &chunk6 = *getChunkRawPtr({posIt->x + 1, posIt->y - 1});
-      const Chunk &chunk7 = *getChunkRawPtr({posIt->x + 1, posIt->y});
-      const Chunk &chunk8 = *getChunkRawPtr({posIt->x + 1, posIt->y + 1});
+      Chunk *chunks[9] = {nullptr};
+      int index = 0;
+      for (auto &pos2 : NEIGHBOR_ARRAY_OFFSETS) {
+        chunks[index++] = getChunkRawPtr(*posIt + pos2);
+      }
 
-      m_chunkMeshInfoMap.emplace(*posIt, std::make_unique<ChunkMeshInfo>(chunk0, chunk1, chunk2, chunk3,
-                                                                         chunk4, chunk5, chunk6, chunk7, chunk8));
+      m_chunkMeshInfoMap.emplace(*posIt, std::make_unique<ChunkMeshInfo>(chunks));
 
 //      auto insertPos =
 //          std::lower_bound(m_chunksReadyToMeshList.begin(), m_chunksReadyToMeshList.end(), *posIt, rcmpVec2);
@@ -612,26 +602,21 @@ void World::processDirectChunkUpdates() {
 
     if (!chunkExists(pos) || m_chunkMap.at(pos)->chunkMeshState != ChunkMeshState::BUILT) continue;
 
-    const Chunk &chunk0 = *getChunkRawPtr({pos.x - 1, pos.y - 1});
-    const Chunk &chunk1 = *getChunkRawPtr({pos.x - 1, pos.y});
-    const Chunk &chunk2 = *getChunkRawPtr({pos.x - 1, pos.y + 1});
-    const Chunk &chunk3 = *getChunkRawPtr({pos.x, pos.y - 1});
-    Chunk &chunk4 = *getChunkRawPtr({pos.x, pos.y}); // not const since this chunk is re-meshing
-    const Chunk &chunk5 = *getChunkRawPtr({pos.x, pos.y + 1});
-    const Chunk &chunk6 = *getChunkRawPtr({pos.x + 1, pos.y - 1});
-    const Chunk &chunk7 = *getChunkRawPtr({pos.x + 1, pos.y});
-    const Chunk &chunk8 = *getChunkRawPtr({pos.x + 1, pos.y + 1});
-
-    ChunkMeshBuilder mesh_builder(chunk0, chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8);
+    Chunk *chunks[9] = {nullptr};
+    int index = 0;
+    for (auto &pos2 : NEIGHBOR_ARRAY_OFFSETS) {
+      chunks[index++] = getChunkRawPtr(pos + pos2);
+    }
+    ChunkMeshBuilder mesh_builder(chunks);
     std::vector<uint32_t> opaqueVertices, transparentVertices;
     std::vector<unsigned int> opaqueIndices, transparentIndices;
     mesh_builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
-    chunk4.m_opaqueMesh.vertices = std::move(opaqueVertices);
-    chunk4.m_opaqueMesh.indices = std::move(opaqueIndices);
-    chunk4.m_transparentMesh.vertices = std::move(transparentVertices);
-    chunk4.m_transparentMesh.indices = std::move(transparentIndices);
-    chunk4.m_opaqueMesh.needsUpdate = true;
-    chunk4.m_transparentMesh.needsUpdate = true;
+    chunks[4]->m_opaqueMesh.vertices = std::move(opaqueVertices);
+    chunks[4]->m_opaqueMesh.indices = std::move(opaqueIndices);
+    chunks[4]->m_transparentMesh.vertices = std::move(transparentVertices);
+    chunks[4]->m_transparentMesh.indices = std::move(transparentIndices);
+    chunks[4]->m_opaqueMesh.needsUpdate = true;
+    chunks[4]->m_transparentMesh.needsUpdate = true;
   }
   m_chunkDirectlyUpdateSet.clear();
 }

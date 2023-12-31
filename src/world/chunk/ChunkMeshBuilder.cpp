@@ -145,64 +145,55 @@ Block ChunkMeshBuilder::getBlock(int x, int y, int z) {
   Block block;
   // adj block in -1, -1 chunk (Chunk 0)
   if (x < 0 && y < 0) {
-    block = m_chunk0.getBlock(CHUNK_WIDTH - 1, CHUNK_WIDTH - 1, z);
+    block = m_chunks[0]->getBlock(CHUNK_WIDTH - 1, CHUNK_WIDTH - 1, z);
   }
     // adj block in -1, 1 chunk (Chunk 2)
   else if (x < 0 && y >= CHUNK_WIDTH) {
-    block = m_chunk2.getBlock(CHUNK_WIDTH - 1, 0, z);
+    block = m_chunks[2]->getBlock(CHUNK_WIDTH - 1, 0, z);
   }
 
     // adj block in 1, -1 chunk (Chunk 6)
   else if (x >= CHUNK_WIDTH && y < 0) {
-    block = m_chunk6.getBlock(0, CHUNK_WIDTH - 1, z);
+    block = m_chunks[6]->getBlock(0, CHUNK_WIDTH - 1, z);
   }
 
     // adj block in 1, 1 chunk (Chunk 8)
   else if (x >= CHUNK_WIDTH && y >= CHUNK_WIDTH) {
-    block = m_chunk8.getBlock(0, 0, z);
+    block = m_chunks[8]->getBlock(0, 0, z);
   }
 
     // adj block in -1, 0 chunk (Chunk 1)
   else if (x < 0) {
-    block = m_chunk1.getBlock(CHUNK_WIDTH - 1, y, z);
+    block = m_chunks[1]->getBlock(CHUNK_WIDTH - 1, y, z);
   }
 
     // adj block in 1, 0 chunk (Chunk 7)
   else if (x >= CHUNK_WIDTH) {
-    block = m_chunk7.getBlock(0, y, z);
+    block = m_chunks[7]->getBlock(0, y, z);
   }
 
     // adj block in 0, -1 chunk (Chunk 3)
   else if (y < 0) {
-    block = m_chunk3.getBlock(x, CHUNK_WIDTH - 1, z);
+    block = m_chunks[3]->getBlock(x, CHUNK_WIDTH - 1, z);
   }
 
     // adj block in 0, 1 chunk (Chunk 5)
   else if (y >= CHUNK_WIDTH) {
-    block = m_chunk5.getBlock(x, 0, z);
+    block = m_chunks[5]->getBlock(x, 0, z);
   }
     // in middle chunk (mesh building chunk)
   else {
-    block = m_chunk4.getBlock(x, y, z);
+    block = m_chunks[4]->getBlock(x, y, z);
   }
 
   return block;
 }
 
-ChunkMeshBuilder::ChunkMeshBuilder(const Chunk &chunk0, const Chunk &chunk1,
-                                   const Chunk &chunk2, const Chunk &chunk3,
-                                   const Chunk &chunk4, const Chunk &chunk5,
-                                   const Chunk &chunk6, const Chunk &chunk7,
-                                   const Chunk &chunk8)
-    : m_chunk0(chunk0),
-      m_chunk1(chunk1),
-      m_chunk2(chunk2),
-      m_chunk3(chunk3),
-      m_chunk4(chunk4),
-      m_chunk5(chunk5),
-      m_chunk6(chunk6),
-      m_chunk7(chunk7),
-      m_chunk8(chunk8) {}
+ChunkMeshBuilder::ChunkMeshBuilder(Chunk *(&chunks)[9]) {
+  for (int i = 0; i < 9; i++) {
+    m_chunks[i] = chunks[i];
+  }
+}
 
 /*
  * Neighbor Chunks Array Structure
@@ -218,16 +209,9 @@ void ChunkMeshBuilder::constructMesh(
     std::vector<unsigned int> &opaqueIndices,
     std::vector<uint32_t> &transparentVertices,
     std::vector<unsigned int> &transparentIndices) {
-  if (m_chunk0.chunkState != ChunkState::FULLY_GENERATED ||
-      m_chunk1.chunkState != ChunkState::FULLY_GENERATED ||
-      m_chunk2.chunkState != ChunkState::FULLY_GENERATED ||
-      m_chunk3.chunkState != ChunkState::FULLY_GENERATED ||
-      m_chunk4.chunkState != ChunkState::FULLY_GENERATED ||
-      m_chunk5.chunkState != ChunkState::FULLY_GENERATED ||
-      m_chunk6.chunkState != ChunkState::FULLY_GENERATED ||
-      m_chunk7.chunkState != ChunkState::FULLY_GENERATED ||
-      m_chunk8.chunkState != ChunkState::FULLY_GENERATED) {
-    return;
+
+  for (auto chunk : m_chunks) {
+    if (chunk->chunkState != ChunkState::FULLY_GENERATED) return;
   }
 
   opaqueVertices.reserve(5000);
@@ -246,7 +230,7 @@ void ChunkMeshBuilder::constructMesh(
     y = (chunkBlockIndex / CHUNK_WIDTH) % CHUNK_WIDTH;
     z = chunkBlockIndex / (CHUNK_AREA);
 
-    Block block = m_chunk4.getBlockFromIndex(chunkBlockIndex);
+    Block block = m_chunks[4]->getBlockFromIndex(chunkBlockIndex);
     if (block == Block::AIR) continue;
 
     glm::ivec3 blockPos = {x, y, z};

@@ -6,7 +6,7 @@
 #include "../chunk/Chunk.hpp"
 
 void TerrainGenerator::generateStructures() {
-  auto chunkWorldPos = m_chunk4.m_worldPos;
+  auto chunkWorldPos = m_chunks[4]->m_worldPos;
   std::array<int, CHUNK_AREA> heightMap{};
   getHeightMap(chunkWorldPos, m_seed, heightMap);
 
@@ -23,7 +23,7 @@ void TerrainGenerator::generateStructures() {
       int height = heightMap[heightMapIndex];
       // + 1 since tree map vals are [-1,1]
       // 1 / 100 prob for now
-      if (m_chunk4.getBlock(x, y, height) != Block::GRASS) {
+      if (m_chunks[4]->getBlock(x, y, height) != Block::GRASS) {
         heightMapIndex++;
         continue;
       }
@@ -34,8 +34,7 @@ void TerrainGenerator::generateStructures() {
       heightMapIndex++;
     }
   }
-
-  m_chunk4.chunkState = ChunkState::FULLY_GENERATED;
+  m_chunks[4]->chunkState = ChunkState::FULLY_GENERATED;
 }
 
 void TerrainGenerator::makeTree(const glm::ivec3 &pos) {
@@ -55,63 +54,55 @@ void TerrainGenerator::makeTree(const glm::ivec3 &pos) {
   }
 }
 
-TerrainGenerator::TerrainGenerator(Chunk &chunk0,
-                                   Chunk &chunk1,
-                                   Chunk &chunk2,
-                                   Chunk &chunk3,
-                                   Chunk &chunk4,
-                                   Chunk &chunk5,
-                                   Chunk &chunk6,
-                                   Chunk &chunk7,
-                                   Chunk &chunk8, int seed)
-    : m_chunk0(chunk0), m_chunk1(chunk1), m_chunk2(chunk2), m_chunk3(chunk3),
-      m_chunk4(chunk4), m_chunk5(chunk5), m_chunk6(chunk6), m_chunk7(chunk7),
-      m_chunk8(chunk8), m_seed(seed) {
-
+TerrainGenerator::TerrainGenerator(Chunk *(chunks)[9], int seed)
+    : m_seed(seed) {
+  for (int i = 0; i < 9; i++) {
+    m_chunks[i] = chunks[i];
+  }
 }
 void TerrainGenerator::setBlock(int x, int y, int z, Block block) {
 
   // adj block in -1, -1 chunk (Chunk 0)
   if (x < 0 && y < 0) {
-    m_chunk0.setBlock(CHUNK_WIDTH + x, CHUNK_WIDTH + y, z, block);
+    m_chunks[0]->setBlock(CHUNK_WIDTH + x, CHUNK_WIDTH + y, z, block);
   }
     // adj block in -1, 1 chunk (Chunk 2)
   else if (x < 0 && y >= CHUNK_WIDTH) {
-    m_chunk2.setBlock(CHUNK_WIDTH + x, 0, z, block);
+    m_chunks[2]->setBlock(CHUNK_WIDTH + x, 0, z, block);
   }
 
     // adj block in 1, -1 chunk (Chunk 6)
   else if (x >= CHUNK_WIDTH && y < 0) {
-    m_chunk6.setBlock(0, CHUNK_WIDTH + y, z, block);
+    m_chunks[6]->setBlock(0, CHUNK_WIDTH + y, z, block);
   }
 
     // adj block in 1, 1 chunk (Chunk 8)
   else if (x >= CHUNK_WIDTH && y >= CHUNK_WIDTH) {
-    m_chunk8.setBlock(0, 0, z, block);
+    m_chunks[8]->setBlock(0, 0, z, block);
   }
 
     // adj block in -1, 0 chunk (Chunk 1)
   else if (x < 0) {
-    m_chunk1.setBlock(CHUNK_WIDTH + x, y, z, block);
+    m_chunks[1]->setBlock(CHUNK_WIDTH + x, y, z, block);
   }
 
     // adj block in 1, 0 chunk (Chunk 7)
   else if (x >= CHUNK_WIDTH) {
-    m_chunk7.setBlock(0, y, z, block);
+    m_chunks[7]->setBlock(0, y, z, block);
   }
 
     // adj block in 0, -1 chunk (Chunk 3)
   else if (y < 0) {
-    m_chunk3.setBlock(x, CHUNK_WIDTH + y, z, block);
+    m_chunks[3]->setBlock(x, CHUNK_WIDTH + y, z, block);
   }
 
     // adj block in 0, 1 chunk (Chunk 5)
   else if (y >= CHUNK_WIDTH) {
-    m_chunk5.setBlock(x, 0, z, block);
+    m_chunks[5]->setBlock(x, 0, z, block);
   }
     // in middle chunk
   else {
-    m_chunk4.setBlock(x, y, z, block);
+    m_chunks[4]->setBlock(x, y, z, block);
   }
 }
 void TerrainGenerator::getHeightMap(glm::ivec2 startWorldPos, int seed, std::array<int, CHUNK_AREA> &result) {
