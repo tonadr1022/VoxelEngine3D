@@ -128,7 +128,7 @@ class ChunkStructuresInfo : public ChunkInfo {
 class ChunkMeshInfo : public ChunkInfo {
  public:
   explicit ChunkMeshInfo(Chunk *chunks[9]);
-  void process();
+  void generateMeshData();
   void applyMeshDataToMesh(Chunk *chunk);
 
  private:

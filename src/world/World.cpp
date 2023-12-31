@@ -113,7 +113,7 @@ void World::updateChunkLoadList() {
         m_chunkTerrainLoadInfoMap.emplace(pos, std::make_unique<ChunkTerrainInfo>(pos, m_seed));
       }
     }
-//    std::sort(m_chunksToLoadVector.begin(), m_chunksToLoadVector.end(), rcmpVec2);
+    std::sort(m_chunksToLoadVector.begin(), m_chunksToLoadVector.end(), rcmpVec2);
   }
 }
 //}
@@ -141,7 +141,7 @@ void World::updateChunkStructureGenList() {
       }
     }
   }
-//  std::sort(m_chunksInStructureGenRangeVector.begin(), m_chunksInStructureGenRangeVector.end(), rcmpVec2);
+  std::sort(m_chunksInStructureGenRangeVector.begin(), m_chunksInStructureGenRangeVector.end(), rcmpVec2);
 //  }
 
   for (auto posIt = m_chunksInStructureGenRangeVector.begin();
@@ -240,10 +240,9 @@ void World::updateChunkMeshList() {
 
       m_chunkMeshInfoMap.emplace(*posIt, std::make_unique<ChunkMeshInfo>(chunks));
 
-//      auto insertPos =
-//          std::lower_bound(m_chunksReadyToMeshList.begin(), m_chunksReadyToMeshList.end(), *posIt, rcmpVec2);
-//      m_chunksReadyToMeshList.insert(insertPos, *posIt);
-      m_chunksReadyToMeshSet.insert(*posIt);
+      auto insertPos =
+          std::lower_bound(m_chunksReadyToMeshList.begin(), m_chunksReadyToMeshList.end(), *posIt, rcmpVec2);
+      m_chunksReadyToMeshList.insert(insertPos, *posIt);
       posIt = m_chunksInMeshRangeVector.erase(posIt);
     } else {
       ++posIt;
@@ -273,46 +272,6 @@ void World::unloadChunks() {
   }
 }
 
-
-void World::generateChunksWorker3() {
-  while (true) {
-    std::queue<glm::ivec2> batchToLoad;
-    std::queue<glm::ivec2> batchToGenStructures;
-    std::queue<glm::ivec2> batchToMesh;
-
-    {
-      std::unique_lock<std::mutex> lock(m_mainMutex);
-      m_conditionVariable.wait(lock, [this]() {
-        return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads
-            && (!m_chunksToLoadVector.empty() || !m_chunksReadyToGenStructuresList.empty() ||
-                !m_chunksReadyToMeshSet.empty()));
-      });
-
-      if (!m_isRunning) return;
-
-      while (!m_chunksToLoadVector.empty() && batchToLoad.size() < MAX_BATCH_SIZE) {
-        batchToLoad.push(m_chunksToLoadVector.back());
-        m_chunksToLoadVector.pop_back();
-      }
-
-      while (!m_chunksReadyToGenStructuresList.empty() && batchToGenStructures.size() < MAX_BATCH_SIZE) {
-        batchToGenStructures.push(m_chunksReadyToGenStructuresList.back());
-        m_chunksReadyToGenStructuresList.pop_back();
-      }
-
-      while (!m_chunksReadyToMeshSet.empty() && batchToMesh.size() < MAX_BATCH_SIZE) {
-        auto pos = m_chunksReadyToMeshSet.begin();
-        batchToMesh.push(*pos);
-        m_chunksReadyToMeshSet.erase(pos);
-      }
-    } // end lock scope. processing happens without lock on its own data
-    // Process the collected batches
-    processBatchToLoad(batchToLoad);
-    processBatchToGenStructures(batchToGenStructures);
-    processBatchToMesh(batchToMesh);
-  }
-}
-
 void World::generateChunksWorker4() {
   while (true) {
     std::queue<glm::ivec2> batchToLoad;
@@ -323,28 +282,29 @@ void World::generateChunksWorker4() {
     m_conditionVariable.wait(lock, [this]() {
       return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads
           && (!m_chunksToLoadVector.empty() || !m_chunksReadyToGenStructuresList.empty() ||
-              !m_chunksReadyToMeshSet.empty()));
+              !m_chunksReadyToMeshList.empty()));
     });
     if (!m_isRunning) return;
     if (!m_chunksToLoadVector.empty()) {
-      while (!m_chunksToLoadVector.empty()) {
+      while (!m_chunksToLoadVector.empty() && batchToLoad.size() < 10) {
         batchToLoad.push(m_chunksToLoadVector.back());
         m_chunksToLoadVector.pop_back();
       }
       lock.unlock();
       processBatchToLoad(batchToLoad);
-    } else if (!m_chunksReadyToGenStructuresList.empty()) {
-      while (!m_chunksReadyToGenStructuresList.empty()) {
+    } else if (!m_chunksReadyToGenStructuresList.empty() && m_chunksToLoadVector.empty()) {
+      while (!m_chunksReadyToGenStructuresList.empty() && batchToGenStructures.size() < 10) {
         batchToGenStructures.push(m_chunksReadyToGenStructuresList.back());
         m_chunksReadyToGenStructuresList.pop_back();
       }
       lock.unlock();
       processBatchToGenStructures(batchToGenStructures);
-    } else if (!m_chunksReadyToMeshSet.empty()) {
-      while (!m_chunksReadyToMeshSet.empty()) {
-        auto pos = m_chunksReadyToMeshSet.begin();
-        batchToMesh.push(*pos);
-        m_chunksReadyToMeshSet.erase(pos);
+    } else if (!m_chunksReadyToMeshList.empty() && m_chunksReadyToGenStructuresList.empty()
+        && m_chunksToLoadVector.empty()) {
+      while (!m_chunksReadyToMeshList.empty() && batchToMesh.size() < MAX_BATCH_SIZE) {
+        auto pos = m_chunksReadyToMeshList.begin();
+        batchToMesh.push(m_chunksReadyToMeshList.back());
+        m_chunksReadyToMeshList.pop_back();
       }
       lock.unlock();
       processBatchToMesh(batchToMesh);
@@ -355,7 +315,9 @@ void World::generateChunksWorker4() {
 void World::processBatchToLoad(std::queue<glm::ivec2> &batchToLoad) {
   while (!batchToLoad.empty()) {
     const auto &pos = batchToLoad.front();
-    m_chunkTerrainLoadInfoMap.at(pos)->generateTerrainData();
+//    m_chunkTerrainLoadInfoMap.at(pos)->generateTerrainData();
+    auto it = m_chunkTerrainLoadInfoMap.find(pos);
+    if (it != m_chunkTerrainLoadInfoMap.end()) it->second->generateTerrainData();
     batchToLoad.pop();
   }
 }
@@ -363,7 +325,9 @@ void World::processBatchToLoad(std::queue<glm::ivec2> &batchToLoad) {
 void World::processBatchToGenStructures(std::queue<glm::ivec2> &batchToGenStructures) {
   while (!batchToGenStructures.empty()) {
     const auto &pos = batchToGenStructures.front();
-    m_chunkStructuresInfoMap.at(pos)->generateStructureData();
+    auto it = m_chunkStructuresInfoMap.find(pos);
+    if (it != m_chunkStructuresInfoMap.end()) it->second->generateStructureData();
+//    m_chunkStructuresInfoMap.at(pos)->generateStructureData();
     batchToGenStructures.pop();
   }
 }
@@ -371,7 +335,9 @@ void World::processBatchToGenStructures(std::queue<glm::ivec2> &batchToGenStruct
 void World::processBatchToMesh(std::queue<glm::ivec2> &batchToMesh) {
   while (!batchToMesh.empty()) {
     const auto &pos = batchToMesh.front();
-    m_chunkMeshInfoMap.at(pos)->process();
+    auto it = m_chunkMeshInfoMap.find(pos);
+    if (it != m_chunkMeshInfoMap.end()) it->second->generateMeshData();
+//    m_chunkMeshInfoMap.at(pos)->generateMeshData();
     batchToMesh.pop();
   }
 }
@@ -390,7 +356,7 @@ void World::meshUpdateWorker() {
 
     lock.unlock();
     m_numRunningThreads++;
-    m_chunkUpdateInfoMap.at(pos)->process();
+    m_chunkUpdateInfoMap.at(pos)->generateMeshData();
     m_numRunningThreads--;
   }
 }

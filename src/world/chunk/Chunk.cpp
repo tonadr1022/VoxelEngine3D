@@ -47,7 +47,7 @@ ChunkMeshInfo::ChunkMeshInfo(Chunk *chunks[9]) {
   m_pos = m_chunks[4]->m_pos;
 }
 
-void ChunkMeshInfo::process() {
+void ChunkMeshInfo::generateMeshData() {
   ChunkMeshBuilder meshBuilder(m_chunks);
   meshBuilder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
   m_done = true;
