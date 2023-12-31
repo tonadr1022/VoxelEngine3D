@@ -253,15 +253,6 @@ void ChunkMeshBuilder::constructMesh(
     adjacentBlockPositions.update(x, y, z);
 
     for (faceIndex = 0; faceIndex < 6; faceIndex++) {
-//      glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[faceIndex];
-//
-//      // skip faces adjacent to borders
-//      if (adjacentBlockPos.z < 0 || adjacentBlockPos.z >= CHUNK_HEIGHT)
-//        continue;
-//
-//      Block adjacentBlock = getBlock(adjacentBlockPos.x, adjacentBlockPos.y,
-//                                     adjacentBlockPos.z);
-
       int adjBlockX = adjacentBlockPositions.x[faceIndex];
       int adjBlockY = adjacentBlockPositions.y[faceIndex];
       int adjBlockZ = adjacentBlockPositions.z[faceIndex];

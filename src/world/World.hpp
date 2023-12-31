@@ -81,11 +81,11 @@ class World {
   void processDirectChunkUpdates();
 
 
-  void generateChunksWorker();
   void generateChunksWorker3();
-  void processBatchToLoad(const std::vector<glm::ivec2>& batchToLoad);
-  void processBatchToGenStructures(const std::vector<glm::ivec2>& batchToGenStructures);
-  void processBatchToMesh(const std::vector<glm::ivec2>& batchToMesh);
+  void generateChunksWorker4();
+  void processBatchToLoad(std::queue<glm::ivec2>& batchToLoad);
+  void processBatchToGenStructures(std::queue<glm::ivec2>& batchToGenStructures);
+  void processBatchToMesh(std::queue<glm::ivec2>& batchToMesh);
 
   void meshUpdateWorker();
 
@@ -111,20 +111,21 @@ class World {
   std::vector<std::thread> m_chunkLoadThreads;
   std::atomic_uint m_numRunningThreads;
   unsigned int m_numLoadingThreads;
-  static constexpr int MAX_BATCH_SIZE = 20;
+  static constexpr int MAX_BATCH_SIZE = 50;
 
   std::vector<glm::ivec2> m_chunksToLoadVector;
-  std::unordered_map<glm::ivec2, Scope<ChunkLoadInfo>>
+  std::unordered_map<glm::ivec2, Scope<ChunkTerrainInfo>>
       m_chunkTerrainLoadInfoMap;
 
   std::vector<glm::ivec2> m_chunksInStructureGenRangeVector;
-  std::unordered_map<glm::ivec2, Scope<ChunkGenerateStructuresInfo>> m_chunkStructureGenInfoMap;
+  std::unordered_map<glm::ivec2, Scope<ChunkStructuresInfo>> m_chunkStructuresInfoMap;
   std::list<glm::ivec2> m_chunksReadyToGenStructuresList;
 
   std::vector<glm::ivec2> m_chunksInMeshRangeVector;
   std::unordered_map<glm::ivec2, Scope<ChunkMeshInfo>>
       m_chunkMeshInfoMap;
-  std::list<glm::ivec2> m_chunksReadyToMeshList;
+//  std::list<glm::ivec2> m_chunksReadyToMeshList;
+std::unordered_set<glm::ivec2> m_chunksReadyToMeshSet;
 
   std::vector<glm::ivec2> m_chunkUpdateVector;
   std::unordered_map<glm::ivec2, Scope<ChunkMeshInfo>> m_chunkUpdateInfoMap;

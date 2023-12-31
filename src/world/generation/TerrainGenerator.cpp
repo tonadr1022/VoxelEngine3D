@@ -127,3 +127,34 @@ void TerrainGenerator::getHeightMap(glm::ivec2 startWorldPos, int seed, std::arr
     highest = std::max(highest, result[i]);
   }
 }
+
+void TerrainGenerator::generateTerrain(const glm::ivec2 &chunkWorldPos, int seed,  Block (&blocks)[CHUNK_VOLUME]) {
+  std::array<int, CHUNK_AREA> heightMap{};
+  TerrainGenerator::getHeightMap(chunkWorldPos,seed, heightMap);
+
+  int heightMapIndex = 0;
+  int z;
+  for (int x = 0; x < CHUNK_WIDTH; x++) {
+    for (int y = 0; y < CHUNK_WIDTH; y++) {
+      int maxBlockHeight = heightMap[heightMapIndex];
+      for (z = 0; z < maxBlockHeight - 4; z++) {
+        blocks[XYZ(x, y, z)] = Block::STONE;
+      }
+      for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
+        blocks[XYZ(x, y, z)] = Block::DIRT;
+      }
+      if (maxBlockHeight <= 66) {
+        blocks[XYZ(x, y, maxBlockHeight)] = Block::SAND;
+      } else {
+        blocks[XYZ(x, y, maxBlockHeight)] = Block::GRASS;
+      }
+
+      for (z = maxBlockHeight + 1; z <= 64; z++) {
+        blocks[XYZ(x, y, z)] = Block::WATER;
+      }
+
+      heightMapIndex++;
+    }
+  }
+
+}

@@ -26,16 +26,11 @@ class TerrainGenerator {
                             Chunk &chunk8, int seed);
   void generateStructures();
 
-
-  static void getHeightMap(glm::ivec2 startWorldPos,int seed, std::array<int, CHUNK_AREA> &result);
-
-//  void makeTree(ChunkManager &chunkManager,
-//                const Ref<Chunk> &chunk,
-//                const glm::ivec3 &position);
-
-void makeTree(const glm::ivec3 &pos);
+  static void getHeightMap(glm::ivec2 startWorldPos, int seed, std::array<int, CHUNK_AREA> &result);
+  static void generateTerrain(const glm::ivec2 &worldPos, int seed, Block (&blocks)[CHUNK_VOLUME]);
 
 
+  void makeTree(const glm::ivec3 &pos);
 
  private:
   void setBlock(int x, int y, int z, Block block);

@@ -96,18 +96,17 @@ class ChunkInfo {
  public:
   ChunkInfo() : m_done(false) {
   }
-
   virtual ~ChunkInfo() = default;
 
   std::atomic_bool m_done;
 };
 
-class ChunkLoadInfo : public ChunkInfo {
+class ChunkTerrainInfo : public ChunkInfo {
  public:
-  ChunkLoadInfo(glm::ivec2 pos, int seed);
+  ChunkTerrainInfo(glm::ivec2 pos, int seed);
 
-  void process();
-  void applyTerrain(Chunk *chunk);
+  void generateTerrainData();
+  void applyTerrainDataToChunk(Chunk *chunk);
 
  private:
   Block m_blocks[CHUNK_VOLUME]{};
@@ -115,13 +114,12 @@ class ChunkLoadInfo : public ChunkInfo {
   glm::ivec2 m_pos;
 };
 
-class ChunkGenerateStructuresInfo : public ChunkInfo {
+class ChunkStructuresInfo : public ChunkInfo {
  public:
-  explicit ChunkGenerateStructuresInfo(Chunk &chunk0, Chunk &chunk1, Chunk &chunk2, Chunk &chunk3, Chunk &chunk4,
-                                       Chunk &chunk5, Chunk &chunk6, Chunk &chunk7, Chunk &chunk8, int seed);
+  explicit ChunkStructuresInfo(Chunk &chunk0, Chunk &chunk1, Chunk &chunk2, Chunk &chunk3, Chunk &chunk4,
+                               Chunk &chunk5, Chunk &chunk6, Chunk &chunk7, Chunk &chunk8, int seed);
 
-  void process();
-  void applyStructures(Chunk *chunk);
+  void generateStructureData();
 
  private:
   TerrainGenerator m_terrainGenerator;
@@ -134,7 +132,7 @@ class ChunkMeshInfo : public ChunkInfo {
                          const Chunk &chunk4, const Chunk &chunk5, const Chunk &chunk6, const Chunk &chunk7,
                          const Chunk &chunk8);
   void process();
-  void applyMesh(Chunk *chunk);
+  void applyMeshDataToMesh(Chunk *chunk);
 
  private:
   const Chunk &m_chunk0;
