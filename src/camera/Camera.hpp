@@ -29,7 +29,7 @@ class Camera {
   float m_fov = 70.0f;
   float m_mouseSensitivity = 0.1f;
 
-  constexpr static float FAR_PLANE = 800.0f;
+  constexpr static float FAR_PLANE = 3000.0f;
   constexpr static float NEAR_PLANE = 0.1f;
   constexpr static glm::vec3 globalUp = glm::vec3(0.0f, 0.0f, 1.0f);
 

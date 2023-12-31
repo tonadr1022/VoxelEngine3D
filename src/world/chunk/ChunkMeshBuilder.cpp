@@ -37,89 +37,89 @@ constexpr std::array<int, 20> bottomFace{
 
 constexpr std::array<std::array<std::array<glm::ivec3, 3>, 4>, 6>
     lightingAdjacencies = {{
-        // front face
-        {{
-            // Bottom Left
-            {glm::ivec3(1, 0, -1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, -1)},
-            // Bottom Right
-            {glm::ivec3(1, 0, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
-            // Top Left
-            {glm::ivec3(1, 0, 1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, 1)},
-            // Top Right
-            {glm::ivec3(1, 0, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
-        }},
-        // back face
-        {{
-            // 0, 0, 0
-            {glm::ivec3(-1, 0, -1), glm::ivec3(-1, -1, 0),
-             glm::ivec3(-1, -1, -1)},
-            // 0, 0, 1
-            {glm::ivec3(-1, 0, 1), glm::ivec3(-1, -1, 0),
-             glm::ivec3(-1, -1, 1)},
-            // 0, 1, 0
-            {glm::ivec3(-1, 0, -1), glm::ivec3(-1, 1, 0),
-             glm::ivec3(-1, 1, -1)},
-            // 0, 1, 1
-            {glm::ivec3(-1, 1, 0), glm::ivec3(-1, 0, 1), glm::ivec3(-1, 1, 1)},
-        }},
-        // left face
-        {{
-            // 0, 0, 0
-            {glm::ivec3(0, -1, -1), glm::ivec3(-1, -1, 0),
-             glm::ivec3(-1, -1, -1)},
-            // 1, 0, 0
-            {glm::ivec3(0, -1, -1), glm::ivec3(1, -1, 0),
-             glm::ivec3(1, -1, -1)},
-            // 0, 0, 1
-            {glm::ivec3(-1, -1, 0), glm::ivec3(0, -1, 1),
-             glm::ivec3(-1, -1, 1)},
-            // 1, 0, 1
-            {glm::ivec3(0, -1, 1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, 1)},
-        }},
-        // right face
-        {{
-            // 0, 1, 0
-            {glm::ivec3(0, 1, -1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, -1)},
-            // 0, 1, 1
-            {glm::ivec3(0, 1, 1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, 1)},
-            // 1, 1, 0
-            {glm::ivec3(0, 1, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
-            // 1, 1, 1
-            {glm::ivec3(0, 1, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
-        }},
-        // top face
-        {{
-            // 0, 0, 1
-            {glm::ivec3(0, -1, 1), glm::ivec3(-1, 0, 1), glm::ivec3(-1, -1, 1)},
-            // 1, 0, 1
-            {glm::ivec3(0, -1, 1), glm::ivec3(1, 0, 1), glm::ivec3(1, -1, 1)},
-            // 0, 1, 1
-            {glm::ivec3(0, 1, 1), glm::ivec3(-1, 0, 1), glm::ivec3(-1, 1, 1)},
-            // 1, 1, 1
-            {glm::ivec3(0, 1, 1), glm::ivec3(1, 0, 1), glm::ivec3(1, 1, 1)},
-        }},
+                               // front face
+                               {{
+                                    // Bottom Left
+                                    {glm::ivec3(1, 0, -1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, -1)},
+                                    // Bottom Right
+                                    {glm::ivec3(1, 0, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
+                                    // Top Left
+                                    {glm::ivec3(1, 0, 1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, 1)},
+                                    // Top Right
+                                    {glm::ivec3(1, 0, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
+                                }},
+                               // back face
+                               {{
+                                    // 0, 0, 0
+                                    {glm::ivec3(-1, 0, -1), glm::ivec3(-1, -1, 0),
+                                     glm::ivec3(-1, -1, -1)},
+                                    // 0, 0, 1
+                                    {glm::ivec3(-1, 0, 1), glm::ivec3(-1, -1, 0),
+                                     glm::ivec3(-1, -1, 1)},
+                                    // 0, 1, 0
+                                    {glm::ivec3(-1, 0, -1), glm::ivec3(-1, 1, 0),
+                                     glm::ivec3(-1, 1, -1)},
+                                    // 0, 1, 1
+                                    {glm::ivec3(-1, 1, 0), glm::ivec3(-1, 0, 1), glm::ivec3(-1, 1, 1)},
+                                }},
+                               // left face
+                               {{
+                                    // 0, 0, 0
+                                    {glm::ivec3(0, -1, -1), glm::ivec3(-1, -1, 0),
+                                     glm::ivec3(-1, -1, -1)},
+                                    // 1, 0, 0
+                                    {glm::ivec3(0, -1, -1), glm::ivec3(1, -1, 0),
+                                     glm::ivec3(1, -1, -1)},
+                                    // 0, 0, 1
+                                    {glm::ivec3(-1, -1, 0), glm::ivec3(0, -1, 1),
+                                     glm::ivec3(-1, -1, 1)},
+                                    // 1, 0, 1
+                                    {glm::ivec3(0, -1, 1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, 1)},
+                                }},
+                               // right face
+                               {{
+                                    // 0, 1, 0
+                                    {glm::ivec3(0, 1, -1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, -1)},
+                                    // 0, 1, 1
+                                    {glm::ivec3(0, 1, 1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, 1)},
+                                    // 1, 1, 0
+                                    {glm::ivec3(0, 1, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
+                                    // 1, 1, 1
+                                    {glm::ivec3(0, 1, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
+                                }},
+                               // top face
+                               {{
+                                    // 0, 0, 1
+                                    {glm::ivec3(0, -1, 1), glm::ivec3(-1, 0, 1), glm::ivec3(-1, -1, 1)},
+                                    // 1, 0, 1
+                                    {glm::ivec3(0, -1, 1), glm::ivec3(1, 0, 1), glm::ivec3(1, -1, 1)},
+                                    // 0, 1, 1
+                                    {glm::ivec3(0, 1, 1), glm::ivec3(-1, 0, 1), glm::ivec3(-1, 1, 1)},
+                                    // 1, 1, 1
+                                    {glm::ivec3(0, 1, 1), glm::ivec3(1, 0, 1), glm::ivec3(1, 1, 1)},
+                                }},
 
-        // bottom face
-        {{
-            // 0, 0, 0
-            {glm::ivec3(0, -1, -1), glm::ivec3(-1, 0, -1),
-             glm::ivec3(-1, -1, -1)},
-            // 0, 1, 0
-            {glm::ivec3(0, 1, -1), glm::ivec3(-1, 0, -1),
-             glm::ivec3(-1, 1, -1)},
-            // 1, 0, 0
-            {glm::ivec3(0, -1, -1), glm::ivec3(1, 0, -1),
-             glm::ivec3(1, -1, -1)},
-            // 1, 1, 0
-            {glm::ivec3(0, 1, -1), glm::ivec3(1, 0, -1), glm::ivec3(1, 1, -1)},
-        }},
-    }};
+                               // bottom face
+                               {{
+                                    // 0, 0, 0
+                                    {glm::ivec3(0, -1, -1), glm::ivec3(-1, 0, -1),
+                                     glm::ivec3(-1, -1, -1)},
+                                    // 0, 1, 0
+                                    {glm::ivec3(0, 1, -1), glm::ivec3(-1, 0, -1),
+                                     glm::ivec3(-1, 1, -1)},
+                                    // 1, 0, 0
+                                    {glm::ivec3(0, -1, -1), glm::ivec3(1, 0, -1),
+                                     glm::ivec3(1, -1, -1)},
+                                    // 1, 1, 0
+                                    {glm::ivec3(0, 1, -1), glm::ivec3(1, 0, -1), glm::ivec3(1, 1, -1)},
+                                }},
+                           }};
 }  // namespace
 
 struct AdjacentBlockPositions {
-  glm::ivec3 positions[6];
+  glm::i16vec3 positions[6];
 
-  void update(int x, int y, int z) {
+  void update(short x, short y, short z) {
     positions[0] = {x + 1, y, z};
     positions[1] = {x - 1, y, z};
     positions[2] = {x, y - 1, z};
@@ -129,47 +129,59 @@ struct AdjacentBlockPositions {
   }
 };
 
+struct AdjacentBlockPositionsSoA {
+  std::array<int, 6> x;
+  std::array<int, 6> y;
+  std::array<int, 6> z;
+
+  void update(int xVal, int yVal, int zVal) {
+    x = {xVal + 1, xVal - 1, xVal, xVal, xVal, xVal};
+    y = {yVal, yVal, yVal - 1, yVal + 1, yVal, yVal};
+    z = {zVal, zVal, zVal, zVal, zVal + 1, zVal - 1};
+  }
+};
+
 Block ChunkMeshBuilder::getBlock(int x, int y, int z) {
   Block block;
   // adj block in -1, -1 chunk (Chunk 0)
   if (x < 0 && y < 0) {
     block = m_chunk0.getBlock(CHUNK_WIDTH - 1, CHUNK_WIDTH - 1, z);
   }
-  // adj block in -1, 1 chunk (Chunk 2)
+    // adj block in -1, 1 chunk (Chunk 2)
   else if (x < 0 && y >= CHUNK_WIDTH) {
     block = m_chunk2.getBlock(CHUNK_WIDTH - 1, 0, z);
   }
 
-  // adj block in 1, -1 chunk (Chunk 6)
+    // adj block in 1, -1 chunk (Chunk 6)
   else if (x >= CHUNK_WIDTH && y < 0) {
     block = m_chunk6.getBlock(0, CHUNK_WIDTH - 1, z);
   }
 
-  // adj block in 1, 1 chunk (Chunk 8)
+    // adj block in 1, 1 chunk (Chunk 8)
   else if (x >= CHUNK_WIDTH && y >= CHUNK_WIDTH) {
     block = m_chunk8.getBlock(0, 0, z);
   }
 
-  // adj block in -1, 0 chunk (Chunk 1)
+    // adj block in -1, 0 chunk (Chunk 1)
   else if (x < 0) {
     block = m_chunk1.getBlock(CHUNK_WIDTH - 1, y, z);
   }
 
-  // adj block in 1, 0 chunk (Chunk 7)
+    // adj block in 1, 0 chunk (Chunk 7)
   else if (x >= CHUNK_WIDTH) {
     block = m_chunk7.getBlock(0, y, z);
   }
 
-  // adj block in 0, -1 chunk (Chunk 3)
+    // adj block in 0, -1 chunk (Chunk 3)
   else if (y < 0) {
     block = m_chunk3.getBlock(x, CHUNK_WIDTH - 1, z);
   }
 
-  // adj block in 0, 1 chunk (Chunk 5)
+    // adj block in 0, 1 chunk (Chunk 5)
   else if (y >= CHUNK_WIDTH) {
     block = m_chunk5.getBlock(x, 0, z);
   }
-  // in middle chunk (mesh building chunk)
+    // in middle chunk (mesh building chunk)
   else {
     block = m_chunk4.getBlock(x, y, z);
   }
@@ -225,116 +237,119 @@ void ChunkMeshBuilder::constructMesh(
   int numVertices[2]; // 0 is opaque, 1 is transparent
   int numIndices[2];
 
-
   int x, y, z, faceIndex, textureX, textureY;
   std::array<int, 20> faceVertices{};
-  std::array<uint32_t, 4> verticesForFace{};
-  AdjacentBlockPositions adjacentBlockPositions{};
-  // TODO: fix level 255. random blocks appear, so data isn't set properly for
-  // it
-  for (z = 0; z < CHUNK_HEIGHT - 1; z++) {
-    for (x = 0; x < CHUNK_WIDTH; x++) {
-      for (y = 0; y < CHUNK_WIDTH; y++) {
-        Block block = m_chunk4.getBlock(x, y, z);
-        if (block == Block::AIR) continue;
-        adjacentBlockPositions.update(x, y, z);
-        glm::ivec3 blockPos = {x, y, z};
-        for (faceIndex = 0; faceIndex < 6; faceIndex++) {
-          glm::ivec3 adjacentBlockPos =
-              adjacentBlockPositions.positions[faceIndex];
-          if (adjacentBlockPos.z < 0 || adjacentBlockPos.z >= CHUNK_HEIGHT)
-            continue;
+  AdjacentBlockPositionsSoA adjacentBlockPositions{};
+  // TODO: fix level 255. random blocks appear, so data isn't set properly for it
+  for (int chunkBlockIndex = 0; chunkBlockIndex < CHUNK_VOLUME; chunkBlockIndex++) {
+    x = chunkBlockIndex % CHUNK_WIDTH;
+    y = (chunkBlockIndex / CHUNK_WIDTH) % CHUNK_WIDTH;
+    z = chunkBlockIndex / (CHUNK_AREA);
 
-          Block adjacentBlock = getBlock(adjacentBlockPos.x, adjacentBlockPos.y,
-                                         adjacentBlockPos.z);
+    Block block = m_chunk4.getBlockFromIndex(chunkBlockIndex);
+    if (block == Block::AIR) continue;
 
-          BlockData &adjBlockData = BlockDB::getBlockData(adjacentBlock);
-          if (!adjBlockData.isTransparent) continue;
-          if (adjacentBlock == block) continue;
+    glm::ivec3 blockPos = {x, y, z};
+    adjacentBlockPositions.update(x, y, z);
 
-          auto face = static_cast<BlockFace>(faceIndex);
+    for (faceIndex = 0; faceIndex < 6; faceIndex++) {
+//      glm::ivec3 adjacentBlockPos = adjacentBlockPositions.positions[faceIndex];
+//
+//      // skip faces adjacent to borders
+//      if (adjacentBlockPos.z < 0 || adjacentBlockPos.z >= CHUNK_HEIGHT)
+//        continue;
+//
+//      Block adjacentBlock = getBlock(adjacentBlockPos.x, adjacentBlockPos.y,
+//                                     adjacentBlockPos.z);
 
-          BlockData &blockData = BlockDB::getBlockData(block);
-          OcclusionLevels occlusionLevels = getOcclusionLevels(blockPos, face);
-          switch (face) {
-            case BlockFace::FRONT:
-              faceVertices = frontFace;
-              textureX = blockData.frontTexCoords.x;
-              textureY = blockData.frontTexCoords.y;
-              break;
-            case BlockFace::BACK:
-              faceVertices = backFace;
-              textureX = blockData.backTexCoords.x;
-              textureY = blockData.backTexCoords.y;
-              break;
-            case BlockFace::LEFT:
-              faceVertices = leftFace;
-              textureX = blockData.leftTexCoords.x;
-              textureY = blockData.leftTexCoords.y;
-              break;
-            case BlockFace::RIGHT:
-              faceVertices = rightFace;
-              textureX = blockData.rightTexCoords.x;
-              textureY = blockData.rightTexCoords.y;
-              break;
-            case BlockFace::TOP:
-              faceVertices = topFace;
-              textureX = blockData.topTexCoords.x;
-              textureY = blockData.topTexCoords.y;
-              break;
-            case BlockFace::BOTTOM:
-              faceVertices = bottomFace;
-              textureX = blockData.bottomTexCoords.x;
-              textureY = blockData.bottomTexCoords.y;
-              break;
-            default:
-              break;
-          }
-          auto &vertices =
-              blockData.isTransparent ? transparentVertices : opaqueVertices;
-          auto &indices =
-              blockData.isTransparent ? transparentIndices : opaqueIndices;
-          int &vertexCount = blockData.isTransparent ? numVertices[1] : numVertices[0];
-          int &indexCount = blockData.isTransparent ? numIndices[1] : numIndices[0];
+      int adjBlockX = adjacentBlockPositions.x[faceIndex];
+      int adjBlockY = adjacentBlockPositions.y[faceIndex];
+      int adjBlockZ = adjacentBlockPositions.z[faceIndex];
 
-          auto baseVertexIndex = vertices.size();
-          int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
+      // skip faces adjacent to borders
+      if (adjBlockZ < 0 || adjBlockZ >= CHUNK_HEIGHT)
+        continue;
 
-          for (int i = 0; i < 20; i += 5) {
-            // x between [0, 16] == 5 bits, y between [0, 16] == 5 bits, z
-            // between [0, 255] == 8 bits occlusion level [0, 3] == 2 bits,
-            // textureX [0, 1] == 1 bit, textureY [0, 1] == 1 bit textureIndex
-            // [0, 255] == 8 bits. total 30 bits pack x, y, z, occlusion level,
-            // textureX, textureY, textureIndex into 32 bits
-            uint32_t vertexData =
-                ((blockPos.x + faceVertices[i]) & 0x1F) |
+      Block adjacentBlock = getBlock(adjBlockX, adjBlockY, adjBlockZ);
+
+      BlockData &adjBlockData = BlockDB::getBlockData(adjacentBlock);
+      if (!adjBlockData.isTransparent) continue;
+      if (adjacentBlock == block) continue;
+
+      auto face = static_cast<BlockFace>(faceIndex);
+
+      BlockData &blockData = BlockDB::getBlockData(block);
+      OcclusionLevels occlusionLevels = getOcclusionLevels(blockPos, face);
+      switch (face) {
+        case BlockFace::FRONT:faceVertices = frontFace;
+          textureX = blockData.frontTexCoords.x;
+          textureY = blockData.frontTexCoords.y;
+          break;
+        case BlockFace::BACK:faceVertices = backFace;
+          textureX = blockData.backTexCoords.x;
+          textureY = blockData.backTexCoords.y;
+          break;
+        case BlockFace::LEFT:faceVertices = leftFace;
+          textureX = blockData.leftTexCoords.x;
+          textureY = blockData.leftTexCoords.y;
+          break;
+        case BlockFace::RIGHT:faceVertices = rightFace;
+          textureX = blockData.rightTexCoords.x;
+          textureY = blockData.rightTexCoords.y;
+          break;
+        case BlockFace::TOP:faceVertices = topFace;
+          textureX = blockData.topTexCoords.x;
+          textureY = blockData.topTexCoords.y;
+          break;
+        case BlockFace::BOTTOM:faceVertices = bottomFace;
+          textureX = blockData.bottomTexCoords.x;
+          textureY = blockData.bottomTexCoords.y;
+          break;
+        default:break;
+      }
+      auto &vertices =
+          blockData.isTransparent ? transparentVertices : opaqueVertices;
+      auto &indices =
+          blockData.isTransparent ? transparentIndices : opaqueIndices;
+      int &vertexCount = blockData.isTransparent ? numVertices[1] : numVertices[0];
+      int &indexCount = blockData.isTransparent ? numIndices[1] : numIndices[0];
+
+      auto baseVertexIndex = vertices.size();
+      int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
+
+      for (int i = 0; i < 20; i += 5) {
+        // x between [0, 16] == 5 bits, y between [0, 16] == 5 bits, z
+        // between [0, 255] == 8 bits occlusion level [0, 3] == 2 bits,
+        // textureX [0, 1] == 1 bit, textureY [0, 1] == 1 bit textureIndex
+        // [0, 255] == 8 bits. total 30 bits pack x, y, z, occlusion level,
+        // textureX, textureY, textureIndex into 32 bits
+        uint32_t vertexData =
+            ((blockPos.x + faceVertices[i]) & 0x1F) |
                 ((blockPos.y + faceVertices[i + 1] & 0x1F) << 5) |
                 ((blockPos.z + faceVertices[i + 2] & 0xFF) << 10) |
                 ((occlusionLevels[i / 5] & 0x3) << 18) |
                 ((faceVertices[i + 3] & 0x1) << 20) |
                 ((faceVertices[i + 4] & 0x1) << 21) |
                 ((textureIndex & 0xFF) << 22);
-            vertices.emplace_back(vertexData);
-          }
+        vertices.emplace_back(vertexData);
+      }
 
-          // check whether to flip quad based on AO
-          if (occlusionLevels[0] + occlusionLevels[3] >
-              occlusionLevels[1] + occlusionLevels[2]) {
-            indices.emplace_back(baseVertexIndex + 2);
-            indices.emplace_back(baseVertexIndex + 0);
-            indices.emplace_back(baseVertexIndex + 3);
-            indices.emplace_back(baseVertexIndex + 3);
-            indices.emplace_back(baseVertexIndex + 0);
-            indices.emplace_back(baseVertexIndex + 1);
-          } else {
-            indices.emplace_back(baseVertexIndex);
-            indices.emplace_back(baseVertexIndex + 1);
-            indices.emplace_back(baseVertexIndex + 2);
-            indices.emplace_back(baseVertexIndex + 2);
-            indices.emplace_back(baseVertexIndex + 1);
-            indices.emplace_back(baseVertexIndex + 3);
-          }
-        }
+      // check whether to flip quad based on AO
+      if (occlusionLevels[0] + occlusionLevels[3] >
+          occlusionLevels[1] + occlusionLevels[2]) {
+        indices.emplace_back(baseVertexIndex + 2);
+        indices.emplace_back(baseVertexIndex + 0);
+        indices.emplace_back(baseVertexIndex + 3);
+        indices.emplace_back(baseVertexIndex + 3);
+        indices.emplace_back(baseVertexIndex + 0);
+        indices.emplace_back(baseVertexIndex + 1);
+      } else {
+        indices.emplace_back(baseVertexIndex);
+        indices.emplace_back(baseVertexIndex + 1);
+        indices.emplace_back(baseVertexIndex + 2);
+        indices.emplace_back(baseVertexIndex + 2);
+        indices.emplace_back(baseVertexIndex + 1);
+        indices.emplace_back(baseVertexIndex + 3);
       }
     }
   }

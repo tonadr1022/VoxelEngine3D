@@ -27,7 +27,7 @@ World::World(Renderer &renderer, int seed, const std::string &savePath)
 //    m_chunkLoadThreads.emplace_back(&World::generateTerrainWorker, this);
 //    m_chunkLoadThreads.emplace_back(&World::generateStructuresWorker, this);
 //    m_chunkLoadThreads.emplace_back(&World::generateChunkMeshWorker, this);
-    m_chunkLoadThreads.emplace_back(&World::generateChunksWorker, this);
+    m_chunkLoadThreads.emplace_back(&World::generateChunksWorker3, this);
   }
 }
 
@@ -146,8 +146,6 @@ void World::updateChunkStructureGenList() {
   for (auto chunkKeyIter = m_chunkStructureGenInfoMap.begin();
        chunkKeyIter != m_chunkStructureGenInfoMap.end();) {
     if (chunkKeyIter->second->m_done) {
-      // must erase from height map before reassigning chunkKeyIter.
-      m_heightMapsMap.erase(chunkKeyIter->first);
       chunkKeyIter = m_chunkStructureGenInfoMap.erase(chunkKeyIter);
     } else {
       chunkKeyIter++;
@@ -322,17 +320,14 @@ void World::generateChunksWorker() {
       m_chunksToLoadVector.pop_back();
       lock.unlock();
       m_numRunningThreads++;
-      Scope<std::array<int, CHUNK_AREA>> heights = m_chunkTerrainLoadInfoMap.at(pos)->process();
-      std::lock_guard<std::mutex> lock2(m_mainMutex);
-      m_heightMapsMap.emplace(pos, std::move(heights));
+      m_chunkTerrainLoadInfoMap.at(pos)->process();
       m_numRunningThreads--;
     } else if (!m_chunksReadyToGenStructuresList.empty()) {
       pos = m_chunksReadyToGenStructuresList.back();
       m_chunksReadyToGenStructuresList.pop_back();
-      const std::array<int, CHUNK_AREA> &heightMap = *m_heightMapsMap.at(pos).get();
       lock.unlock();
       m_numRunningThreads++;
-      m_chunkStructureGenInfoMap.at(pos)->process(heightMap);
+      m_chunkStructureGenInfoMap.at(pos)->process();
       m_numRunningThreads--;
     } else if (!m_chunksReadyToMeshList.empty()) {
       pos = m_chunksReadyToMeshList.back();
@@ -342,6 +337,65 @@ void World::generateChunksWorker() {
       m_chunkMeshInfoMap.at(pos)->process();
       m_numRunningThreads--;
     }
+  }
+}
+void World::generateChunksWorker3() {
+  while (true) {
+    std::vector<glm::ivec2> batchToLoad;
+    std::vector<glm::ivec2> batchToGenStructures;
+    std::vector<glm::ivec2> batchToMesh;
+
+    {
+      std::unique_lock<std::mutex> lock(m_mainMutex);
+      m_conditionVariable.wait(lock, [this]() {
+        return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads
+            && (!m_chunksToLoadVector.empty() || !m_chunksReadyToGenStructuresList.empty() ||
+                !m_chunksReadyToMeshList.empty()));
+      });
+
+      if (!m_isRunning) return;
+
+      // Collect a batch of chunks to load
+      while (!m_chunksToLoadVector.empty() && batchToLoad.size() < MAX_BATCH_SIZE) {
+        batchToLoad.push_back(m_chunksToLoadVector.back());
+        m_chunksToLoadVector.pop_back();
+      }
+
+      // Collect a batch of chunks to generate structures
+      while (!m_chunksReadyToGenStructuresList.empty() && batchToGenStructures.size() < MAX_BATCH_SIZE) {
+        batchToGenStructures.push_back(m_chunksReadyToGenStructuresList.back());
+        m_chunksReadyToGenStructuresList.pop_back();
+      }
+
+      // Collect a batch of chunks to mesh
+      while (!m_chunksReadyToMeshList.empty() && batchToMesh.size() < MAX_BATCH_SIZE) {
+        batchToMesh.push_back(m_chunksReadyToMeshList.back());
+        m_chunksReadyToMeshList.pop_back();
+      }
+    } // end lock scope. processing happens without lock on its own data
+
+    // Process the collected batches
+    processBatchToLoad(batchToLoad);
+    processBatchToGenStructures(batchToGenStructures);
+    processBatchToMesh(batchToMesh);
+  }
+}
+
+void World::processBatchToLoad(const std::vector<glm::ivec2> &batchToLoad) {
+  for (const auto &pos : batchToLoad) {
+    m_chunkTerrainLoadInfoMap.at(pos)->process();
+  }
+}
+
+void World::processBatchToGenStructures(const std::vector<glm::ivec2> &batchToGenStructures) {
+  for (const auto &pos : batchToGenStructures) {
+    m_chunkStructureGenInfoMap.at(pos)->process();
+  }
+}
+
+void World::processBatchToMesh(const std::vector<glm::ivec2> &batchToMesh) {
+  for (const auto &pos : batchToMesh) {
+    m_chunkMeshInfoMap.at(pos)->process();
   }
 }
 

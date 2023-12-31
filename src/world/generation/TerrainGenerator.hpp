@@ -24,9 +24,10 @@ class TerrainGenerator {
                             Chunk &chunk6,
                             Chunk &chunk7,
                             Chunk &chunk8, int seed);
-  void generateStructures(const std::array<int, CHUNK_AREA> &heightMap);
-  void generateStructuresFor(ChunkManager &chunkManager,
-                             const Ref<Chunk> &chunk);
+  void generateStructures();
+
+
+  static void getHeightMap(glm::ivec2 startWorldPos,int seed, std::array<int, CHUNK_AREA> &result);
 
 //  void makeTree(ChunkManager &chunkManager,
 //                const Ref<Chunk> &chunk,

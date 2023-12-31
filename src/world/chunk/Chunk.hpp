@@ -26,11 +26,13 @@ enum class ChunkState {
 };
 
 static inline int XYZ(int x, int y, int z) {
-  return z * CHUNK_AREA + y * CHUNK_WIDTH + x;
+  return x + (y * CHUNK_WIDTH) + (z * CHUNK_AREA);
+//  return z * CHUNK_AREA + y * CHUNK_WIDTH + x;
 }
 
 static inline int XYZ(glm::ivec3 pos) {
   return pos.z * CHUNK_AREA + pos.y * CHUNK_WIDTH + pos.x;
+//  return pos.x + (pos.y * CHUNK_WIDTH) + (pos.z * CHUNK_AREA);
 }
 
 static inline int XY(int x, int y) {
@@ -42,8 +44,8 @@ static inline int XY(glm::ivec2 &pos) {
 }
 
 static inline int MESH_XYZ(int x, int y, int z) {
-  return (z + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH +
-      (y + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH + (x + 1);
+  return (x + 1) + (y + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH
+      + (z + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH;
 }
 
 class Chunk {
@@ -67,6 +69,10 @@ class Chunk {
   }
   [[nodiscard]] inline Block getBlock(const glm::ivec3 &pos) const {
     return m_blocks[XYZ(pos)];
+  }
+
+  [[nodiscard]] inline Block getBlockFromIndex(int index) const {
+    return m_blocks[index];
   }
 
   ChunkMeshState chunkMeshState;
@@ -93,7 +99,6 @@ class ChunkInfo {
 
   virtual ~ChunkInfo() = default;
 
-
   std::atomic_bool m_done;
 };
 
@@ -101,7 +106,7 @@ class ChunkLoadInfo : public ChunkInfo {
  public:
   ChunkLoadInfo(glm::ivec2 pos, int seed);
 
-  Scope<std::array<int, CHUNK_AREA>> process();
+  void process();
   void applyTerrain(Chunk *chunk);
 
  private:
@@ -112,17 +117,10 @@ class ChunkLoadInfo : public ChunkInfo {
 
 class ChunkGenerateStructuresInfo : public ChunkInfo {
  public:
-  explicit ChunkGenerateStructuresInfo(Chunk &chunk0,
-                                       Chunk &chunk1,
-                                       Chunk &chunk2,
-                                       Chunk &chunk3,
-                                       Chunk &chunk4,
-                                       Chunk &chunk5,
-                                       Chunk &chunk6,
-                                       Chunk &chunk7,
-                                       Chunk &chunk8, int seed);
+  explicit ChunkGenerateStructuresInfo(Chunk &chunk0, Chunk &chunk1, Chunk &chunk2, Chunk &chunk3, Chunk &chunk4,
+                                       Chunk &chunk5, Chunk &chunk6, Chunk &chunk7, Chunk &chunk8, int seed);
 
-  void process(const std::array<int, CHUNK_AREA> &heightMap);
+  void process();
   void applyStructures(Chunk *chunk);
 
  private:
@@ -132,12 +130,9 @@ class ChunkGenerateStructuresInfo : public ChunkInfo {
 
 class ChunkMeshInfo : public ChunkInfo {
  public:
-  explicit ChunkMeshInfo(const Chunk &chunk0, const Chunk &chunk1,
-                         const Chunk &chunk2, const Chunk &chunk3,
-                         const Chunk &chunk4, const Chunk &chunk5,
-                         const Chunk &chunk6, const Chunk &chunk7,
+  explicit ChunkMeshInfo(const Chunk &chunk0, const Chunk &chunk1, const Chunk &chunk2, const Chunk &chunk3,
+                         const Chunk &chunk4, const Chunk &chunk5, const Chunk &chunk6, const Chunk &chunk7,
                          const Chunk &chunk8);
-
   void process();
   void applyMesh(Chunk *chunk);
 

@@ -80,13 +80,15 @@ class World {
 //  void updateChunkUpdateList();
   void processDirectChunkUpdates();
 
-  void generateTerrainWorker();
-  void generateStructuresWorker();
-  void generateChunkMeshWorker();
+
   void generateChunksWorker();
+  void generateChunksWorker3();
+  void processBatchToLoad(const std::vector<glm::ivec2>& batchToLoad);
+  void processBatchToGenStructures(const std::vector<glm::ivec2>& batchToGenStructures);
+  void processBatchToMesh(const std::vector<glm::ivec2>& batchToMesh);
+
   void meshUpdateWorker();
 
-  float m_frameTime = 0;
   int m_renderDistance = 16;
   int m_loadDistance = m_renderDistance + 2;
   int m_structureLoadDistance = m_renderDistance + 1;
@@ -109,11 +111,11 @@ class World {
   std::vector<std::thread> m_chunkLoadThreads;
   std::atomic_uint m_numRunningThreads;
   unsigned int m_numLoadingThreads;
+  static constexpr int MAX_BATCH_SIZE = 20;
 
   std::vector<glm::ivec2> m_chunksToLoadVector;
   std::unordered_map<glm::ivec2, Scope<ChunkLoadInfo>>
       m_chunkTerrainLoadInfoMap;
-  std::unordered_map<glm::ivec2, Scope<std::array<int, CHUNK_AREA>>> m_heightMapsMap;
 
   std::vector<glm::ivec2> m_chunksInStructureGenRangeVector;
   std::unordered_map<glm::ivec2, Scope<ChunkGenerateStructuresInfo>> m_chunkStructureGenInfoMap;

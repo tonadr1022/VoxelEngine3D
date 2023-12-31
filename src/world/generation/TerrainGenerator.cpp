@@ -5,8 +5,10 @@
 #include "TerrainGenerator.hpp"
 #include "../chunk/Chunk.hpp"
 
-void TerrainGenerator::generateStructures(const std::array<int, CHUNK_AREA> &heightMap) {
+void TerrainGenerator::generateStructures() {
   auto chunkWorldPos = m_chunk4.m_worldPos;
+  std::array<int, CHUNK_AREA> heightMap{};
+  getHeightMap(chunkWorldPos, m_seed, heightMap);
 
   FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
   fastNoise->SetSeed(m_seed);
@@ -27,7 +29,7 @@ void TerrainGenerator::generateStructures(const std::array<int, CHUNK_AREA> &hei
       }
       bool structureExists = static_cast<int>((treeMap[heightMapIndex] + 1) * 100.0f) == 0;
       if (structureExists) {
-        makeTree({x, y, height+1});
+        makeTree({x, y, height + 1});
       }
       heightMapIndex++;
     }
@@ -44,8 +46,8 @@ void TerrainGenerator::makeTree(const glm::ivec3 &pos) {
   for (int x = -2; x <= 2; x++) {
     for (int y = -2; y <= 2; y++) {
       for (int z = 8; z <= 12; z++) {
-        setBlock( pos.x + x,
-                  pos.y + y,
+        setBlock(pos.x + x,
+                 pos.y + y,
                  pos.z + z,
                  Block::OAK_LEAVES);
       }
@@ -110,5 +112,18 @@ void TerrainGenerator::setBlock(int x, int y, int z, Block block) {
     // in middle chunk
   else {
     m_chunk4.setBlock(x, y, z, block);
+  }
+}
+void TerrainGenerator::getHeightMap(glm::ivec2 startWorldPos, int seed, std::array<int, CHUNK_AREA> &result) {
+  FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
+  fastNoise->SetSeed(seed);
+  fastNoise->SetFractalOctaves(4);
+  fastNoise->SetFrequency(1.0f / 300.0f);
+  float *heightMap = fastNoise->GetSimplexFractalSet(startWorldPos.x, startWorldPos.y, 0, CHUNK_WIDTH,
+                                                     CHUNK_WIDTH, 1);
+  int highest = 0;
+  for (int i = 0; i < CHUNK_AREA; i++) {
+    result[i] = (int) floor(heightMap[i] * 64) + 70;
+    highest = std::max(highest, result[i]);
   }
 }
