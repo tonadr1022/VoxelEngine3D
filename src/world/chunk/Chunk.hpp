@@ -22,25 +22,22 @@ enum class ChunkState {
   FULLY_GENERATED,
   UNGENERATED,
   CHANGED,
-  UNDEFINED,
 };
 
 static inline int XYZ(int x, int y, int z) {
-  return x + (y * CHUNK_WIDTH) + (z * CHUNK_AREA);
-//  return z * CHUNK_AREA + y * CHUNK_WIDTH + x;
+  return x + (y * CHUNK_SIZE) + (z * CHUNK_AREA);
 }
 
 static inline int XYZ(glm::ivec3 pos) {
-  return pos.z * CHUNK_AREA + pos.y * CHUNK_WIDTH + pos.x;
-//  return pos.x + (pos.y * CHUNK_WIDTH) + (pos.z * CHUNK_AREA);
+  return pos.z * CHUNK_AREA + pos.y * CHUNK_SIZE + pos.x;
 }
 
 static inline int XY(int x, int y) {
-  return x + y * CHUNK_WIDTH;
+  return x + y * CHUNK_SIZE;
 }
 
 static inline int XY(glm::ivec2 &pos) {
-  return pos.x + pos.y * CHUNK_WIDTH;
+  return pos.x + pos.y * CHUNK_SIZE;
 }
 
 static inline int MESH_XYZ(int x, int y, int z) {
@@ -51,7 +48,7 @@ static inline int MESH_XYZ(int x, int y, int z) {
 class Chunk {
  public:
   Chunk() = delete;
-  explicit Chunk(glm::ivec2 location);
+  explicit Chunk(glm::ivec3 pos);
   ~Chunk();
 
   inline void setBlock(int x, int y, int z, Block block) {
@@ -61,8 +58,8 @@ class Chunk {
   void markDirty();
 
   static inline bool outOfBounds(int x, int y, int z) {
-    return x < 0 || x >= CHUNK_WIDTH || y < 0 || y >= CHUNK_WIDTH || z < 0
-        || z >= CHUNK_HEIGHT;
+    return x < 0 || x >= CHUNK_SIZE || y < 0 || y >= CHUNK_SIZE || z < 0
+        || z >= CHUNK_SIZE;
   }
   [[nodiscard]] inline Block getBlock(int x, int y, int z) const {
     return m_blocks[XYZ(x, y, z)];
@@ -79,8 +76,8 @@ class Chunk {
   ChunkState chunkState;
 
   Block m_blocks[CHUNK_VOLUME]{};
-  glm::ivec2 m_pos;
-  glm::ivec2 m_worldPos;
+  glm::ivec3 m_pos;
+  glm::ivec3 m_worldPos;
   float m_firstBufferTime = 0;
 
   /**
@@ -106,38 +103,37 @@ class ChunkTerrainInfo : public ChunkInfo {
   ChunkTerrainInfo(glm::ivec2 pos, int seed);
 
   void generateTerrainData();
-  void applyTerrainDataToChunk(Chunk *chunk);
+  void applyTerrainDataToChunk(Chunk *(&chunk)[CHUNKS_PER_STACK]);
 
  private:
-  Block m_blocks[CHUNK_VOLUME]{};
+  Block m_blocks[CHUNK_VOLUME * CHUNKS_PER_STACK]{};
   int m_seed;
   glm::ivec2 m_pos;
 };
 
 class ChunkStructuresInfo : public ChunkInfo {
  public:
-  explicit ChunkStructuresInfo(Chunk *chunks[9], int seed);
+  explicit ChunkStructuresInfo(Chunk *chunks[27], int seed);
 
   void generateStructureData();
 
  private:
   TerrainGenerator m_terrainGenerator;
-  glm::ivec2 m_pos;
+  glm::ivec3 m_pos;
 };
 
 class ChunkMeshInfo : public ChunkInfo {
  public:
-  explicit ChunkMeshInfo(Chunk *chunks[9]);
+  explicit ChunkMeshInfo(Chunk *chunks[27]);
   void generateMeshData();
   void applyMeshDataToMesh(Chunk *chunk);
 
  private:
-  Chunk *m_chunks[9]{};
+  Chunk *m_chunks[27]{};
   std::vector<uint32_t> m_opaqueVertices;
   std::vector<uint32_t> m_transparentVertices;
   std::vector<unsigned int> m_opaqueIndices;
   std::vector<unsigned int> m_transparentIndices;
-  glm::ivec2 m_pos{};
 };
 
 #endif //VOXEL_ENGINE_CHUNK_HPP

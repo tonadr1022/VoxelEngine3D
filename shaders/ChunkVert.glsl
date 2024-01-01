@@ -1,9 +1,6 @@
 #version 400 core
 
-layout (location = 0) in uint pos;
-layout (location = 1) in vec2 texCoord2;
-layout (location = 2) in float occlusionLevel2;
-layout (location = 3) in float texIndex2;
+layout (location = 0) in uint vertexData;
 
 out vec3 v_FragPos;
 out vec2 v_TexCoord;
@@ -83,13 +80,13 @@ vec3 applyWave(vec3 vertexPos, uint texIndex) {
 
 
 void main() {
-    uint posX = bitfieldExtract(pos, 0, 5);
-    uint posY = bitfieldExtract(pos, 5, 5);
-    uint posZ = bitfieldExtract(pos, 10, 8);
-    uint occlusionLevel = bitfieldExtract(pos, 18, 2);
-    int x = int(bitfieldExtract(pos, 20, 1));
-    int y = int(bitfieldExtract(pos, 21, 1));
-    uint texIndex = bitfieldExtract(pos, 22, 8);
+    uint posX = bitfieldExtract(vertexData, 0, 6);
+    uint posY = bitfieldExtract(vertexData, 6, 6);
+    uint posZ = bitfieldExtract(vertexData, 12, 6);
+    uint occlusionLevel = bitfieldExtract(vertexData, 18, 2);
+    int x = int(bitfieldExtract(vertexData, 20, 1));
+    int y = int(bitfieldExtract(vertexData, 21, 1));
+    uint texIndex = bitfieldExtract(vertexData, 22, 8);
 
     vec3 vertexPos = vec3(posX, posY, posZ);
     vertexPos = applyWave(vertexPos, texIndex);

@@ -141,59 +141,11 @@ struct AdjacentBlockPositionsSoA {
   }
 };
 
-Block ChunkMeshBuilder::getBlock(int x, int y, int z) {
-  Block block;
-  // adj block in -1, -1 chunk (Chunk 0)
-  if (x < 0 && y < 0) {
-    block = m_chunks[0]->getBlock(CHUNK_WIDTH - 1, CHUNK_WIDTH - 1, z);
-  }
-    // adj block in -1, 1 chunk (Chunk 2)
-  else if (x < 0 && y >= CHUNK_WIDTH) {
-    block = m_chunks[2]->getBlock(CHUNK_WIDTH - 1, 0, z);
-  }
-
-    // adj block in 1, -1 chunk (Chunk 6)
-  else if (x >= CHUNK_WIDTH && y < 0) {
-    block = m_chunks[6]->getBlock(0, CHUNK_WIDTH - 1, z);
-  }
-
-    // adj block in 1, 1 chunk (Chunk 8)
-  else if (x >= CHUNK_WIDTH && y >= CHUNK_WIDTH) {
-    block = m_chunks[8]->getBlock(0, 0, z);
-  }
-
-    // adj block in -1, 0 chunk (Chunk 1)
-  else if (x < 0) {
-    block = m_chunks[1]->getBlock(CHUNK_WIDTH - 1, y, z);
-  }
-
-    // adj block in 1, 0 chunk (Chunk 7)
-  else if (x >= CHUNK_WIDTH) {
-    block = m_chunks[7]->getBlock(0, y, z);
-  }
-
-    // adj block in 0, -1 chunk (Chunk 3)
-  else if (y < 0) {
-    block = m_chunks[3]->getBlock(x, CHUNK_WIDTH - 1, z);
-  }
-
-    // adj block in 0, 1 chunk (Chunk 5)
-  else if (y >= CHUNK_WIDTH) {
-    block = m_chunks[5]->getBlock(x, 0, z);
-  }
-    // in middle chunk (mesh building chunk)
-  else {
-    block = m_chunks[4]->getBlock(x, y, z);
-  }
-
-  return block;
-}
-
-ChunkMeshBuilder::ChunkMeshBuilder(Chunk *(&chunks)[9]) {
-  for (int i = 0; i < 9; i++) {
-    m_chunks[i] = chunks[i];
-  }
-}
+//ChunkMeshBuilder::ChunkMeshBuilder(Chunk *(&chunks)[27]) {
+//  for (int i = 0; i < 9; i++) {
+//    m_chunks[i] = chunks[i];
+//  }
+//}
 
 /*
  * Neighbor Chunks Array Structure
@@ -208,29 +160,26 @@ void ChunkMeshBuilder::constructMesh(
     std::vector<uint32_t> &opaqueVertices,
     std::vector<unsigned int> &opaqueIndices,
     std::vector<uint32_t> &transparentVertices,
-    std::vector<unsigned int> &transparentIndices) {
+    std::vector<unsigned int> &transparentIndices, Chunk *(&chunks)[27]) {
+  std::cout << chunks[13]->m_worldPos.z << std::endl;
+  int chunkBaseZ = chunks[13]->m_worldPos.z;
 
-  for (auto chunk : m_chunks) {
-    if (chunk->chunkState != ChunkState::FULLY_GENERATED) return;
-  }
-
-  opaqueVertices.reserve(5000);
-  opaqueIndices.reserve(5000);
-  transparentVertices.reserve(5000);
-  transparentIndices.reserve(5000);
-  int numVertices[2]; // 0 is opaque, 1 is transparent
-  int numIndices[2];
+  // TODO figure out size to reserve
+//  opaqueVertices.reserve(5000);
+//  opaqueIndices.reserve(5000);
+//  transparentVertices.reserve(5000);
+//  transparentIndices.reserve(5000);
 
   int x, y, z, faceIndex, textureX, textureY;
   std::array<int, 20> faceVertices{};
   AdjacentBlockPositionsSoA adjacentBlockPositions{};
-  // TODO: fix level 255. random blocks appear, so data isn't set properly for it
+
   for (int chunkBlockIndex = 0; chunkBlockIndex < CHUNK_VOLUME; chunkBlockIndex++) {
-    x = chunkBlockIndex % CHUNK_WIDTH;
-    y = (chunkBlockIndex / CHUNK_WIDTH) % CHUNK_WIDTH;
+    x = chunkBlockIndex % CHUNK_SIZE;
+    y = (chunkBlockIndex / CHUNK_SIZE) % CHUNK_SIZE;
     z = chunkBlockIndex / (CHUNK_AREA);
 
-    Block block = m_chunks[4]->getBlockFromIndex(chunkBlockIndex);
+    Block block = chunks[13]->getBlockFromIndex(chunkBlockIndex);
     if (block == Block::AIR) continue;
 
     glm::ivec3 blockPos = {x, y, z};
@@ -242,10 +191,9 @@ void ChunkMeshBuilder::constructMesh(
       int adjBlockZ = adjacentBlockPositions.z[faceIndex];
 
       // skip faces adjacent to borders
-      if (adjBlockZ < 0 || adjBlockZ >= CHUNK_HEIGHT)
-        continue;
+      if (adjBlockZ + chunkBaseZ < 0 || adjBlockZ + chunkBaseZ >= WORLD_HEIGHT_BLOCKS) continue;
 
-      Block adjacentBlock = getBlock(adjBlockX, adjBlockY, adjBlockZ);
+      Block adjacentBlock = getBlock(adjBlockX, adjBlockY, adjBlockZ, chunks);
 
       BlockData &adjBlockData = BlockDB::getBlockData(adjacentBlock);
       if (!adjBlockData.isTransparent) continue;
@@ -254,7 +202,7 @@ void ChunkMeshBuilder::constructMesh(
       auto face = static_cast<BlockFace>(faceIndex);
 
       BlockData &blockData = BlockDB::getBlockData(block);
-      OcclusionLevels occlusionLevels = getOcclusionLevels(blockPos, face);
+      OcclusionLevels occlusionLevels = getOcclusionLevels(blockPos, face, chunks);
       switch (face) {
         case BlockFace::FRONT:faceVertices = frontFace;
           textureX = blockData.frontTexCoords.x;
@@ -282,26 +230,22 @@ void ChunkMeshBuilder::constructMesh(
           break;
         default:break;
       }
-      auto &vertices =
-          blockData.isTransparent ? transparentVertices : opaqueVertices;
-      auto &indices =
-          blockData.isTransparent ? transparentIndices : opaqueIndices;
-      int &vertexCount = blockData.isTransparent ? numVertices[1] : numVertices[0];
-      int &indexCount = blockData.isTransparent ? numIndices[1] : numIndices[0];
+      auto &vertices = blockData.isTransparent ? transparentVertices : opaqueVertices;
+      auto &indices = blockData.isTransparent ? transparentIndices : opaqueIndices;
 
       auto baseVertexIndex = vertices.size();
       int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
 
       for (int i = 0; i < 20; i += 5) {
-        // x between [0, 16] == 5 bits, y between [0, 16] == 5 bits, z
-        // between [0, 255] == 8 bits occlusion level [0, 3] == 2 bits,
+        // x between [0, 32] == 6 bits, y between [0, 32] == 6 bits, z
+        // between [0, 32] == 6 bits occlusion level [0, 3] == 2 bits,
         // textureX [0, 1] == 1 bit, textureY [0, 1] == 1 bit textureIndex
         // [0, 255] == 8 bits. total 30 bits pack x, y, z, occlusion level,
         // textureX, textureY, textureIndex into 32 bits
         uint32_t vertexData =
-            ((blockPos.x + faceVertices[i]) & 0x1F) |
-                ((blockPos.y + faceVertices[i + 1] & 0x1F) << 5) |
-                ((blockPos.z + faceVertices[i + 2] & 0xFF) << 10) |
+            ((blockPos.x + faceVertices[i]) & 0x3F) |
+                ((blockPos.y + faceVertices[i + 1] & 0x3F) << 6) |
+                ((blockPos.z + faceVertices[i + 2] & 0x3F) << 12) |
                 ((occlusionLevels[i / 5] & 0x3) << 18) |
                 ((faceVertices[i + 3] & 0x1) << 20) |
                 ((faceVertices[i + 4] & 0x1) << 21) |
@@ -334,8 +278,9 @@ void ChunkMeshBuilder::constructMesh(
   transparentIndices.shrink_to_fit();
 }
 
-OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(
-    const glm::ivec3 &blockPosInChunk, BlockFace face) {
+OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(const glm::ivec3 &blockPosInChunk,
+                                                     BlockFace face,
+                                                     Chunk *(&chunks)[27]) {
   // source:
   // https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
 
@@ -349,19 +294,19 @@ OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(
     bool cornerIsSolid = false;
 
     glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
-    Block side1Block = getBlock(side1Pos.x, side1Pos.y, side1Pos.z);
+    Block side1Block = getBlock(side1Pos.x, side1Pos.y, side1Pos.z, chunks);
     if (side1Block != Block::AIR) {
       side1IsSolid = true;
     }
 
     glm::ivec3 side2Pos = blockPosInChunk + faceLightingAdjacency[1];
-    Block side2Block = getBlock(side2Pos.x, side2Pos.y, side2Pos.z);
+    Block side2Block = getBlock(side2Pos.x, side2Pos.y, side2Pos.z, chunks);
     if (side2Block != Block::AIR) {
       side2IsSolid = true;
     }
 
     glm::ivec3 cornerPos = blockPosInChunk + faceLightingAdjacency[2];
-    Block cornerBlock = getBlock(cornerPos.x, cornerPos.y, cornerPos.z);
+    Block cornerBlock = getBlock(cornerPos.x, cornerPos.y, cornerPos.z, chunks);
     if (cornerBlock != Block::AIR) {
       cornerIsSolid = true;
     }
@@ -374,4 +319,19 @@ OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(
     }
   }
   return occlusionLevels;
+}
+
+Block ChunkMeshBuilder::getBlock(int x, int y, int z, Chunk *(&chunks)[27]) {
+  int offsetX = Utils::chunkNeighborOffset(x);
+  int offsetY = Utils::chunkNeighborOffset(y);
+  int offsetZ = Utils::chunkNeighborOffset(z);
+  if (offsetX == 0 && offsetY == 0 && offsetZ == 0) {
+    return chunks[Utils::getNeighborArrayIndex(offsetX, offsetY, offsetZ)]->getBlock(x, y, z);
+  }
+  int relX = Utils::getRelativeIndex(x);
+  int relY = Utils::getRelativeIndex(y);
+  int relZ = Utils::getRelativeIndex(z);
+  Chunk *chunk = chunks[Utils::getNeighborArrayIndex(offsetX, offsetY, offsetZ)];
+  if (!chunk) return Block::AIR;
+  return chunk->getBlock(relX, relY, relZ);
 }

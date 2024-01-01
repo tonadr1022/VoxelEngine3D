@@ -109,8 +109,6 @@ set(SOURCE_FILES
         src/input/KeyPress.hpp
         src/world/save/WorldSave.cpp
         src/world/save/WorldSave.hpp
-        src/world/chunk/ChunkAlg.cpp
-        src/world/chunk/ChunkAlg.hpp
         src/world/chunk/ChunkMeshBuilder.cpp
         src/world/chunk/ChunkMeshBuilder.hpp
         src/renderer/ViewFrustum.cpp

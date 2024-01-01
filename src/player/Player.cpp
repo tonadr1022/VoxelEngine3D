@@ -81,7 +81,4 @@ void Player::onCursorUpdate(double xOffset, double yOffset) {
   camera.onCursorUpdate(xOffset, yOffset);
 }
 
-glm::ivec2 Player::getChunkPosition() {
-  return {static_cast<int>(position.x / CHUNK_WIDTH),
-          static_cast<int>(position.y / CHUNK_WIDTH)};
-}
+

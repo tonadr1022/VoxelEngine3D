@@ -14,7 +14,9 @@ class Player {
   Player();
 
   glm::vec3 &getPosition();
-  glm::ivec2 getChunkPosition();
+  [[nodiscard]] inline glm::ivec3 getChunkPosition() const { return {static_cast<int>(position.x / CHUNK_SIZE),
+                                                 static_cast<int>(position.y / CHUNK_SIZE),
+                                                 static_cast<int>(position.z / CHUNK_SIZE)};}
   void update(float deltaTime);
   void perFrameUpdate();
   void processScrollInput(double yoffset);

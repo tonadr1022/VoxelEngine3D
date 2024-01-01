@@ -5,13 +5,12 @@
 #include "Chunk.hpp"
 #include "ChunkMeshBuilder.hpp"
 
-Chunk::Chunk(glm::ivec2 pos)
+Chunk::Chunk(glm::ivec3 pos)
     : m_pos(pos),
-      m_worldPos(pos * CHUNK_WIDTH),
+      m_worldPos(pos * CHUNK_SIZE),
       chunkMeshState(ChunkMeshState::UNBUILT),
       chunkState(ChunkState::UNGENERATED),
-      m_boundingBox({glm::vec3(m_worldPos.x, m_worldPos.y, 0),
-                     glm::vec3(m_worldPos.x + CHUNK_WIDTH, m_worldPos.y + CHUNK_WIDTH, CHUNK_HEIGHT)}) {}
+      m_boundingBox({m_worldPos, m_worldPos + CHUNK_SIZE}) {}
 
 Chunk::~Chunk() {
   m_transparentMesh.clearBuffers();
@@ -30,26 +29,44 @@ ChunkTerrainInfo::ChunkTerrainInfo(glm::ivec2 pos, int seed)
 }
 
 void ChunkTerrainInfo::generateTerrainData() {
-  auto chunkWorldPos = glm::ivec2(m_pos.x * CHUNK_WIDTH, m_pos.y * CHUNK_WIDTH);
+  auto chunkWorldPos = m_pos * CHUNK_SIZE;
   TerrainGenerator::generateTerrain(chunkWorldPos, m_seed, m_blocks);
   m_done = true;
 }
 
-void ChunkTerrainInfo::applyTerrainDataToChunk(Chunk *chunk) {
-  std::copy(m_blocks, m_blocks + CHUNK_VOLUME, chunk->m_blocks);
-  chunk->chunkState = ChunkState::TERRAIN_GENERATED;
+void ChunkTerrainInfo::applyTerrainDataToChunk(Chunk *(&chunks)[CHUNKS_PER_STACK]) {
+  for (int z = 0; z < CHUNKS_PER_STACK; z++) {
+    int zOffset0 = z * CHUNK_VOLUME;
+    int zOffset1 = z * CHUNK_VOLUME + CHUNK_VOLUME;
+    std::copy(m_blocks + zOffset0, m_blocks + zOffset1, chunks[z]->m_blocks );
+    chunks[z]->chunkState = ChunkState::TERRAIN_GENERATED;
+  }
 }
 
-ChunkMeshInfo::ChunkMeshInfo(Chunk *chunks[9]) {
-  for (int i = 0; i < 9; i++) {
+ChunkMeshInfo::ChunkMeshInfo(Chunk *chunks[27]) {
+  //  structure of the neighbour arrays
+  // y
+  // |
+  // |  6   15  24
+  // |    7   16  25
+  // |      8   17  26
+  // |
+  // |  3   12  21
+  // |    4   13  22
+  // |      5   14  23
+  // \-------------------x
+  //  \ 0   9   18
+  //   \  1   10  19
+  //    \   2   11  20
+  //     z
+  for (int i = 0; i < 27; i++) {
     m_chunks[i] = chunks[i];
   }
-  m_pos = m_chunks[4]->m_pos;
 }
 
 void ChunkMeshInfo::generateMeshData() {
-  ChunkMeshBuilder meshBuilder(m_chunks);
-  meshBuilder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
+//  ChunkMeshBuilder meshBuilder(m_chunks);
+  ChunkMeshBuilder::constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices, m_chunks);
   m_done = true;
 }
 
@@ -61,7 +78,7 @@ void ChunkMeshInfo::applyMeshDataToMesh(Chunk *chunk) {
   chunk->chunkMeshState = ChunkMeshState::BUILT;
 }
 
-ChunkStructuresInfo::ChunkStructuresInfo(Chunk *(chunks)[9], int seed) : m_terrainGenerator(chunks, seed), m_pos(chunks[4]->m_pos) {
+ChunkStructuresInfo::ChunkStructuresInfo(Chunk *(chunks)[27], int seed) : m_terrainGenerator(chunks, seed), m_pos(chunks[13]->m_pos) {
 
 }
 void ChunkStructuresInfo::generateStructureData() {
