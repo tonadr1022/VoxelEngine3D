@@ -62,6 +62,17 @@ constexpr std::array<std::array<std::array<glm::ivec3, 3>, 4>, 6>
                                     // 0, 1, 1
                                     {glm::ivec3(-1, 1, 0), glm::ivec3(-1, 0, 1), glm::ivec3(-1, 1, 1)},
                                 }},
+                               // right face
+                               {{
+                                    // 0, 1, 0
+                                    {glm::ivec3(0, 1, -1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, -1)},
+                                    // 0, 1, 1
+                                    {glm::ivec3(0, 1, 1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, 1)},
+                                    // 1, 1, 0
+                                    {glm::ivec3(0, 1, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
+                                    // 1, 1, 1
+                                    {glm::ivec3(0, 1, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
+                                }},
                                // left face
                                {{
                                     // 0, 0, 0
@@ -75,17 +86,6 @@ constexpr std::array<std::array<std::array<glm::ivec3, 3>, 4>, 6>
                                      glm::ivec3(-1, -1, 1)},
                                     // 1, 0, 1
                                     {glm::ivec3(0, -1, 1), glm::ivec3(1, -1, 0), glm::ivec3(1, -1, 1)},
-                                }},
-                               // right face
-                               {{
-                                    // 0, 1, 0
-                                    {glm::ivec3(0, 1, -1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, -1)},
-                                    // 0, 1, 1
-                                    {glm::ivec3(0, 1, 1), glm::ivec3(-1, 1, 0), glm::ivec3(-1, 1, 1)},
-                                    // 1, 1, 0
-                                    {glm::ivec3(0, 1, -1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, -1)},
-                                    // 1, 1, 1
-                                    {glm::ivec3(0, 1, 1), glm::ivec3(1, 1, 0), glm::ivec3(1, 1, 1)},
                                 }},
                                // top face
                                {{
@@ -116,20 +116,9 @@ constexpr std::array<std::array<std::array<glm::ivec3, 3>, 4>, 6>
                            }};
 }  // namespace
 
+
+
 struct AdjacentBlockPositions {
-  glm::i16vec3 positions[6];
-
-  void update(short x, short y, short z) {
-    positions[0] = {x + 1, y, z};
-    positions[1] = {x - 1, y, z};
-    positions[2] = {x, y - 1, z};
-    positions[3] = {x, y + 1, z};
-    positions[4] = {x, y, z + 1};
-    positions[5] = {x, y, z - 1};
-  }
-};
-
-struct AdjacentBlockPositionsSoA {
   std::array<int, 6> x;
   std::array<int, 6> y;
   std::array<int, 6> z;
@@ -145,51 +134,61 @@ ChunkMeshBuilder::ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE], const 
     blocks), m_chunkWorldPos(chunkWorldPos) {
 }
 
-/*
- * Neighbor Chunks Array Structure
- *
- * \------------------ x
- *  \  0  3  6
- *   \  1  4  7
- *    \  2  5  8
- *     y
- */
-void ChunkMeshBuilder::constructMesh(
-    std::vector<uint32_t> &opaqueVertices,
-    std::vector<unsigned int> &opaqueIndices,
-    std::vector<uint32_t> &transparentVertices,
-    std::vector<unsigned int> &transparentIndices) {
 
-  // TODO figure out size to reserve
-  opaqueVertices.reserve(8192);
-  opaqueIndices.reserve(8192);
-  transparentVertices.reserve(4096);
-  transparentIndices.reserve(4096);
+void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
+                                     std::vector<unsigned int> &opaqueIndices,
+                                     std::vector<uint32_t> &transparentVertices,
+                                     std::vector<unsigned int> &transparentIndices) {
+
+  uint32_t opaqueVertices_[50000]{};
+  uint32_t transparentVertices_[50000]{};
+  unsigned int opaqueIndices_[50000]{};
+  unsigned int transparentIndices_[50000]{};
+
+  int opaqueVerticesIndex = 0;
+  int transparentVerticesIndex = 0;
+  int opaqueIndicesIndex = 0;
+  int transparentIndicesIndex = 0;
+
   int chunkBaseZ = m_chunkWorldPos.z;
   int x, y, z, faceIndex, textureX, textureY;
   std::array<int, 20> faceVertices{};
-  AdjacentBlockPositionsSoA adjacentBlockPositions{};
+  AdjacentBlockPositions adjacentBlockPositions{};
 
   for (int chunkBlockIndex = 0; chunkBlockIndex < CHUNK_VOLUME; chunkBlockIndex++) {
     y = chunkBlockIndex & 31;
     x = (chunkBlockIndex >> 5) & 31;
     z = chunkBlockIndex >> 10;
 
-    Block block = getBlock(x, y, z);
+    Block block = m_blocks[MESH_XYZ(x, y, z)];
     if (block == Block::AIR) continue;
 
     glm::ivec3 blockPos = {x, y, z};
-    adjacentBlockPositions.update(x, y, z);
+    int blockPos2[3] = {x, y, z};
+//    adjacentBlockPositions.update(x, y, z);
 
+    // 1, 0, 0
+    // -1, 0, 0
+    // 0, 1, 0
+    // 0, -1, 0
+    // 0, 0, 1
+    // 0, 0, -1
     for (faceIndex = 0; faceIndex < 6; faceIndex++) {
-      int adjBlockX = adjacentBlockPositions.x[faceIndex];
-      int adjBlockY = adjacentBlockPositions.y[faceIndex];
-      int adjBlockZ = adjacentBlockPositions.z[faceIndex];
+      int adjBlockPos[3] = {blockPos2[0], blockPos2[1], blockPos2[2]};
+      adjBlockPos[faceIndex>>1] += 1 - ((faceIndex&1)<<1);
+
+//      int adjBlockX = adjacentBlockPositions.x[faceIndex];
+//      int adjBlockY = adjacentBlockPositions.y[faceIndex];
+//      int adjBlockZ = adjacentBlockPositions.z[faceIndex];
+      int adjBlockX = adjBlockPos[0];
+      int adjBlockY = adjBlockPos[1];
+      int adjBlockZ = adjBlockPos[2];
+
 
       // skip faces adjacent to absolute borders
       if (adjBlockZ + chunkBaseZ < 0 || adjBlockZ + chunkBaseZ >= WORLD_HEIGHT_BLOCKS) continue;
 
-      Block adjacentBlock = getBlock(adjBlockX, adjBlockY, adjBlockZ);
+      Block adjacentBlock = m_blocks[MESH_XYZ(adjBlockX, adjBlockY, adjBlockZ)];
       if (adjacentBlock == block) continue;
 
       BlockData &adjBlockData = BlockDB::getBlockData(adjacentBlock);
@@ -226,13 +225,15 @@ void ChunkMeshBuilder::constructMesh(
           break;
         default:break;
       }
-      auto &vertices = blockData.isTransparent ? transparentVertices : opaqueVertices;
-      auto &indices = blockData.isTransparent ? transparentIndices : opaqueIndices;
 
-      auto baseVertexIndex = vertices.size();
+      auto vertices = blockData.isTransparent ? transparentVertices_ : opaqueVertices_;
+      auto indices = blockData.isTransparent ? transparentIndices_ : opaqueIndices_;
+      auto &verticesIndex = blockData.isTransparent ? transparentVerticesIndex : opaqueVerticesIndex;
+      auto &indicesIndex = blockData.isTransparent ? transparentIndicesIndex : opaqueIndicesIndex;
+      auto baseVertexIndex = verticesIndex;
+
       int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
-
-      for (int i = 0; i < 20; i += 5) {
+      for (int i = 0, j = 0; i < 20; i += 5, j++) {
         // x between [0, 32] == 6 bits, y between [0, 32] == 6 bits, z
         // between [0, 32] == 6 bits occlusion level [0, 3] == 2 bits,
         // textureX [0, 1] == 1 bit, textureY [0, 1] == 1 bit textureIndex
@@ -242,42 +243,42 @@ void ChunkMeshBuilder::constructMesh(
             ((blockPos.x + faceVertices[i]) & 0x3F) |
                 ((blockPos.y + faceVertices[i + 1] & 0x3F) << 6) |
                 ((blockPos.z + faceVertices[i + 2] & 0x3F) << 12) |
-                ((occlusionLevels[i / 5] & 0x3) << 18) |
+                ((occlusionLevels[j] & 0x3) << 18) |
                 ((faceVertices[i + 3] & 0x1) << 20) |
                 ((faceVertices[i + 4] & 0x1) << 21) |
                 ((textureIndex & 0xFF) << 22);
-        vertices.emplace_back(vertexData);
+        vertices[verticesIndex++] = vertexData;
       }
-
       // check whether to flip quad based on AO
-      if (occlusionLevels[0] + occlusionLevels[3] >
-          occlusionLevels[1] + occlusionLevels[2]) {
-        indices.emplace_back(baseVertexIndex + 2);
-        indices.emplace_back(baseVertexIndex + 0);
-        indices.emplace_back(baseVertexIndex + 3);
-        indices.emplace_back(baseVertexIndex + 3);
-        indices.emplace_back(baseVertexIndex + 0);
-        indices.emplace_back(baseVertexIndex + 1);
+      if (occlusionLevels[0] + occlusionLevels[3] > occlusionLevels[1] + occlusionLevels[2]) {
+        indices[indicesIndex++] = baseVertexIndex + 2;
+        indices[indicesIndex++] = baseVertexIndex + 0;
+        indices[indicesIndex++] = baseVertexIndex + 3;
+        indices[indicesIndex++] = baseVertexIndex + 3;
+        indices[indicesIndex++] = baseVertexIndex + 0;
+        indices[indicesIndex++] = baseVertexIndex + 1;
       } else {
-        indices.emplace_back(baseVertexIndex);
-        indices.emplace_back(baseVertexIndex + 1);
-        indices.emplace_back(baseVertexIndex + 2);
-        indices.emplace_back(baseVertexIndex + 2);
-        indices.emplace_back(baseVertexIndex + 1);
-        indices.emplace_back(baseVertexIndex + 3);
+        indices[indicesIndex++] = baseVertexIndex;
+        indices[indicesIndex++] = baseVertexIndex + 1;
+        indices[indicesIndex++] = baseVertexIndex + 2;
+        indices[indicesIndex++] = baseVertexIndex + 2;
+        indices[indicesIndex++] = baseVertexIndex + 1;
+        indices[indicesIndex++] = baseVertexIndex + 3;
       }
     }
   }
-  // shrink to fit
-  opaqueVertices.shrink_to_fit();
-  opaqueIndices.shrink_to_fit();
-  transparentVertices.shrink_to_fit();
-  transparentIndices.shrink_to_fit();
+  opaqueVertices = std::vector<uint32_t>(opaqueVertices_, opaqueVertices_ + opaqueVerticesIndex);
+  opaqueIndices = std::vector<unsigned int>(opaqueIndices_, opaqueIndices_ + opaqueIndicesIndex);
+  transparentVertices = std::vector<uint32_t>(transparentVertices_, transparentVertices_ + transparentVerticesIndex);
+  transparentIndices = std::vector<unsigned int>(transparentIndices_, transparentIndices_ + transparentIndicesIndex);
 
-//  std::cout << "opaqueVertices: " << opaqueVertices.size() << std::endl;
-//  std::cout << "opaqueIndices: " << opaqueIndices.size() << std::endl;
-//  std::cout << "transparentVertices: " << transparentVertices.size() << std::endl;
-//  std::cout << "transparentIndices: " << transparentIndices.size() << std::endl;
+//  auto endTime = std::chrono::high_resolution_clock::now();
+//if (opaqueVertices.size() > 0) {
+//
+//  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000.0f;
+//  std::cout << "ChunkMeshBuilder::constructMesh took " << duration << "ms" << std::endl;
+//}
+
 }
 
 OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(const glm::ivec3 &blockPosInChunk,
@@ -295,19 +296,19 @@ OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(const glm::ivec3 &blockPosI
     bool cornerIsSolid = false;
 
     glm::ivec3 side1Pos = blockPosInChunk + faceLightingAdjacency[0];
-    Block side1Block = getBlock(side1Pos.x, side1Pos.y, side1Pos.z);
+    Block side1Block = m_blocks[MESH_XYZ(side1Pos.x, side1Pos.y, side1Pos.z)];
     if (side1Block != Block::AIR) {
       side1IsSolid = true;
     }
 
     glm::ivec3 side2Pos = blockPosInChunk + faceLightingAdjacency[1];
-    Block side2Block = getBlock(side2Pos.x, side2Pos.y, side2Pos.z);
+    Block side2Block = m_blocks[MESH_XYZ(side2Pos.x, side2Pos.y, side2Pos.z)];
     if (side2Block != Block::AIR) {
       side2IsSolid = true;
     }
 
     glm::ivec3 cornerPos = blockPosInChunk + faceLightingAdjacency[2];
-    Block cornerBlock = getBlock(cornerPos.x, cornerPos.y, cornerPos.z);
+    Block cornerBlock = m_blocks[MESH_XYZ(cornerPos.x, cornerPos.y, cornerPos.z)];
     if (cornerBlock != Block::AIR) {
       cornerIsSolid = true;
     }
@@ -321,22 +322,4 @@ OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(const glm::ivec3 &blockPosI
   }
   return occlusionLevels;
 }
-Block ChunkMeshBuilder::getBlock(int x, int y, int z) {
-  return m_blocks[MESH_XYZ(x, y, z)];
-}
 
-//Block ChunkMeshBuilder::getBlock(int x, int y, int z, Chunk *(&chunks)[27]) {
-//  int offsetX = Utils::chunkNeighborOffset(x);
-//  int offsetY = Utils::chunkNeighborOffset(y);
-//  int offsetZ = Utils::chunkNeighborOffset(z);
-//  if (offsetX == 0 && offsetY == 0 && offsetZ == 0) {
-//    int index = Utils::getNeighborArrayIndex(offsetX, offsetY, offsetZ);
-//    return chunks[index]->getBlock(x, y, z);
-//  }
-//  int relX = Utils::getRelativeIndex(x);
-//  int relY = Utils::getRelativeIndex(y);
-//  int relZ = Utils::getRelativeIndex(z);
-//  Chunk *chunk = chunks[Utils::getNeighborArrayIndex(offsetX, offsetY, offsetZ)];
-//  if (!chunk) return Block::AIR;
-//  return chunk->getBlock(relX, relY, relZ);
-//}

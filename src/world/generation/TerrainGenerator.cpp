@@ -37,6 +37,8 @@ void TerrainGenerator::generateStructures() {
       heightMapIndex++;
     }
   }
+  FastNoiseSIMD::FreeNoiseSet(treeMap);
+  delete fastNoise;
   m_chunks[13]->chunkState = ChunkState::FULLY_GENERATED;
 }
 
@@ -84,6 +86,8 @@ void TerrainGenerator::getHeightMap(glm::ivec2 startWorldPos, int seed, std::arr
     result[i] = (int) floor((heightMap[i] + 1) * 64) + 1;
     highest = std::max(highest, result[i]);
   }
+  FastNoiseSIMD::FreeNoiseSet(heightMap);
+  delete fastNoise;
 }
 
 void TerrainGenerator::generateTerrain(const glm::ivec2 &chunkWorldPos, int seed,  Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK]) {

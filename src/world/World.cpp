@@ -13,7 +13,7 @@
 World::World(Renderer &renderer, int seed, const std::string &savePath)
     : m_worldSave(savePath), m_renderer(renderer), m_center(INT_MAX), m_xyCenter(INT_MAX), m_numRunningThreads(0),
       m_numLoadingThreads(std::thread::hardware_concurrency()), m_seed(seed) {
-
+//m_numLoadingThreads = 1;
   const size_t loadVectorSize = ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
   m_chunksToLoadVector.reserve(loadVectorSize);
   BlockDB::loadData("../resources/blocks/");

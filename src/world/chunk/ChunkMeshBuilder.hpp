@@ -23,8 +23,6 @@ class ChunkMeshBuilder {
    OcclusionLevels getOcclusionLevels(const glm::ivec3 &blockPosInChunk, BlockFace face);
 
  private:
-
-  inline Block getBlock(int x, int y, int z);
   Block (&m_blocks)[CHUNK_MESH_INFO_SIZE];
   glm::ivec3 m_chunkWorldPos;
 
