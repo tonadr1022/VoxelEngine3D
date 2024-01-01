@@ -25,15 +25,15 @@ enum class ChunkState {
 };
 
 static inline int XYZ(int x, int y, int z) {
-  return x + (y * CHUNK_SIZE) + (z * CHUNK_AREA);
+  return x + (y << 5) + (z << 10);
 }
 
 static inline int XYZ(glm::ivec3 pos) {
-  return pos.z * CHUNK_AREA + pos.y * CHUNK_SIZE + pos.x;
+  return pos.x + (pos.y << 5) + (pos.z << 10) ;
 }
 
 static inline int XY(int x, int y) {
-  return x + y * CHUNK_SIZE;
+  return x + (y << 5);
 }
 
 static inline int XY(glm::ivec2 &pos) {
@@ -61,6 +61,7 @@ class Chunk {
     return x < 0 || x >= CHUNK_SIZE || y < 0 || y >= CHUNK_SIZE || z < 0
         || z >= CHUNK_SIZE;
   }
+
   [[nodiscard]] inline Block getBlock(int x, int y, int z) const {
     return m_blocks[XYZ(x, y, z)];
   }
@@ -95,7 +96,8 @@ class ChunkInfo {
   }
   virtual ~ChunkInfo() = default;
 
-  std::atomic_bool m_done;
+//  std::atomic_bool m_done;
+bool m_done;
 };
 
 class ChunkTerrainInfo : public ChunkInfo {
@@ -127,6 +129,7 @@ class ChunkMeshInfo : public ChunkInfo {
   explicit ChunkMeshInfo(Chunk *chunks[27]);
   void generateMeshData();
   void applyMeshDataToMesh(Chunk *chunk);
+  static void populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_SIZE], Chunk *(&chunks)[27]);
 
  private:
   Chunk *m_chunks[27]{};

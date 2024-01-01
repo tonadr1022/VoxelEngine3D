@@ -36,31 +36,21 @@ using ChunkMap = std::unordered_map<glm::ivec3, Scope<Chunk>>;
 //     x
 static constexpr std::array<glm::ivec3, 27> NEIGHBOR_ARRAY_OFFSETS =
     {
-        // z == -1
+        // y == -1
         glm::ivec3{-1, -1, -1}, glm::ivec3{0, -1, -1}, glm::ivec3{1, -1, -1},
-        glm::ivec3{-1, 0, -1}, glm::ivec3{0, 0, -1}, glm::ivec3{1, 0, -1},
-        glm::ivec3{-1, 1, -1}, glm::ivec3{0, 1, -1}, glm::ivec3{1, 1, -1},
-
-        // z == 0
         glm::ivec3{-1, -1, 0}, glm::ivec3{0, -1, 0}, glm::ivec3{1, -1, 0},
-        glm::ivec3{-1, 0, 0}, glm::ivec3{0, 0, 0}, glm::ivec3{1, 0, 0},
-        glm::ivec3{-1, 1, 0}, glm::ivec3{0, 1, 0}, glm::ivec3{1, 1, 0},
-
-        // z == 1
         glm::ivec3{-1, -1, 1}, glm::ivec3{0, -1, 1}, glm::ivec3{1, -1, 1},
+
+        // y == 0
+        glm::ivec3{-1, 0, -1}, glm::ivec3{0, 0, -1}, glm::ivec3{1, 0, -1},
+        glm::ivec3{-1, 0, 0}, glm::ivec3{0, 0, 0}, glm::ivec3{1, 0, 0},
         glm::ivec3{-1, 0, 1}, glm::ivec3{0, 0, 1}, glm::ivec3{1, 0, 1},
-        glm::ivec3{-1, 1, 1}, glm::ivec3{0, 1, 1}, glm::ivec3{1, 1, 1}
+
+        // y == 1
+        glm::ivec3{-1, 1, -1}, glm::ivec3{0, 1, -1}, glm::ivec3{1, 1, -1},
+        glm::ivec3{-1, 1, 0}, glm::ivec3{0, 1, 0}, glm::ivec3{1, 1, 0},
+        glm::ivec3{-1, 1, 1}, glm::ivec3{0, 1, 1}, glm::ivec3{1, 1, 1},
     };
-
-
-//static constexpr std::array<glm::ivec3, 6> DIRECTLY_ADJACENT_CHUNK_OFFSETS = {
-//    glm::ivec3{0, 0, 1},  // top
-//    glm::ivec3{0, 0, -1}, // bottom
-//    glm::ivec3{1, 0, 0}, // front (pos X)
-//    glm::ivec3{-1, 0, 0}, // back (neg X)
-//    glm::ivec3{0, 1, 0}, // right (pos Y)
-//    glm::ivec3{0, -1, 0}, // left (neg y)
-//};
 
 class World {
  public:

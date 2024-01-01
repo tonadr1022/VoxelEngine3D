@@ -211,48 +211,48 @@ void World::updateChunkMeshList() {
   m_chunksReadyToMeshList.sort(rcmpVec3);
 
   for (auto posIt = m_chunksInMeshRangeVector.begin(); posIt != m_chunksInMeshRangeVector.end();) {
-      // z
-      // |
-      // |  6   15  24
-      // |    7   16  25
-      // |      8   17  26
-      // |
-      // |  3   12  21
-      // |    4   13  22
-      // |      5   14  23
-      // \-------------------y
-      //  \ 0   9   18
-      //   \  1   10  19
-      //    \   2   11  20
-      //     x
-      Chunk *chunks[27] = {nullptr};
-      int index = 0;
-      for (auto &neighborOffset : NEIGHBOR_ARRAY_OFFSETS) {
-        auto neighborPos = *posIt + neighborOffset;
-        if (neighborPos.z < 0 || neighborPos.z >= CHUNKS_PER_STACK) {
-          chunks[index++] = nullptr;
-        } else {
-          chunks[index++] = getChunkRawPtr(neighborPos);
-        }
-      }
-      bool canMesh = true;
-      for (auto &chunk : chunks) {
-        if (chunk && chunk->chunkState != ChunkState::FULLY_GENERATED) {
-          canMesh = false;
-          break;
-        }
-      }
-
-      if (canMesh) {
-        m_chunkMeshInfoMap.emplace(*posIt, std::make_unique<ChunkMeshInfo>(chunks));
-        auto insertPos =
-            std::lower_bound(m_chunksReadyToMeshList.begin(), m_chunksReadyToMeshList.end(), *posIt, rcmpVec3);
-        m_chunksReadyToMeshList.insert(insertPos, *posIt);
-        posIt = m_chunksInMeshRangeVector.erase(posIt);
+    // z
+    // |
+    // |  6   15  24
+    // |    7   16  25
+    // |      8   17  26
+    // |
+    // |  3   12  21
+    // |    4   13  22
+    // |      5   14  23
+    // \-------------------y
+    //  \ 0   9   18
+    //   \  1   10  19
+    //    \   2   11  20
+    //     x
+    Chunk *chunks[27] = {nullptr};
+    int index = 0;
+    for (auto &neighborOffset : NEIGHBOR_ARRAY_OFFSETS) {
+      auto neighborPos = *posIt + neighborOffset;
+      if (neighborPos.z < 0 || neighborPos.z >= CHUNKS_PER_STACK) {
+        chunks[index++] = nullptr;
       } else {
-        posIt++;
+        chunks[index++] = getChunkRawPtr(neighborPos);
       }
     }
+    bool canMesh = true;
+    for (auto &chunk : chunks) {
+      if (chunk && chunk->chunkState != ChunkState::FULLY_GENERATED) {
+        canMesh = false;
+        break;
+      }
+    }
+
+    if (canMesh) {
+      m_chunkMeshInfoMap.emplace(*posIt, std::make_unique<ChunkMeshInfo>(chunks));
+      auto insertPos =
+          std::lower_bound(m_chunksReadyToMeshList.begin(), m_chunksReadyToMeshList.end(), *posIt, rcmpVec3);
+      m_chunksReadyToMeshList.insert(insertPos, *posIt);
+      posIt = m_chunksInMeshRangeVector.erase(posIt);
+    } else {
+      posIt++;
+    }
+  }
 }
 
 void World::unloadChunks() {
@@ -445,9 +445,20 @@ void World::renderDebugGui() {
 
   ImGui::Text("Running Threads: %d", static_cast<int>(m_numRunningThreads));
 
-  ImGui::Text("Opaque Set: %d", static_cast<int>(m_opaqueRenderSet.size()));
-  ImGui::Text("Transparent Set: %d", static_cast<int>(m_transparentRenderSet.size()));
-  ImGui::Text("Transparent Vector: %d", static_cast<int>(m_transparentRenderVector.size()));
+  ImGui::Text("ChunksToLoadVector: %d", static_cast<int>(m_chunksToLoadVector.size()));
+  ImGui::Text("ChunkTerrainLoadInfoMap: %d", static_cast<int>(m_chunkTerrainLoadInfoMap.size()));
+  ImGui::Text("ChunksInStructureGenRangeVectorXY: %d", static_cast<int>(m_chunksInStructureGenRangeVectorXY.size()));
+  ImGui::Text("ChunkStructuresInfoMap: %d", static_cast<int>(m_chunkStructuresInfoMap.size()));
+  ImGui::Text("ChunksReadyToGenStructuresList: %d", static_cast<int>(m_chunksReadyToGenStructuresList.size()));
+  ImGui::Text("ChunksInMeshRangeVector: %d", static_cast<int>(m_chunksInMeshRangeVector.size()));
+  ImGui::Text("ChunkMeshInfoMap: %d", static_cast<int>(m_chunkMeshInfoMap.size()));
+  ImGui::Text("ChunksReadyToMeshList: %d", static_cast<int>(m_chunksReadyToMeshList.size()));
+  ImGui::Text("ChunkUpdateVector: %d", static_cast<int>(m_chunkUpdateVector.size()));
+  ImGui::Text("ChunkUpdateInfoMap: %d", static_cast<int>(m_chunkUpdateInfoMap.size()));
+  ImGui::Text("ChunkDirectlyUpdateSet: %d", static_cast<int>(m_chunkDirectlyUpdateSet.size()));
+  ImGui::Text("OpaqueRenderSet: %d", static_cast<int>(m_opaqueRenderSet.size()));
+  ImGui::Text("TransparentRenderSet: %d", static_cast<int>(m_transparentRenderSet.size()));
+  ImGui::Text("TransparentRenderVector: %d", static_cast<int>(m_transparentRenderVector.size()));
 
   player.renderDebugGui();
 
@@ -541,7 +552,12 @@ void World::processDirectChunkUpdates() {
 
     std::vector<uint32_t> opaqueVertices, transparentVertices;
     std::vector<unsigned int> opaqueIndices, transparentIndices;
-    ChunkMeshBuilder::constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices, chunks);
+
+    Block blocks[CHUNK_MESH_INFO_SIZE];
+    ChunkMeshInfo::populateMeshInfoForMeshing(blocks, chunks);
+    ChunkMeshBuilder builder(blocks, chunks[13]->m_worldPos);
+    builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
+
     chunks[13]->m_opaqueMesh.vertices = std::move(opaqueVertices);
     chunks[13]->m_opaqueMesh.indices = std::move(opaqueIndices);
     chunks[13]->m_transparentMesh.vertices = std::move(transparentVertices);

@@ -30,12 +30,12 @@ inline static int chunkNeighborOffset(int value) {
 
 // see neighbor array in world.hpp
 inline static int getNeighborArrayIndex(int x, int y, int z) {
-  return (x + 1) + 3 * ((y + 1) + 3 * (z + 1));
+  return (x + 1) + 3 * ((z + 1) + 3 * (y + 1));
 }
 
 // if val == 33 return 1, if val ==
 inline static int getRelativeIndex(int val) {
-  return (val % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE;
+  return (val & 31 + CHUNK_SIZE) & 31;
 }
 
 }

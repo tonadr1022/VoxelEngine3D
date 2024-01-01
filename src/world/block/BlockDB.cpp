@@ -40,7 +40,6 @@ void BlockDB::loadData(const std::string &filePath) {
         blockData["bottomTexCoords"][1].get<int>();
     blockDataEntry.isTransparent = blockData["isTransparent"].get<bool>();
     blockDataEntry.isCollidable = blockData["isCollidable"].get<bool>();
-//        data[blockDataEntry.id] = blockDataEntry;
     prelimData.push_back(blockDataEntry);
 
   }
