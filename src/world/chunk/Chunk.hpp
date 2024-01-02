@@ -26,9 +26,9 @@ enum class ChunkState {
   CHANGED,
 };
 
+// Crashes when out of bounds
 static inline int XYZ(int x, int y, int z) {
-  return x + (y << 5) + (z << 10);
-//  return (z << 10 | y << 5 | x);
+  return (z << 10 | y << 5 | x);
 }
 
 static inline int XYZ(glm::ivec3 pos) {

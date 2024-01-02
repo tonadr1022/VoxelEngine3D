@@ -85,21 +85,21 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap, Block (&blocks)[CHU
     for (int y = 0; y < CHUNK_SIZE; y++) {
       int maxBlockHeight = heightMap[heightMapIndex];
       for (z = 0; z < maxBlockHeight - 4; z++) {
-        blocks[XYZ(x, y, z)] = Block::STONE;
+        blocks[WORLD_HEIGHT_XYZ(x, y, z)] = Block::STONE;
       }
       if (maxBlockHeight - 4 >= 0) {
         for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
-          blocks[XYZ(x, y, z)] = Block::DIRT;
+          blocks[WORLD_HEIGHT_XYZ(x, y, z)] = Block::DIRT;
         }
       }
       if (maxBlockHeight <= 66) {
-        blocks[XYZ(x, y, maxBlockHeight)] = Block::SAND;
+        blocks[WORLD_HEIGHT_XYZ(x, y, maxBlockHeight)] = Block::SAND;
       } else {
-        blocks[XYZ(x, y, maxBlockHeight)] = Block::GRASS;
+        blocks[WORLD_HEIGHT_XYZ(x, y, maxBlockHeight)] = Block::GRASS;
       }
 
       for (z = maxBlockHeight + 1; z <= 64; z++) {
-        blocks[XYZ(x, y, z)] = Block::WATER;
+        blocks[WORLD_HEIGHT_XYZ(x, y, z)] = Block::WATER;
       }
       heightMapIndex++;
     }

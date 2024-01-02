@@ -9,6 +9,7 @@ class Config {
  public:
   static bool getUseAmbientOcclusion();
   static void setUseAmbientOcclusion(bool pUseAmbientOcclusion);
+  static bool useWireFrame;
 
  private:
   static bool useAmbientOcclusion;

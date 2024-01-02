@@ -94,13 +94,13 @@ void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_S
 
     chunkNum = 4;
     chunkBlockIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
-    chunkBlockIndex2 = XYZ(CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ); // x not inclusive
+    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ) + 1; // x not inclusive
     resultBlockIndex = MESH_XYZ(0, -1, chunkZ);
     COPY;
 
     chunkNum = 22;
     chunkBlockIndex = XYZ(0, 0, chunkZ);
-    chunkBlockIndex2 = XYZ(CHUNK_SIZE, 0, chunkZ);
+    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, 0, chunkZ) + 1;
     resultBlockIndex = MESH_XYZ(0, M1_MESH_SIZE, chunkZ); // x not inclusive
     COPY;
 
@@ -117,7 +117,7 @@ void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_S
 
       chunkNum = 13;
       chunkBlockIndex = XYZ(0, chunkY, chunkZ);
-      chunkBlockIndex2 = XYZ(CHUNK_SIZE, chunkY, chunkZ); // not inclusive
+      chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ) + 1; // not inclusive
       resultBlockIndex = MESH_XYZ(0, chunkY, chunkZ);
       COPY;
     }
@@ -149,13 +149,13 @@ void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_S
 
     chunkNum = 1;
     chunkBlockIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
-    chunkBlockIndex2 = XYZ(CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ); // x not inclusive
+    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ) + 1; // x not inclusive
     resultBlockIndex = MESH_XYZ(0, -1, meshZ);
     COPY;
 
     chunkNum = 19;
     chunkBlockIndex = XYZ(0, 0, chunkZ);
-    chunkBlockIndex2 = XYZ(CHUNK_SIZE, 0, chunkZ); // x not inclusive
+    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, 0, chunkZ) + 1; // x not inclusive
     resultBlockIndex = MESH_XYZ(0, M1_MESH_SIZE, meshZ);
     COPY;
 
@@ -172,7 +172,7 @@ void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_S
 
       chunkNum = 10;
       chunkBlockIndex = XYZ(0, chunkY, chunkZ);
-      chunkBlockIndex2 = XYZ(CHUNK_SIZE, chunkY, chunkZ); // not inclusive
+      chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ) + 1; // not inclusive
       resultBlockIndex = MESH_XYZ(0, chunkY, meshZ);
       COPY;
     }
@@ -208,13 +208,13 @@ void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_S
 
     chunkNum = 7;
     chunkBlockIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
-    chunkBlockIndex2 = XYZ(CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ); // x not inclusive
+    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ) + 1; // x not inclusive
     resultBlockIndex = MESH_XYZ(0, -1, meshZ);
     COPY;
 
     chunkNum = 25;
     chunkBlockIndex = XYZ(0, 0, chunkZ);
-    chunkBlockIndex2 = XYZ(CHUNK_SIZE, 0, chunkZ);
+    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, 0, chunkZ) + 1;
     resultBlockIndex = MESH_XYZ(0, M1_MESH_SIZE, meshZ); // x not inclusive
     COPY;
 
@@ -231,7 +231,7 @@ void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_S
 
       chunkNum = 16;
       chunkBlockIndex = XYZ(0, chunkY, chunkZ);
-      chunkBlockIndex2 = XYZ(CHUNK_SIZE, chunkY, chunkZ); // not inclusive
+      chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ) + 1; // not inclusive
       resultBlockIndex = MESH_XYZ(0, chunkY, meshZ);
       COPY;
     }

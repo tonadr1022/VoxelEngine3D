@@ -13,3 +13,4 @@ void Config::setUseAmbientOcclusion(bool pUseAmbientOcclusion) {
 }
 
 bool Config::useAmbientOcclusion = true;
+bool Config::useWireFrame = false;

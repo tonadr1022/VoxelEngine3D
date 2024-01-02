@@ -451,6 +451,11 @@ void World::renderDebugGui() {
 //    m_renderer.updateShaderUniforms();
   }
 
+  bool useWireFrame = Config::useWireFrame;
+  if (ImGui::Checkbox("WireFrame", &useWireFrame)) {
+    Config::useWireFrame = useWireFrame;
+  }
+
   ImGui::Text("lastRayCastBlockPos: %d, %d, %d", m_lastRayCastBlockPos.x,
               m_lastRayCastBlockPos.y, m_lastRayCastBlockPos.z);
 

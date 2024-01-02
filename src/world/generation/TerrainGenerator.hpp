@@ -20,6 +20,10 @@ class TerrainGenerator {
 
   void makeTree(const glm::ivec3 &pos);
 
+  static inline int WORLD_HEIGHT_XYZ(int x, int y, int z) {
+    return x + (y << 5) + (z << 10);
+  }
+
  private:
   void setBlock(int x, int y, int z, Block block);
 
