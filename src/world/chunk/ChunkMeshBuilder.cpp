@@ -125,10 +125,11 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
                                      std::vector<unsigned int> &opaqueIndices,
                                      std::vector<uint32_t> &transparentVertices,
                                      std::vector<unsigned int> &transparentIndices) {
-  uint32_t opaqueVertices_[50000]{};
-  uint32_t transparentVertices_[50000]{};
-  unsigned int opaqueIndices_[50000]{};
-  unsigned int transparentIndices_[50000]{};
+
+  uint32_t opaqueVertices_[20000]{};
+  uint32_t transparentVertices_[20000]{};
+  unsigned int opaqueIndices_[20000]{};
+  unsigned int transparentIndices_[20000]{};
 
   int opaqueVerticesIndex = 0;
   int transparentVerticesIndex = 0;
