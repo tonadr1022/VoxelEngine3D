@@ -6,22 +6,19 @@
 #include "../Config.hpp"
 #include "block/BlockDB.hpp"
 #include "../input/Mouse.hpp"
-#include "../utils/Utils.hpp"
 #include "../utils/Timer.hpp"
 #include <algorithm>
 
 World::World(Renderer &renderer, int seed, const std::string &savePath)
     : m_worldSave(savePath), m_renderer(renderer), m_center(INT_MAX), m_xyCenter(INT_MAX), m_numRunningThreads(0),
       m_numLoadingThreads(std::thread::hardware_concurrency()), m_seed(seed) {
-//m_numLoadingThreads = 1;
   const size_t loadVectorSize = ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
   m_chunksToLoadVector.reserve(loadVectorSize);
   BlockDB::loadData("../resources/blocks/");
 
-  for (int i = 0; i < m_numLoadingThreads; i++) {
+  for (unsigned int i = 0; i < m_numLoadingThreads; i++) {
     m_chunkLoadThreads.emplace_back(&World::generateChunksWorker4, this);
   }
-
 }
 
 World::~World() {
@@ -93,6 +90,9 @@ void World::updateChunkLoadList() {
         chunksInStack[z] = getChunkRawPtr({posIt->first.x, posIt->first.y, z});
       }
       posIt->second->applyTerrainDataToChunk(chunksInStack);
+      m_chunkHeightMapMap.emplace(posIt->first, posIt->second->m_heightMap);
+        m_chunkTreeMapMap.emplace(posIt->first, posIt->second->m_treeMap);
+
       // delete from map regardless of whether chunk exists
       posIt = m_chunkTerrainLoadInfoMap.erase(posIt);
     } else {
@@ -264,6 +264,8 @@ void World::unloadChunks() {
         pos.y > m_center.y + m_unloadDistance) {
       m_opaqueRenderSet.erase(pos);
       m_transparentRenderSet.erase(pos);
+      m_chunkHeightMapMap.erase(pos);
+      m_chunkTreeMapMap.erase(pos);
       it = m_chunkMap.erase(it);
     } else {
       ++it;
@@ -324,9 +326,17 @@ void World::processBatchToLoad(std::queue<glm::ivec2> &batchToLoad) {
 void World::processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStructures) {
   while (!batchToGenStructures.empty()) {
     const auto &pos = batchToGenStructures.front();
-    auto it = m_chunkStructuresInfoMap.find(pos);
-    if (it != m_chunkStructuresInfoMap.end()) it->second->generateStructureData();
-//    m_chunkStructuresInfoMap.at(pos)->generateStructureData();
+
+    // find instead of at
+    auto heightMapIt = m_chunkHeightMapMap.find(pos);
+    auto treeMapIt = m_chunkTreeMapMap.find(pos);
+    if (heightMapIt == m_chunkHeightMapMap.end() || treeMapIt == m_chunkTreeMapMap.end()) {
+      std::cout << "BROKEN HEIGHTMAP OR TREEMAP" << std::endl;
+    } else {
+      auto it = m_chunkStructuresInfoMap.find(pos);
+      if (it != m_chunkStructuresInfoMap.end()) it->second->generateStructureData(heightMapIt->second, treeMapIt->second);
+    }
+//    m_chunkStructuresInfoMap.at(pos)->generateStructureData(heightMapIt->second, treeMapIt->second);
     batchToGenStructures.pop();
   }
 }
@@ -364,6 +374,7 @@ void World::castPlayerAimRay(Ray ray) {
         continue;
       }
     } catch (std::exception &e) {
+
       return;
     }
 
@@ -459,6 +470,7 @@ void World::renderDebugGui() {
   ImGui::Text("OpaqueRenderSet: %d", static_cast<int>(m_opaqueRenderSet.size()));
   ImGui::Text("TransparentRenderSet: %d", static_cast<int>(m_transparentRenderSet.size()));
   ImGui::Text("TransparentRenderVector: %d", static_cast<int>(m_transparentRenderVector.size()));
+  ImGui::Text("HeightMapMap: %d", static_cast<int>(m_chunkHeightMapMap.size()));
 
   player.renderDebugGui();
 

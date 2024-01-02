@@ -115,6 +115,14 @@ set(SOURCE_FILES
         src/renderer/ViewFrustum.hpp
         src/math/AABB.hpp
         src/math/Plane.hpp
+        src/world/chunk/ChunkVertex.hpp
+        src/world/chunk/ChunkTerrainInfo.cpp
+        src/world/chunk/ChunkTerrainInfo.hpp
+        src/world/chunk/ChunkInfo.hpp
+        src/world/chunk/ChunkStructuresInfo.cpp
+        src/world/chunk/ChunkStructuresInfo.hpp
+        src/world/chunk/ChunkMeshInfo.cpp
+        src/world/chunk/ChunkMeshInfo.hpp
 )
 
 add_executable(voxel_engine ${SOURCE_FILES})

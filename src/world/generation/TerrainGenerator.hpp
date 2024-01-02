@@ -9,17 +9,14 @@
 #include "../block/Block.hpp"
 #include "../../AppConstants.hpp"
 
-class Chunk;
-
-class ChunkManager;
-
 class TerrainGenerator {
  public:
   explicit TerrainGenerator(Chunk *(chunks)[27], int seed);
-  void generateStructures();
+  void generateStructures(HeightMap &heightMap, TreeMap &treeMap);
 
-  static void getHeightMap(glm::ivec2 startWorldPos, int seed, std::array<int, CHUNK_AREA> &result);
-  static void generateTerrain(const glm::ivec2 &worldPos, int seed, Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK]);
+  static void getHeightMap(const glm::ivec2 &startWorldPos, int seed, HeightMap &result);
+  static void getTreeMap(const glm::ivec2 &startWorldPos, int seed, TreeMap &result);
+  static void generateTerrain(HeightMap &heightMap, Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK]);
 
   void makeTree(const glm::ivec3 &pos);
 

@@ -10,8 +10,6 @@
 
 class Chunk;
 
-class ChunkManager;
-
 enum BlockFace : uint8_t {
   FRONT = 0,
   BACK,

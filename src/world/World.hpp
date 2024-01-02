@@ -5,20 +5,23 @@
 #ifndef VOXEL_ENGINE_WORLD_HPP
 #define VOXEL_ENGINE_WORLD_HPP
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 
 #include "../EngineConfig.hpp"
+#include "chunk/Chunk.hpp"
+#include "generation/TerrainGenerator.hpp"
+#include "chunk/ChunkTerrainInfo.hpp"
+#include "chunk/ChunkStructuresInfo.hpp"
+#include "chunk/ChunkMeshInfo.hpp"
+#include "../renderer/Renderer.hpp"
 #include "../physics/Ray.hpp"
 #include "../player/Player.hpp"
-#include "../renderer/Renderer.hpp"
-#include "generation/TerrainGenerator.hpp"
 #include "save/WorldSave.hpp"
+#include "../AppConstants.hpp"
 
-using ChunkMap = std::unordered_map<glm::ivec3, Scope<Chunk>>;
-
-//static constexpr std::array<glm::ivec2, 8> NEIGHBOR_CHUNK_KEY_OFFSETS = {
-//    glm::ivec2{-1, -1}, glm::ivec2{-1, 0}, glm::ivec2{-1, 1}, glm::ivec2{0, -1},
-//    glm::ivec2{0, 1}, glm::ivec2{1, -1}, glm::ivec2{1, 0}, glm::ivec2{1, 1}};
+class Chunk;
+class ChunkStructuresInfo;
 
 // z
 // |
@@ -114,8 +117,6 @@ class World {
   void processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStructures);
   void processBatchToMesh(std::queue<glm::ivec3> &batchToMesh);
 
-//  void meshUpdateWorker();
-
   int m_renderDistance = 8;
   int m_loadDistance = m_renderDistance + 2;
   int m_structureLoadDistance = m_renderDistance + 1;
@@ -140,10 +141,13 @@ class World {
   std::vector<std::thread> m_chunkLoadThreads;
   std::atomic_uint m_numRunningThreads;
   unsigned int m_numLoadingThreads;
-  static constexpr int MAX_BATCH_SIZE = 30;
+  static constexpr int MAX_BATCH_SIZE = 10;
 
   std::vector<glm::ivec2> m_chunksToLoadVector;
   std::unordered_map<glm::ivec2, Scope<ChunkTerrainInfo>> m_chunkTerrainLoadInfoMap;
+  ChunkHeightMapMap m_chunkHeightMapMap;
+  ChunkTreeMapMap m_chunkTreeMapMap;
+
 
   std::vector<glm::ivec2> m_chunksInStructureGenRangeVectorXY;
   std::unordered_map<glm::ivec3, Scope<ChunkStructuresInfo>> m_chunkStructuresInfoMap;

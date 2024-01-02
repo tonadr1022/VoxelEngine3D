@@ -6,9 +6,9 @@
 #define VOXEL_ENGINE_CHUNKRENDERER_HPP
 
 #include "../../shaders/Shader.hpp"
-#include "Chunk.hpp"
 #include "../../camera/Camera.hpp"
 #include "../../EngineConfig.hpp"
+#include "../chunk/ChunkMesh.hpp"
 
 class ChunkRenderer {
  public:

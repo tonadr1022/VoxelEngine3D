@@ -117,29 +117,14 @@ constexpr std::array<std::array<std::array<glm::ivec3, 3>, 4>, 6>
 }  // namespace
 
 
-
-struct AdjacentBlockPositions {
-  std::array<int, 6> x;
-  std::array<int, 6> y;
-  std::array<int, 6> z;
-
-  void update(int xVal, int yVal, int zVal) {
-    x = {xVal + 1, xVal - 1, xVal, xVal, xVal, xVal};
-    y = {yVal, yVal, yVal - 1, yVal + 1, yVal, yVal};
-    z = {zVal, zVal, zVal, zVal, zVal + 1, zVal - 1};
-  }
-};
-
 ChunkMeshBuilder::ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE], const glm::ivec3 &chunkWorldPos) : m_blocks(
     blocks), m_chunkWorldPos(chunkWorldPos) {
 }
-
 
 void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
                                      std::vector<unsigned int> &opaqueIndices,
                                      std::vector<uint32_t> &transparentVertices,
                                      std::vector<unsigned int> &transparentIndices) {
-
   uint32_t opaqueVertices_[50000]{};
   uint32_t transparentVertices_[50000]{};
   unsigned int opaqueIndices_[50000]{};
@@ -153,7 +138,6 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
   int chunkBaseZ = m_chunkWorldPos.z;
   int x, y, z, faceIndex, textureX, textureY;
   std::array<int, 20> faceVertices{};
-  AdjacentBlockPositions adjacentBlockPositions{};
 
   for (int chunkBlockIndex = 0; chunkBlockIndex < CHUNK_VOLUME; chunkBlockIndex++) {
     y = chunkBlockIndex & 31;
@@ -165,7 +149,6 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
 
     glm::ivec3 blockPos = {x, y, z};
     int blockPos2[3] = {x, y, z};
-//    adjacentBlockPositions.update(x, y, z);
 
     // 1, 0, 0
     // -1, 0, 0
@@ -175,11 +158,8 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
     // 0, 0, -1
     for (faceIndex = 0; faceIndex < 6; faceIndex++) {
       int adjBlockPos[3] = {blockPos2[0], blockPos2[1], blockPos2[2]};
-      adjBlockPos[faceIndex>>1] += 1 - ((faceIndex&1)<<1);
+      adjBlockPos[faceIndex >> 1] += 1 - ((faceIndex & 1) << 1);
 
-//      int adjBlockX = adjacentBlockPositions.x[faceIndex];
-//      int adjBlockY = adjacentBlockPositions.y[faceIndex];
-//      int adjBlockZ = adjacentBlockPositions.z[faceIndex];
       int adjBlockX = adjBlockPos[0];
       int adjBlockY = adjBlockPos[1];
       int adjBlockZ = adjBlockPos[2];
@@ -271,14 +251,6 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
   opaqueIndices = std::vector<unsigned int>(opaqueIndices_, opaqueIndices_ + opaqueIndicesIndex);
   transparentVertices = std::vector<uint32_t>(transparentVertices_, transparentVertices_ + transparentVerticesIndex);
   transparentIndices = std::vector<unsigned int>(transparentIndices_, transparentIndices_ + transparentIndicesIndex);
-
-//  auto endTime = std::chrono::high_resolution_clock::now();
-//if (opaqueVertices.size() > 0) {
-//
-//  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000.0f;
-//  std::cout << "ChunkMeshBuilder::constructMesh took " << duration << "ms" << std::endl;
-//}
-
 }
 
 OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(const glm::ivec3 &blockPosInChunk,

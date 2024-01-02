@@ -30,4 +30,13 @@ enum class HorizontalDirection {
   BACK,
 };
 
+class Chunk;
+
+using ChunkMap = std::unordered_map<glm::ivec3, Scope<Chunk>>;
+using HeightMap = std::array<int, CHUNK_AREA>;
+using TreeMap = std::array<float, CHUNK_AREA>;
+using ChunkHeightMapMap = std::unordered_map<glm::ivec2, HeightMap>;
+using ChunkTreeMapMap = std::unordered_map<glm::ivec2, TreeMap>;
+
+
 #endif //VOXEL_ENGINE_APPCONSTANTS_HPP
