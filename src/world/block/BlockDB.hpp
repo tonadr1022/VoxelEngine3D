@@ -24,8 +24,14 @@ class BlockDB {
   static void loadData(const std::string &filePath);
   static BlockData &getBlockData(Block id);
 
-  static inline bool isTransparent(Block id) {
-    return data[static_cast<unsigned long>(id)].isTransparent;
+//  static inline bool isTransparent(uint8_t id) {
+//    return !id ||  data[static_cast<unsigned long>(id)].isTransparent;
+//  }
+
+  static inline bool isTransparent(uint8_t id) {
+    return !id ||  static_cast<Block>(id) == Block::WATER || static_cast<Block>(id) == Block::OAK_LEAVES || static_cast<Block>(id)
+        == Block::JUNGLE_LEAVES ||
+        static_cast<Block>(id) == Block::BIRCH_LEAVES || static_cast<Block>(id) == Block::SPRUCE_LEAVES;
   }
 
   static inline int getTextureIndex(Block id, BlockFace faceNum) {

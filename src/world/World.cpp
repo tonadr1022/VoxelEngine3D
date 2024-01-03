@@ -12,13 +12,16 @@
 World::World(Renderer &renderer, int seed, const std::string &savePath)
     : m_worldSave(savePath), m_renderer(renderer), m_center(INT_MAX), m_xyCenter(INT_MAX), m_numRunningThreads(0),
       m_numLoadingThreads(std::thread::hardware_concurrency()), m_seed(seed) {
-//  m_numLoadingThreads = 1;
+  m_numLoadingThreads = 1;
   const size_t loadVectorSize = ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
   m_chunksToLoadVector.reserve(loadVectorSize);
   BlockDB::loadData("../resources/blocks/");
 
   for (unsigned int i = 0; i < m_numLoadingThreads; i++) {
-    m_chunkLoadThreads.emplace_back(&World::generateChunksWorker4, this);
+//    m_chunkLoadThreads.emplace_back(&World::generateChunksWorker4, this);
+    m_chunkLoadThreads.emplace_back(&World::chunkTerrainWorker, this);
+    m_chunkLoadThreads.emplace_back(&World::chunkStructureGenWorker, this);
+    m_chunkLoadThreads.emplace_back(&World::chunkMeshWorker, this);
   }
 }
 
@@ -92,7 +95,7 @@ void World::updateChunkLoadList() {
       }
       posIt->second->applyTerrainDataToChunk(chunksInStack);
       m_chunkHeightMapMap.emplace(posIt->first, posIt->second->m_heightMap);
-        m_chunkTreeMapMap.emplace(posIt->first, posIt->second->m_treeMap);
+      m_chunkTreeMapMap.emplace(posIt->first, posIt->second->m_treeMap);
 
       // delete from map regardless of whether chunk exists
       posIt = m_chunkTerrainLoadInfoMap.erase(posIt);
@@ -274,6 +277,71 @@ void World::unloadChunks() {
   }
 }
 
+void World::chunkTerrainWorker() {
+  glm::ivec2 pos;
+  while (m_isRunning) {
+    std::unique_lock<std::mutex> lock(m_mainMutex);
+    m_conditionVariable.wait(lock, [this]() {
+      return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads && (!m_chunksToLoadVector.empty()));
+    });
+    if (!m_isRunning) return;
+    pos = m_chunksToLoadVector.back();
+    m_chunksToLoadVector.pop_back();
+    m_numRunningThreads++;
+    m_chunkTerrainLoadInfoMap.at(pos)->generateTerrainData();
+    m_numRunningThreads--;
+//      auto it = m_chunkTerrainLoadInfoMap.find(pos);
+//      if (it != m_chunkTerrainLoadInfoMap.end()) it->second->generateTerrainData();
+
+  }
+}
+
+void World::chunkStructureGenWorker() {
+  glm::ivec3 pos;
+  while (m_isRunning) {
+    std::unique_lock<std::mutex> lock(m_mainMutex);
+    m_conditionVariable.wait(lock, [this]() {
+      return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads && (!m_chunksReadyToGenStructuresList.empty()));
+    });
+    if (!m_isRunning) return;
+    pos = m_chunksReadyToGenStructuresList.back();
+    m_chunksReadyToGenStructuresList.pop_back();
+    lock.unlock();
+    // find instead of at
+    m_numRunningThreads++;
+    auto heightMapIt = m_chunkHeightMapMap.find(pos);
+    auto treeMapIt = m_chunkTreeMapMap.find(pos);
+    if (heightMapIt == m_chunkHeightMapMap.end() || treeMapIt == m_chunkTreeMapMap.end()) {
+      std::cout << "BROKEN HEIGHTMAP OR TREEMAP" << std::endl;
+    } else {
+      auto it = m_chunkStructuresInfoMap.find(pos);
+      if (it != m_chunkStructuresInfoMap.end())
+        it->second->generateStructureData(heightMapIt->second, treeMapIt->second);
+    }
+    m_numRunningThreads--;
+//    m_chunkStructuresInfoMap.at(pos)->generateStructureData(heightMapIt->second, treeMapIt->second);
+
+  }
+}
+void World::chunkMeshWorker() {
+  glm::ivec3 pos;
+  while (m_isRunning) {
+    std::unique_lock<std::mutex> lock(m_mainMutex);
+    m_conditionVariable.wait(lock, [this]() {
+      return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads && (!m_chunksReadyToMeshList.empty()));
+    });
+    if (!m_isRunning) return;
+    pos = m_chunksReadyToMeshList.back();
+    m_chunksReadyToMeshList.pop_back();
+    lock.unlock();
+    m_numRunningThreads++;
+    // find instead of at
+    m_chunkMeshInfoMap.at(pos)->generateMeshData();
+    m_numRunningThreads--;
+
+  }
+}
+
 void World::generateChunksWorker4() {
   while (true) {
     std::queue<glm::ivec2> batchToLoad;
@@ -336,7 +404,9 @@ void World::processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStruct
       std::cout << "BROKEN HEIGHTMAP OR TREEMAP" << std::endl;
     } else {
       auto it = m_chunkStructuresInfoMap.find(pos);
-      if (it != m_chunkStructuresInfoMap.end()) it->second->generateStructureData(heightMapIt->second, treeMapIt->second);
+      if (it != m_chunkStructuresInfoMap.end())
+        it->second->generateStructureData(heightMapIt->second,
+                                          treeMapIt->second);
     }
 //    m_chunkStructuresInfoMap.at(pos)->generateStructureData(heightMapIt->second, treeMapIt->second);
     batchToGenStructures.pop();
@@ -531,8 +601,8 @@ void World::setBlockWithUpdate(int worldX, int worldY, int worldZ, Block block) 
   //     x
   // todo sep function
   if (x > 0 && x < CHUNK_SIZE_MINUS_ONE && y > 0 && y < CHUNK_SIZE_MINUS_ONE && z > 0 && z < CHUNK_SIZE_MINUS_ONE) {
-      m_chunkDirectlyUpdateSet.insert(chunkPos);
-      return;
+    m_chunkDirectlyUpdateSet.insert(chunkPos);
+    return;
   } else if (x == 0 && y == 0 && z == 0) {
     m_chunkDirectlyUpdateSet.insert(chunkPos - 1);
   } else if (x == CHUNK_SIZE_MINUS_ONE && y == CHUNK_SIZE_MINUS_ONE && z == CHUNK_SIZE_MINUS_ONE) {
@@ -564,8 +634,8 @@ void World::processDirectChunkUpdates() {
 
     Block blocks[CHUNK_MESH_INFO_SIZE];
     ChunkMeshInfo::populateMeshInfoForMeshing(blocks, chunks);
-    ChunkMeshBuilder builder(blocks, chunks[13]->m_pos);
-    builder.constructMeshGreedy(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
+//    ChunkMeshBuilder builder(blocks, chunks[13]->m_pos);
+    ChunkMeshBuilder::constructMeshGreedy(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices, blocks);
 
     chunks[13]->m_opaqueMesh.vertices = std::move(opaqueVertices);
     chunks[13]->m_opaqueMesh.indices = std::move(opaqueIndices);

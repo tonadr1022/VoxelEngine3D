@@ -265,15 +265,16 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
   delete[] opaqueIndices_;
   delete[] transparentIndices_;
 }
+
 void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVertices,
                                            std::vector<unsigned int> &opaqueIndices,
                                            std::vector<ChunkVertex> &transparentVertices,
-                                           std::vector<unsigned int> &transparentIndices) {
+                                           std::vector<unsigned int> &transparentIndices, Block (&blocks)[CHUNK_MESH_INFO_SIZE]) {
   auto startTime = std::chrono::high_resolution_clock::now();
 
   // get face data
 //  FaceInfo faceInfo[CHUNK_VOLUME][6] = {}; // need to initialize in case skip faces, which will be left as 0
-  auto faceInfo = new FaceInfo[CHUNK_VOLUME][6]; // need to initialize in case skip faces, which will be left as 0
+  auto faceInfo = new FaceInfo[CHUNK_VOLUME][6];
 
   Block blockNeighbors[27];
   for (int chunkBlockIndex = 0; chunkBlockIndex < CHUNK_VOLUME; chunkBlockIndex++) {
@@ -285,8 +286,8 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
     blockPos[2] = chunkBlockIndex >> 10; // Z (left most 5 bits in the index value)
 
     // get block, if its air, none of the faces should be added
-    Block block = m_blocks[MESH_XYZ(blockPos[0], blockPos[1], blockPos[2])];
-    if (block == Block::AIR) continue;
+    auto block = static_cast<uint8_t>(blocks[MESH_XYZ(blockPos[0], blockPos[1], blockPos[2])]);
+    if (!block) continue; // air is 0
 
     // front, back, right, left, top, bottom
     bool neighborsInitializedForCurrentBlock = false;
@@ -302,8 +303,7 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
 
       // since greedy meshing, no longer need to check whether neighbor is above or below absolute height borders
       // this will also allow for infinite height impl in future.
-      Block neighborBlock = m_blocks[MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2])];
-
+      auto neighborBlock = static_cast<uint8_t>(blocks[MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2])]);
       if (!shouldShowFace(block, neighborBlock)) continue;
 
       // fill neighbors for block if haven't. only do this on first iteration of face loop after at least one face should be shown.
@@ -315,7 +315,7 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
         for (iterator[1] = blockPos[1] - 1; iterator[1] <= blockPos[1] + 1; ++iterator[1]) {
           for (iterator[2] = blockPos[2] - 1; iterator[2] <= blockPos[2] + 1; ++iterator[2]) {
             for (iterator[0] = blockPos[0] - 1; iterator[0] <= blockPos[0] + 1; ++iterator[0]) {
-              blockNeighbors[neighborIndex++] = m_blocks[MESH_XYZ(iterator[0], iterator[1], iterator[2])];
+              blockNeighbors[neighborIndex++] = blocks[MESH_XYZ(iterator[0], iterator[1], iterator[2])];
             }
           }
         }
@@ -349,8 +349,8 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
       counter = 0;
       for (x[v] = 0; x[v] < CHUNK_SIZE; x[v]++) {
         for (x[u] = 0; x[u] < CHUNK_SIZE; x[u]++, counter++) {
-          const Block block1 = m_blocks[MESH_XYZ(x[0], x[1], x[2])];
-          const Block block2 = m_blocks[MESH_XYZ(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
+          const auto block1 = static_cast<const uint8_t>(blocks[MESH_XYZ(x[0], x[1], x[2])]);
+          const auto block2 = static_cast<const uint8_t>(blocks[MESH_XYZ(x[0] + q[0], x[1] + q[1], x[2] + q[2])]);
 
           bool block1OutsideBorder = x[axis] < 0;
           bool block2OutsideBorder = CHUNK_SIZE - 1 <= x[axis];
@@ -537,7 +537,7 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
                     | ((textureIndex & 0xFF) << 22)), static_cast<float>(v11u), static_cast<float>(v11v),
                 static_cast<float>(textureIndex), (float) (vx + dv[0]), (float) (vy + dv[1]), (float) (vz + dv[2])};
 
-            bool isTransparent = BlockDB::isTransparent(static_cast<Block>(blockType));
+            bool isTransparent = BlockDB::isTransparent(blockType);
             auto &vertices = isTransparent ? transparentVertices : opaqueVertices;
             auto &indices = isTransparent ? transparentIndices : opaqueIndices;
             unsigned long baseVertexIndex = vertices.size();
@@ -603,7 +603,7 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
       }
     }
   }
-  delete[] faceInfo;
+//  delete[] faceInfo;
 
   auto endTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000.0;

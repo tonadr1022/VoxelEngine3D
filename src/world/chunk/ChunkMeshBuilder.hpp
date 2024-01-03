@@ -15,18 +15,16 @@
 using OcclusionLevels = std::array<uint8_t, 4>;
 
 struct FaceInfo {
-
   uint8_t aoLevels[4];
   bool flip;
+
   void setValues(uint8_t faceNum, const Block (&blockNeighbors)[27]);
 
-  // operator ==
   bool operator==(const FaceInfo &other) const {
     return aoLevels[0] == other.aoLevels[0] && aoLevels[1] == other.aoLevels[1] && aoLevels[2] == other.aoLevels[2] &&
         aoLevels[3] == other.aoLevels[3];
   }
 
-  // operator !=
   bool operator!=(const FaceInfo &other) const {
     return aoLevels[0] != other.aoLevels[0] || aoLevels[1] != other.aoLevels[1] || aoLevels[2] != other.aoLevels[2] ||
         aoLevels[3] != other.aoLevels[3];
@@ -40,8 +38,8 @@ class ChunkMeshBuilder {
   void constructMesh(std::vector<ChunkVertex> &opaqueVertices, std::vector<unsigned int> &opaqueIndices,
                      std::vector<ChunkVertex> &transparentVertices, std::vector<unsigned int> &transparentIndices);
 
-  void constructMeshGreedy(std::vector<ChunkVertex> &opaqueVertices, std::vector<unsigned int> &opaqueIndices,
-                           std::vector<ChunkVertex> &transparentVertices, std::vector<unsigned int> &transparentIndices);
+  static void constructMeshGreedy(std::vector<ChunkVertex> &opaqueVertices, std::vector<unsigned int> &opaqueIndices,
+                           std::vector<ChunkVertex> &transparentVertices, std::vector<unsigned int> &transparentIndices, Block (&blocks)[CHUNK_MESH_INFO_SIZE]);
 
   OcclusionLevels getOcclusionLevels(const glm::ivec3 &blockPosInChunk, BlockFace face);
 
@@ -50,11 +48,11 @@ class ChunkMeshBuilder {
   glm::ivec3 m_chunkPos;
 
   // TODO: improve for other edge cases: glass, leaves, etc.
-  static inline bool shouldShowFace(Block block, Block neighborBlock) {
-    if (block == Block::AIR) return false; // if block to show face is air, dont show face
-    if (neighborBlock == Block::AIR) return true; // to avoid lookup??? profile
-    bool blockIsTrans = BlockMethods::isTransparent(block);
-    bool neighborIsTrans = BlockMethods::isTransparent(neighborBlock);
+  static inline bool shouldShowFace(uint8_t block, uint8_t neighborBlock) {
+    if (!block) return false; // if block to show face is air, dont show face
+    if (!neighborBlock) return true; // to avoid lookup??? profile
+    bool blockIsTrans = BlockDB::isTransparent(block);
+    bool neighborIsTrans = BlockDB::isTransparent(neighborBlock);
     if (blockIsTrans || !neighborIsTrans) return false;
     return true;
   }
