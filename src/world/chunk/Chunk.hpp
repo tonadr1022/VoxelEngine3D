@@ -54,8 +54,12 @@ class Chunk {
   Chunk() = delete;
   explicit Chunk(glm::ivec3 pos);
   ~Chunk();
+  int m_numNonAirBlocks = 0;
 
   inline void setBlock(int x, int y, int z, Block block) {
+    Block oldBlock = m_blocks[XYZ(x,y,z)];
+    if (oldBlock != Block::AIR && block == Block::AIR) m_numNonAirBlocks--;
+    if (oldBlock == Block::AIR && block != Block::AIR) m_numNonAirBlocks++;
     m_blocks[XYZ(x, y, z)] = block;
   }
 

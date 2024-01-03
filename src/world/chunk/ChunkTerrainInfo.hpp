@@ -25,6 +25,7 @@ class ChunkTerrainInfo : public ChunkInfo {
   Block m_blocks[CHUNK_VOLUME * CHUNKS_PER_STACK]{};
   int m_seed;
   glm::ivec2 m_pos;
+  int m_numBlocksPlaced[CHUNKS_PER_STACK]{};
 };
 
 #endif //VOXEL_ENGINE_SRC_WORLD_CHUNK_CHUNKTERRAININFO_HPP_
