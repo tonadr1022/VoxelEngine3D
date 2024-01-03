@@ -38,5 +38,10 @@ using TreeMap = std::array<float, CHUNK_AREA>;
 using ChunkHeightMapMap = std::unordered_map<glm::ivec2, HeightMap>;
 using ChunkTreeMapMap = std::unordered_map<glm::ivec2, TreeMap>;
 
+struct ChunkVertex {
+  uint32_t vertexData;
+  float u, v, texIndex, x, y, z;
+};
+
 
 #endif //VOXEL_ENGINE_APPCONSTANTS_HPP

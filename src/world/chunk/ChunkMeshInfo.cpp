@@ -31,8 +31,9 @@ ChunkMeshInfo::ChunkMeshInfo(Chunk *chunks[27]) {
 void ChunkMeshInfo::generateMeshData() {
   Block blocks[CHUNK_MESH_INFO_SIZE]{};
   populateMeshInfoForMeshing(blocks, m_chunks);
-  ChunkMeshBuilder builder(blocks, m_chunks[13]->m_worldPos);
-  builder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
+  ChunkMeshBuilder builder(blocks, m_chunks[13]->m_pos);
+//  builder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
+  builder.constructMeshGreedy(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
 
   m_done = true;
 }

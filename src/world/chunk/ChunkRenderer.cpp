@@ -16,7 +16,8 @@ ChunkRenderer::ChunkRenderer() {
 ChunkRenderer::~ChunkRenderer() = default;
 
 void ChunkRenderer::render(ChunkMesh &mesh, const glm::ivec3 &worldPos, float firstBufferTime) {
-  glm::mat4 model = glm::translate(glm::mat4(1.0f), (glm::vec3) worldPos);
+  // todo figure out why i need to divide by chunk size!!!!!
+  glm::mat4 model = glm::translate(glm::mat4(1.0f), (glm::vec3) worldPos / (float)CHUNK_SIZE);
   shader->setMat4("u_Model", model);
   shader->setIVec2("u_ChunkWorldPos", worldPos);
   shader->setFloat("u_FirstBufferTime", firstBufferTime);
@@ -50,7 +51,7 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
 
   glGenBuffers(1, &mesh.VBO);
   glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
-  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(uint32_t),
+  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(ChunkVertex),
                &mesh.vertices[0], GL_STATIC_DRAW);
 
   glGenBuffers(1, &mesh.EBO);
@@ -60,8 +61,14 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
                GL_STATIC_DRAW);
 
   // vertex data only attribute, must be IPointer
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(uint32_t), (void *) nullptr);
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData));
   glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, false,sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, u));
+  glEnableVertexAttribArray(1);
+
+  glVertexAttribPointer(2, 3, GL_FLOAT, false,sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, x));
+  glEnableVertexAttribArray(2);
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -72,7 +79,7 @@ void ChunkRenderer::start(const Camera &camera) {
   updateShaderUniforms(camera);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D_ARRAY, textureAtlasID);
-  Config::useWireFrame ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  !Config::useWireFrame ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void ChunkRenderer::updateShaderUniforms(const Camera &camera) {
@@ -93,7 +100,7 @@ void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
   GLuint nVBO;
   glGenBuffers(1, &nVBO);
   glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
-  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(uint32_t),
+  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(ChunkVertex),
                &mesh.vertices[0], GL_STATIC_DRAW);
 
   GLuint nEBO;
@@ -107,8 +114,14 @@ void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
   mesh.EBO = nEBO;
 
   // vertex data only attribute, must be IPointer
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(uint32_t), (void *) nullptr);
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData));
   glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, false,sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, u));
+  glEnableVertexAttribArray(1);
+
+  glVertexAttribPointer(2, 3, GL_FLOAT, false,sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, x));
+  glEnableVertexAttribArray(2);
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);

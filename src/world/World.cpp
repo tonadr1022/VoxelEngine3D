@@ -12,6 +12,7 @@
 World::World(Renderer &renderer, int seed, const std::string &savePath)
     : m_worldSave(savePath), m_renderer(renderer), m_center(INT_MAX), m_xyCenter(INT_MAX), m_numRunningThreads(0),
       m_numLoadingThreads(std::thread::hardware_concurrency()), m_seed(seed) {
+  m_numLoadingThreads = 1;
   const size_t loadVectorSize = ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
   m_chunksToLoadVector.reserve(loadVectorSize);
   BlockDB::loadData("../resources/blocks/");
@@ -567,12 +568,12 @@ void World::processDirectChunkUpdates() {
       chunks[index++] = getChunkRawPtr(pos + neighborOffset);
     }
 
-    std::vector<uint32_t> opaqueVertices, transparentVertices;
+    std::vector<ChunkVertex> opaqueVertices, transparentVertices;
     std::vector<unsigned int> opaqueIndices, transparentIndices;
 
     Block blocks[CHUNK_MESH_INFO_SIZE];
     ChunkMeshInfo::populateMeshInfoForMeshing(blocks, chunks);
-    ChunkMeshBuilder builder(blocks, chunks[13]->m_worldPos);
+    ChunkMeshBuilder builder(blocks, chunks[13]->m_pos);
     builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
 
     chunks[13]->m_opaqueMesh.vertices = std::move(opaqueVertices);

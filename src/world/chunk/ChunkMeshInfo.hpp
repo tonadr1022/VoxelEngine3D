@@ -20,8 +20,8 @@ class ChunkMeshInfo : public ChunkInfo {
 
  private:
   Chunk *m_chunks[27]{};
-  std::vector<uint32_t> m_opaqueVertices;
-  std::vector<uint32_t> m_transparentVertices;
+  std::vector<ChunkVertex> m_opaqueVertices;
+  std::vector<ChunkVertex> m_transparentVertices;
   std::vector<unsigned int> m_opaqueIndices;
   std::vector<unsigned int> m_transparentIndices;
 };

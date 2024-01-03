@@ -117,7 +117,7 @@ class World {
   void processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStructures);
   void processBatchToMesh(std::queue<glm::ivec3> &batchToMesh);
 
-  int m_renderDistance = 8;
+  int m_renderDistance = 1;
   int m_loadDistance = m_renderDistance + 2;
   int m_structureLoadDistance = m_renderDistance + 1;
   int m_unloadDistance = m_renderDistance + 4;
