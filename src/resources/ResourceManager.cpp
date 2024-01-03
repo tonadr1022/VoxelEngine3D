@@ -69,8 +69,8 @@ ResourceManager::makeTexture2dArray(const std::string &texturePath,
   std::vector<Image> subImages;
 
   // create sub images on CPU
-  for (int tileX = 0; tileX < tilesPerColumn; tileX++) {
-    for (int tileY = 0; tileY < tilesPerRow; tileY++) {
+  for (int tileY = 0; tileY < tilesPerColumn; tileY++) {
+    for (int tileX = 0; tileX < tilesPerRow; tileX++) {
       uint32_t offsetX = tileX * tileWidth;
       uint32_t offsetY = tileY * tileHeight;
       subImages.emplace_back(image.subImage({offsetX, offsetY},

@@ -2,7 +2,7 @@
 
 layout (location = 0) in uint vertexData;
 layout (location = 1) in vec3 texCoords;
-layout (location = 2) in vec3 inVertexPos;
+layout (location = 2) in vec3 inVertexPos69;
 
 out vec3 v_FragPos;
 out vec3 v_TexCoord;
@@ -62,14 +62,14 @@ vec3 applyWave(vec3 vertexPos, uint texIndex) {
 
 
 void main() {
-//    uint posX = bitfieldExtract(vertexData, 0, 6);
-//    uint posY = bitfieldExtract(vertexData, 6, 6);
-//    uint posZ = bitfieldExtract(vertexData, 12, 6);
+    uint posX = bitfieldExtract(vertexData, 0, 6);
+    uint posY = bitfieldExtract(vertexData, 6, 6);
+    uint posZ = bitfieldExtract(vertexData, 12, 6);
     uint occlusionLevel = bitfieldExtract(vertexData, 18, 2);
     uint texIndex = bitfieldExtract(vertexData, 22, 8);
 
-//    vec3 vertexPos = vec3(posX, posY, posZ);
-    vec3 vertexPos = applyWave(inVertexPos, texIndex);
+    vec3 vertexPos = vec3(posX, posY, posZ);
+     vertexPos = applyWave(vertexPos, texIndex);
 
     int textureYIndex = int(texIndex) % 16;
     int textureXIndex = int(texIndex) / 16;

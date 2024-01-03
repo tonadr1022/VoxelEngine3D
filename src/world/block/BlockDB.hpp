@@ -13,13 +13,8 @@
 struct BlockData {
   Block id;
   std::string name;
-
-  glm::ivec2 topTexCoords;
-  glm::ivec2 frontTexCoords;
-  glm::ivec2 backTexCoords;
-  glm::ivec2 leftTexCoords;
-  glm::ivec2 rightTexCoords;
-  glm::ivec2 bottomTexCoords;
+  // front back right left top bottom
+  std::array<int, 6> texCoords;
   bool isTransparent;
   bool isCollidable;
 };
@@ -34,32 +29,7 @@ class BlockDB {
   }
 
   static inline int getTextureIndex(Block id, BlockFace faceNum) {
-    int textureX, textureY;
-    BlockData &blockData = data[static_cast<unsigned long>(id)];
-    switch (faceNum) {
-      case BlockFace::FRONT:textureX = blockData.frontTexCoords.x;
-        textureY = blockData.frontTexCoords.y;
-        break;
-      case BlockFace::BACK:textureX = blockData.backTexCoords.x;
-        textureY = blockData.backTexCoords.y;
-        break;
-      case BlockFace::LEFT:textureX = blockData.leftTexCoords.x;
-        textureY = blockData.leftTexCoords.y;
-        break;
-      case BlockFace::RIGHT:textureX = blockData.rightTexCoords.x;
-        textureY = blockData.rightTexCoords.y;
-        break;
-      case BlockFace::TOP:textureX = blockData.topTexCoords.x;
-        textureY = blockData.topTexCoords.y;
-        break;
-      case BlockFace::BOTTOM:textureX = blockData.bottomTexCoords.x;
-        textureY = blockData.bottomTexCoords.y;
-        break;
-      default:break;
-    }
-//    return textureX * TEXTURE_ATLAS_WIDTH + textureY;
-return 207;
-//return 127;
+    return data[static_cast<unsigned long>(id)].texCoords[faceNum];
   }
 
  private:

@@ -12,7 +12,7 @@
 World::World(Renderer &renderer, int seed, const std::string &savePath)
     : m_worldSave(savePath), m_renderer(renderer), m_center(INT_MAX), m_xyCenter(INT_MAX), m_numRunningThreads(0),
       m_numLoadingThreads(std::thread::hardware_concurrency()), m_seed(seed) {
-  m_numLoadingThreads = 1;
+//  m_numLoadingThreads = 1;
   const size_t loadVectorSize = ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
   m_chunksToLoadVector.reserve(loadVectorSize);
   BlockDB::loadData("../resources/blocks/");
@@ -303,7 +303,8 @@ void World::generateChunksWorker4() {
       processBatchToGenStructures(batchToGenStructures);
     } else if (!m_chunksReadyToMeshList.empty() && m_chunksReadyToGenStructuresList.empty()
         && m_chunksToLoadVector.empty()) {
-      while (!m_chunksReadyToMeshList.empty() && batchToMesh.size() < MAX_BATCH_SIZE) {
+      while (!m_chunksReadyToMeshList.empty()) {
+//      while (!m_chunksReadyToMeshList.empty() && batchToMesh.size() < MAX_BATCH_SIZE) {
         auto pos = m_chunksReadyToMeshList.begin();
         batchToMesh.push(m_chunksReadyToMeshList.back());
         m_chunksReadyToMeshList.pop_back();
@@ -501,18 +502,20 @@ void World::setRenderDistance(int renderDistance) {
   m_loadDistance = m_renderDistance + 2;
   m_structureLoadDistance = m_renderDistance + 1;
   m_unloadDistance = m_renderDistance + 4;
+
   m_renderDistanceChanged = true;
 }
 
 void World::setBlockWithUpdate(int worldX, int worldY, int worldZ, Block block) {
+  constexpr int CHUNK_SIZE_MINUS_ONE = CHUNK_SIZE - 1;
   auto chunkPos = chunkPosFromWorldPos(worldX, worldY, worldZ);
-  int chunkX = Utils::positiveModulo(worldX, CHUNK_SIZE);
-  int chunkY = Utils::positiveModulo(worldY, CHUNK_SIZE);
-  int chunkZ = Utils::positiveModulo(worldZ, CHUNK_SIZE);
+  int x = Utils::positiveModulo(worldX, CHUNK_SIZE);
+  int y = Utils::positiveModulo(worldY, CHUNK_SIZE);
+  int z = Utils::positiveModulo(worldZ, CHUNK_SIZE);
   Chunk &chunk = *m_chunkMap.at(chunkPos).get();
-  chunk.setBlock(chunkX, chunkY, chunkZ, block);
+  chunk.setBlock(x, y, z, block);
 
-  // y
+  // z
   // |
   // |  6   15  24
   // |    7   16  25
@@ -521,35 +524,23 @@ void World::setBlockWithUpdate(int worldX, int worldY, int worldZ, Block block) 
   // |  3   12  21
   // |    4   13  22
   // |      5   14  23
-  // \-------------------x
+  // \-------------------y
   //  \ 0   9   18
   //   \  1   10  19
   //    \   2   11  20
-  //     z
-//  if (chunkX == 0) {   // block in (0, any) of chunk4, need to update 1
-//    m_chunkDirectlyUpdateSet.insert({chunkPos.x - 1, chunkPos.y});
-//    if (chunkY == 0) {   // block in 0, 0 of chunk 4, need to update 0
-//      m_chunkDirectlyUpdateSet.insert({chunkPos.x - 1, chunkPos.y - 1});
-//    } else if (chunkY == 15) {   // block in (0, 15) of chunk 4, need to update 2
-//      m_chunkDirectlyUpdateSet.insert({chunkPos.x - 1, chunkPos.y + 1});
-//    }
-//  }
-//
-//  if (chunkX == 15) { // block in (15, any) of chunk 4, need to update 7
-//    m_chunkDirectlyUpdateSet.insert({chunkPos.x + 1, chunkPos.y});
-//    if (chunkY == 0) { // block in (15, 0) of chunk 4, need to update 6
-//      m_chunkDirectlyUpdateSet.insert({chunkPos.x + 1, chunkPos.y - 1});
-//    } else if (chunkY == 15) { // block in (15, 15) of chunk 4, need to update 8
-//      m_chunkDirectlyUpdateSet.insert({chunkPos.x + 1, chunkPos.y + 1});
-//    }
-//  }
-//
-//  if (chunkY == 0) { // block in (any, 0) of chunk 4, need to update chunk 3
-//    m_chunkDirectlyUpdateSet.insert({chunkPos.x, chunkPos.y - 1});
-//  } else if (chunkY == 15) { // block in (any, 15) of chunk 4, need to update 5
-//    m_chunkDirectlyUpdateSet.insert({chunkPos.x, chunkPos.y + 1});
-//  }
-//
+  //     x
+  // todo sep function
+  if (x > 0 && x < CHUNK_SIZE_MINUS_ONE && y > 0 && y < CHUNK_SIZE_MINUS_ONE && z > 0 && z < CHUNK_SIZE_MINUS_ONE) {
+      m_chunkDirectlyUpdateSet.insert(chunkPos);
+      return;
+  } else if (x == 0 && y == 0 && z == 0) {
+    m_chunkDirectlyUpdateSet.insert(chunkPos - 1);
+  } else if (x == CHUNK_SIZE_MINUS_ONE && y == CHUNK_SIZE_MINUS_ONE && z == CHUNK_SIZE_MINUS_ONE) {
+    m_chunkDirectlyUpdateSet.insert(chunkPos + 1);
+  }
+  // todo finish other cases
+
+
 //  m_chunkDirectlyUpdateSet.insert({chunkPos.x, chunkPos.y});
 }
 
@@ -574,7 +565,7 @@ void World::processDirectChunkUpdates() {
     Block blocks[CHUNK_MESH_INFO_SIZE];
     ChunkMeshInfo::populateMeshInfoForMeshing(blocks, chunks);
     ChunkMeshBuilder builder(blocks, chunks[13]->m_pos);
-    builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
+    builder.constructMeshGreedy(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
 
     chunks[13]->m_opaqueMesh.vertices = std::move(opaqueVertices);
     chunks[13]->m_opaqueMesh.indices = std::move(opaqueIndices);

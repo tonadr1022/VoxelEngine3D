@@ -48,10 +48,11 @@ enum class Block : uint8_t {
 
 //typedef uint8_t Block;
 
-//namespace BlockMethods {
-//inline bool isTransparent(Block block) {
-////  return block == Block::AIR || block == Block::WATER || block == ;
-////}
-//}
+namespace BlockMethods {
+inline bool isTransparent(Block block) {
+  return block == Block::AIR || block == Block::WATER || block == Block::OAK_LEAVES || block == Block::JUNGLE_LEAVES ||
+      block == Block::BIRCH_LEAVES || block == Block::SPRUCE_LEAVES;
+}
+}
 
 #endif //VOXEL_ENGINE_BLOCK_HPP

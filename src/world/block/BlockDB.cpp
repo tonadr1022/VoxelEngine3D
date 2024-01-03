@@ -24,20 +24,7 @@ void BlockDB::loadData(const std::string &filePath) {
     BlockData blockDataEntry{};
     blockDataEntry.name = blockName;
     blockDataEntry.id = static_cast<Block>(blockData["id"].get<int>());
-    blockDataEntry.topTexCoords.x = blockData["topTexCoords"][0].get<int>();
-    blockDataEntry.topTexCoords.y = blockData["topTexCoords"][1].get<int>();
-    blockDataEntry.frontTexCoords.x = blockData["frontTexCoords"][0].get<int>();
-    blockDataEntry.frontTexCoords.y = blockData["frontTexCoords"][1].get<int>();
-    blockDataEntry.backTexCoords.x = blockData["backTexCoords"][0].get<int>();
-    blockDataEntry.backTexCoords.y = blockData["backTexCoords"][1].get<int>();
-    blockDataEntry.leftTexCoords.x = blockData["leftTexCoords"][0].get<int>();
-    blockDataEntry.leftTexCoords.y = blockData["leftTexCoords"][1].get<int>();
-    blockDataEntry.rightTexCoords.x = blockData["rightTexCoords"][0].get<int>();
-    blockDataEntry.rightTexCoords.y = blockData["rightTexCoords"][1].get<int>();
-    blockDataEntry.bottomTexCoords.x =
-        blockData["bottomTexCoords"][0].get<int>();
-    blockDataEntry.bottomTexCoords.y =
-        blockData["bottomTexCoords"][1].get<int>();
+    blockDataEntry.texCoords = blockData["texCoords"].get<std::array<int, 6>>();
     blockDataEntry.isTransparent = blockData["isTransparent"].get<bool>();
     blockDataEntry.isCollidable = blockData["isCollidable"].get<bool>();
     prelimData.push_back(blockDataEntry);

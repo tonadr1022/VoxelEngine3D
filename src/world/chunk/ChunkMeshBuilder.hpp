@@ -18,7 +18,6 @@ struct FaceInfo {
 
   uint8_t aoLevels[4];
   bool flip;
-  uint8_t blockId;
   void setValues(uint8_t faceNum, const Block (&blockNeighbors)[27]);
 
   // operator ==
@@ -52,12 +51,12 @@ class ChunkMeshBuilder {
 
   // TODO: improve for other edge cases: glass, leaves, etc.
   static inline bool shouldShowFace(Block block, Block neighborBlock) {
-    if (block == Block::AIR) return false;
+    if (block == Block::AIR) return false; // if block to show face is air, dont show face
     if (neighborBlock == Block::AIR) return true; // to avoid lookup??? profile
-//    bool blockIsTrans = BlockDB::isTransparent(static_cast<Block>(block));
-//    bool neighborIsTrans = BlockDB::isTransparent(static_cast<Block>(neighborBlock));
-    return BlockDB::isTransparent(static_cast<Block>(neighborBlock));
-
+    bool blockIsTrans = BlockMethods::isTransparent(block);
+    bool neighborIsTrans = BlockMethods::isTransparent(neighborBlock);
+    if (blockIsTrans || !neighborIsTrans) return false;
+    return true;
   }
 
 //  Chunk *(m_chunks)[27] = {nullptr};
