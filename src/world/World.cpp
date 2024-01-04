@@ -18,10 +18,10 @@ World::World(Renderer &renderer, int seed, const std::string &savePath)
   BlockDB::loadData("../resources/blocks/");
 
   for (unsigned int i = 0; i < m_numLoadingThreads; i++) {
-//    m_chunkLoadThreads.emplace_back(&World::generateChunksWorker4, this);
-    m_chunkLoadThreads.emplace_back(&World::chunkTerrainWorker, this);
-    m_chunkLoadThreads.emplace_back(&World::chunkStructureGenWorker, this);
-    m_chunkLoadThreads.emplace_back(&World::chunkMeshWorker, this);
+    m_chunkLoadThreads.emplace_back(&World::generateChunksWorker4, this);
+//    m_chunkLoadThreads.emplace_back(&World::chunkTerrainWorker, this);
+//    m_chunkLoadThreads.emplace_back(&World::chunkStructureGenWorker, this);
+//    m_chunkLoadThreads.emplace_back(&World::chunkMeshWorker, this);
   }
 }
 
@@ -35,7 +35,6 @@ World::~World() {
 }
 
 void World::update() {
-  Timer t("update", false);
   m_centerChanged = false;
   m_centerChangedXY = false;
 
@@ -203,12 +202,10 @@ void World::updateChunkMeshList() {
     for (pos.y = m_center.y - m_renderDistance; pos.y <= m_center.y + m_renderDistance; pos.y++) {
       for (pos.z = 0; pos.z < CHUNKS_PER_STACK; pos.z++) {
         Chunk *chunk = getChunkRawPtr(pos);
-        if (chunk->chunkMeshState == ChunkMeshState::BUILT ||
-            chunk->chunkState != ChunkState::FULLY_GENERATED ||
-            m_chunkMeshInfoMap.count(pos)) {
-          continue;
+        if (chunk->m_numNonAirBlocks != 0 && chunk->chunkMeshState != ChunkMeshState::BUILT
+            && chunk->chunkState == ChunkState::FULLY_GENERATED && !m_chunkMeshInfoMap.count(pos)) {
+          m_chunksInMeshRangeVector.emplace_back(pos);
         }
-        m_chunksInMeshRangeVector.emplace_back(pos);
       }
     }
   }
@@ -292,7 +289,6 @@ void World::chunkTerrainWorker() {
     m_numRunningThreads--;
 //      auto it = m_chunkTerrainLoadInfoMap.find(pos);
 //      if (it != m_chunkTerrainLoadInfoMap.end()) it->second->generateTerrainData();
-
   }
 }
 
@@ -328,7 +324,7 @@ void World::chunkMeshWorker() {
   while (m_isRunning) {
     std::unique_lock<std::mutex> lock(m_mainMutex);
     m_conditionVariable.wait(lock, [this]() {
-      return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads && (!m_chunksReadyToMeshList.empty()));
+      return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads && !m_chunksReadyToMeshList.empty());
     });
     if (!m_isRunning) return;
     pos = m_chunksReadyToMeshList.back();
@@ -336,7 +332,9 @@ void World::chunkMeshWorker() {
     lock.unlock();
     m_numRunningThreads++;
     // find instead of at
-    m_chunkMeshInfoMap.at(pos)->generateMeshData();
+    auto it = m_chunkMeshInfoMap.find(pos);
+if (it != m_chunkMeshInfoMap.end()) it->second->generateMeshData();
+    //m_chunkMeshInfoMap.at(pos)->generateMeshData();
     m_numRunningThreads--;
 
   }
@@ -371,8 +369,8 @@ void World::generateChunksWorker4() {
       processBatchToGenStructures(batchToGenStructures);
     } else if (!m_chunksReadyToMeshList.empty() && m_chunksReadyToGenStructuresList.empty()
         && m_chunksToLoadVector.empty()) {
-      while (!m_chunksReadyToMeshList.empty()) {
-//      while (!m_chunksReadyToMeshList.empty() && batchToMesh.size() < MAX_BATCH_SIZE) {
+//      while (!m_chunksReadyToMeshList.empty()) {
+      while (!m_chunksReadyToMeshList.empty() && batchToMesh.size() < 2) {
         auto pos = m_chunksReadyToMeshList.begin();
         batchToMesh.push(m_chunksReadyToMeshList.back());
         m_chunksReadyToMeshList.pop_back();
@@ -635,7 +633,11 @@ void World::processDirectChunkUpdates() {
     Block blocks[CHUNK_MESH_INFO_SIZE];
     ChunkMeshInfo::populateMeshInfoForMeshing(blocks, chunks);
 //    ChunkMeshBuilder builder(blocks, chunks[13]->m_pos);
-    ChunkMeshBuilder::constructMeshGreedy(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices, blocks);
+    ChunkMeshBuilder::constructMeshGreedy(opaqueVertices,
+                                          opaqueIndices,
+                                          transparentVertices,
+                                          transparentIndices,
+                                          blocks);
 
     chunks[13]->m_opaqueMesh.vertices = std::move(opaqueVertices);
     chunks[13]->m_opaqueMesh.indices = std::move(opaqueIndices);

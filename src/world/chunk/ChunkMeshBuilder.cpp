@@ -270,6 +270,8 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
                                            std::vector<unsigned int> &opaqueIndices,
                                            std::vector<ChunkVertex> &transparentVertices,
                                            std::vector<unsigned int> &transparentIndices, Block (&blocks)[CHUNK_MESH_INFO_SIZE]) {
+  static float maxTime = 0;
+  static int count =0;
   auto startTime = std::chrono::high_resolution_clock::now();
 
   // get face data
@@ -603,11 +605,16 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
       }
     }
   }
-//  delete[] faceInfo;
-
+  delete[] faceInfo;
+  static float totalTime =0;
+  count++;
   auto endTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000.0;
-    std::cout << duration << " ms" << std::endl;
+    totalTime += duration;
+    if (duration > maxTime) {
+      maxTime = duration;
+    }
+    std::cout << duration << " ms, max:  " << maxTime << " ms, avg: " << totalTime / count << std::endl;
 }
 
 OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(const glm::ivec3 &blockPosInChunk,
