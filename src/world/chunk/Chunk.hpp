@@ -32,7 +32,6 @@ static inline int XYZ(int x, int y, int z) {
 }
 
 static inline int XYZ(glm::ivec3 pos) {
-//  return pos.x + (pos.y << 5) + (pos.z << 10) ;
     return pos.z << 10 | pos.y << 5 | pos.x;
 }
 
@@ -54,10 +53,25 @@ class Chunk {
   Chunk() = delete;
   explicit Chunk(glm::ivec3 pos);
   ~Chunk();
+  int m_numNonAirBlocks = 0;
 
   inline void setBlock(int x, int y, int z, Block block) {
+    Block oldBlock = m_blocks[XYZ(x,y,z)];
+    if (oldBlock != Block::AIR && block == Block::AIR) m_numNonAirBlocks--;
+    if (oldBlock == Block::AIR && block != Block::AIR) m_numNonAirBlocks++;
     m_blocks[XYZ(x, y, z)] = block;
   }
+
+  inline void setBlock(const glm::ivec3&pos, Block block) {
+    Block oldBlock = m_blocks[XYZ(pos)];
+    if (oldBlock != Block::AIR && block == Block::AIR) m_numNonAirBlocks--;
+    if (oldBlock == Block::AIR && block != Block::AIR) m_numNonAirBlocks++;
+    m_blocks[XYZ(pos)] = block;
+  }
+
+//  inline void setBlock(int x, int y, int z, Block block) {
+//    m_blocks[XYZ(x, y, z)] = block;
+//  }
 
   void markDirty();
 

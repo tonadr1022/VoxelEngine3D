@@ -91,7 +91,7 @@ void World::updateChunkLoadList() {
       }
       posIt->second->applyTerrainDataToChunk(chunksInStack);
       m_chunkHeightMapMap.emplace(posIt->first, posIt->second->m_heightMap);
-        m_chunkTreeMapMap.emplace(posIt->first, posIt->second->m_treeMap);
+      m_chunkTreeMapMap.emplace(posIt->first, posIt->second->m_treeMap);
 
       // delete from map regardless of whether chunk exists
       posIt = m_chunkTerrainLoadInfoMap.erase(posIt);
@@ -155,7 +155,7 @@ void World::updateChunkStructureGenList() {
       //    \   2   11  20
       //     x
       Chunk *chunks[27] = {nullptr};
-      addNeighborChunks(chunks, pos);
+      getNeighborChunks(chunks, pos);
 
       bool canGenStructures = true;
       for (auto &chunk : chunks) {
@@ -199,12 +199,10 @@ void World::updateChunkMeshList() {
     for (pos.y = m_center.y - m_renderDistance; pos.y <= m_center.y + m_renderDistance; pos.y++) {
       for (pos.z = 0; pos.z < CHUNKS_PER_STACK; pos.z++) {
         Chunk *chunk = getChunkRawPtr(pos);
-        if (chunk->chunkMeshState == ChunkMeshState::BUILT ||
-            chunk->chunkState != ChunkState::FULLY_GENERATED ||
-            m_chunkMeshInfoMap.count(pos)) {
-          continue;
+        if (chunk->m_numNonAirBlocks != 0 && chunk->chunkMeshState != ChunkMeshState::BUILT
+            && chunk->chunkState == ChunkState::FULLY_GENERATED && !m_chunkMeshInfoMap.count(pos)) {
+          m_chunksInMeshRangeVector.emplace_back(pos);
         }
-        m_chunksInMeshRangeVector.emplace_back(pos);
       }
     }
   }
@@ -282,8 +280,8 @@ void World::generateChunksWorker4() {
     std::unique_lock<std::mutex> lock(m_mainMutex);
     m_conditionVariable.wait(lock, [this]() {
       return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads
-          && (!m_chunksToLoadVector.empty() || !m_chunksReadyToGenStructuresList.empty() ||
-              !m_chunksReadyToMeshList.empty()));
+                              && (!m_chunksToLoadVector.empty() || !m_chunksReadyToGenStructuresList.empty() ||
+                                  !m_chunksReadyToMeshList.empty()));
     });
     if (!m_isRunning) return;
     if (!m_chunksToLoadVector.empty()) {
@@ -301,7 +299,7 @@ void World::generateChunksWorker4() {
       lock.unlock();
       processBatchToGenStructures(batchToGenStructures);
     } else if (!m_chunksReadyToMeshList.empty() && m_chunksReadyToGenStructuresList.empty()
-        && m_chunksToLoadVector.empty()) {
+               && m_chunksToLoadVector.empty()) {
       while (!m_chunksReadyToMeshList.empty() && batchToMesh.size() < MAX_BATCH_SIZE) {
         auto pos = m_chunksReadyToMeshList.begin();
         batchToMesh.push(m_chunksReadyToMeshList.back());
@@ -334,7 +332,9 @@ void World::processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStruct
       std::cout << "BROKEN HEIGHTMAP OR TREEMAP" << std::endl;
     } else {
       auto it = m_chunkStructuresInfoMap.find(pos);
-      if (it != m_chunkStructuresInfoMap.end()) it->second->generateStructureData(heightMapIt->second, treeMapIt->second);
+      if (it != m_chunkStructuresInfoMap.end())
+        it->second->generateStructureData(heightMapIt->second,
+                                          treeMapIt->second);
     }
 //    m_chunkStructuresInfoMap.at(pos)->generateStructureData(heightMapIt->second, treeMapIt->second);
     batchToGenStructures.pop();
@@ -411,7 +411,7 @@ void World::castPlayerAimRay(Ray ray) {
       // placing block
     else if (Mouse::isPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
       if (!isFirstAction && std::chrono::steady_clock::now() - lastTime <
-          std::chrono::milliseconds(PLACING_DELAY_MS)) {
+                            std::chrono::milliseconds(PLACING_DELAY_MS)) {
         return;
       }
       setBlockWithUpdate(lastAirBlockPos,
@@ -505,51 +505,13 @@ void World::setRenderDistance(int renderDistance) {
 
 void World::setBlockWithUpdate(int worldX, int worldY, int worldZ, Block block) {
   auto chunkPos = chunkPosFromWorldPos(worldX, worldY, worldZ);
-  int chunkX = Utils::positiveModulo(worldX, CHUNK_SIZE);
-  int chunkY = Utils::positiveModulo(worldY, CHUNK_SIZE);
-  int chunkZ = Utils::positiveModulo(worldZ, CHUNK_SIZE);
+//  int x = Utils::positiveModulo(worldX, CHUNK_SIZE);
+//  int y = Utils::positiveModulo(worldY, CHUNK_SIZE);
+//  int z = Utils::positiveModulo(worldZ, CHUNK_SIZE);
+  auto blockPosInChunk = glm::ivec3(worldX, worldY, worldZ) - chunkPos * CHUNK_SIZE;
   Chunk &chunk = *m_chunkMap.at(chunkPos).get();
-  chunk.setBlock(chunkX, chunkY, chunkZ, block);
-
-  // y
-  // |
-  // |  6   15  24
-  // |    7   16  25
-  // |      8   17  26
-  // |
-  // |  3   12  21
-  // |    4   13  22
-  // |      5   14  23
-  // \-------------------x
-  //  \ 0   9   18
-  //   \  1   10  19
-  //    \   2   11  20
-  //     z
-//  if (chunkX == 0) {   // block in (0, any) of chunk4, need to update 1
-//    m_chunkDirectlyUpdateSet.insert({chunkPos.x - 1, chunkPos.y});
-//    if (chunkY == 0) {   // block in 0, 0 of chunk 4, need to update 0
-//      m_chunkDirectlyUpdateSet.insert({chunkPos.x - 1, chunkPos.y - 1});
-//    } else if (chunkY == 15) {   // block in (0, 15) of chunk 4, need to update 2
-//      m_chunkDirectlyUpdateSet.insert({chunkPos.x - 1, chunkPos.y + 1});
-//    }
-//  }
-//
-//  if (chunkX == 15) { // block in (15, any) of chunk 4, need to update 7
-//    m_chunkDirectlyUpdateSet.insert({chunkPos.x + 1, chunkPos.y});
-//    if (chunkY == 0) { // block in (15, 0) of chunk 4, need to update 6
-//      m_chunkDirectlyUpdateSet.insert({chunkPos.x + 1, chunkPos.y - 1});
-//    } else if (chunkY == 15) { // block in (15, 15) of chunk 4, need to update 8
-//      m_chunkDirectlyUpdateSet.insert({chunkPos.x + 1, chunkPos.y + 1});
-//    }
-//  }
-//
-//  if (chunkY == 0) { // block in (any, 0) of chunk 4, need to update chunk 3
-//    m_chunkDirectlyUpdateSet.insert({chunkPos.x, chunkPos.y - 1});
-//  } else if (chunkY == 15) { // block in (any, 15) of chunk 4, need to update 5
-//    m_chunkDirectlyUpdateSet.insert({chunkPos.x, chunkPos.y + 1});
-//  }
-//
-//  m_chunkDirectlyUpdateSet.insert({chunkPos.x, chunkPos.y});
+  chunk.setBlock(blockPosInChunk, block);
+  addRelatedChunks(blockPosInChunk, chunkPos, m_chunkDirectlyUpdateSet);
 }
 
 void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
@@ -584,12 +546,13 @@ void World::processDirectChunkUpdates() {
   }
   m_chunkDirectlyUpdateSet.clear();
 }
+
 void World::sortTransparentRenderVector() {
   m_transparentRenderVector = std::vector<glm::ivec3>(m_transparentRenderSet.begin(), m_transparentRenderSet.end());
   std::sort(m_transparentRenderVector.begin(), m_transparentRenderVector.end(), rcmpVec3);
 }
 
-void World::addNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const {
+void World::getNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const {
   int index = 0;
   for (auto &neighborOffset : NEIGHBOR_ARRAY_OFFSETS) {
     auto neighborPos = pos + neighborOffset;

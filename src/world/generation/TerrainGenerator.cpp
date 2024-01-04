@@ -77,7 +77,11 @@ void TerrainGenerator::getHeightMap(const glm::ivec2 &startWorldPos, int seed, H
   delete fastNoise;
 }
 
-void TerrainGenerator::generateTerrain(HeightMap &heightMap, Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK]) {
+void TerrainGenerator::generateTerrain(HeightMap &heightMap, Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK], int (&numBlocksPlaced)[CHUNKS_PER_STACK]) {
+  auto setBlockTerrain = [&](int x, int y, int z, Block block) {
+    blocks[WORLD_HEIGHT_XYZ(x, y, z)] = block;
+    numBlocksPlaced[z / CHUNK_SIZE]++;
+  };
 
   int heightMapIndex = 0;
   int z;
@@ -85,21 +89,21 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap, Block (&blocks)[CHU
     for (int y = 0; y < CHUNK_SIZE; y++) {
       int maxBlockHeight = heightMap[heightMapIndex];
       for (z = 0; z < maxBlockHeight - 4; z++) {
-        blocks[WORLD_HEIGHT_XYZ(x, y, z)] = Block::STONE;
+        setBlockTerrain(x, y, z, Block::STONE);
       }
       if (maxBlockHeight - 4 >= 0) {
         for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
-          blocks[WORLD_HEIGHT_XYZ(x, y, z)] = Block::DIRT;
+          setBlockTerrain(x, y, z, Block::DIRT);
         }
       }
       if (maxBlockHeight <= 66) {
-        blocks[WORLD_HEIGHT_XYZ(x, y, maxBlockHeight)] = Block::SAND;
+        setBlockTerrain(x, y, maxBlockHeight, Block::SAND);
       } else {
-        blocks[WORLD_HEIGHT_XYZ(x, y, maxBlockHeight)] = Block::GRASS;
+        setBlockTerrain(x, y, maxBlockHeight, Block::GRASS);
       }
 
       for (z = maxBlockHeight + 1; z <= 64; z++) {
-        blocks[WORLD_HEIGHT_XYZ(x, y, z)] = Block::WATER;
+        setBlockTerrain(x, y, z, Block::WATER);
       }
       heightMapIndex++;
     }

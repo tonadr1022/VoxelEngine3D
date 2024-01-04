@@ -20,8 +20,8 @@ class ChunkMeshBuilder {
    void constructMesh(std::vector<uint32_t> &opaqueVertices, std::vector<unsigned int> &opaqueIndices,
                      std::vector<uint32_t> &transparentVertices, std::vector<unsigned int> &transparentIndices);
 
-   OcclusionLevels getOcclusionLevels(const glm::ivec3 &blockPosInChunk, BlockFace face);
-   static void setOcclusionLevels(bool (&solidNeighborBlocks)[27], int faceIndex, int (&levels)[4]);
+   void setOcclusionLevels(const glm::ivec3 &blockPosInChunk, BlockFace face, int (&levels)[4]);
+//   static void setOcclusionLevels(bool (&solidNeighborBlocks)[27], int faceIndex, int (&levels)[4]);
 
  private:
   Block (&m_blocks)[CHUNK_MESH_INFO_SIZE];

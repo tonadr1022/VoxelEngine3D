@@ -21,15 +21,16 @@ void ChunkTerrainInfo::generateTerrainData() {
   TerrainGenerator::getTreeMap(chunkWorldPos, m_seed, treeMap);
   m_treeMap = treeMap;
 
-  TerrainGenerator::generateTerrain(heightMap, m_blocks);
+  TerrainGenerator::generateTerrain(heightMap, m_blocks, m_numBlocksPlaced);
   m_done = true;
 }
 
 void ChunkTerrainInfo::applyTerrainDataToChunk(Chunk *(&chunks)[CHUNKS_PER_STACK]) {
   for (int z = 0; z < CHUNKS_PER_STACK; z++) {
     int zOffset0 = z * CHUNK_VOLUME;
-    int zOffset1 = z * CHUNK_VOLUME + CHUNK_VOLUME;
+    int zOffset1 = zOffset0 + CHUNK_VOLUME;
     std::copy(m_blocks + zOffset0, m_blocks + zOffset1, chunks[z]->m_blocks);
     chunks[z]->chunkState = ChunkState::TERRAIN_GENERATED;
+    chunks[z]->m_numNonAirBlocks = m_numBlocksPlaced[z];
   }
 }

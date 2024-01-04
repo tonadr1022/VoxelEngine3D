@@ -7,7 +7,7 @@
     },
     "Stone": {
         "id": 3,
-        "texIndex": [4,4,4,4,4,4],
+        "texIndex": [3,3,3,3,3,3],
         "isTransparent": false,
         "isCollidable": true
     },

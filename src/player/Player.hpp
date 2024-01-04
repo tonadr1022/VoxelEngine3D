@@ -33,7 +33,7 @@ class Player {
 
   glm::vec3 position = glm::vec3(0.0f, 0.0f, 150.0f);
 
-  float m_movementSpeed = 50.0f;
+  float m_movementSpeed = 300.0f;
 };
 
 #endif //VOXEL_ENGINE_PLAYER_HPP

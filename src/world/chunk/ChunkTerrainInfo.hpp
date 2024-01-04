@@ -20,6 +20,7 @@ class ChunkTerrainInfo : public ChunkInfo {
 
   HeightMap m_heightMap{};
   TreeMap m_treeMap{};
+  int m_numBlocksPlaced[CHUNKS_PER_STACK]{};
 
  private:
   Block m_blocks[CHUNK_VOLUME * CHUNKS_PER_STACK]{};

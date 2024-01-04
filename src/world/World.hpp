@@ -110,7 +110,40 @@ class World {
   void updateChunkMeshList();
 //  void updateChunkUpdateList();
   void processDirectChunkUpdates();
-  void addNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const;
+  void getNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const;
+
+  static inline void addRelatedChunks(const glm::ivec3 &blockPosInChunk, const glm::ivec3 &chunkPos, std::unordered_set<glm::ivec3> &chunkSet) {
+    glm::ivec3 chunksToAdd[8]; // at most 8 chunks are related to a block
+    glm::ivec3 temp; // temp variable to store the chunk to add (calculate offset from chunk pos)
+    int numChunksToAdd = 1; // always add the chunk the block is in
+    int _size;
+    chunksToAdd[0] = chunkPos; // always add the chunk the block is in
+
+    // iterate over each axis
+    for (int axis = 0; axis < 3; axis++) {
+      // if block is on edge of the axis, add the chunko on the other side of the edge
+      if (blockPosInChunk[axis] == 0) {
+        _size = numChunksToAdd;
+        for (int i = 0; i < _size; i++) {
+          temp = chunksToAdd[i]; // works since only doing one axis at a time
+          temp[axis]--; // decrement chunk pos on the axis
+          chunksToAdd[numChunksToAdd++] = temp;
+        }
+      } else if (blockPosInChunk[axis] == CHUNK_SIZE - 1) {
+        _size = numChunksToAdd;
+        for (int i = 0; i < _size; i++) {
+          temp = chunksToAdd[i];
+          temp[axis]++;
+          chunksToAdd[numChunksToAdd++] = temp;
+        }
+      }
+    }
+
+    // add the chunks to the set
+    for (int i = 0; i < numChunksToAdd; i++) {
+      chunkSet.insert(chunksToAdd[i]);
+    }
+  }
 
   void generateChunksWorker4();
   void processBatchToLoad(std::queue<glm::ivec2> &batchToLoad);

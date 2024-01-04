@@ -37,10 +37,10 @@ void ChunkRenderer::render(ChunkMesh &mesh, const glm::ivec3 &worldPos, float fi
   glBindVertexArray(0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  GLenum error = glGetError();
-  if (error != GL_NO_ERROR) {
-    std::cerr << "OpenGL Error: " << error << std::endl;
-  }
+  //GLenum error = glGetError();
+  //if (error != GL_NO_ERROR) {
+  //  std::cerr << "OpenGL Error: " << error << std::endl;
+  //}
 }
 
 void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {

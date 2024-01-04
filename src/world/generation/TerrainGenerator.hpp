@@ -16,7 +16,7 @@ class TerrainGenerator {
 
   static void getHeightMap(const glm::ivec2 &startWorldPos, int seed, HeightMap &result);
   static void getTreeMap(const glm::ivec2 &startWorldPos, int seed, TreeMap &result);
-  static void generateTerrain(HeightMap &heightMap, Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK]);
+  static void generateTerrain(HeightMap &heightMap, Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK], int (&numBlocksPlaced)[CHUNKS_PER_STACK]);
 
   void makeTree(const glm::ivec3 &pos);
 
