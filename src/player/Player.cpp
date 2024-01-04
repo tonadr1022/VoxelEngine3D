@@ -19,18 +19,18 @@ void Player::processKeyInput(float deltaTime) {
 
   float multiplier = m_movementSpeed * deltaTime;
 
-  if (Keyboard::isPressed(GLFW_KEY_W))
+  if (Keyboard::isPressed(GLFW_KEY_W) || Keyboard::isPressed(GLFW_KEY_O))
     position += front * multiplier;
-  if (Keyboard::isPressed(GLFW_KEY_S))
+  if (Keyboard::isPressed(GLFW_KEY_S) || Keyboard::isPressed(GLFW_KEY_L))
     position -= front * multiplier;
-  if (Keyboard::isPressed(GLFW_KEY_A))
+  if (Keyboard::isPressed(GLFW_KEY_A) || Keyboard::isPressed(GLFW_KEY_K))
     position -= glm::normalize(glm::cross(front, globalUp)) * multiplier;
-  if (Keyboard::isPressed(GLFW_KEY_D))
+  if (Keyboard::isPressed(GLFW_KEY_D) || Keyboard::isPressed(GLFW_KEY_SEMICOLON))
     position += glm::normalize(glm::cross(front, globalUp)) * multiplier;
-  if (Keyboard::isPressed(GLFW_KEY_R)) {
+  if (Keyboard::isPressed(GLFW_KEY_R) || Keyboard::isPressed(GLFW_KEY_U)) {
     position += globalUp * multiplier;
   }
-  if (Keyboard::isPressed(GLFW_KEY_F)) {
+  if (Keyboard::isPressed(GLFW_KEY_F) || Keyboard::isPressed(GLFW_KEY_J)) {
     position -= globalUp * multiplier;
   }
   camera.setPosition(position);

@@ -33,16 +33,14 @@ std::shared_ptr<Shader> ShaderManager::getShader(const std::string &name) {
 void ShaderManager::compileShaders() {
   if (shadersCompiled) return;
   std::shared_ptr<Shader>
-      chunkShader = std::make_shared<Shader>("../shaders/ChunkVert.glsl",
-                                             "../shaders/ChunkFrag.glsl");
+      chunkShader = std::make_shared<Shader>("shaders/ChunkVert.glsl", "shaders/ChunkFrag.glsl");
   std::shared_ptr<Shader>
-      outlineShader = std::make_shared<Shader>("../shaders/OutlineVert.glsl",
-                                               "../shaders/OutlineFrag.glsl",
-                                               "../shaders/OutlineGeom.glsl");
+      outlineShader =
+      std::make_shared<Shader>("shaders/OutlineVert.glsl", "shaders/OutlineFrag.glsl", "shaders/OutlineGeom.glsl");
   std::shared_ptr<Shader> blockBreakShader = std::make_shared<Shader>(
-      "../shaders/BlockBreakVert.glsl", "../shaders/BlockBreakFrag.glsl");
+      "shaders/BlockBreakVert.glsl", "shaders/BlockBreakFrag.glsl");
   std::shared_ptr<Shader> crossHairShader = std::make_shared<Shader>(
-      "../shaders/CrossHairVert.glsl", "../shaders/CrossHairFrag.glsl");
+      "shaders/CrossHairVert.glsl", "shaders/CrossHairFrag.glsl");
   addShader(chunkShader, "chunk");
   addShader(outlineShader, "outline");
   addShader(blockBreakShader, "blockBreak");

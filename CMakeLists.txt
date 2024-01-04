@@ -134,3 +134,13 @@ find_package(OpenGL REQUIRED)
 
 
 target_link_libraries(voxel_engine ${OPENGL_LIBRARIES} glfw glm)
+
+# get binary directory path and copy shaders and resource folders to it
+
+add_custom_command(TARGET voxel_engine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:voxel_engine>/shaders)
+
+add_custom_command(TARGET voxel_engine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:voxel_engine>/resources)

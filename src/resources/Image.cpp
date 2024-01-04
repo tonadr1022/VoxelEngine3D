@@ -10,7 +10,8 @@ Image Image::subImage(glm::ivec2 offset, glm::ivec2 size) const {
   for (uint32_t y = 0; y < size.y; y++) {
     for (uint32_t x = 0; x < size.x; x++) {
       uint32_t subImageIndex = (y * size.x + x) * 4;
-      uint32_t imageIndex = ((y + offset.y) * width + (x + offset.x)) * 4;
+      uint32_t flippedY = size.y - y - 1; // flip for texture atlas
+      uint32_t imageIndex = ((flippedY + offset.y) * width + (x + offset.x)) * 4;
       subImage.pixels[subImageIndex] = pixels[imageIndex];
       subImage.pixels[subImageIndex + 1] = pixels[imageIndex + 1];
       subImage.pixels[subImageIndex + 2] = pixels[imageIndex + 2];

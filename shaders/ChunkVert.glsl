@@ -3,7 +3,7 @@
 layout (location = 0) in uint vertexData;
 
 out vec3 v_FragPos;
-out vec2 v_TexCoord;
+out vec3 v_TexCoord;
 out float v_LightLevel;
 flat out uint v_TexIndex;
 
@@ -91,18 +91,11 @@ void main() {
     vec3 vertexPos = vec3(posX, posY, posZ);
     vertexPos = applyWave(vertexPos, texIndex);
 
-    int textureYIndex = int(texIndex) % 16;
-    int textureXIndex = int(texIndex) / 16;
-
-    float u = (textureXIndex + x) * textureWidth;
-    float v = (textureYIndex + y) * textureWidth;
-
     v_FragPos = vec3(u_Model * vec4(vertexPos, 1.0));
 
 
     gl_Position = u_Projection * u_View * u_Model * vec4(vertexPos, 1.0);
-    v_TexCoord = vec2(x, y);
-    v_TexIndex = int(texIndex);
+    v_TexCoord = vec3(x, y, texIndex);
 
     float occlusionFactor = mix(0.0, 1.0, float(u_UseAmbientOcclusion));
     float baseLightLevel = mix(1.0, 0.4, float(u_UseAmbientOcclusion));

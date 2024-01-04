@@ -116,6 +116,37 @@ constexpr std::array<std::array<std::array<glm::ivec3, 3>, 4>, 6>
                            }};
 }  // namespace
 
+//  neighbor block array structure
+// z
+// |
+// |  6   15  24
+// |    7   16  25
+// |      8   17  26
+// |
+// |  3   12  21
+// |    4   13  22
+// |      5   14  23
+// \-------------------y
+//  \ 0   9   18
+//   \  1   10  19
+//    \   2   11  20
+//     x
+// Bottom Left, Bottom right, Top Left, Top Right, corner is middle block in each 3 pairing
+constexpr uint8_t LIGHTING_LOOKUP[6][4][3] = {
+    // front face
+    {{11, 2, 5}, {11, 20, 23}, {5, 8, 17}, {17, 26, 23}},
+    // back face
+    {{9, 18, 21}, {9, 0, 3}, {15, 6, 3}, {15, 24, 21}},
+    // right face
+    {{19, 20, 23}, {19, 18, 21}, {25, 26, 23}, {25, 24, 21}},
+    // left face
+    {{1, 0, 3}, {1, 2, 5}, {7, 6, 3}, {7, 8, 5}},
+    // top face
+    {{17, 8, 7}, {17, 26, 25}, {15, 6, 7}, {15, 24, 25}},
+    // bottom face
+    {{9, 0, 1}, {9, 18, 19}, {11, 2, 1}, {11, 20, 19}},
+};
+
 
 ChunkMeshBuilder::ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE], const glm::ivec3 &chunkWorldPos) : m_blocks(
     blocks), m_chunkWorldPos(chunkWorldPos) {
@@ -129,6 +160,9 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
   uint32_t transparentVertices_[20000];
   unsigned int opaqueIndices_[20000];
   unsigned int transparentIndices_[20000];
+  int occlusionLevels2[4];
+  Block blockNeighbors[27];
+  bool solidBlockNeighbors[27];
 
   int opaqueVerticesIndex = 0;
   int transparentVerticesIndex = 0;
@@ -136,12 +170,12 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
   int transparentIndicesIndex = 0;
 
   int chunkBaseZ = m_chunkWorldPos.z;
-  int x, y, z, faceIndex, textureX, textureY;
+  int x, y, z, faceIndex;
   std::array<int, 20> faceVertices{};
 
   for (int chunkBlockIndex = 0; chunkBlockIndex < CHUNK_VOLUME; chunkBlockIndex++) {
-    y = chunkBlockIndex & 31;
-    x = (chunkBlockIndex >> 5) & 31;
+    x = chunkBlockIndex & 31;
+    y = (chunkBlockIndex >> 5) & 31;
     z = chunkBlockIndex >> 10;
 
     Block block = m_blocks[MESH_XYZ(x, y, z)];
@@ -149,6 +183,9 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
 
     glm::ivec3 blockPos = {x, y, z};
     int blockPos2[3] = {x, y, z};
+
+
+    bool neighborsInitializedForCurrentBlock = false;
 
     // 1, 0, 0
     // -1, 0, 0
@@ -177,31 +214,41 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
       auto face = static_cast<BlockFace>(faceIndex);
 
       BlockData &blockData = BlockDB::getBlockData(block);
+      if (!neighborsInitializedForCurrentBlock) {
+        int neighborIndex = 0;
+        int iterator[3];
+
+        // see neighbor array offsets in World.hpp
+        for (iterator[1] = blockPos[1] - 1; iterator[1] <= blockPos[1] + 1; ++iterator[1]) {
+          for (iterator[2] = blockPos[2] - 1; iterator[2] <= blockPos[2] + 1; ++iterator[2]) {
+            for (iterator[0] = blockPos[0] - 1; iterator[0] <= blockPos[0] + 1; ++iterator[0]) {
+              blockNeighbors[neighborIndex] = m_blocks[MESH_XYZ(iterator[0], iterator[1], iterator[2])];
+              solidBlockNeighbors[neighborIndex] = blockNeighbors[neighborIndex] != Block::AIR;
+              neighborIndex++;
+            }
+          }
+        }
+        neighborsInitializedForCurrentBlock = true;
+      }
       OcclusionLevels occlusionLevels = getOcclusionLevels(blockPos, face);
+      setOcclusionLevels(solidBlockNeighbors, face, occlusionLevels2);
+      int texIndex = blockData.texIndex[faceIndex];
       switch (face) {
         case BlockFace::FRONT:faceVertices = frontFace;
-          textureX = blockData.frontTexCoords.x;
-          textureY = blockData.frontTexCoords.y;
           break;
         case BlockFace::BACK:faceVertices = backFace;
-          textureX = blockData.backTexCoords.x;
-          textureY = blockData.backTexCoords.y;
+
           break;
         case BlockFace::LEFT:faceVertices = leftFace;
-          textureX = blockData.leftTexCoords.x;
-          textureY = blockData.leftTexCoords.y;
+
           break;
         case BlockFace::RIGHT:faceVertices = rightFace;
-          textureX = blockData.rightTexCoords.x;
-          textureY = blockData.rightTexCoords.y;
+
           break;
         case BlockFace::TOP:faceVertices = topFace;
-          textureX = blockData.topTexCoords.x;
-          textureY = blockData.topTexCoords.y;
+
           break;
         case BlockFace::BOTTOM:faceVertices = bottomFace;
-          textureX = blockData.bottomTexCoords.x;
-          textureY = blockData.bottomTexCoords.y;
           break;
         default:break;
       }
@@ -212,7 +259,6 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
       auto &indicesIndex = blockData.isTransparent ? transparentIndicesIndex : opaqueIndicesIndex;
       auto baseVertexIndex = verticesIndex;
 
-      int textureIndex = textureX * TEXTURE_ATLAS_WIDTH + textureY;
       for (int i = 0, j = 0; i < 20; i += 5, j++) {
         // x between [0, 32] == 6 bits, y between [0, 32] == 6 bits, z
         // between [0, 32] == 6 bits occlusion level [0, 3] == 2 bits,
@@ -221,12 +267,12 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
         // textureX, textureY, textureIndex into 32 bits
         uint32_t vertexData =
             ((blockPos.x + faceVertices[i]) & 0x3F) |
-                ((blockPos.y + faceVertices[i + 1] & 0x3F) << 6) |
-                ((blockPos.z + faceVertices[i + 2] & 0x3F) << 12) |
-                ((occlusionLevels[j] & 0x3) << 18) |
-                ((faceVertices[i + 3] & 0x1) << 20) |
-                ((faceVertices[i + 4] & 0x1) << 21) |
-                ((textureIndex & 0xFF) << 22);
+            ((blockPos.y + faceVertices[i + 1] & 0x3F) << 6) |
+            ((blockPos.z + faceVertices[i + 2] & 0x3F) << 12) |
+            ((occlusionLevels[j] & 0x3) << 18) |
+            ((faceVertices[i + 3] & 0x1) << 20) |
+            ((faceVertices[i + 4] & 0x1) << 21) |
+            ((texIndex & 0xFF) << 22);
         vertices[verticesIndex++] = vertexData;
       }
       // check whether to flip quad based on AO
@@ -293,5 +339,17 @@ OcclusionLevels ChunkMeshBuilder::getOcclusionLevels(const glm::ivec3 &blockPosI
     }
   }
   return occlusionLevels;
+}
+
+void ChunkMeshBuilder::setOcclusionLevels(bool (&solidNeighborBlocks)[27], int faceIndex, int (&levels)[4]) {
+  bool aoSolidNeighbors[3];
+  for (int vertexIndex = 0; vertexIndex < 4; vertexIndex++) {
+    for (int blockToCheckIndex = 0; blockToCheckIndex < 3; blockToCheckIndex++) {
+      aoSolidNeighbors[blockToCheckIndex] = solidNeighborBlocks[LIGHTING_LOOKUP[faceIndex][vertexIndex][blockToCheckIndex]];
+    }
+    levels[vertexIndex] = aoSolidNeighbors[0] && aoSolidNeighbors[2] ? 0 : 3 -
+                                                                           (aoSolidNeighbors[0] + aoSolidNeighbors[1] +
+                                                                            aoSolidNeighbors[2]);
+  }
 }
 

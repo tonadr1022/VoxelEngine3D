@@ -11,13 +11,7 @@
 struct BlockData {
   Block id;
   std::string name;
-
-  glm::ivec2 topTexCoords;
-  glm::ivec2 frontTexCoords;
-  glm::ivec2 backTexCoords;
-  glm::ivec2 leftTexCoords;
-  glm::ivec2 rightTexCoords;
-  glm::ivec2 bottomTexCoords;
+  std::array<int, 6> texIndex;
   bool isTransparent;
   bool isCollidable;
 };
@@ -25,7 +19,15 @@ struct BlockData {
 class BlockDB {
  public:
   static void loadData(const std::string &filePath);
-  static BlockData &getBlockData(Block id);
+
+  static inline BlockData &getBlockData(Block id) {
+    return data[static_cast<unsigned long>(id)];
+  }
+
+  static inline int getTexIndex(Block id, int face) {
+    return getBlockData(id).texIndex[face];
+  }
+
  private:
   static std::vector<BlockData> data;
 };

@@ -3,6 +3,7 @@
 //
 
 #define STB_IMAGE_IMPLEMENTATION
+
 #include "ResourceManager.hpp"
 #include "Image.hpp"
 
@@ -16,15 +17,7 @@ void ResourceManager::makeTexture(const std::string &texturePath,
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
 
-  glTexImage2D(GL_TEXTURE_2D,
-               0,
-               GL_RGBA,
-               image.width,
-               image.height,
-               0,
-               GL_RGBA,
-               GL_UNSIGNED_BYTE,
-               image.pixels.data());
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.pixels.data());
   stbi_image_free(image.pixels.data());
   textures.emplace(textureName, texture);
   // configure sampler
@@ -72,37 +65,27 @@ ResourceManager::makeTexture2dArray(const std::string &texturePath,
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
   // t = y-axis
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D_ARRAY,
-                  GL_TEXTURE_MIN_FILTER,
-                  GL_NEAREST_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   std::vector<Image> subImages;
 
   // create sub images on CPU
-  for (int tileX = 0; tileX < tilesPerColumn; tileX++) {
-    for (int tileY = 0; tileY < tilesPerRow; tileY++) {
+  for (int tileY = 0; tileY < tilesPerColumn; tileY++) {
+    for (int tileX = 0; tileX < tilesPerRow; tileX++) {
       uint32_t offsetX = tileX * tileWidth;
       uint32_t offsetY = tileY * tileHeight;
-      subImages.emplace_back(image.subImage({offsetX, offsetY},
-                                            {tileWidth, tileHeight}));
+      subImages.emplace_back(image.subImage({offsetX, offsetY}, {tileWidth, tileHeight}));
     }
   }
 
   // create sub images on GPU
   for (int subImageIndex = 0; subImageIndex < subImages.size();
        subImageIndex++) {
-    glTexSubImage3D(GL_TEXTURE_2D_ARRAY,
-                    0,
-                    0,
-                    0,
-                    subImageIndex,
-                    static_cast<GLsizei>(tileWidth),
-                    static_cast<GLsizei>(tileHeight),
-                    1,
-                    GL_RGBA,
-                    GL_UNSIGNED_BYTE,
+    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, subImageIndex, static_cast<GLsizei>(tileWidth),
+                    static_cast<GLsizei>(tileHeight), 1, GL_RGBA, GL_UNSIGNED_BYTE,
                     subImages[subImageIndex].pixels.data());
   }
+
   glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
   glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }
@@ -112,27 +95,20 @@ Image ResourceManager::loadImage(const std::string &imagePath,
   int width, height, nrChannels;
   if (!flipVertically)
     stbi_set_flip_vertically_on_load(true);
-  unsigned char
-      *data = stbi_load(imagePath.c_str(), &width, &height, &nrChannels,
-                        STBI_rgb_alpha);
+  unsigned char *data = stbi_load(imagePath.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
   if (!data) {
     throw std::runtime_error("Failed to load texture: " + imagePath);
   }
 
-  Image image
-      {width, height, std::vector<uint8_t>(data, data + width * height * 4)};
+  Image image{width, height, std::vector<uint8_t>(data, data + width * height * 4)};
   stbi_image_free(data);
   return image;
 }
+
 void ResourceManager::loadTextures() {
   if (texturesLoaded) return;
-  makeTexture2dArray(
-      "../resources/textures/default_pack_512.png",
-      "texture_atlas",
-      true);
-
+  makeTexture2dArray("resources/textures/default_pack_512.png", "texture_atlas", true);
   texturesLoaded = true;
 }
 
 bool ResourceManager::texturesLoaded = false;
-
