@@ -35,6 +35,10 @@ static inline int XYZ(int x, int y, int z) {
   return (z << 10 | y << 5 | x);
 }
 
+static inline glm::ivec3 XYZ_FROM_INDEX(int index) {
+  return {index & 0x01F, (index >> 5) & 0x01F, (index >> 10) & 0x01F};
+}
+
 static inline int XYZ(glm::ivec3 pos) {
   return pos.z << 10 | pos.y << 5 | pos.x;
 }
@@ -54,6 +58,16 @@ static inline int MESH_XYZ(int x, int y, int z) {
 
 static inline int LIGHT_XYZ(int x, int y, int z) {
   return (x + 14) + (y + 14) * CHUNK_LIGHT_INFO_WIDTH + (z + 14) * CHUNK_LIGHT_INFO_WIDTH * CHUNK_LIGHT_INFO_WIDTH;
+}
+
+// return true if x, y, or z are not between 0-31 inclusive.
+static inline bool isPosOutOfChunkBounds(int x, int y, int z) {
+  return (x & 0b1111100000) || (y & 0b1111100000) || (z & 0b1111100000);
+}
+
+// return true if x, y, or z are not between 0-31 inclusive.
+static inline bool isPosOutOfChunkBounds(const glm::ivec3 &pos) {
+  return (pos.x & 0b1111100000) || (pos.y & 0b1111100000) || (pos.z & 0b1111100000);
 }
 
 class Chunk {
@@ -86,10 +100,7 @@ class Chunk {
 
   void markDirty();
 
-  static inline bool outOfBounds(int x, int y, int z) {
-    return x < 0 || x >= CHUNK_SIZE || y < 0 || y >= CHUNK_SIZE || z < 0
-           || z >= CHUNK_SIZE;
-  }
+
 
   [[nodiscard]] inline Block getBlock(int x, int y, int z) const {
     return m_blocks[XYZ(x, y, z)];
@@ -99,9 +110,25 @@ class Chunk {
     return m_blocks[XYZ(pos)];
   }
 
+  [[nodiscard]] inline glm::ivec3 getLightLevel(const glm::ivec3 &pos) const {
+    return m_lightLevels[XYZ(pos)];
+  }
+
+  inline void setLightLevel(const glm::ivec3 &pos, const glm::ivec3 lightLevel) {
+    m_lightLevels[XYZ(pos)] = lightLevel;
+  }
+
   [[nodiscard]] inline Block getBlockFromIndex(int index) const {
     return m_blocks[index];
   }
+
+  void setLightLevelIncludingNeighborsOptimized(glm::ivec3 pos, glm::ivec3 lightLevel, Chunk *(&chunks)[27]);
+
+  void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block, Chunk *(&chunks)[27]);
+
+  Block getBlockIncludingNeighborsOptimized(glm::ivec3 pos, Chunk *(&chunks)[27]) const;
+
+  glm::ivec3 getLightLevelIncludingNeighborsOptimized(glm::ivec3 pos, Chunk *(&chunks)[27]) const;
 
   ChunkMeshState chunkMeshState;
   ChunkState chunkState;
@@ -124,71 +151,6 @@ class Chunk {
 
 
 
-struct LightNode {
-  glm::ivec3 pos;
-  glm::ivec3 lightLevel;
-};
-
-class ChunkTerrainInfo : public ChunkInfo {
- public:
-  ChunkTerrainInfo(glm::ivec2 pos, int seed);
-
-  void generateTerrainData();
-  void applyTerrainDataToChunk(Chunk *(&chunk)[CHUNKS_PER_STACK]);
-
-  HeightMap m_heightMap{};
-  TreeMap m_treeMap{};
-  int m_numBlocksPlaced[CHUNKS_PER_STACK]{};
-
- private:
-  Block m_blocks[CHUNK_VOLUME * CHUNKS_PER_STACK]{};
-  int m_seed;
-  glm::ivec2 m_pos;
-};
-
-
-
-class ChunkLightInfo : public ChunkInfo {
- public:
-
-  explicit ChunkLightInfo(Chunk *chunks[27]);
-
-  // TODO: do this in separate thread since we have the chunk pointer
-  void applyLightDataToChunk(Chunk *chunk);
-
-//  Block getBlockIncludingNeighborChunks(int x, int y, int z);
-
-  void populateBlockArrayForLighting(Block (&blocks)[CHUNK_LIGHT_INFO_SIZE]);
-
-  void generateLightingData();
-
- private:
-  Chunk *m_chunks[27]{};
-  glm::ivec3 m_lightLevelArray[CHUNK_LIGHT_INFO_SIZE]{};
-
-  void propogateTorchLight(std::queue<LightNode> &torchlightQueue, Block (&blocks)[CHUNK_LIGHT_INFO_SIZE]);
-
-  static inline void getPosFromLightArrIndex(glm::ivec3 &pos, int index) {
-    int _i = index;
-    pos.z = _i / (CHUNK_LIGHT_INFO_AREA);
-    _i %= CHUNK_LIGHT_INFO_AREA;
-    pos.y = _i / CHUNK_LIGHT_INFO_WIDTH - 14;
-    pos.x = _i % CHUNK_LIGHT_INFO_WIDTH - 14;
-  }
-
-
-  static constexpr uint32_t RED_MASK = 0xF00;
-  static constexpr uint32_t GREEN_MASK = 0x0F0;
-  static constexpr uint32_t BLUE_MASK = 0x00F;
-
-  static inline glm::ivec3 unpackLightLevel(uint32_t level) {
-    return {
-        static_cast<int8_t>((level & RED_MASK) >> 8),
-        static_cast<int8_t>((level & GREEN_MASK) >> 4),
-        static_cast<int8_t>((level & BLUE_MASK)),
-    };
-  }
-};
 
 
 #endif //VOXEL_ENGINE_CHUNK_HPP

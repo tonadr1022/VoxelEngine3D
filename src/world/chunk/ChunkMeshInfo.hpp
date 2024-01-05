@@ -17,7 +17,7 @@ class ChunkMeshInfo : public ChunkInfo {
   explicit ChunkMeshInfo(Chunk *chunks[27]);
   void generateMeshData();
   void applyMeshDataToMesh(Chunk *chunk);
-  static void populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_SIZE], Chunk *(&chunks)[27]);
+  static void populateMeshInfoForMeshing(Block (&blockResult)[CHUNK_MESH_INFO_SIZE], glm::ivec3 (&torchResult)[CHUNK_MESH_INFO_SIZE], Chunk *(&chunks)[27]);
 
  private:
   Chunk *m_chunks[27]{};

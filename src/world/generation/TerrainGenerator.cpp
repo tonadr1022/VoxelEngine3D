@@ -31,7 +31,7 @@ void TerrainGenerator::generateStructures(HeightMap &heightMap, TreeMap &treeMap
 }
 
 void TerrainGenerator::makeTree(const glm::ivec3 &pos) {
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 8; i++) {
     setBlock(pos.x, pos.y, i + pos.z, Block::OAK_WOOD);
   }
   // leaves
@@ -42,6 +42,22 @@ void TerrainGenerator::makeTree(const glm::ivec3 &pos) {
       }
     }
   }
+  int col = rand() % 4;
+  Block glowstoneColor;
+  switch(col) {
+    case 0:
+      glowstoneColor = Block::GLOWSTONE_GREEN;
+      break;
+    case 1:
+      glowstoneColor = Block::GLOWSTONE_RED;
+      break;
+    case 2:
+      glowstoneColor = Block::GLOWSTONE_BLUE;
+      break;
+    default:
+      glowstoneColor = Block::GLOWSTONE;
+  }
+  setBlock(pos.x, pos.y, 8 + pos.z,glowstoneColor);
 }
 
 TerrainGenerator::TerrainGenerator(Chunk *(chunks)[27], int seed)
@@ -55,10 +71,10 @@ void TerrainGenerator::setBlock(int x, int y, int z, Block block) {
   int offsetX = Utils::chunkNeighborOffset(x);
   int offsetY = Utils::chunkNeighborOffset(y);
   int offsetZ = Utils::chunkNeighborOffset(z);
-  int relX = Utils::getRelativeIndex(x);
-  int relY = Utils::getRelativeIndex(y);
-  int relZ = Utils::getRelativeIndex(z);
-  m_chunks[Utils::getNeighborArrayIndex(offsetX, offsetY, offsetZ)]->setBlock(relX, relY, relZ, block);
+  int localX = Utils::getLocalIndex(x);
+  int localY = Utils::getLocalIndex(y);
+  int localZ = Utils::getLocalIndex(z);
+  m_chunks[Utils::getNeighborArrayIndex(offsetX, offsetY, offsetZ)]->setBlock(localX, localY, localZ, block);
 }
 
 void TerrainGenerator::getHeightMap(const glm::ivec2 &startWorldPos, int seed, HeightMap &result) {
@@ -110,20 +126,26 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap,
       heightMapIndex++;
     }
   }
+  for (int x = 0; x < CHUNK_SIZE; x++) {
+    for (int y = 0; y < CHUNK_SIZE; y++) {
+      for (int z = 0; z < 15; z++) {
+        setBlockTerrain(x, y, z, Block::STONE);
+      }
+    }
+  }
 
-  int maxBlockHeightAtx5y5 = heightMap[32 * 5 + 5];
-  setBlockTerrain(5, 5, maxBlockHeightAtx5y5, Block::GLOWSTONE);
+//  setBlockTerrain(0, 0, 15, Block::GLOWSTONE_GREEN);
+//  setBlockTerrain(15, 16, 15, Block::GLOWSTONE_RED);
+//  setBlockTerrain(16, 15, 15, Block::GLOWSTONE_BLUE);
 
-  int maxBlockHeightAtx10y10 = heightMap[32 * 10 + 10];
-  setBlockTerrain(10, 10, maxBlockHeightAtx10y10, Block::GLOWSTONE_RED);
-
-  int maxBlockHeightAtx15y15 = heightMap[32 * 15 + 15];
-  setBlockTerrain(15, 15, maxBlockHeightAtx15y15, Block::GLOWSTONE_GREEN);
-
-  int maxBlockHeightAtx20y20 = heightMap[32 * 20 + 20];
-  setBlockTerrain(20, 20, maxBlockHeightAtx20y20, Block::GLOWSTONE_BLUE);
-
-
+//  int maxBlockHeightAtx10y10 = heightMap[32 * 10 + 10];
+//  setBlockTerrain(10, 10, maxBlockHeightAtx10y10, Block::GLOWSTONE_RED);
+//
+//  int maxBlockHeightAtx15y15 = heightMap[32 * 15 + 15];
+//  setBlockTerrain(15, 15, maxBlockHeightAtx15y15, Block::GLOWSTONE_GREEN);
+//
+//  int maxBlockHeightAtx20y20 = heightMap[32 * 20 + 20];
+//  setBlockTerrain(20, 20, maxBlockHeightAtx20y20, Block::GLOWSTONE_BLUE);
 }
 
 void TerrainGenerator::getTreeMap(const glm::ivec2 &startWorldPos, int seed, TreeMap &result) {

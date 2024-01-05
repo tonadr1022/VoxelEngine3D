@@ -121,6 +121,10 @@ set(SOURCE_FILES
         src/world/chunk/ChunkStructuresInfo.hpp
         src/world/chunk/ChunkMeshInfo.cpp
         src/world/chunk/ChunkMeshInfo.hpp
+        src/world/chunk/ChunkLightInfo.cpp
+        src/world/chunk/ChunkLightInfo.hpp
+        src/world/chunk/ChunkTerrainInfo.cpp
+        src/world/chunk/ChunkTerrainInfo.hpp
 )
 
 add_executable(voxel_engine ${SOURCE_FILES})

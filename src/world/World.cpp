@@ -54,9 +54,6 @@ void World::update() {
         for (pos.z = 0; pos.z < CHUNKS_PER_STACK; pos.z++) {
           if (chunkExists(pos)) continue; // skip existent chunks
           m_chunkMap.emplace(pos, std::make_unique<Chunk>(pos));
-          if (pos.x == -3 && pos.y == -5) {
-            std::cout << pos.x << " " << pos.y << " " << pos.z << std::endl;
-          }
         }
       }
     }
@@ -185,10 +182,6 @@ void World::updateChunkStructureGenList() {
 void World::updateChunkLightingList() {
   for (auto posIt = m_chunkLightInfoMap.begin(); posIt != m_chunkLightInfoMap.end();) {
     if (posIt->second->m_done) {
-      // TODO: see light info class and apply the light on the thread since the thread has a pointer to the chunk already
-      // TODO: same for structures/meshing?
-      Chunk *chunk = getChunkRawPtr(posIt->first);
-      posIt->second->applyLightDataToChunk(chunk);
       posIt = m_chunkLightInfoMap.erase(posIt);
     } else {
       posIt++;
@@ -211,6 +204,12 @@ void World::updateChunkLightingList() {
   for (auto posIt = m_chunksInLightingRangeVectorXY.begin(); posIt != m_chunksInLightingRangeVectorXY.end();) {
     for (int z = 0; z < CHUNKS_PER_STACK; z++) {
       auto pos = glm::ivec3(posIt->x, posIt->y, z);
+
+      Chunk *chunkToLight = getChunkRawPtr(pos);
+      if (chunkToLight->m_numNonAirBlocks == 0) {
+        chunkToLight->chunkState = ChunkState::FULLY_GENERATED;
+        continue;
+      }
 
       Chunk *chunks[27] = {nullptr};
       getNeighborChunks(chunks, pos);
@@ -415,7 +414,7 @@ void World::processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStruct
 
 void World::processBatchToLight(std::queue<glm::ivec3> &batchToLight) {
   while (!batchToLight.empty()) {
-    const auto &pos = batchToLight.front();
+    const auto pos = batchToLight.front();
     auto it = m_chunkLightInfoMap.find(pos);
     if (it != m_chunkLightInfoMap.end()) it->second->generateLightingData();
 //    m_chunkLightInfoMap.at(pos)->generateLightingData();
@@ -614,16 +613,17 @@ void World::processDirectChunkUpdates() {
     Chunk *chunks[27] = {nullptr};
     int index = 0;
     for (auto &neighborOffset : NEIGHBOR_ARRAY_OFFSETS) {
-      chunks[index++] = getChunkRawPtr(pos + neighborOffset);
+      chunks[index++] = getChunkRawPtrOrNull(pos + neighborOffset);
     }
 
     std::vector<ChunkVertex> opaqueVertices, transparentVertices;
     std::vector<unsigned int> opaqueIndices, transparentIndices;
 
     Block blocks[CHUNK_MESH_INFO_SIZE];
-    ChunkMeshInfo::populateMeshInfoForMeshing(blocks, chunks);
+    glm::ivec3 torchLightLevels[CHUNK_MESH_INFO_SIZE];
+    ChunkMeshInfo::populateMeshInfoForMeshing(blocks, torchLightLevels, chunks);
     Chunk *chunk = chunks[13];
-    ChunkMeshBuilder builder(blocks, chunk->m_lightLevels, chunk->m_worldPos);
+    ChunkMeshBuilder builder(blocks, torchLightLevels, chunk->m_worldPos);
     builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
 
     chunks[13]->m_opaqueMesh.vertices = std::move(opaqueVertices);

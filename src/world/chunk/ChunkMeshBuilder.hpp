@@ -14,7 +14,7 @@
 
 class ChunkMeshBuilder {
  public:
- explicit ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE], glm::ivec3 (&lightLevels)[CHUNK_VOLUME],const glm::ivec3 &chunkWorldPos);
+ explicit ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE], glm::ivec3 (&lightLevels)[CHUNK_MESH_INFO_SIZE],const glm::ivec3 &chunkWorldPos);
 
    void constructMesh(std::vector<ChunkVertex> &opaqueVertices, std::vector<unsigned int> &opaqueIndices,
                      std::vector<ChunkVertex> &transparentVertices, std::vector<unsigned int> &transparentIndices);
@@ -24,7 +24,7 @@ class ChunkMeshBuilder {
 
  private:
   Block (&m_blocks)[CHUNK_MESH_INFO_SIZE];
-  glm::ivec3 (&m_lightLevels)[CHUNK_VOLUME];
+  glm::ivec3 (&m_lightLevels)[CHUNK_MESH_INFO_SIZE];
   glm::ivec3 m_chunkWorldPos;
 
 //  Chunk *(m_chunks)[27] = {nullptr};

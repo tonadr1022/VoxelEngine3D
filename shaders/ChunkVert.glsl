@@ -96,7 +96,7 @@ void main() {
     uint redLightLevel = bitfieldExtract(vertexData2, 8, 4);
     uint intensity = bitfieldExtract(vertexData2, 12, 4);
 
-    v_FragColor = vec3(float(redLightLevel) / 15.0, float(greenLightLevel) / 15.0, float(blueLightLevel) / 15.0);
+    v_FragColor = vec3(float(redLightLevel) / 15.0, float(greenLightLevel) / 15.0, float(blueLightLevel) / 15.0) * float(intensity) / 15.0;
 
     vec3 vertexPos = vec3(posX, posY, posZ);
     vertexPos = applyWave(vertexPos, texIndex);
@@ -110,5 +110,5 @@ void main() {
     float baseLightLevel = mix(1.0, 0.4, float(u_UseAmbientOcclusion));
 
     float occlusion = 0.2 * occlusionLevel * occlusionFactor;
-    v_LightLevel = (baseLightLevel + occlusion) * float(intensity) / 15.0;
+    v_LightLevel = (baseLightLevel + occlusion);
 }

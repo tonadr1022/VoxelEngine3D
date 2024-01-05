@@ -28,14 +28,23 @@ inline int chunkNeighborOffset(int value) {
   return ((value & 0x80) != 0) ? -1 : ((value >> 5) & 1) ? 1 : 0;
 }
 
+
 // see neighbor array in world.hpp
 inline int getNeighborArrayIndex(int x, int y, int z) {
   return (x + 1) + 3 * ((z + 1) + 3 * (y + 1));
 }
 
+inline int getChunkNeighborArrayIndexFromOutOfBoundsPos(const glm::ivec3 &pos) {
+  return getNeighborArrayIndex(chunkNeighborOffset(pos.x), chunkNeighborOffset(pos.y), chunkNeighborOffset(pos.z));
+}
+
 // if val == 33 return 1, if val ==
-inline int getRelativeIndex(int val) {
+inline int getLocalIndex(int val) {
   return (val & 31 + CHUNK_SIZE) & 31;
+}
+
+inline glm::ivec3 outOfBoundsPosToLocalPos(const glm::ivec3 outOfBoundsPos) {
+  return {getLocalIndex(outOfBoundsPos.x), getLocalIndex(outOfBoundsPos.y), getLocalIndex(outOfBoundsPos.z)};
 }
 
 inline uint32_t packLightLevel(const glm::ivec3 &level) {
@@ -43,8 +52,9 @@ inline uint32_t packLightLevel(const glm::ivec3 &level) {
 }
 
 inline glm::ivec3 getNeighborPosFromFace(glm::ivec3 pos, short faceNum) {
-  pos[faceNum >> 1] += 1 - ((faceNum & 1) << 1);
-  return pos;
+  glm::ivec3 neighborPos = pos;
+  neighborPos[faceNum >> 1] += 1 - ((faceNum & 1) << 1);
+  return neighborPos;
 }
 
 

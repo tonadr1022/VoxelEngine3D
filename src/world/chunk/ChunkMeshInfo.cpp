@@ -30,9 +30,10 @@ ChunkMeshInfo::ChunkMeshInfo(Chunk *chunks[27]) {
 
 void ChunkMeshInfo::generateMeshData() {
   Block blocks[CHUNK_MESH_INFO_SIZE]{};
-  populateMeshInfoForMeshing(blocks, m_chunks);
+  glm::ivec3 torchLightLevels[CHUNK_MESH_INFO_SIZE]{};
+  populateMeshInfoForMeshing(blocks, torchLightLevels, m_chunks);
   Chunk *chunk = m_chunks[13];
-  ChunkMeshBuilder builder(blocks, chunk->m_lightLevels, chunk->m_worldPos);
+  ChunkMeshBuilder builder(blocks, torchLightLevels, chunk->m_worldPos);
   builder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
   m_done = true;
 }
@@ -45,7 +46,9 @@ void ChunkMeshInfo::applyMeshDataToMesh(Chunk *chunk) {
   chunk->chunkMeshState = ChunkMeshState::BUILT;
 }
 
-void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_SIZE], Chunk *(&chunks)[27]) {
+void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&blockResult)[CHUNK_MESH_INFO_SIZE],
+                                               glm::ivec3 (&torchResult)[CHUNK_MESH_INFO_SIZE],
+                                               Chunk *(&chunks)[27]) {
   const int chunkZIndex = chunks[13]->m_pos.z;
   constexpr int M1_CHUNK_SIZE = CHUNK_SIZE - 1;
   constexpr int M1_MESH_SIZE = CHUNK_SIZE;
@@ -66,59 +69,61 @@ void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_S
   //    \   2   11  20
   //     x
 
-  int chunkNum, chunkBlockIndex, chunkBlockIndex2, resultBlockIndex, chunkY, chunkZ, meshZ;
-#define SET result[resultBlockIndex] = chunks[chunkNum]->m_blocks[chunkBlockIndex];
-#define COPY std::copy(chunks[chunkNum]->m_blocks + chunkBlockIndex, chunks[chunkNum]->m_blocks + chunkBlockIndex2, result + resultBlockIndex);
+  int chunkNum, chunkInfoIndex, chunkInfoIndex2, resultInfoIndex, chunkY, chunkZ, meshZ;
+#define SET blockResult[resultInfoIndex] = chunks[chunkNum]->m_blocks[chunkInfoIndex]; \
+torchResult[resultInfoIndex] = chunks[chunkNum]->m_lightLevels[chunkInfoIndex];
+#define COPY std::copy(chunks[chunkNum]->m_blocks + chunkInfoIndex, chunks[chunkNum]->m_blocks + chunkInfoIndex2, blockResult + resultInfoIndex); \
+std::copy(chunks[chunkNum]->m_lightLevels + chunkInfoIndex, chunks[chunkNum]->m_lightLevels + chunkInfoIndex2, torchResult + resultInfoIndex);
 
   // Chunks at same z level as middle chunk
   for (chunkZ = 0; chunkZ < CHUNK_SIZE; chunkZ++) {
     chunkNum = 3;
-    chunkBlockIndex = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ);
-    resultBlockIndex = MESH_XYZ(-1, -1, chunkZ);
+    chunkInfoIndex = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ);
+    resultInfoIndex = MESH_XYZ(-1, -1, chunkZ);
     SET;
 
     chunkNum = 5;
-    chunkBlockIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
-    resultBlockIndex = MESH_XYZ(M1_MESH_SIZE, -1, chunkZ);
+    chunkInfoIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
+    resultInfoIndex = MESH_XYZ(M1_MESH_SIZE, -1, chunkZ);
     SET;
 
     chunkNum = 23;
-    chunkBlockIndex = XYZ(0, 0, chunkZ);
-    resultBlockIndex = MESH_XYZ(M1_MESH_SIZE, M1_MESH_SIZE, chunkZ);
+    chunkInfoIndex = XYZ(0, 0, chunkZ);
+    resultInfoIndex = MESH_XYZ(M1_MESH_SIZE, M1_MESH_SIZE, chunkZ);
     SET;
 
     chunkNum = 21;
-    chunkBlockIndex = XYZ(M1_CHUNK_SIZE, 0, chunkZ);
-    resultBlockIndex = MESH_XYZ(-1, M1_MESH_SIZE, chunkZ);
+    chunkInfoIndex = XYZ(M1_CHUNK_SIZE, 0, chunkZ);
+    resultInfoIndex = MESH_XYZ(-1, M1_MESH_SIZE, chunkZ);
     SET;
 
     chunkNum = 4;
-    chunkBlockIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
-    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ) + 1; // x not inclusive
-    resultBlockIndex = MESH_XYZ(0, -1, chunkZ);
+    chunkInfoIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
+    chunkInfoIndex2 = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ) + 1; // x not inclusive
+    resultInfoIndex = MESH_XYZ(0, -1, chunkZ);
     COPY;
 
     chunkNum = 22;
-    chunkBlockIndex = XYZ(0, 0, chunkZ);
-    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, 0, chunkZ) + 1;
-    resultBlockIndex = MESH_XYZ(0, M1_MESH_SIZE, chunkZ); // x not inclusive
+    chunkInfoIndex = XYZ(0, 0, chunkZ);
+    chunkInfoIndex2 = XYZ(M1_CHUNK_SIZE, 0, chunkZ) + 1;
+    resultInfoIndex = MESH_XYZ(0, M1_MESH_SIZE, chunkZ); // x not inclusive
     COPY;
 
     for (chunkY = 0; chunkY < CHUNK_SIZE; chunkY++) {
       chunkNum = 12;
-      chunkBlockIndex = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ);
-      resultBlockIndex = MESH_XYZ(-1, chunkY, chunkZ);
+      chunkInfoIndex = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ);
+      resultInfoIndex = MESH_XYZ(-1, chunkY, chunkZ);
       SET;
 
       chunkNum = 14;
-      chunkBlockIndex = XYZ(0, chunkY, chunkZ);
-      resultBlockIndex = MESH_XYZ(M1_MESH_SIZE, chunkY, chunkZ);
+      chunkInfoIndex = XYZ(0, chunkY, chunkZ);
+      resultInfoIndex = MESH_XYZ(M1_MESH_SIZE, chunkY, chunkZ);
       SET;
 
       chunkNum = 13;
-      chunkBlockIndex = XYZ(0, chunkY, chunkZ);
-      chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ) + 1; // not inclusive
-      resultBlockIndex = MESH_XYZ(0, chunkY, chunkZ);
+      chunkInfoIndex = XYZ(0, chunkY, chunkZ);
+      chunkInfoIndex2 = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ) + 1; // not inclusive
+      resultInfoIndex = MESH_XYZ(0, chunkY, chunkZ);
       COPY;
     }
   }
@@ -128,57 +133,57 @@ void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_S
     meshZ = -1;
 
     chunkNum = 0;
-    chunkBlockIndex = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ);
-    resultBlockIndex = MESH_XYZ(-1, -1, meshZ);
+    chunkInfoIndex = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ);
+    resultInfoIndex = MESH_XYZ(-1, -1, meshZ);
     SET;
 
     chunkNum = 2;
-    chunkBlockIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
-    resultBlockIndex = MESH_XYZ(M1_MESH_SIZE, -1, meshZ);
+    chunkInfoIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
+    resultInfoIndex = MESH_XYZ(M1_MESH_SIZE, -1, meshZ);
     SET;
 
     chunkNum = 20;
-    chunkBlockIndex = XYZ(0, 0, chunkZ);
-    resultBlockIndex = MESH_XYZ(M1_MESH_SIZE, M1_MESH_SIZE, meshZ);
+    chunkInfoIndex = XYZ(0, 0, chunkZ);
+    resultInfoIndex = MESH_XYZ(M1_MESH_SIZE, M1_MESH_SIZE, meshZ);
     SET;
 
     chunkNum = 18;
-    chunkBlockIndex = XYZ(M1_CHUNK_SIZE, 0, chunkZ);
-    resultBlockIndex = MESH_XYZ(-1, M1_MESH_SIZE, meshZ);
+    chunkInfoIndex = XYZ(M1_CHUNK_SIZE, 0, chunkZ);
+    resultInfoIndex = MESH_XYZ(-1, M1_MESH_SIZE, meshZ);
     SET;
 
     chunkNum = 1;
-    chunkBlockIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
-    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ) + 1; // x not inclusive
-    resultBlockIndex = MESH_XYZ(0, -1, meshZ);
+    chunkInfoIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
+    chunkInfoIndex2 = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ) + 1; // x not inclusive
+    resultInfoIndex = MESH_XYZ(0, -1, meshZ);
     COPY;
 
     chunkNum = 19;
-    chunkBlockIndex = XYZ(0, 0, chunkZ);
-    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, 0, chunkZ) + 1; // x not inclusive
-    resultBlockIndex = MESH_XYZ(0, M1_MESH_SIZE, meshZ);
+    chunkInfoIndex = XYZ(0, 0, chunkZ);
+    chunkInfoIndex2 = XYZ(M1_CHUNK_SIZE, 0, chunkZ) + 1; // x not inclusive
+    resultInfoIndex = MESH_XYZ(0, M1_MESH_SIZE, meshZ);
     COPY;
 
     for (chunkY = 0; chunkY < CHUNK_SIZE; chunkY++) {
       chunkNum = 9;
-      chunkBlockIndex = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ);
-      resultBlockIndex = MESH_XYZ(-1, chunkY, meshZ);
+      chunkInfoIndex = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ);
+      resultInfoIndex = MESH_XYZ(-1, chunkY, meshZ);
       SET;
 
       chunkNum = 11;
-      chunkBlockIndex = XYZ(0, chunkY, chunkZ);
-      resultBlockIndex = MESH_XYZ(M1_MESH_SIZE, chunkY, meshZ);
+      chunkInfoIndex = XYZ(0, chunkY, chunkZ);
+      resultInfoIndex = MESH_XYZ(M1_MESH_SIZE, chunkY, meshZ);
       SET;
 
       chunkNum = 10;
-      chunkBlockIndex = XYZ(0, chunkY, chunkZ);
-      chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ) + 1; // not inclusive
-      resultBlockIndex = MESH_XYZ(0, chunkY, meshZ);
+      chunkInfoIndex = XYZ(0, chunkY, chunkZ);
+      chunkInfoIndex2 = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ) + 1; // not inclusive
+      resultInfoIndex = MESH_XYZ(0, chunkY, meshZ);
       COPY;
     }
   } else {
     // fill bottom mesh layer info with air, top chunk in world
-    std::fill(result, result + CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH, Block::AIR);
+    std::fill(blockResult, blockResult + CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH, Block::AIR);
   }
 
   // chunks above middle chunk (z offset is 1)
@@ -187,57 +192,57 @@ void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&result)[CHUNK_MESH_INFO_S
     meshZ = M1_MESH_SIZE;
 
     chunkNum = 6;
-    chunkBlockIndex = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ);
-    resultBlockIndex = MESH_XYZ(-1, -1, meshZ);
+    chunkInfoIndex = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ);
+    resultInfoIndex = MESH_XYZ(-1, -1, meshZ);
     SET;
 
     chunkNum = 8;
-    chunkBlockIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
-    resultBlockIndex = MESH_XYZ(M1_MESH_SIZE, -1, meshZ);
+    chunkInfoIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
+    resultInfoIndex = MESH_XYZ(M1_MESH_SIZE, -1, meshZ);
     SET;
 
     chunkNum = 26;
-    chunkBlockIndex = XYZ(0, 0, chunkZ);
-    resultBlockIndex = MESH_XYZ(M1_MESH_SIZE, M1_MESH_SIZE, meshZ);
+    chunkInfoIndex = XYZ(0, 0, chunkZ);
+    resultInfoIndex = MESH_XYZ(M1_MESH_SIZE, M1_MESH_SIZE, meshZ);
     SET;
 
     chunkNum = 24;
-    chunkBlockIndex = XYZ(M1_CHUNK_SIZE, 0, chunkZ);
-    resultBlockIndex = MESH_XYZ(-1, M1_MESH_SIZE, meshZ);
+    chunkInfoIndex = XYZ(M1_CHUNK_SIZE, 0, chunkZ);
+    resultInfoIndex = MESH_XYZ(-1, M1_MESH_SIZE, meshZ);
     SET;
 
     chunkNum = 7;
-    chunkBlockIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
-    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ) + 1; // x not inclusive
-    resultBlockIndex = MESH_XYZ(0, -1, meshZ);
+    chunkInfoIndex = XYZ(0, M1_CHUNK_SIZE, chunkZ);
+    chunkInfoIndex2 = XYZ(M1_CHUNK_SIZE, M1_CHUNK_SIZE, chunkZ) + 1; // x not inclusive
+    resultInfoIndex = MESH_XYZ(0, -1, meshZ);
     COPY;
 
     chunkNum = 25;
-    chunkBlockIndex = XYZ(0, 0, chunkZ);
-    chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, 0, chunkZ) + 1;
-    resultBlockIndex = MESH_XYZ(0, M1_MESH_SIZE, meshZ); // x not inclusive
+    chunkInfoIndex = XYZ(0, 0, chunkZ);
+    chunkInfoIndex2 = XYZ(M1_CHUNK_SIZE, 0, chunkZ) + 1;
+    resultInfoIndex = MESH_XYZ(0, M1_MESH_SIZE, meshZ); // x not inclusive
     COPY;
 
     for (chunkY = 0; chunkY < CHUNK_SIZE; chunkY++) {
       chunkNum = 15;
-      chunkBlockIndex = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ);
-      resultBlockIndex = MESH_XYZ(-1, chunkY, meshZ);
+      chunkInfoIndex = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ);
+      resultInfoIndex = MESH_XYZ(-1, chunkY, meshZ);
       SET;
 
       chunkNum = 17;
-      chunkBlockIndex = XYZ(0, chunkY, chunkZ);
-      resultBlockIndex = MESH_XYZ(M1_MESH_SIZE, chunkY, meshZ);
+      chunkInfoIndex = XYZ(0, chunkY, chunkZ);
+      resultInfoIndex = MESH_XYZ(M1_MESH_SIZE, chunkY, meshZ);
       SET;
 
       chunkNum = 16;
-      chunkBlockIndex = XYZ(0, chunkY, chunkZ);
-      chunkBlockIndex2 = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ) + 1; // not inclusive
-      resultBlockIndex = MESH_XYZ(0, chunkY, meshZ);
+      chunkInfoIndex = XYZ(0, chunkY, chunkZ);
+      chunkInfoIndex2 = XYZ(M1_CHUNK_SIZE, chunkY, chunkZ) + 1; // not inclusive
+      resultInfoIndex = MESH_XYZ(0, chunkY, meshZ);
       COPY;
     }
   } else {
     // fill top mesh layer info with air, top chunk in world
-    std::fill(result + MESH_XYZ(-1, -1, M1_MESH_SIZE), result + CHUNK_MESH_INFO_SIZE, Block::AIR);
+    std::fill(blockResult + MESH_XYZ(-1, -1, M1_MESH_SIZE), blockResult + CHUNK_MESH_INFO_SIZE, Block::AIR);
   }
 }
 
