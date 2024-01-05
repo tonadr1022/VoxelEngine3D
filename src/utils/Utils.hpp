@@ -9,7 +9,7 @@
 #include "../AppConstants.hpp"
 
 namespace Utils {
-inline static int positiveModulo(int value, int m) {
+inline int positiveModulo(int value, int m) {
   int mod = value % (int) m;
   if (mod < 0) {
     mod += m;
@@ -24,20 +24,29 @@ inline static int positiveModulo(int value, int m) {
 //}
 
 // if negative return -1, else if >= 32, return 1, else return 0;
-inline static int chunkNeighborOffset(int value) {
+inline int chunkNeighborOffset(int value) {
   return ((value & 0x80) != 0) ? -1 : ((value >> 5) & 1) ? 1 : 0;
 }
 
 // see neighbor array in world.hpp
-inline static int getNeighborArrayIndex(int x, int y, int z) {
+inline int getNeighborArrayIndex(int x, int y, int z) {
   return (x + 1) + 3 * ((z + 1) + 3 * (y + 1));
 }
 
 // if val == 33 return 1, if val ==
-inline static int getRelativeIndex(int val) {
+inline int getRelativeIndex(int val) {
   return (val & 31 + CHUNK_SIZE) & 31;
 }
 
+inline uint32_t packLightLevel(const glm::ivec3 &level) {
+  return static_cast<uint32_t>(level.r  << 8 | level.g << 4 | level.b);
 }
 
+inline glm::ivec3 getNeighborPosFromFace(glm::ivec3 pos, short faceNum) {
+  pos[faceNum >> 1] += 1 - ((faceNum & 1) << 1);
+  return pos;
+}
+
+
+}
 #endif //VOXEL_ENGINE_UTILS_HPP

@@ -3,7 +3,6 @@
 //
 
 #include "ChunkMeshBuilder.hpp"
-
 #include "../block/BlockDB.hpp"
 #include "Chunk.hpp"
 
@@ -147,16 +146,18 @@ constexpr uint8_t LIGHTING_LOOKUP[6][4][3] = {
 };
 
 
-ChunkMeshBuilder::ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE], const glm::ivec3 &chunkWorldPos) : m_blocks(
-    blocks), m_chunkWorldPos(chunkWorldPos) {
+ChunkMeshBuilder::ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE],
+                                   glm::ivec3 (&lightLevels)[CHUNK_VOLUME],
+                                   const glm::ivec3 &chunkWorldPos) : m_blocks(
+    blocks), m_chunkWorldPos(chunkWorldPos), m_lightLevels(lightLevels) {
 }
 
-void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
+void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
                                      std::vector<unsigned int> &opaqueIndices,
-                                     std::vector<uint32_t> &transparentVertices,
+                                     std::vector<ChunkVertex> &transparentVertices,
                                      std::vector<unsigned int> &transparentIndices) {
-  uint32_t opaqueVertices_[20000];
-  uint32_t transparentVertices_[20000];
+  ChunkVertex opaqueVertices_[20000];
+  ChunkVertex transparentVertices_[20000];
   unsigned int opaqueIndices_[20000];
   unsigned int transparentIndices_[20000];
   int occlusionLevels[4];
@@ -212,6 +213,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
       auto face = static_cast<BlockFace>(faceIndex);
 
       BlockData &blockData = BlockDB::getBlockData(block);
+      const glm::ivec3 &blockLightLevel = m_lightLevels[blockIndex];
 
       setOcclusionLevels(blockPos, face, occlusionLevels);
       int texIndex = blockData.texIndex[faceIndex];
@@ -230,7 +232,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
         // textureX [0, 1] == 1 bit, textureY [0, 1] == 1 bit textureIndex
         // [0, 255] == 8 bits. total 30 bits pack x, y, z, occlusion level,
         // textureX, textureY, textureIndex into 32 bits
-        uint32_t vertexData =
+        uint32_t vertexData1 =
             ((blockPos.x + ALL_FACES_LOOKUP[faceVerticesIndex + i]) & 0x3F) |
             ((blockPos.y + ALL_FACES_LOOKUP[faceVerticesIndex + i + 1] & 0x3F) << 6) |
             ((blockPos.z + ALL_FACES_LOOKUP[faceVerticesIndex + i + 2] & 0x3F) << 12) |
@@ -238,7 +240,17 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
             ((ALL_FACES_LOOKUP[faceVerticesIndex + i + 3] & 0x1) << 20) |
             ((ALL_FACES_LOOKUP[faceVerticesIndex + i + 4] & 0x1) << 21) |
             ((texIndex & 0xFF) << 22);
-        vertices[verticesIndex++] = vertexData;
+        // blue light level [0, 15] == 4 bits, green light level [0, 15] == 4, red light level [0, 15] == 4 bits
+        // intensity [0, 15] == 4 bits, total 16 bits
+//        int redLightLevel = 15;
+//        int greenLightLevel = 0;
+//        int blueLightLevel =  0;
+        int intensity = 15;
+        uint32_t vertexData2 =
+            (blockLightLevel.b & 0xF) | ((blockLightLevel.g & 0xF) << 4) | ((blockLightLevel.r & 0xF) << 8) |
+            ((intensity & 0xF) << 12);
+        ChunkVertex vertex = {vertexData1, vertexData2};
+        vertices[verticesIndex++] = vertex;
       }
       // check whether to flip quad based on AO
       if (occlusionLevels[0] + occlusionLevels[3] > occlusionLevels[1] + occlusionLevels[2]) {
@@ -258,9 +270,9 @@ void ChunkMeshBuilder::constructMesh(std::vector<uint32_t> &opaqueVertices,
       }
     }
   }
-  opaqueVertices = std::vector<uint32_t>(opaqueVertices_, opaqueVertices_ + opaqueVerticesIndex);
+  opaqueVertices = std::vector<ChunkVertex>(opaqueVertices_, opaqueVertices_ + opaqueVerticesIndex);
   opaqueIndices = std::vector<unsigned int>(opaqueIndices_, opaqueIndices_ + opaqueIndicesIndex);
-  transparentVertices = std::vector<uint32_t>(transparentVertices_, transparentVertices_ + transparentVerticesIndex);
+  transparentVertices = std::vector<ChunkVertex>(transparentVertices_, transparentVertices_ + transparentVerticesIndex);
   transparentIndices = std::vector<unsigned int>(transparentIndices_, transparentIndices_ + transparentIndicesIndex);
 }
 

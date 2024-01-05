@@ -7,6 +7,7 @@
 
 #include "../block/Block.hpp"
 #include "../../EngineConfig.hpp"
+#include "ChunkVertex.hpp"
 
 class Chunk;
 
@@ -27,7 +28,7 @@ class ChunkMesh {
   void clearData();
   void clearBuffers();
 
-  std::vector<uint32_t> vertices;
+  std::vector<ChunkVertex> vertices;
   std::vector<unsigned int> indices;
   bool isBuffered = false;
   bool needsUpdate = false;

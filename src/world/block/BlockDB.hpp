@@ -14,6 +14,10 @@ struct BlockData {
   std::array<int, 6> texIndex;
   bool isTransparent;
   bool isCollidable;
+  bool isLightSource;
+  uint32_t packedLightLevel;
+  glm::ivec3 lightLevel;
+  bool lightCanPass;
 };
 
 class BlockDB {
@@ -26,6 +30,22 @@ class BlockDB {
 
   static inline int getTexIndex(Block id, int face) {
     return getBlockData(id).texIndex[face];
+  }
+
+  static inline bool isLightSource(Block id) {
+    return getBlockData(id).isLightSource;
+  }
+
+  static inline glm::ivec3 getLightLevel(Block id) {
+    return getBlockData(id).lightLevel;
+  }
+
+  static inline uint32_t getpackedLightLevel(Block id) {
+    return getBlockData(id).packedLightLevel;
+  }
+
+  static inline bool canLightPass(Block id) {
+    return getBlockData(id).lightCanPass;
   }
 
  private:

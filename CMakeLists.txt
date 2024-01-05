@@ -116,8 +116,6 @@ set(SOURCE_FILES
         src/math/AABB.hpp
         src/math/Plane.hpp
         src/world/chunk/ChunkVertex.hpp
-        src/world/chunk/ChunkTerrainInfo.cpp
-        src/world/chunk/ChunkTerrainInfo.hpp
         src/world/chunk/ChunkInfo.hpp
         src/world/chunk/ChunkStructuresInfo.cpp
         src/world/chunk/ChunkStructuresInfo.hpp

@@ -3,216 +3,351 @@
         "id": 12,
         "texIndex": [8,8,8,8,8,8],
         "isTransparent": true,
-        "isCollidable": false
+        "isCollidable": false,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Stone": {
         "id": 3,
         "texIndex": [3,3,3,3,3,3],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Snowy Grass Block": {
         "id": 10,
         "texIndex": [17,17,17,17,16,16],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Sand": {
         "id": 6,
         "texIndex": [7,7,7,7,7,7],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Oak Wood": {
         "id": 7,
         "texIndex": [10,10,10,10,11,11],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Oak Leaves": {
         "id": 8,
         "texIndex": [12,12,12,12,12,12],
         "isTransparent": true,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Jungle Wood": {
         "id": 15,
         "texIndex": [26,26,26,26,27,27],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Gravel": {
         "id": 4,
         "texIndex": [34,34,34,34,34,34],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Glowstone": {
         "id": 14,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": true,
+        "lightLevels": [15,15,15],
+        "lightCanPass": true
+    },
+    "GlowstoneRed": {
+        "id": 35,
+      "texIndex": [79,79,79,79,79,79],
+      "isTransparent": false,
+      "isCollidable": true,
+      "isLightSource": true,
+      "lightLevels": [15,0,0],
+        "lightCanPass": true
+    },
+    "GlowstoneGreen": {
+        "id": 36,
+      "texIndex": [79,79,79,79,79,79],
+      "isTransparent": false,
+      "isCollidable": true,
+      "isLightSource": true,
+      "lightLevels": [0,15,0],
+        "lightCanPass": true
+    },
+    "GlowstoneBlue": {
+      "id": 37,
+      "texIndex": [79,79,79,79,79,79],
+      "isTransparent": false,
+      "isCollidable": true,
+      "isLightSource": true,
+      "lightLevels": [0,15,15],
+        "lightCanPass": true
     },
     "Dirt": {
         "id": 1,
         "texIndex": [2,2,2,2,2,2],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Grass": {
         "id": 2,
         "texIndex": [1,1,1,1,0,0],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Diamond Block": {
         "id": 255,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Crafting Table": {
         "id": 13,
         "texIndex": [74,74,74,74,75,75],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Cobblestone": {
         "id": 9,
         "texIndex": [78,78,78,78,78,78],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Bedrock": {
         "id": 5,
         "texIndex": [19,19,19,19,19,19],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Ice Block": {
         "id": 11,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Air": {
         "id": 0,
         "texIndex": [224,224,224,224,224,224],
         "isTransparent": true,
-        "isCollidable": false
+        "isCollidable": false,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": true
     },
     "Jungle Leaves": {
         "id": 16,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": true,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Birch Wood": {
         "id": 17,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Birch Leaves": {
         "id": 18,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": true,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Spruce Wood": {
         "id": 19,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Spruce Leaves": {
         "id": 20,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": true,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Coal Ore": {
         "id": 21,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Iron Ore": {
         "id": 22,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Redstone Ore": {
         "id": 23,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Gold Ore": {
         "id": 24,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Diamond Ore": {
         "id": 25,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Emerald Ore": {
         "id": 26,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Lapis Lazuli Ore": {
         "id": 27,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Clay": {
         "id": 28,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Sugar Cane": {
         "id": 29,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Cactus": {
         "id": 30,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Oak Planks": {
         "id": 31,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Birch Planks": {
         "id": 32,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Jungle Planks": {
         "id": 33,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     },
     "Spruce Planks": {
         "id": 34,
         "texIndex": [79,79,79,79,79,79],
         "isTransparent": false,
-        "isCollidable": true
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
     }
 }

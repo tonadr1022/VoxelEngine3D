@@ -43,15 +43,16 @@ enum class Block : uint8_t {
   BIRCH_PLANKS, // 32
   JUNGLE_PLANKS, // 33
   SPRUCE_PLANKS, // 34
+  GLOWSTONE_RED, // 35
+    GLOWSTONE_GREEN, // 36
+    GLOWSTONE_BLUE, // 37
   BLOCK_COUNT,
 };
 
 //typedef uint8_t Block;
 
 namespace BlockMethods {
-inline bool isTransparent(Block block) {
-  return block == Block::AIR || block == Block::WATER;
-}
+
 }
 
 #endif //VOXEL_ENGINE_BLOCK_HPP

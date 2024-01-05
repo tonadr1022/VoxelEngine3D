@@ -27,7 +27,7 @@ void TerrainGenerator::generateStructures(HeightMap &heightMap, TreeMap &treeMap
       heightMapIndex++;
     }
   }
-  m_chunks[13]->chunkState = ChunkState::FULLY_GENERATED;
+  m_chunks[13]->chunkState = ChunkState::STRUCTURES_GENERATED;
 }
 
 void TerrainGenerator::makeTree(const glm::ivec3 &pos) {
@@ -77,7 +77,9 @@ void TerrainGenerator::getHeightMap(const glm::ivec2 &startWorldPos, int seed, H
   delete fastNoise;
 }
 
-void TerrainGenerator::generateTerrain(HeightMap &heightMap, Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK], int (&numBlocksPlaced)[CHUNKS_PER_STACK]) {
+void TerrainGenerator::generateTerrain(HeightMap &heightMap,
+                                       Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK],
+                                       int (&numBlocksPlaced)[CHUNKS_PER_STACK]) {
   auto setBlockTerrain = [&](int x, int y, int z, Block block) {
     blocks[WORLD_HEIGHT_XYZ(x, y, z)] = block;
     numBlocksPlaced[z / CHUNK_SIZE]++;
@@ -109,7 +111,21 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap, Block (&blocks)[CHU
     }
   }
 
+  int maxBlockHeightAtx5y5 = heightMap[32 * 5 + 5];
+  setBlockTerrain(5, 5, maxBlockHeightAtx5y5, Block::GLOWSTONE);
+
+  int maxBlockHeightAtx10y10 = heightMap[32 * 10 + 10];
+  setBlockTerrain(10, 10, maxBlockHeightAtx10y10, Block::GLOWSTONE_RED);
+
+  int maxBlockHeightAtx15y15 = heightMap[32 * 15 + 15];
+  setBlockTerrain(15, 15, maxBlockHeightAtx15y15, Block::GLOWSTONE_GREEN);
+
+  int maxBlockHeightAtx20y20 = heightMap[32 * 20 + 20];
+  setBlockTerrain(20, 20, maxBlockHeightAtx20y20, Block::GLOWSTONE_BLUE);
+
+
 }
+
 void TerrainGenerator::getTreeMap(const glm::ivec2 &startWorldPos, int seed, TreeMap &result) {
   FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
   fastNoise->SetSeed(seed);

@@ -8,6 +8,7 @@
 #include "../../EngineConfig.hpp"
 #include "../block/Block.hpp"
 #include "../../AppConstants.hpp"
+#include "../chunk/Chunk.hpp"
 
 class TerrainGenerator {
  public:

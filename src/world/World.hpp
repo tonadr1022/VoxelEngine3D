@@ -11,7 +11,6 @@
 #include "../EngineConfig.hpp"
 #include "chunk/Chunk.hpp"
 #include "generation/TerrainGenerator.hpp"
-#include "chunk/ChunkTerrainInfo.hpp"
 #include "chunk/ChunkStructuresInfo.hpp"
 #include "chunk/ChunkMeshInfo.hpp"
 #include "../renderer/Renderer.hpp"
@@ -22,6 +21,8 @@
 
 class Chunk;
 class ChunkStructuresInfo;
+
+using ChunkMap = std::unordered_map<glm::ivec3, Scope<Chunk>>;
 
 // z
 // |
@@ -107,6 +108,7 @@ class World {
 
   void updateChunkLoadList();
   void updateChunkStructureGenList();
+  void updateChunkLightingList();
   void updateChunkMeshList();
 //  void updateChunkUpdateList();
   void processDirectChunkUpdates();
@@ -148,11 +150,13 @@ class World {
   void generateChunksWorker4();
   void processBatchToLoad(std::queue<glm::ivec2> &batchToLoad);
   void processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStructures);
+    void processBatchToLight(std::queue<glm::ivec3> &batchToLight);
   void processBatchToMesh(std::queue<glm::ivec3> &batchToMesh);
 
-  int m_renderDistance = 8;
-  int m_loadDistance = m_renderDistance + 2;
+  int m_renderDistance = 1;
   int m_structureLoadDistance = m_renderDistance + 1;
+  int m_lightingLoadDistance = m_renderDistance + 2;
+  int m_loadDistance = m_renderDistance + 3;
   int m_unloadDistance = m_renderDistance + 4;
 
   glm::ivec3 m_center;
@@ -185,6 +189,10 @@ class World {
   std::vector<glm::ivec2> m_chunksInStructureGenRangeVectorXY;
   std::unordered_map<glm::ivec3, Scope<ChunkStructuresInfo>> m_chunkStructuresInfoMap;
   std::list<glm::ivec3> m_chunksReadyToGenStructuresList;
+
+  std::vector<glm::ivec2> m_chunksInLightingRangeVectorXY;
+  std::unordered_map<glm::ivec3, Scope<ChunkLightInfo>> m_chunkLightInfoMap;
+  std::list<glm::ivec3> m_chunksReadyForLightingList;
 
   std::vector<glm::ivec3> m_chunksInMeshRangeVector;
   std::unordered_map<glm::ivec3, Scope<ChunkMeshInfo>> m_chunkMeshInfoMap;

@@ -5,9 +5,9 @@
 #ifndef VOXEL_ENGINE_SRC_WORLD_CHUNK_CHUNKSTRUCTURESINFO_HPP_
 #define VOXEL_ENGINE_SRC_WORLD_CHUNK_CHUNKSTRUCTURESINFO_HPP_
 
+#include "../../EngineConfig.hpp"
 #include "ChunkInfo.hpp"
 #include "../../AppConstants.hpp"
-#include "../../EngineConfig.hpp"
 #include "../generation/TerrainGenerator.hpp"
 
 class Chunk;

@@ -50,7 +50,7 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
 
   glGenBuffers(1, &mesh.VBO);
   glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
-  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(uint32_t),
+  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(ChunkVertex),
                &mesh.vertices[0], GL_STATIC_DRAW);
 
   glGenBuffers(1, &mesh.EBO);
@@ -59,9 +59,11 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
                mesh.indices.size() * sizeof(unsigned int), &mesh.indices[0],
                GL_STATIC_DRAW);
 
-  // vertex data only attribute, must be IPointer
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(uint32_t), (void *) nullptr);
+  //  must be IPointer
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData1));
   glEnableVertexAttribArray(0);
+  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData2));
+  glEnableVertexAttribArray(1);
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -93,22 +95,21 @@ void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
   GLuint nVBO;
   glGenBuffers(1, &nVBO);
   glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
-  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(uint32_t),
-               &mesh.vertices[0], GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(ChunkVertex), &mesh.vertices[0], GL_STATIC_DRAW);
 
   GLuint nEBO;
   glGenBuffers(1, &nEBO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-               mesh.indices.size() * sizeof(unsigned int), &mesh.indices[0],
-               GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int), &mesh.indices[0], GL_STATIC_DRAW);
 
   mesh.VBO = nVBO;
   mesh.EBO = nEBO;
 
-  // vertex data only attribute, must be IPointer
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(uint32_t), (void *) nullptr);
+  //  must be IPointer
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData1));
   glEnableVertexAttribArray(0);
+  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData2));
+  glEnableVertexAttribArray(1);
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);

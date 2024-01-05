@@ -23,6 +23,11 @@ constexpr int CHUNK_MESH_INFO_CHUNK_WIDTH = CHUNK_SIZE + 2;
 constexpr int CHUNK_MESH_INFO_SIZE = CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH *
                                              CHUNK_MESH_INFO_CHUNK_WIDTH;
 
+constexpr int CHUNK_LIGHT_INFO_WIDTH = CHUNK_SIZE + 28;
+constexpr int CHUNK_LIGHT_INFO_AREA = CHUNK_LIGHT_INFO_WIDTH * CHUNK_LIGHT_INFO_WIDTH;
+
+constexpr int CHUNK_LIGHT_INFO_SIZE = CHUNK_LIGHT_INFO_WIDTH * CHUNK_LIGHT_INFO_WIDTH * CHUNK_LIGHT_INFO_WIDTH;
+
 enum class HorizontalDirection {
   LEFT = 0,
   RIGHT,
@@ -30,9 +35,11 @@ enum class HorizontalDirection {
   BACK,
 };
 
-class Chunk;
+//typedef uint32_t PackedLightLevel;
+//typedef glm::ivec3 LightLevel;
 
-using ChunkMap = std::unordered_map<glm::ivec3, Scope<Chunk>>;
+
+
 using HeightMap = std::array<int, CHUNK_AREA>;
 using TreeMap = std::array<float, CHUNK_AREA>;
 using ChunkHeightMapMap = std::unordered_map<glm::ivec2, HeightMap>;
