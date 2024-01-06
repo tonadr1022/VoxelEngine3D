@@ -64,6 +64,18 @@ void World::update() {
 
   castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
 
+  glm::ivec3 pos;
+  for (pos.x = m_center.x - m_renderDistance; pos.x <= m_center.x + m_renderDistance; pos.x++) {
+    for (pos.y = m_center.y - m_renderDistance; pos.y <= m_center.y + m_renderDistance; pos.y++) {
+      for (pos.z = 0; pos.z < CHUNKS_PER_STACK; pos.z++) {
+        if (!m_opaqueRenderSet.empty() && m_chunksReadyToMeshList.size() < 250 && m_chunksToLoadVector.empty() && m_chunksReadyToGenStructuresList.empty() && m_chunkMap.at(pos)->chunkState != ChunkState::FULLY_GENERATED) {
+          Chunk *c = getChunkRawPtr(pos);
+          std::cout << pos.x << "  " << pos.y << "  " << pos.z << "  " << std::endl;
+        }
+      }
+    }
+  }
+
   static int i = 0;
   if (i % 4 == 0) {
     sortTransparentRenderVector();
@@ -226,6 +238,13 @@ void World::updateChunkLightingList() {
         if (chunk && chunk->chunkState != ChunkState::STRUCTURES_GENERATED &&
             chunk->chunkState != ChunkState::FULLY_GENERATED) {
           canGenLight = false;
+//                  if (chunk->m_pos.x < m_center.x + m_loadDistance && chunk->m_pos.x > m_center.x - m_loadDistance
+//            && chunk->m_pos.y < m_center.y + m_loadDistance && chunk->m_pos.y > m_center.y - m_loadDistance &&  m_chunksReadyToGenStructuresList.empty()) {
+//          std::cout << "cant mesh because: " << chunk->m_pos.x << " " << chunk->m_pos.y << " " << chunk->m_pos.z;
+//          if (chunk->chunkState == ChunkState::STRUCTURES_GENERATED) {
+//            std::cout << "  structs generated but not light\n\n";
+//          }
+//        }
           break;
         }
       }
