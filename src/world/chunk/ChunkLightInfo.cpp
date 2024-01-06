@@ -107,3 +107,9 @@ Block ChunkLightInfo::getBlock(const glm::ivec3 &pos) {
     return Block::STONE; // anything that cant propagate light
   }
 }
+//void TorchLightInfoLayer::setTorchLight(uint16_t lightLevel, int localX, int localY) {
+//
+//}
+//uint16_t TorchLightInfoLayer::getTorchLight(int localX, int localY) {
+//  return m_lightLevelLayer[XY(localX, localY)];
+//}

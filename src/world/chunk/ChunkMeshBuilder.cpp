@@ -147,7 +147,7 @@ constexpr uint8_t LIGHTING_LOOKUP[6][4][3] = {
 
 
 ChunkMeshBuilder::ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE],
-                                   glm::ivec3 (&lightLevels)[CHUNK_MESH_INFO_SIZE],
+                                   uint16_t (&lightLevels)[CHUNK_MESH_INFO_SIZE],
                                    const glm::ivec3 &chunkWorldPos) : m_blocks(
     blocks), m_chunkWorldPos(chunkWorldPos), m_lightLevels(lightLevels) {
 }
@@ -213,7 +213,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
       auto face = static_cast<BlockFace>(faceIndex);
 
       BlockData &blockData = BlockDB::getBlockData(block);
-      const glm::ivec3 &faceLightLevel = m_lightLevels[MESH_XYZ(adjBlockX, adjBlockY, adjBlockZ)];
+      const uint16_t faceLightLevel = m_lightLevels[MESH_XYZ(adjBlockX, adjBlockY, adjBlockZ)];
 
       setOcclusionLevels(blockPos, face, occlusionLevels);
       int texIndex = blockData.texIndex[faceIndex];
@@ -246,9 +246,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
 //        int greenLightLevel = 0;
 //        int blueLightLevel =  0;
         int intensity = 15;
-        uint32_t vertexData2 =
-            (faceLightLevel.b & 0xF) | ((faceLightLevel.g & 0xF) << 4) | ((faceLightLevel.r & 0xF) << 8) |
-            ((intensity & 0xF) << 12);
+        uint32_t vertexData2 = faceLightLevel | ((intensity & 0xF) << 12);
         ChunkVertex vertex = {vertexData1, vertexData2};
         vertices[verticesIndex++] = vertex;
       }

@@ -620,7 +620,7 @@ void World::processDirectChunkUpdates() {
     std::vector<unsigned int> opaqueIndices, transparentIndices;
 
     Block blocks[CHUNK_MESH_INFO_SIZE];
-    glm::ivec3 torchLightLevels[CHUNK_MESH_INFO_SIZE];
+    uint16_t torchLightLevels[CHUNK_MESH_INFO_SIZE];
     ChunkMeshInfo::populateMeshInfoForMeshing(blocks, torchLightLevels, chunks);
     Chunk *chunk = chunks[13];
     ChunkMeshBuilder builder(blocks, torchLightLevels, chunk->m_worldPos);

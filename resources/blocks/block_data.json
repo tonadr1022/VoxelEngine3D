@@ -104,7 +104,7 @@
       "isTransparent": false,
       "isCollidable": true,
       "isLightSource": true,
-      "lightLevels": [0,15,15],
+      "lightLevels": [0,0,15],
         "lightCanPass": false
     },
     "Dirt": {

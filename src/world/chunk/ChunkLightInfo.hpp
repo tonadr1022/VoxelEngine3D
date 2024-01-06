@@ -36,20 +36,23 @@ class ChunkLightInfo : public ChunkInfo {
   Chunk *m_chunks[27]{};
 
   void propagateTorchLight(std::queue<LightNode> &torchlightQueue);
-
-
-  static constexpr uint32_t RED_MASK = 0xF00;
-  static constexpr uint32_t GREEN_MASK = 0x0F0;
-  static constexpr uint32_t BLUE_MASK = 0x00F;
-
-  static inline glm::ivec3 unpackLightLevel(uint32_t level) {
-    return {
-        static_cast<int8_t>((level & RED_MASK) >> 8),
-        static_cast<int8_t>((level & GREEN_MASK) >> 4),
-        static_cast<int8_t>((level & BLUE_MASK)),
-    };
-  }
 };
+
+//class TorchLightInfo {
+// public:
+//
+// private:
+//  std::uni
+//};
+
+//class TorchLightInfoLayer {
+// public:
+//  void setTorchLight(uint16_t lightLevel, int localX, int localY);
+//  uint16_t getTorchLight(int localX, int localY);
+//
+// private:
+//  uint16_t m_lightLevelLayer[CHUNK_AREA];
+//};
 
 
 #endif //VOXEL_ENGINE_SRC_WORLD_CHUNK_CHUNKLIGHTINFO_HPP_

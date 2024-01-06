@@ -30,7 +30,7 @@ ChunkMeshInfo::ChunkMeshInfo(Chunk *chunks[27]) {
 
 void ChunkMeshInfo::generateMeshData() {
   Block blocks[CHUNK_MESH_INFO_SIZE]{};
-  glm::ivec3 torchLightLevels[CHUNK_MESH_INFO_SIZE]{};
+  uint16_t torchLightLevels[CHUNK_MESH_INFO_SIZE]{};
   populateMeshInfoForMeshing(blocks, torchLightLevels, m_chunks);
   Chunk *chunk = m_chunks[13];
   ChunkMeshBuilder builder(blocks, torchLightLevels, chunk->m_worldPos);
@@ -47,7 +47,7 @@ void ChunkMeshInfo::applyMeshDataToMesh(Chunk *chunk) {
 }
 
 void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&blockResult)[CHUNK_MESH_INFO_SIZE],
-                                               glm::ivec3 (&torchResult)[CHUNK_MESH_INFO_SIZE],
+                                               uint16_t (&torchResult)[CHUNK_MESH_INFO_SIZE],
                                                Chunk *(&chunks)[27]) {
   const int chunkZIndex = chunks[13]->m_pos.z;
   constexpr int M1_CHUNK_SIZE = CHUNK_SIZE - 1;

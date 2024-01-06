@@ -47,7 +47,7 @@ inline glm::ivec3 outOfBoundsPosToLocalPos(const glm::ivec3 outOfBoundsPos) {
   return {getLocalIndex(outOfBoundsPos.x), getLocalIndex(outOfBoundsPos.y), getLocalIndex(outOfBoundsPos.z)};
 }
 
-inline uint32_t packLightLevel(const glm::ivec3 &level) {
+inline uint16_t packLightLevel(const glm::ivec3 &level) {
   return static_cast<uint32_t>(level.r  << 8 | level.g << 4 | level.b);
 }
 

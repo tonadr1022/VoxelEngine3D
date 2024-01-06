@@ -111,11 +111,11 @@ class Chunk {
   }
 
   [[nodiscard]] inline glm::ivec3 getLightLevel(const glm::ivec3 &pos) const {
-    return m_lightLevels[XYZ(pos)];
+    return unpackLightLevel(m_lightLevels[XYZ(pos)]);
   }
 
   inline void setLightLevel(const glm::ivec3 &pos, const glm::ivec3 lightLevel) {
-    m_lightLevels[XYZ(pos)] = lightLevel;
+    m_lightLevels[XYZ(pos)] = Utils::packLightLevel(lightLevel);
   }
 
   [[nodiscard]] inline Block getBlockFromIndex(int index) const {
@@ -134,7 +134,8 @@ class Chunk {
   ChunkState chunkState;
 
   Block m_blocks[CHUNK_VOLUME]{};
-  glm::ivec3 m_lightLevels[CHUNK_VOLUME]{};
+  uint16_t m_lightLevels[CHUNK_VOLUME]{};
+//  uint16_t m_packedLightLevels[CHUNK_VOLUME]{};
 
   glm::ivec3 m_pos;
   glm::ivec3 m_worldPos;
@@ -147,6 +148,19 @@ class Chunk {
   ChunkMesh m_transparentMesh;
 
   AABB m_boundingBox;
+
+ private:
+  static constexpr uint16_t RED_MASK = 0xF00;
+  static constexpr uint16_t GREEN_MASK = 0x0F0;
+  static constexpr uint16_t BLUE_MASK = 0x00F;
+
+  static inline glm::ivec3 unpackLightLevel(uint16_t level) {
+    return {
+        static_cast<int8_t>((level & RED_MASK) >> 8),
+        static_cast<int8_t>((level & GREEN_MASK) >> 4),
+        static_cast<int8_t>((level & BLUE_MASK)),
+    };
+  }
 };
 
 
