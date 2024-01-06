@@ -28,6 +28,8 @@ class ChunkLightInfo : public ChunkInfo {
 
   void generateLightingData();
 
+  static void propagateTorchLight(std::queue<LightNode> &torchLightQueue, Chunk *(&chunks)[27]);
+
  private:
   Chunk *m_chunks[27]{};
 
