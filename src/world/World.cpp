@@ -590,20 +590,31 @@ void World::setRenderDistance(int renderDistance) {
   m_renderDistanceChanged = true;
 }
 
-void World::setBlockWithUpdate(int worldX, int worldY, int worldZ, Block block) {
-  auto chunkPos = chunkPosFromWorldPos(worldX, worldY, worldZ);
-//  int x = Utils::positiveModulo(worldX, CHUNK_SIZE);
-//  int y = Utils::positiveModulo(worldY, CHUNK_SIZE);
-//  int z = Utils::positiveModulo(worldZ, CHUNK_SIZE);
-  auto blockPosInChunk = glm::ivec3(worldX, worldY, worldZ) - chunkPos * CHUNK_SIZE;
+
+void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
+  auto chunkPos = chunkPosFromWorldPos(worldPos);
+  auto blockPosInChunk = worldPos - chunkPos * CHUNK_SIZE;
   Chunk &chunk = *m_chunkMap.at(chunkPos).get();
+
+  glm::ivec3 oldTorchLight = chunk.getLightLevel(blockPosInChunk);
+  glm::ivec3 newTorchLight = BlockDB::getLightLevel(block);
+
+  if (newTorchLight.r < oldTorchLight.r || newTorchLight.g < oldTorchLight.g || newTorchLight.b < oldTorchLight.b) {
+//    m_torchlightRemovalQueue.emplace(blockPosInChunk, Utils::unpackLightLevel(oldTorchLight));
+  }
+
+
   chunk.setBlock(blockPosInChunk, block);
   addRelatedChunks(blockPosInChunk, chunkPos, m_chunkDirectlyUpdateSet);
 }
 
-void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
-  setBlockWithUpdate(worldPos.x, worldPos.y, worldPos.z, block);
-}
+//void World::setTorchLightWithUpdate(const glm::ivec3 &worldPos, Block block) {
+//  auto chunkPos = chunkPosFromWorldPos(worldPos);
+//  auto blockPosInChunk = worldPos - chunkPos * CHUNK_SIZE;
+//  Chunk &chunk = *m_chunkMap.at(chunkPos).get();
+//
+//}
+
 
 void World::processDirectChunkUpdates() {
   if (m_chunkDirectlyUpdateSet.empty()) return;

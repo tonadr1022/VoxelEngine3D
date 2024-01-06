@@ -50,6 +50,14 @@ My ChunkVertex struct contains two 32-bit unsigned integers rather than floats f
 in a chunk range from 0-32 (5 bits each), UV-coordinates are 2 bits total, ambient occlusion is 4 bits, and the texture index
 is 8 bits.
 
+### Memory Management/Optimization
+Prior to this C++ project, I had never worked with pointers. This led to many points of confusion as to how and when memory is allocated.
+One particular struggle occurred when my compile time slowed to a crawl after I initialized a massive array at compile time without 
+realizing. Dealing with large amounts of data to maximize performance forced me to learn to reduce memory usage whenever possible.
+Aside from reducing data size through bit manipulation, I switched from always allocating space for light data on chunk creation to only
+doing so when a light level is set for the chunk. I realized the trade-off for an extra if statement or two compared to hundreds of megabytes
+of data in memory was worth it, a concept I had never considered before this project.
+
 # Inspiration
 - Idea for packing colored lights into a 16-bit integer came from this video: https://www.youtube.com/watch?v=edaaFUflusk.
 - Ambient Occlusion for voxels concepts: https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/

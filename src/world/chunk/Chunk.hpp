@@ -11,7 +11,6 @@
 #include "ChunkMesh.hpp"
 #include "ChunkMeshBuilder.hpp"
 
-
 #include "../generation/TerrainGenerator.hpp"
 #include "../../renderer/ViewFrustum.hpp"
 #include "../../AppConstants.hpp"
@@ -53,7 +52,7 @@ static inline int XY(glm::ivec2 &pos) {
 
 static inline int MESH_XYZ(int x, int y, int z) {
   return (x + 1) + (y + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH
-         + (z + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH;
+      + (z + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH;
 }
 
 static inline int LIGHT_XYZ(int x, int y, int z) {
@@ -94,13 +93,7 @@ class Chunk {
     m_blocks[XYZ(pos)] = block;
   }
 
-//  inline void setBlock(int x, int y, int z, Block block) {
-//    m_blocks[XYZ(x, y, z)] = block;
-//  }
-
   void markDirty();
-
-
 
   [[nodiscard]] inline Block getBlock(int x, int y, int z) const {
     return m_blocks[XYZ(x, y, z)];
@@ -111,11 +104,22 @@ class Chunk {
   }
 
   [[nodiscard]] inline glm::ivec3 getLightLevel(const glm::ivec3 &pos) const {
-    return unpackLightLevel(m_lightLevels[XYZ(pos)]);
+//    return unpackLightLevel(m_lightLevels[XYZ(pos)]);
+    if (!m_torchLightLevelsPtr) return {0, 0, 0};
+    return Utils::unpackLightLevel(m_torchLightLevelsPtr.get()[XYZ(pos)]);
+  }
+
+  [[nodiscard]] inline uint16_t getLightLevelPacked(const glm::ivec3 &pos) const {
+    if (!m_torchLightLevelsPtr) return 0;
+    return m_torchLightLevelsPtr.get()[XYZ(pos)];
   }
 
   inline void setLightLevel(const glm::ivec3 &pos, const glm::ivec3 lightLevel) {
-    m_lightLevels[XYZ(pos)] = Utils::packLightLevel(lightLevel);
+    if (!m_torchLightLevelsPtr) {
+      allocateTorchLightLevels();
+    }
+    m_torchLightLevelsPtr.get()[XYZ(pos)] = Utils::packLightLevel(lightLevel);
+//    m_lightLevels[XYZ(pos)] = Utils::packLightLevel(lightLevel);
   }
 
   [[nodiscard]] inline Block getBlockFromIndex(int index) const {
@@ -134,37 +138,21 @@ class Chunk {
   ChunkState chunkState;
 
   Block m_blocks[CHUNK_VOLUME]{};
-  uint16_t m_lightLevels[CHUNK_VOLUME]{};
-//  uint16_t m_packedLightLevels[CHUNK_VOLUME]{};
+//  uint16_t m_lightLevels[CHUNK_VOLUME]{};
+  std::unique_ptr<uint16_t[]> m_torchLightLevelsPtr = nullptr;
+
+  void allocateTorchLightLevels();
 
   glm::ivec3 m_pos;
   glm::ivec3 m_worldPos;
   float m_firstBufferTime = 0;
 
-  /**
-   * @brief index 0 is opaque, 1 is transparent, 2 is other (floral etc)
-   */
   ChunkMesh m_opaqueMesh;
   ChunkMesh m_transparentMesh;
 
   AABB m_boundingBox;
 
  private:
-  static constexpr uint16_t RED_MASK = 0xF00;
-  static constexpr uint16_t GREEN_MASK = 0x0F0;
-  static constexpr uint16_t BLUE_MASK = 0x00F;
-
-  static inline glm::ivec3 unpackLightLevel(uint16_t level) {
-    return {
-        static_cast<int8_t>((level & RED_MASK) >> 8),
-        static_cast<int8_t>((level & GREEN_MASK) >> 4),
-        static_cast<int8_t>((level & BLUE_MASK)),
-    };
-  }
 };
-
-
-
-
 
 #endif //VOXEL_ENGINE_CHUNK_HPP

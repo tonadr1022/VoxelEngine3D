@@ -103,7 +103,7 @@ class World {
 
   void castPlayerAimRay(Ray ray);
   void setBlockWithUpdate(const glm::ivec3 &worldPos, Block block);
-  void setBlockWithUpdate(int worldX, int worldY, int worldZ, Block block);
+//  void setTorchLightWithUpdate(const glm::ivec3 &worldPos, Block block);
   void saveData();
 
   void unloadChunks();
@@ -208,6 +208,9 @@ class World {
   std::unordered_set<glm::ivec3> m_opaqueRenderSet;
   std::unordered_set<glm::ivec3> m_transparentRenderSet;
   std::vector<glm::ivec3> m_transparentRenderVector;
+
+  std::queue<LightNode> m_torchlightRemovalQueue;
+  std::queue<LightNode> m_torchLightPlacementQueue;
 
   void sortTransparentRenderVector();
 

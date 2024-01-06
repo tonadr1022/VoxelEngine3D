@@ -79,3 +79,10 @@ glm::ivec3 Chunk::getLightLevelIncludingNeighborsOptimized(glm::ivec3 pos, Chunk
   }
 }
 
+void Chunk::allocateTorchLightLevels() {
+  if (!m_torchLightLevelsPtr) {
+    m_torchLightLevelsPtr = std::make_unique<uint16_t[]>(CHUNK_VOLUME);
+    std::fill(m_torchLightLevelsPtr.get(), m_torchLightLevelsPtr.get() + CHUNK_VOLUME, 0);
+  }
+}
+
