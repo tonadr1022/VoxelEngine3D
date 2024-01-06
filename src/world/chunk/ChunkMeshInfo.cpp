@@ -71,9 +71,10 @@ void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&blockResult)[CHUNK_MESH_I
 
   int chunkNum, chunkInfoIndex, chunkInfoIndex2, resultInfoIndex, chunkY, chunkZ, meshZ;
 #define SET blockResult[resultInfoIndex] = chunks[chunkNum]->m_blocks[chunkInfoIndex]; \
-torchResult[resultInfoIndex] = chunks[chunkNum]->m_lightLevels[chunkInfoIndex];
+if (chunks[chunkNum]->m_torchLightLevelsPtr) {torchResult[resultInfoIndex] = chunks[chunkNum]->m_torchLightLevelsPtr.get()[chunkInfoIndex]; }
 #define COPY std::copy(chunks[chunkNum]->m_blocks + chunkInfoIndex, chunks[chunkNum]->m_blocks + chunkInfoIndex2, blockResult + resultInfoIndex); \
-std::copy(chunks[chunkNum]->m_lightLevels + chunkInfoIndex, chunks[chunkNum]->m_lightLevels + chunkInfoIndex2, torchResult + resultInfoIndex);
+if (chunks[chunkNum]->m_torchLightLevelsPtr) { std::copy(chunks[chunkNum]->m_torchLightLevelsPtr.get() + chunkInfoIndex,\
+chunks[chunkNum]->m_torchLightLevelsPtr.get() + chunkInfoIndex2, torchResult + resultInfoIndex); }
 
   // Chunks at same z level as middle chunk
   for (chunkZ = 0; chunkZ < CHUNK_SIZE; chunkZ++) {

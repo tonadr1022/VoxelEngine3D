@@ -47,8 +47,20 @@ inline glm::ivec3 outOfBoundsPosToLocalPos(const glm::ivec3 outOfBoundsPos) {
   return {getLocalIndex(outOfBoundsPos.x), getLocalIndex(outOfBoundsPos.y), getLocalIndex(outOfBoundsPos.z)};
 }
 
-inline uint16_t packLightLevel(const glm::ivec3 &level) {
+static inline uint16_t packLightLevel(const glm::ivec3 &level) {
   return static_cast<uint32_t>(level.r  << 8 | level.g << 4 | level.b);
+}
+
+static constexpr uint16_t RED_MASK = 0xF00;
+static constexpr uint16_t GREEN_MASK = 0x0F0;
+static constexpr uint16_t BLUE_MASK = 0x00F;
+
+static inline glm::ivec3 unpackLightLevel(uint16_t level) {
+  return {
+      static_cast<int8_t>((level & RED_MASK) >> 8),
+      static_cast<int8_t>((level & GREEN_MASK) >> 4),
+      static_cast<int8_t>((level & BLUE_MASK)),
+  };
 }
 
 inline glm::ivec3 getNeighborPosFromFace(glm::ivec3 pos, short faceNum) {

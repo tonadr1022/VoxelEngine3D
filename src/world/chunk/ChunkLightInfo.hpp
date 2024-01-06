@@ -10,7 +10,6 @@
 #include "ChunkInfo.hpp"
 #include "../block/Block.hpp"
 
-
 struct LightNode {
   glm::ivec3 pos;
   glm::ivec3 lightLevel;
@@ -29,21 +28,11 @@ class ChunkLightInfo : public ChunkInfo {
 
   void generateLightingData();
 
-
-
  private:
-  Block getBlock(const glm::ivec3 &pos);
   Chunk *m_chunks[27]{};
 
-  void propagateTorchLight(std::queue<LightNode> &torchlightQueue);
+//  void propagateTorchLight(std::queue<LightNode> &torchlightQueue);
 };
-
-//class TorchLightInfo {
-// public:
-//
-// private:
-//  std::uni
-//};
 
 //class TorchLightInfoLayer {
 // public:
