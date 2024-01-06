@@ -242,9 +242,6 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
             ((texIndex & 0xFF) << 22);
         // blue light level [0, 15] == 4 bits, green light level [0, 15] == 4, red light level [0, 15] == 4 bits
         // intensity [0, 15] == 4 bits, total 16 bits
-//        int redLightLevel = 15;
-//        int greenLightLevel = 0;
-//        int blueLightLevel =  0;
         int intensity = 15;
         uint32_t vertexData2 = faceLightLevel | ((intensity & 0xF) << 12);
         ChunkVertex vertex = {vertexData1, vertexData2};

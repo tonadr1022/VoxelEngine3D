@@ -13,8 +13,6 @@ ChunkLightInfo::ChunkLightInfo(Chunk *chunks[27]) {
 }
 
 void ChunkLightInfo::generateLightingData() {
-  // populate bloc array
-//  populateBlockArrayForLighting(blocks);
   Chunk *chunk = m_chunks[13];
   // torchlight
   std::queue<LightNode> torchlightQueue;
@@ -24,9 +22,18 @@ void ChunkLightInfo::generateLightingData() {
     if (BlockDB::isLightSource(block)) {
       glm::ivec3 pos = XYZ_FROM_INDEX(blockIndex);
       glm::ivec3 lightLevel = BlockDB::getLightLevel(block);
-      torchlightQueue.emplace(pos, lightLevel);
+      torchlightQueue.push({pos, lightLevel});
     }
   }
+
+  propagateTorchLight(torchlightQueue, m_chunks);
+
+  chunk->chunkState = ChunkState::FULLY_GENERATED;
+  m_done = true;
+}
+
+void ChunkLightInfo::propagateTorchLight(std::queue<LightNode> &torchlightQueue, Chunk *(&chunks)[27]) {
+  Chunk *chunk = chunks[13];
 
   // while the queue is not empty, pop the front element and add it to the light level array
   while (!torchlightQueue.empty()) {
@@ -40,12 +47,12 @@ void ChunkLightInfo::generateLightingData() {
     for (short faceNum = 0; faceNum < 6; faceNum++) {
       glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(node.pos, faceNum);
       // TODO check for vertical bounds on the neighbor position???
-      Block neighborBlock = chunk->getBlockIncludingNeighborsOptimized(neighborPos, m_chunks);
+      Block neighborBlock = chunk->getBlockIncludingNeighborsOptimized(neighborPos, chunks);
 
       // if light cant pass dont add anything
       if (!BlockDB::canLightPass(neighborBlock)) continue;
 
-      const glm::ivec3 neighborLightLevel = chunk->getLightLevelIncludingNeighborsOptimized(neighborPos, m_chunks);
+      const glm::ivec3 neighborLightLevel = chunk->getLightLevelIncludingNeighborsOptimized(neighborPos, chunks);
 
       if (neighborLightLevel.r < node.lightLevel.r - 1 ||
           neighborLightLevel.g < node.lightLevel.g - 1 ||
@@ -54,16 +61,14 @@ void ChunkLightInfo::generateLightingData() {
         const int newG = std::max(neighborLightLevel.g, node.lightLevel.g - 1);
         const int newB = std::max(neighborLightLevel.b, node.lightLevel.b - 1);
         const glm::ivec3 newLightLevel = {newR, newG, newB};
-        chunk->setLightLevelIncludingNeighborsOptimized(neighborPos, newLightLevel, m_chunks);
+        chunk->setLightLevelIncludingNeighborsOptimized(neighborPos, newLightLevel, chunks);
 
         // if there is still light to propagate add to queue
         if (newR > 1 || newG > 1 || newB > 1) {
-          torchlightQueue.emplace(neighborPos, newLightLevel);
+          torchlightQueue.push({neighborPos, newLightLevel});
         }
       }
     }
   }
-  chunk->chunkState = ChunkState::FULLY_GENERATED;
-  m_done = true;
 }
 

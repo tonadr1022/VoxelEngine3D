@@ -122,6 +122,13 @@ class Chunk {
 //    m_lightLevels[XYZ(pos)] = Utils::packLightLevel(lightLevel);
   }
 
+  inline void setLightLevel(const glm::ivec3 &pos, uint16_t lightLevel) {
+    if (!m_torchLightLevelsPtr) {
+      allocateTorchLightLevels();
+    }
+    m_torchLightLevelsPtr.get()[XYZ(pos)] = lightLevel;
+  }
+
   [[nodiscard]] inline Block getBlockFromIndex(int index) const {
     return m_blocks[index];
   }
@@ -138,7 +145,9 @@ class Chunk {
   ChunkState chunkState;
 
   Block m_blocks[CHUNK_VOLUME]{};
-//  uint16_t m_lightLevels[CHUNK_VOLUME]{};
+
+  Chunk *m_neighborChunks[27]{};
+
   std::unique_ptr<uint16_t[]> m_torchLightLevelsPtr = nullptr;
 
   void allocateTorchLightLevels();
