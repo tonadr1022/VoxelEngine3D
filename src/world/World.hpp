@@ -13,7 +13,6 @@
 #include "generation/TerrainGenerator.hpp"
 #include "chunk/ChunkTerrainInfo.hpp"
 #include "chunk/ChunkStructuresInfo.hpp"
-#include "chunk/ChunkLightInfo.hpp"
 #include "chunk/ChunkMeshInfo.hpp"
 #include "../renderer/Renderer.hpp"
 #include "../physics/Ray.hpp"
@@ -116,8 +115,8 @@ class World {
   void processDirectChunkUpdates();
   void getNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const;
 
-  static void addRelatedChunks(const glm::ivec3 &blockPosInChunk, const glm::ivec3 &chunkPos, std::unordered_set<glm::ivec3> &chunkSet, bool addAll = false);
-  void addRelatedChunksToChunk();
+  static void addRelatedChunks(const glm::ivec3 &blockPosInChunk, const glm::ivec3 &chunkPos, std::unordered_set<glm::ivec3> &chunkSet);
+
   void generateChunksWorker4();
   void processBatchToLoad(std::queue<glm::ivec2> &batchToLoad);
   void processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStructures);
@@ -161,9 +160,9 @@ class World {
   std::unordered_map<glm::ivec3, Scope<ChunkStructuresInfo>> m_chunkStructuresInfoMap;
   std::list<glm::ivec3> m_chunksReadyToGenStructuresList;
 
-  std::vector<glm::ivec2> m_chunksInLightingRangeVectorXY;
-  std::unordered_map<glm::ivec3, Scope<ChunkLightInfo>> m_chunkLightInfoMap;
-  std::list<glm::ivec3> m_chunksReadyForLightingList;
+  std::vector<glm::ivec2> m_chunkStacksEligibleForLighting;
+  std::unordered_map<glm::ivec3, Chunk*> m_chunksToLightMap;
+  std::list<glm::ivec3> m_chunkPositionsToLightList;
 
   std::vector<glm::ivec3> m_chunksInMeshRangeVector;
   std::unordered_map<glm::ivec3, Scope<ChunkMeshInfo>> m_chunkMeshInfoMap;

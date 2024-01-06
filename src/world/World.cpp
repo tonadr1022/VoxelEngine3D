@@ -7,7 +7,7 @@
 #include "block/BlockDB.hpp"
 #include "../input/Mouse.hpp"
 #include "../utils/Timer.hpp"
-#include <algorithm>
+#include "chunk/ChunkAlg.hpp"
 
 World::World(Renderer &renderer, int seed, const std::string &savePath)
     : m_worldSave(savePath), m_renderer(renderer), m_center(INT_MAX), m_xyCenter(INT_MAX), m_numRunningThreads(0),
@@ -168,8 +168,6 @@ void World::updateChunkStructureGenList() {
         }
       }
 
-
-
       if (canGenStructures) {
         Chunk *c = chunks[13];
         for (int i = 0; i < 27; i++) {
@@ -187,41 +185,42 @@ void World::updateChunkStructureGenList() {
 }
 
 void World::updateChunkLightingList() {
-  for (auto posIt = m_chunkLightInfoMap.begin(); posIt != m_chunkLightInfoMap.end();) {
-    if (posIt->second->m_done) {
-      posIt = m_chunkLightInfoMap.erase(posIt);
+  for (auto iter = m_chunksToLightMap.begin(); iter != m_chunksToLightMap.end();) {
+    if (iter->second->chunkState == ChunkState::FULLY_GENERATED) {
+      iter = m_chunksToLightMap.erase(iter);
     } else {
-      posIt++;
+      iter++;
     }
   }
 
   if (m_centerChangedXY || m_opaqueRenderSet.empty()) {
-    m_chunksInLightingRangeVectorXY.clear();
+    m_chunkStacksEligibleForLighting.clear();
     glm::ivec2 pos;
     for (pos.x = m_center.x - m_lightingLoadDistance; pos.x <= m_center.x + m_lightingLoadDistance; pos.x++) {
       for (pos.y = m_center.y - m_lightingLoadDistance; pos.y <= m_center.y + m_lightingLoadDistance; pos.y++) {
         if (m_chunkMap.at({pos.x, pos.y, 0})->chunkState != ChunkState::STRUCTURES_GENERATED) continue;
-        if (m_chunkLightInfoMap.count({pos.x, pos.y, 0})) continue;
-        m_chunksInLightingRangeVectorXY.emplace_back(pos);
+        if (m_chunksToLightMap.count({pos.x, pos.y, 0})) continue;
+        m_chunkStacksEligibleForLighting.emplace_back(pos);
       }
     }
-    std::sort(m_chunksInLightingRangeVectorXY.begin(), m_chunksInLightingRangeVectorXY.end(), rcmpVec2);
+    std::sort(m_chunkStacksEligibleForLighting.begin(), m_chunkStacksEligibleForLighting.end(), rcmpVec2);
   }
 
-  for (auto posIt = m_chunksInLightingRangeVectorXY.begin(); posIt != m_chunksInLightingRangeVectorXY.end();) {
+  for (auto posIt = m_chunkStacksEligibleForLighting.begin(); posIt != m_chunkStacksEligibleForLighting.end();) {
     for (int z = 0; z < CHUNKS_PER_STACK; z++) {
       auto pos = glm::ivec3(posIt->x, posIt->y, z);
 
       Chunk *chunkToLight = getChunkRawPtr(pos);
+      // if the chunk is all air, there are no faces to reflect light, so skip lighting altogether
       if (chunkToLight->m_numNonAirBlocks == 0) {
         chunkToLight->chunkState = ChunkState::FULLY_GENERATED;
         continue;
       }
 
-      Chunk *chunks[27] = {nullptr};
-      getNeighborChunks(chunks, pos);
+      // should only calculate light when block placement is done for all neighbors, which includes
+      // neighbors that already have lighting completed
       bool canGenLight = true;
-      for (auto &chunk : chunks) {
+      for (auto &chunk : chunkToLight->m_neighborChunks) {
         if (chunk && chunk->chunkState != ChunkState::STRUCTURES_GENERATED &&
             chunk->chunkState != ChunkState::FULLY_GENERATED) {
           canGenLight = false;
@@ -230,15 +229,13 @@ void World::updateChunkLightingList() {
       }
 
       if (canGenLight) {
-        m_chunkLightInfoMap.emplace(pos, std::make_unique<ChunkLightInfo>(chunks));
-        auto insertPos = std::lower_bound(m_chunksReadyForLightingList.begin(),
-                                          m_chunksReadyForLightingList.end(),
-                                          pos,
-                                          rcmpVec3);
-        m_chunksReadyForLightingList.insert(insertPos, pos);
+        m_chunksToLightMap.emplace(pos, chunkToLight);
+        auto insertPos = std::lower_bound(m_chunkPositionsToLightList.begin(),
+                                          m_chunkPositionsToLightList.end(), pos, rcmpVec3);
+        m_chunkPositionsToLightList.insert(insertPos, pos);
       }
     }
-    posIt = m_chunksInLightingRangeVectorXY.erase(posIt);
+    posIt = m_chunkStacksEligibleForLighting.erase(posIt);
   }
 }
 
@@ -349,7 +346,7 @@ void World::generateChunksWorker4() {
     m_conditionVariable.wait(lock, [this]() {
       return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads
           && (!m_chunksToLoadVector.empty() || !m_chunksReadyToGenStructuresList.empty() ||
-              !m_chunksReadyForLightingList.empty() ||
+              !m_chunkPositionsToLightList.empty() ||
               !m_chunksReadyToMeshList.empty()));
     });
     if (!m_isRunning) return;
@@ -367,11 +364,11 @@ void World::generateChunksWorker4() {
       }
       lock.unlock();
       processBatchToGenStructures(batchToGenStructures);
-    } else if (!m_chunksReadyForLightingList.empty() && m_chunksReadyToGenStructuresList.empty() &&
+    } else if (!m_chunkPositionsToLightList.empty() && m_chunksReadyToGenStructuresList.empty() &&
         m_chunksToLoadVector.empty()) {
-      while (!m_chunksReadyForLightingList.empty() && batchToLight.size() < 10) {
-        batchToLight.push(m_chunksReadyForLightingList.back());
-        m_chunksReadyForLightingList.pop_back();
+      while (!m_chunkPositionsToLightList.empty() && batchToLight.size() < 10) {
+        batchToLight.push(m_chunkPositionsToLightList.back());
+        m_chunkPositionsToLightList.pop_back();
       }
       lock.unlock();
       processBatchToLight(batchToLight);
@@ -421,8 +418,8 @@ void World::processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStruct
 void World::processBatchToLight(std::queue<glm::ivec3> &batchToLight) {
   while (!batchToLight.empty()) {
     const auto pos = batchToLight.front();
-    auto it = m_chunkLightInfoMap.find(pos);
-    if (it != m_chunkLightInfoMap.end()) it->second->generateLightingData();
+    auto it = m_chunksToLightMap.find(pos);
+    if (it != m_chunksToLightMap.end()) ChunkAlg::generateTorchlightData(it->second);
 //    m_chunkLightInfoMap.at(pos)->generateLightingData();
     batchToLight.pop();
   }
@@ -552,9 +549,9 @@ void World::renderDebugGui() {
   ImGui::Text("ChunksInStructureGenRangeVectorXY: %d", static_cast<int>(m_chunksInStructureGenRangeVectorXY.size()));
   ImGui::Text("ChunkStructuresInfoMap: %d", static_cast<int>(m_chunkStructuresInfoMap.size()));
   ImGui::Text("ChunksReadyToGenStructuresList: %d", static_cast<int>(m_chunksReadyToGenStructuresList.size()));
-  ImGui::Text("ChunksInLightingRangeVectorXY: %d", static_cast<int>(m_chunksInLightingRangeVectorXY.size()));
-  ImGui::Text("ChunkLightInfoMap: %d", static_cast<int>(m_chunkLightInfoMap.size()));
-  ImGui::Text("ChunksReadyForLightingList: %d", static_cast<int>(m_chunksReadyForLightingList.size()));
+  ImGui::Text("ChunksInLightingRangeVectorXY: %d", static_cast<int>(m_chunkStacksEligibleForLighting.size()));
+  ImGui::Text("ChunkLightInfoMap: %d", static_cast<int>(m_chunksToLightMap.size()));
+  ImGui::Text("ChunksReadyForLightingList: %d", static_cast<int>(m_chunkPositionsToLightList.size()));
   ImGui::Text("ChunksInMeshRangeVector: %d", static_cast<int>(m_chunksInMeshRangeVector.size()));
   ImGui::Text("ChunkMeshInfoMap: %d", static_cast<int>(m_chunkMeshInfoMap.size()));
   ImGui::Text("ChunksReadyToMeshList: %d", static_cast<int>(m_chunksReadyToMeshList.size()));
@@ -599,16 +596,17 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
 
   auto chunkPos = chunkPosFromWorldPos(worldPos);
   auto blockPosInChunk = worldPos - chunkPos * CHUNK_SIZE;
-  Chunk &chunk = *m_chunkMap.at(chunkPos).get();
-  Block oldBlock = chunk.getBlock(blockPosInChunk);
-  uint16_t oldTorchLightPacked = chunk.getLightLevelPacked(blockPosInChunk);
+//  Chunk &chunk = *m_chunkMap.at(chunkPos).get();
+  Chunk *chunk = getChunkRawPtr(chunkPos);
+  Block oldBlock = chunk->getBlock(blockPosInChunk);
+  uint16_t oldTorchLightPacked = chunk->getLightLevelPacked(blockPosInChunk);
   uint16_t newTorchLightPacked = BlockDB::getpackedLightLevel(block);
   glm::ivec3 oldTorchLight = Utils::unpackLightLevel(oldTorchLightPacked);
   // cases
   // 1) torch of any color to air.
   if (!newTorchLightPacked && oldTorchLightPacked) {
     m_torchlightRemovalQueue.push({blockPosInChunk, Utils::unpackLightLevel(oldTorchLightPacked)});
-    chunk.setLightLevel(blockPosInChunk, 0);
+    chunk->setLightLevel(blockPosInChunk, 0);
     lightChanged = true;
   }
     // 2) air to any color
@@ -620,53 +618,42 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   // 4) not torch to air
 
 
-  chunk.setBlock(blockPosInChunk, block);
+  chunk->setBlock(blockPosInChunk, block);
   if (lightChanged) {
-    ChunkLightInfo::propagateTorchLight(m_torchLightPlacementQueue, chunk.m_neighborChunks);
-    for (auto &c : chunk.m_neighborChunks) {
+    ChunkAlg::propagateTorchLight(m_torchLightPlacementQueue, chunk);
+    // if light changed add all the neighbor chunks.
+    for (auto &c : chunk->m_neighborChunks) {
       m_chunkDirectlyUpdateSet.insert(c->m_pos);
     }
-//    addRelatedChunks(blockPosInChunk, chunkPos, m_chunkDirectlyUpdateSet, true);
   } else {
+    // if light didnt change, calculate which chunks to add since high chance a block was changed not on the border
     addRelatedChunks(blockPosInChunk, chunkPos, m_chunkDirectlyUpdateSet);
   }
 }
-
-//void World::setTorchLightWithUpdate(const glm::ivec3 &worldPos, Block block) {
-//  auto chunkPos = chunkPosFromWorldPos(worldPos);
-//  auto blockPosInChunk = worldPos - chunkPos * CHUNK_SIZE;
-//  Chunk &chunk = *m_chunkMap.at(chunkPos).get();
-//
-//}
-
 
 void World::processDirectChunkUpdates() {
   if (m_chunkDirectlyUpdateSet.empty()) return;
 
   for (const glm::ivec3 &pos : m_chunkDirectlyUpdateSet) {
-    if (!chunkExists(pos) || m_chunkMap.at(pos)->chunkMeshState != ChunkMeshState::BUILT) continue;
-    Chunk *chunks[27] = {nullptr};
-    int index = 0;
-    for (auto &neighborOffset : NEIGHBOR_ARRAY_OFFSETS) {
-      chunks[index++] = getChunkRawPtrOrNull(pos + neighborOffset);
-    }
+    Chunk *chunk = getChunkRawPtrOrNull(pos);
+    if (!chunk) continue;
+    if (chunk->chunkMeshState != ChunkMeshState::BUILT) continue; // When will this happen realistically?
 
     std::vector<ChunkVertex> opaqueVertices, transparentVertices;
     std::vector<unsigned int> opaqueIndices, transparentIndices;
 
     Block blocks[CHUNK_MESH_INFO_SIZE];
     uint16_t torchLightLevels[CHUNK_MESH_INFO_SIZE];
-    ChunkMeshInfo::populateMeshInfoForMeshing(blocks, torchLightLevels, chunks);
-    Chunk *chunk = chunks[13];
+    ChunkMeshInfo::populateMeshInfoForMeshing(blocks, torchLightLevels, chunk->m_neighborChunks);
     ChunkMeshBuilder builder(blocks, torchLightLevels, chunk->m_worldPos);
     builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
 
-    chunks[13]->m_opaqueMesh.vertices = std::move(opaqueVertices);
-    chunks[13]->m_opaqueMesh.indices = std::move(opaqueIndices);
-    chunks[13]->m_transparentMesh.vertices = std::move(transparentVertices);
-    chunks[13]->m_transparentMesh.indices = std::move(transparentIndices);
-    chunks[13]->m_opaqueMesh.needsUpdate = true;
-    chunks[13]->m_transparentMesh.needsUpdate = true;
+    chunk->m_opaqueMesh.vertices = std::move(opaqueVertices);
+    chunk->m_opaqueMesh.indices = std::move(opaqueIndices);
+    chunk->m_transparentMesh.vertices = std::move(transparentVertices);
+    chunk->m_transparentMesh.indices = std::move(transparentIndices);
+    chunk->m_opaqueMesh.needsUpdate = true;
+    chunk->m_transparentMesh.needsUpdate = true;
   }
   m_chunkDirectlyUpdateSet.clear();
 }
@@ -690,8 +677,7 @@ void World::getNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const
 
 void World::addRelatedChunks(const glm::ivec3 &blockPosInChunk,
                              const glm::ivec3 &chunkPos,
-                             std::unordered_set<glm::ivec3> &chunkSet,
-                             bool addAll) {
+                             std::unordered_set<glm::ivec3> &chunkSet) {
   glm::ivec3 chunksToAdd[8]; // at most 8 chunks are related to a block
   glm::ivec3 temp; // temp variable to store the chunk to add (calculate offset from chunk pos)
   int numChunksToAdd = 1; // always add the chunk the block is in
@@ -701,7 +687,7 @@ void World::addRelatedChunks(const glm::ivec3 &blockPosInChunk,
   // iterate over each axis
   for (int axis = 0; axis < 3; axis++) {
     // if block is on edge of the axis, add the chunko on the other side of the edge
-    if (blockPosInChunk[axis] == 0 || addAll) {
+    if (blockPosInChunk[axis] == 0) {
       _size = numChunksToAdd;
       for (int i = 0; i < _size; i++) {
         temp = chunksToAdd[i]; // works since only doing one axis at a time
@@ -710,7 +696,7 @@ void World::addRelatedChunks(const glm::ivec3 &blockPosInChunk,
       }
     }
 
-    if (blockPosInChunk[axis] == CHUNK_SIZE - 1 || addAll) {
+    if (blockPosInChunk[axis] == CHUNK_SIZE - 1) {
       _size = numChunksToAdd;
       for (int i = 0; i < _size; i++) {
         temp = chunksToAdd[i];
@@ -725,8 +711,6 @@ void World::addRelatedChunks(const glm::ivec3 &blockPosInChunk,
     chunkSet.insert(chunksToAdd[i]);
   }
 }
-void World::addRelatedChunksToChunk() {
 
-}
 
 

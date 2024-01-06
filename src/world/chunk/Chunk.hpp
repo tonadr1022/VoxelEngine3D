@@ -29,6 +29,11 @@ enum class ChunkState {
   CHANGED,
 };
 
+struct LightNode {
+  glm::ivec3 pos;
+  glm::ivec3 lightLevel;
+};
+
 // Crashes when out of bounds
 static inline int XYZ(int x, int y, int z) {
   return (z << 10 | y << 5 | x);
