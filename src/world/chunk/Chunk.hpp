@@ -31,7 +31,7 @@ enum class ChunkState {
 
 struct LightNode {
   glm::ivec3 pos;
-  glm::ivec3 lightLevel;
+  uint16_t lightLevel;
 };
 
 // Crashes when out of bounds
@@ -138,7 +138,7 @@ class Chunk {
     return m_blocks[index];
   }
 
-  void setLightLevelIncludingNeighborsOptimized(glm::ivec3 pos, glm::ivec3 lightLevel);
+  void setLightLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked);
 
   void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block);
 

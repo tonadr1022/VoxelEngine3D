@@ -14,7 +14,7 @@ void ChunkAlg::generateTorchlightData(Chunk *chunk) {
     if (BlockDB::isLightSource(block)) {
       glm::ivec3 pos = XYZ_FROM_INDEX(blockIndex);
       glm::ivec3 lightLevel = BlockDB::getLightLevel(block);
-      torchlightQueue.push({pos, lightLevel});
+      torchlightQueue.push({pos, Utils::packLightLevel(lightLevel)});
     }
   }
 
@@ -34,21 +34,20 @@ void ChunkAlg::propagateTorchLight(std::queue<LightNode> &torchlightQueue, Chunk
     // from the current light level
     for (short faceNum = 0; faceNum < 6; faceNum++) {
       glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(node.pos, faceNum);
-      // TODO check for vertical bounds on the neighbor position???
       Block neighborBlock = chunk->getBlockIncludingNeighborsOptimized(neighborPos);
 
       // if light cant pass dont add anything
       if (!BlockDB::canLightPass(neighborBlock)) continue;
 
       const glm::ivec3 neighborLightLevel = chunk->getLightLevelIncludingNeighborsOptimized(neighborPos);
-
-      if (neighborLightLevel.r < node.lightLevel.r - 1 ||
-          neighborLightLevel.g < node.lightLevel.g - 1 ||
-          neighborLightLevel.b < node.lightLevel.b - 1) {
-        const int newR = std::max(neighborLightLevel.r, node.lightLevel.r - 1);
-        const int newG = std::max(neighborLightLevel.g, node.lightLevel.g - 1);
-        const int newB = std::max(neighborLightLevel.b, node.lightLevel.b - 1);
-        const glm::ivec3 newLightLevel = {newR, newG, newB};
+      glm::ivec3 unpackedNodeLightLevel = Utils::unpackLightLevel(node.lightLevel);
+      if (neighborLightLevel.r < unpackedNodeLightLevel.r - 1 ||
+          neighborLightLevel.g < unpackedNodeLightLevel.g - 1 ||
+          neighborLightLevel.b < unpackedNodeLightLevel.b - 1) {
+        const int newR = std::max(neighborLightLevel.r, unpackedNodeLightLevel.r - 1);
+        const int newG = std::max(neighborLightLevel.g, unpackedNodeLightLevel.g - 1);
+        const int newB = std::max(neighborLightLevel.b, unpackedNodeLightLevel.b - 1);
+        const uint16_t newLightLevel = Utils::packLightLevel(newR, newG, newB);
         chunk->setLightLevelIncludingNeighborsOptimized(neighborPos, newLightLevel);
 
         // if there is still light to propagate add to queue

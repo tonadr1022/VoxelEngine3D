@@ -25,16 +25,16 @@ void Chunk::markDirty() {
   chunkState = ChunkState::CHANGED;
 }
 
-void Chunk::setLightLevelIncludingNeighborsOptimized(const glm::ivec3 pos, const glm::ivec3 lightLevel) {
+void Chunk::setLightLevelIncludingNeighborsOptimized(const glm::ivec3 pos, uint16_t lightLevelPacked) {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
       glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
-      neighborChunk->setLightLevel(localPos, lightLevel);
+      neighborChunk->setLightLevel(localPos, lightLevelPacked);
     }
   } else {
-    setLightLevel(pos, lightLevel);
+    setLightLevel(pos, lightLevelPacked);
   }
 }
 

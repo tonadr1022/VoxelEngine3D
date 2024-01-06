@@ -137,6 +137,15 @@ class World {
   glm::ivec3 m_lastRayCastBlockPos = NULL_VECTOR;
   glm::ivec3 m_prevLastRayCastBlockPos = NULL_VECTOR;
 
+  static inline bool checkIfAllAreFullyGenerated(Chunk *chunk) {
+    for (auto &c : chunk->m_neighborChunks) {
+      if (c && c->chunkState != ChunkState::FULLY_GENERATED) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   ChunkMap m_chunkMap;
   Renderer m_renderer;
   TerrainGenerator m_terrainGenerator;

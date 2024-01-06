@@ -202,10 +202,13 @@ void World::updateChunkLightingList() {
         m_chunkStackPositionsEligibleForLighting.emplace_back(pos);
       }
     }
-    std::sort(m_chunkStackPositionsEligibleForLighting.begin(), m_chunkStackPositionsEligibleForLighting.end(), rcmpVec2);
+    std::sort(m_chunkStackPositionsEligibleForLighting.begin(),
+              m_chunkStackPositionsEligibleForLighting.end(),
+              rcmpVec2);
   }
 
-  for (auto posIt = m_chunkStackPositionsEligibleForLighting.begin(); posIt != m_chunkStackPositionsEligibleForLighting.end();) {
+  for (auto posIt = m_chunkStackPositionsEligibleForLighting.begin();
+       posIt != m_chunkStackPositionsEligibleForLighting.end();) {
     for (int z = 0; z < CHUNKS_PER_STACK; z++) {
       auto pos = glm::ivec3(posIt->x, posIt->y, z);
 
@@ -276,6 +279,13 @@ void World::updateChunkMeshList() {
     for (auto &chunk : chunkToMesh->m_neighborChunks) {
       if (chunk && chunk->chunkState != ChunkState::FULLY_GENERATED) {
         canMesh = false;
+//        if (chunk->m_pos.x < m_center.x + m_renderDistance && chunk->m_pos.x > m_center.x - m_renderDistance
+//            && chunk->m_pos.y < m_center.y + m_renderDistance && chunk->m_pos.y > m_center.y - m_renderDistance &&  m_chunksReadyToGenStructuresList.empty()) {
+//          std::cout << "cant mesh because: " << chunk->m_pos.x << " " << chunk->m_pos.y << " " << chunk->m_pos.z;
+//          if (chunk->chunkState == ChunkState::STRUCTURES_GENERATED) {
+//            std::cout << "  structs generated but not light\n\n";
+//          }
+//        }
         break;
       }
     }
@@ -581,13 +591,13 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   // cases
   // 1) torch of any color to air.
   if (!newTorchLightPacked && oldTorchLightPacked) {
-    m_torchlightRemovalQueue.push({blockPosInChunk, Utils::unpackLightLevel(oldTorchLightPacked)});
+    m_torchlightRemovalQueue.push({blockPosInChunk, oldTorchLightPacked});
     chunk->setLightLevel(blockPosInChunk, 0);
     lightChanged = true;
   }
     // 2) air to any color
   else if (oldBlock == Block::AIR && newTorchLightPacked) {
-    m_torchLightPlacementQueue.push({blockPosInChunk, Utils::unpackLightLevel(newTorchLightPacked)});
+    m_torchLightPlacementQueue.push({blockPosInChunk, newTorchLightPacked});
     lightChanged = true;
   }
   // 3) air to not torch

@@ -50,6 +50,9 @@ inline glm::ivec3 outOfBoundsPosToLocalPos(const glm::ivec3 outOfBoundsPos) {
 static inline uint16_t packLightLevel(const glm::ivec3 &level) {
   return static_cast<uint32_t>(level.r  << 8 | level.g << 4 | level.b);
 }
+static inline uint16_t packLightLevel(int r, int g, int b) {
+  return static_cast<uint32_t>(r  << 8 | g << 4 | b);
+}
 
 static constexpr uint16_t RED_MASK = 0xF00;
 static constexpr uint16_t GREEN_MASK = 0x0F0;
