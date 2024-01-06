@@ -110,6 +110,9 @@ class World {
   void updateChunkStructureGenList();
   void updateChunkLightingList();
   void updateChunkMeshList();
+  void combinedUpdateListsTEST();
+  void combinedUpdateMapsTEST();
+  void combinedUpdateSortedTEST();
 //  void updateChunkUpdateList();
   void processDirectChunkUpdates();
   void getNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const;

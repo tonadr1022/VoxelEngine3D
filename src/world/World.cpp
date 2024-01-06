@@ -83,11 +83,133 @@ void World::update() {
   processDirectChunkUpdates();
 
   std::lock_guard<std::mutex> lock(m_mainMutex);
+//  combinedUpdateMapsTEST();
+//  combinedUpdateListsTEST();
+//  combinedUpdateSortedTEST();
   updateChunkLoadList();
   updateChunkStructureGenList();
   updateChunkLightingList();
   updateChunkMeshList();
   m_conditionVariable.notify_all();
+}
+
+void World::combinedUpdateMapsTEST() {
+  // apply terrain and update map regardless of whether pos changed
+  for (auto posIt = m_chunkTerrainLoadInfoMap.begin(); posIt != m_chunkTerrainLoadInfoMap.end();) {
+    if (posIt->second->m_done) {
+      // assume all exist in the chunk stack
+      Chunk *chunksInStack[CHUNKS_PER_STACK]{};
+      for (int z = 0; z < CHUNKS_PER_STACK; z++) {
+        chunksInStack[z] = getChunkRawPtr({posIt->first.x, posIt->first.y, z});
+      }
+      posIt->second->applyTerrainDataToChunks(chunksInStack);
+      m_chunkHeightMapMap.emplace(posIt->first, posIt->second->m_heightMap);
+      m_chunkTreeMapMap.emplace(posIt->first, posIt->second->m_treeMap);
+
+      // delete from map regardless of whether chunk exists
+      posIt = m_chunkTerrainLoadInfoMap.erase(posIt);
+    } else {
+      posIt++;
+    }
+  }
+
+  for (auto posIt = m_chunkStructuresInfoMap.begin(); posIt != m_chunkStructuresInfoMap.end();) {
+    if (posIt->second->chunkState == ChunkState::STRUCTURES_GENERATED) {
+      posIt = m_chunkStructuresInfoMap.erase(posIt);
+    } else {
+      posIt++;
+    }
+  }
+}
+
+void World::combinedUpdateListsTEST() {
+  if (m_centerChangedXY || m_opaqueRenderSet.empty()) {
+    int loadBoundMinX = m_center.x - m_loadDistance;
+    int loadBoundMaxX = m_center.x + m_loadDistance;
+    int loadBoundMinY = m_center.y - m_loadDistance;
+    int loadBoundMaxY = m_center.y + m_loadDistance;
+    int structureBoundMinX = loadBoundMinX + 1;
+    int structureBoundMinY = loadBoundMinY + 1;
+    int structureBoundMaxX = loadBoundMaxX - 1;
+    int structureBoundMaxY = loadBoundMaxY - 1;
+    m_chunksInStructureGenRangeVectorXY.clear();
+    glm::ivec2 pos;
+    for (pos.x = loadBoundMinX; pos.x <= loadBoundMaxX; pos.x++) {
+      for (pos.y = loadBoundMinY; pos.y <= loadBoundMaxY; pos.y++) {
+        // Terrain generation check
+        Chunk *chunkBottom = getChunkRawPtr({pos.x, pos.y, 0});
+        if (chunkBottom->chunkState == ChunkState::UNGENERATED) {
+          if (!m_chunkTerrainLoadInfoMap.count(pos)) {
+            m_chunksToLoadVector.emplace_back(pos);
+            m_chunkTerrainLoadInfoMap.emplace(pos, std::make_unique<ChunkTerrainInfo>(pos, m_terrainGenerator));
+            continue;
+          }
+        } else if (chunkBottom->chunkState == ChunkState::TERRAIN_GENERATED) {
+          if (pos.x >= structureBoundMinX && pos.x <= structureBoundMaxX
+          && pos.y >= structureBoundMinY && pos.y <= structureBoundMaxY &&
+          !m_chunkStructuresInfoMap.count({pos.x, pos.y, 0})) {
+            m_chunksInStructureGenRangeVectorXY.emplace_back(pos);
+          }
+        }
+
+        // Structure generation check
+
+        // Lighting check
+
+        // Meshing check
+
+      }
+      std::sort(m_chunksToLoadVector.begin(), m_chunksToLoadVector.end(), rcmpVec2);
+      std::sort(m_chunksInStructureGenRangeVectorXY.begin(), m_chunksInStructureGenRangeVectorXY.end(), rcmpVec2);
+    }
+  }
+}
+
+void World::combinedUpdateSortedTEST() {
+  for (auto posIt = m_chunksInStructureGenRangeVectorXY.begin(); posIt != m_chunksInStructureGenRangeVectorXY.end();) {
+    for (int z = 0; z < CHUNKS_PER_STACK; z++) {
+      auto pos = glm::ivec3(posIt->x, posIt->y, z);
+      // z
+      // |
+      // |  6   15  24
+      // |    7   16  25
+      // |      8   17  26
+      // |
+      // |  3   12  21
+      // |    4   13  22
+      // |      5   14  23
+      // \-------------------y
+      //  \ 0   9   18
+      //   \  1   10  19
+      //    \   2   11  20
+      //     x
+      Chunk *chunks[27] = {nullptr};
+      getNeighborChunks(chunks, pos);
+
+      bool canGenStructures = true;
+      for (auto &chunk : chunks) {
+        if (chunk && chunk->chunkState != ChunkState::TERRAIN_GENERATED
+            && chunk->chunkState != ChunkState::STRUCTURES_GENERATED &&
+            chunk->chunkState != ChunkState::FULLY_GENERATED) {
+          canGenStructures = false;
+          break;
+        }
+      }
+
+      if (canGenStructures) {
+        // TODO move this logic of adding neighbor chunks to the chunk somewhere else? or at least a new function
+        Chunk *chunk = chunks[13];
+        for (int i = 0; i < 27; i++) {
+          chunk->m_neighborChunks[i] = chunks[i];
+        }
+        m_chunkStructuresInfoMap.emplace(pos, chunk);
+        auto insertPos = std::lower_bound(
+            m_chunksReadyToGenStructuresList.begin(), m_chunksReadyToGenStructuresList.end(), *posIt, rcmpVec2);
+        m_chunksReadyToGenStructuresList.insert(insertPos, pos);
+      }
+    }
+    posIt = m_chunksInStructureGenRangeVectorXY.erase(posIt);
+  }
 }
 
 void World::updateChunkLoadList() {
@@ -149,7 +271,6 @@ void World::updateChunkStructureGenList() {
   for (auto posIt = m_chunksInStructureGenRangeVectorXY.begin(); posIt != m_chunksInStructureGenRangeVectorXY.end();) {
     for (int z = 0; z < CHUNKS_PER_STACK; z++) {
       auto pos = glm::ivec3(posIt->x, posIt->y, z);
-
       // z
       // |
       // |  6   15  24
