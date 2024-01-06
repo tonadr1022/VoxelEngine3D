@@ -170,7 +170,7 @@ class World {
   std::unordered_map<glm::ivec3, Chunk*> m_chunkStructuresInfoMap;
   std::list<glm::ivec3> m_chunksReadyToGenStructuresList;
 
-  std::vector<glm::ivec2> m_chunkStackPositionsEligibleForLighting;
+  std::vector<glm::ivec3> m_chunkStackPositionsEligibleForLighting;
   std::unordered_map<glm::ivec3, Chunk*> m_chunksToLightMap;
   std::list<glm::ivec3> m_chunkPositionsToLightList;
 

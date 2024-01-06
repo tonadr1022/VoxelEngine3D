@@ -64,24 +64,21 @@ void World::update() {
 
   castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
 
-  glm::ivec3 pos;
-  for (pos.x = m_center.x - m_renderDistance; pos.x <= m_center.x + m_renderDistance; pos.x++) {
-    for (pos.y = m_center.y - m_renderDistance; pos.y <= m_center.y + m_renderDistance; pos.y++) {
-      for (pos.z = 0; pos.z < CHUNKS_PER_STACK; pos.z++) {
-        if (!m_opaqueRenderSet.empty() && m_chunksReadyToMeshList.size() < 250 && m_chunksToLoadVector.empty() && m_chunksReadyToGenStructuresList.empty() && m_chunkMap.at(pos)->chunkState != ChunkState::FULLY_GENERATED) {
-          Chunk *c = getChunkRawPtr(pos);
-          std::cout << pos.x << "  " << pos.y << "  " << pos.z << "  " << std::endl;
-        }
-      }
-    }
+
+  // don't need to sort transparent render vector every frame.
+  static unsigned long oldRenderSetSize = 0;
+  unsigned long newRenderSetSize = m_transparentRenderSet.size();
+  if (newRenderSetSize != oldRenderSetSize) {
+    sortTransparentRenderVector();
+    oldRenderSetSize = newRenderSetSize;
   }
 
-  static int i = 0;
-  if (i % 4 == 0) {
-    sortTransparentRenderVector();
-    i = 0;
-  }
-  i++;
+//  static int i = 0;
+//  if (i % 4 == 0) {
+//    sortTransparentRenderVector();
+//    i = 0;
+//  }
+//  i++;
 
   processDirectChunkUpdates();
 
@@ -181,6 +178,7 @@ void World::updateChunkStructureGenList() {
       }
 
       if (canGenStructures) {
+        // TODO move this logic of adding neighbor chunks to the chunk somewhere else? or at least a new function
         Chunk *chunk = chunks[13];
         for (int i = 0; i < 27; i++) {
           chunk->m_neighborChunks[i] = chunks[i];
@@ -206,57 +204,52 @@ void World::updateChunkLightingList() {
 
   if (m_centerChangedXY || m_opaqueRenderSet.empty()) {
     m_chunkStackPositionsEligibleForLighting.clear();
-    glm::ivec2 pos;
+    glm::ivec3 pos;
     for (pos.x = m_center.x - m_lightingLoadDistance; pos.x <= m_center.x + m_lightingLoadDistance; pos.x++) {
       for (pos.y = m_center.y - m_lightingLoadDistance; pos.y <= m_center.y + m_lightingLoadDistance; pos.y++) {
-        if (m_chunkMap.at({pos.x, pos.y, 0})->chunkState != ChunkState::STRUCTURES_GENERATED) continue;
-        if (m_chunksToLightMap.count({pos.x, pos.y, 0})) continue;
-        m_chunkStackPositionsEligibleForLighting.emplace_back(pos);
+        for (pos.z = 0; pos.z < CHUNKS_PER_STACK; pos.z++) {
+          if (m_chunkMap.at(pos)->chunkState != ChunkState::STRUCTURES_GENERATED) continue;
+          if (m_chunksToLightMap.count(pos)) continue;
+          m_chunkStackPositionsEligibleForLighting.emplace_back(pos);
+        }
       }
     }
     std::sort(m_chunkStackPositionsEligibleForLighting.begin(),
               m_chunkStackPositionsEligibleForLighting.end(),
-              rcmpVec2);
+              rcmpVec3);
   }
 
   for (auto posIt = m_chunkStackPositionsEligibleForLighting.begin();
        posIt != m_chunkStackPositionsEligibleForLighting.end();) {
-    for (int z = 0; z < CHUNKS_PER_STACK; z++) {
-      auto pos = glm::ivec3(posIt->x, posIt->y, z);
+    glm::ivec3 pos = *posIt;
+    Chunk *chunkToLight = getChunkRawPtr(pos);
+    // if the chunk is all air, there are no faces to reflect light, so skip lighting altogether
+    if (chunkToLight->m_numNonAirBlocks == 0) {
+      chunkToLight->chunkState = ChunkState::FULLY_GENERATED;
+      ++posIt;
+      continue;
+    }
 
-      Chunk *chunkToLight = getChunkRawPtr(pos);
-      // if the chunk is all air, there are no faces to reflect light, so skip lighting altogether
-      if (chunkToLight->m_numNonAirBlocks == 0) {
-        chunkToLight->chunkState = ChunkState::FULLY_GENERATED;
-        continue;
-      }
-
-      // should only calculate light when block placement is done for all neighbors, which includes
-      // neighbors that already have lighting completed
-      bool canGenLight = true;
-      for (auto &chunk : chunkToLight->m_neighborChunks) {
-        if (chunk && chunk->chunkState != ChunkState::STRUCTURES_GENERATED &&
-            chunk->chunkState != ChunkState::FULLY_GENERATED) {
-          canGenLight = false;
-//                  if (chunk->m_pos.x < m_center.x + m_loadDistance && chunk->m_pos.x > m_center.x - m_loadDistance
-//            && chunk->m_pos.y < m_center.y + m_loadDistance && chunk->m_pos.y > m_center.y - m_loadDistance &&  m_chunksReadyToGenStructuresList.empty()) {
-//          std::cout << "cant mesh because: " << chunk->m_pos.x << " " << chunk->m_pos.y << " " << chunk->m_pos.z;
-//          if (chunk->chunkState == ChunkState::STRUCTURES_GENERATED) {
-//            std::cout << "  structs generated but not light\n\n";
-//          }
-//        }
-          break;
-        }
-      }
-
-      if (canGenLight) {
-        m_chunksToLightMap.emplace(pos, chunkToLight);
-        auto insertPos = std::lower_bound(m_chunkPositionsToLightList.begin(),
-                                          m_chunkPositionsToLightList.end(), pos, rcmpVec3);
-        m_chunkPositionsToLightList.insert(insertPos, pos);
+    // should only calculate light when block placement is done for all neighbors, which includes
+    // neighbors that already have lighting completed
+    bool canGenLight = true;
+    for (auto &chunk : chunkToLight->m_neighborChunks) {
+      if (chunk && chunk->chunkState != ChunkState::STRUCTURES_GENERATED &&
+          chunk->chunkState != ChunkState::FULLY_GENERATED) {
+        canGenLight = false;
+        break;
       }
     }
-    posIt = m_chunkStackPositionsEligibleForLighting.erase(posIt);
+
+    if (canGenLight) {
+      m_chunksToLightMap.emplace(pos, chunkToLight);
+      auto insertPos = std::lower_bound(m_chunkPositionsToLightList.begin(),
+                                        m_chunkPositionsToLightList.end(), pos, rcmpVec3);
+      m_chunkPositionsToLightList.insert(insertPos, pos);
+      posIt = m_chunkStackPositionsEligibleForLighting.erase(posIt);
+    } else {
+      ++posIt;
+    }
   }
 }
 
