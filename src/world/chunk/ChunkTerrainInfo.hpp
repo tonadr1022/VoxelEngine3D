@@ -9,24 +9,25 @@
 #include "../../AppConstants.hpp"
 #include "ChunkInfo.hpp"
 #include "../block/Block.hpp"
+#include "../generation/TerrainGenerator.hpp"
 
 class Chunk;
 
 
 class ChunkTerrainInfo : public ChunkInfo {
  public:
-  ChunkTerrainInfo(glm::ivec2 pos, int seed);
+  ChunkTerrainInfo(glm::ivec2 pos, TerrainGenerator &terrainGenerator);
 
   void generateTerrainData();
-  void applyTerrainDataToChunk(Chunk *(&chunk)[CHUNKS_PER_STACK]);
+  void applyTerrainDataToChunks(Chunk *(&chunk)[CHUNKS_PER_STACK]);
 
-  HeightMap m_heightMap{};
-  TreeMap m_treeMap{};
+  HeightMap m_heightMap;
+  TreeMap m_treeMap;
   int m_numBlocksPlaced[CHUNKS_PER_STACK]{};
 
  private:
+  TerrainGenerator &m_terrainGenerator;
   Block m_blocks[CHUNK_VOLUME * CHUNKS_PER_STACK]{};
-  int m_seed;
   glm::ivec2 m_pos;
 };
 

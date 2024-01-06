@@ -12,7 +12,6 @@
 #include "chunk/Chunk.hpp"
 #include "generation/TerrainGenerator.hpp"
 #include "chunk/ChunkTerrainInfo.hpp"
-#include "chunk/ChunkStructuresInfo.hpp"
 #include "chunk/ChunkMeshInfo.hpp"
 #include "../renderer/Renderer.hpp"
 #include "../physics/Ray.hpp"
@@ -21,7 +20,7 @@
 #include "../AppConstants.hpp"
 
 class Chunk;
-class ChunkStructuresInfo;
+
 
 using ChunkMap = std::unordered_map<glm::ivec3, Scope<Chunk>>;
 
@@ -140,6 +139,7 @@ class World {
 
   ChunkMap m_chunkMap;
   Renderer m_renderer;
+  TerrainGenerator m_terrainGenerator;
   WorldSave m_worldSave;
 
   std::mutex m_mainMutex;
@@ -150,21 +150,22 @@ class World {
   unsigned int m_numLoadingThreads;
   static constexpr int MAX_BATCH_SIZE = 10;
 
-  std::vector<glm::ivec2> m_chunksToLoadVector;
-  std::unordered_map<glm::ivec2, Scope<ChunkTerrainInfo>> m_chunkTerrainLoadInfoMap;
   ChunkHeightMapMap m_chunkHeightMapMap;
   ChunkTreeMapMap m_chunkTreeMapMap;
 
+  std::vector<glm::ivec2> m_chunksToLoadVector;
+  std::unordered_map<glm::ivec2, Scope<ChunkTerrainInfo>> m_chunkTerrainLoadInfoMap;
+
 
   std::vector<glm::ivec2> m_chunksInStructureGenRangeVectorXY;
-  std::unordered_map<glm::ivec3, Scope<ChunkStructuresInfo>> m_chunkStructuresInfoMap;
+  std::unordered_map<glm::ivec3, Chunk*> m_chunkStructuresInfoMap;
   std::list<glm::ivec3> m_chunksReadyToGenStructuresList;
 
-  std::vector<glm::ivec2> m_chunkStacksEligibleForLighting;
+  std::vector<glm::ivec2> m_chunkStackPositionsEligibleForLighting;
   std::unordered_map<glm::ivec3, Chunk*> m_chunksToLightMap;
   std::list<glm::ivec3> m_chunkPositionsToLightList;
 
-  std::vector<glm::ivec3> m_chunksInMeshRangeVector;
+  std::vector<glm::ivec3> m_chunkPositionsEligibleForMeshing;
   std::unordered_map<glm::ivec3, Scope<ChunkMeshInfo>> m_chunkMeshInfoMap;
   std::list<glm::ivec3> m_chunksReadyToMeshList;
 

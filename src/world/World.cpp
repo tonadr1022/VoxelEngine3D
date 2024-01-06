@@ -11,7 +11,7 @@
 
 World::World(Renderer &renderer, int seed, const std::string &savePath)
     : m_worldSave(savePath), m_renderer(renderer), m_center(INT_MAX), m_xyCenter(INT_MAX), m_numRunningThreads(0),
-      m_numLoadingThreads(std::thread::hardware_concurrency()), m_seed(seed) {
+      m_numLoadingThreads(std::thread::hardware_concurrency()), m_seed(seed), m_terrainGenerator(seed) {
   const size_t loadVectorSize = ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
   m_chunksToLoadVector.reserve(loadVectorSize);
   BlockDB::loadData("resources/blocks/");
@@ -85,12 +85,12 @@ void World::updateChunkLoadList() {
   // apply terrain and update map regardless of whether pos changed
   for (auto posIt = m_chunkTerrainLoadInfoMap.begin(); posIt != m_chunkTerrainLoadInfoMap.end();) {
     if (posIt->second->m_done) {
-      // assume all exist in stack
+      // assume all exist in the chunk stack
       Chunk *chunksInStack[CHUNKS_PER_STACK]{};
       for (int z = 0; z < CHUNKS_PER_STACK; z++) {
         chunksInStack[z] = getChunkRawPtr({posIt->first.x, posIt->first.y, z});
       }
-      posIt->second->applyTerrainDataToChunk(chunksInStack);
+      posIt->second->applyTerrainDataToChunks(chunksInStack);
       m_chunkHeightMapMap.emplace(posIt->first, posIt->second->m_heightMap);
       m_chunkTreeMapMap.emplace(posIt->first, posIt->second->m_treeMap);
 
@@ -107,7 +107,7 @@ void World::updateChunkLoadList() {
       if (m_chunkMap.at({pos.x, pos.y, 0})->chunkState == ChunkState::UNGENERATED
           && !m_chunkTerrainLoadInfoMap.count(pos)) {
         m_chunksToLoadVector.emplace_back(pos);
-        m_chunkTerrainLoadInfoMap.emplace(pos, std::make_unique<ChunkTerrainInfo>(pos, m_seed));
+        m_chunkTerrainLoadInfoMap.emplace(pos, std::make_unique<ChunkTerrainInfo>(pos, m_terrainGenerator));
       }
     }
     std::sort(m_chunksToLoadVector.begin(), m_chunksToLoadVector.end(), rcmpVec2);
@@ -116,7 +116,7 @@ void World::updateChunkLoadList() {
 
 void World::updateChunkStructureGenList() {
   for (auto posIt = m_chunkStructuresInfoMap.begin(); posIt != m_chunkStructuresInfoMap.end();) {
-    if (posIt->second->m_done) {
+    if (posIt->second->chunkState == ChunkState::STRUCTURES_GENERATED) {
       posIt = m_chunkStructuresInfoMap.erase(posIt);
     } else {
       posIt++;
@@ -169,12 +169,11 @@ void World::updateChunkStructureGenList() {
       }
 
       if (canGenStructures) {
-        Chunk *c = chunks[13];
+        Chunk *chunk = chunks[13];
         for (int i = 0; i < 27; i++) {
-          c->m_neighborChunks[i] = chunks[i];
+          chunk->m_neighborChunks[i] = chunks[i];
         }
-
-        m_chunkStructuresInfoMap.emplace(pos, std::make_unique<ChunkStructuresInfo>(chunks, m_seed));
+        m_chunkStructuresInfoMap.emplace(pos, chunk);
         auto insertPos = std::lower_bound(
             m_chunksReadyToGenStructuresList.begin(), m_chunksReadyToGenStructuresList.end(), *posIt, rcmpVec2);
         m_chunksReadyToGenStructuresList.insert(insertPos, pos);
@@ -194,19 +193,19 @@ void World::updateChunkLightingList() {
   }
 
   if (m_centerChangedXY || m_opaqueRenderSet.empty()) {
-    m_chunkStacksEligibleForLighting.clear();
+    m_chunkStackPositionsEligibleForLighting.clear();
     glm::ivec2 pos;
     for (pos.x = m_center.x - m_lightingLoadDistance; pos.x <= m_center.x + m_lightingLoadDistance; pos.x++) {
       for (pos.y = m_center.y - m_lightingLoadDistance; pos.y <= m_center.y + m_lightingLoadDistance; pos.y++) {
         if (m_chunkMap.at({pos.x, pos.y, 0})->chunkState != ChunkState::STRUCTURES_GENERATED) continue;
         if (m_chunksToLightMap.count({pos.x, pos.y, 0})) continue;
-        m_chunkStacksEligibleForLighting.emplace_back(pos);
+        m_chunkStackPositionsEligibleForLighting.emplace_back(pos);
       }
     }
-    std::sort(m_chunkStacksEligibleForLighting.begin(), m_chunkStacksEligibleForLighting.end(), rcmpVec2);
+    std::sort(m_chunkStackPositionsEligibleForLighting.begin(), m_chunkStackPositionsEligibleForLighting.end(), rcmpVec2);
   }
 
-  for (auto posIt = m_chunkStacksEligibleForLighting.begin(); posIt != m_chunkStacksEligibleForLighting.end();) {
+  for (auto posIt = m_chunkStackPositionsEligibleForLighting.begin(); posIt != m_chunkStackPositionsEligibleForLighting.end();) {
     for (int z = 0; z < CHUNKS_PER_STACK; z++) {
       auto pos = glm::ivec3(posIt->x, posIt->y, z);
 
@@ -235,7 +234,7 @@ void World::updateChunkLightingList() {
         m_chunkPositionsToLightList.insert(insertPos, pos);
       }
     }
-    posIt = m_chunkStacksEligibleForLighting.erase(posIt);
+    posIt = m_chunkStackPositionsEligibleForLighting.erase(posIt);
   }
 }
 
@@ -254,7 +253,7 @@ void World::updateChunkMeshList() {
     }
   }
 
-  m_chunksInMeshRangeVector.clear();
+  m_chunkPositionsEligibleForMeshing.clear();
   // add chunks that can be meshed into vector
   glm::ivec3 pos;
   for (pos.x = m_center.x - m_renderDistance; pos.x <= m_center.x + m_renderDistance; pos.x++) {
@@ -263,40 +262,18 @@ void World::updateChunkMeshList() {
         Chunk *chunk = getChunkRawPtr(pos);
         if (chunk->m_numNonAirBlocks != 0 && chunk->chunkMeshState != ChunkMeshState::BUILT
             && chunk->chunkState == ChunkState::FULLY_GENERATED && !m_chunkMeshInfoMap.count(pos)) {
-          m_chunksInMeshRangeVector.emplace_back(pos);
+          m_chunkPositionsEligibleForMeshing.emplace_back(pos);
         }
       }
     }
   }
   m_chunksReadyToMeshList.sort(rcmpVec3);
 
-  for (auto posIt = m_chunksInMeshRangeVector.begin(); posIt != m_chunksInMeshRangeVector.end();) {
-    // z
-    // |
-    // |  6   15  24
-    // |    7   16  25
-    // |      8   17  26
-    // |
-    // |  3   12  21
-    // |    4   13  22
-    // |      5   14  23
-    // \-------------------y
-    //  \ 0   9   18
-    //   \  1   10  19
-    //    \   2   11  20
-    //     x
-    Chunk *chunks[27] = {nullptr};
-    int index = 0;
-    for (auto &neighborOffset : NEIGHBOR_ARRAY_OFFSETS) {
-      auto neighborPos = *posIt + neighborOffset;
-      if (neighborPos.z < 0 || neighborPos.z >= CHUNKS_PER_STACK) {
-        chunks[index++] = nullptr;
-      } else {
-        chunks[index++] = getChunkRawPtr(neighborPos);
-      }
-    }
+  for (auto posIt = m_chunkPositionsEligibleForMeshing.begin(); posIt != m_chunkPositionsEligibleForMeshing.end();) {
+    Chunk *chunkToMesh = getChunkRawPtr(*posIt);
+
     bool canMesh = true;
-    for (auto &chunk : chunks) {
+    for (auto &chunk : chunkToMesh->m_neighborChunks) {
       if (chunk && chunk->chunkState != ChunkState::FULLY_GENERATED) {
         canMesh = false;
         break;
@@ -304,13 +281,13 @@ void World::updateChunkMeshList() {
     }
 
     if (canMesh) {
-      m_chunkMeshInfoMap.emplace(*posIt, std::make_unique<ChunkMeshInfo>(chunks));
+      m_chunkMeshInfoMap.emplace(*posIt, std::make_unique<ChunkMeshInfo>(chunkToMesh->m_neighborChunks));
       auto insertPos = std::lower_bound(m_chunksReadyToMeshList.begin(),
                                         m_chunksReadyToMeshList.end(),
                                         *posIt,
                                         rcmpVec3);
       m_chunksReadyToMeshList.insert(insertPos, *posIt);
-      posIt = m_chunksInMeshRangeVector.erase(posIt);
+      posIt = m_chunkPositionsEligibleForMeshing.erase(posIt);
     } else {
       posIt++;
     }
@@ -388,7 +365,6 @@ void World::generateChunksWorker4() {
 void World::processBatchToLoad(std::queue<glm::ivec2> &batchToLoad) {
   while (!batchToLoad.empty()) {
     const auto &pos = batchToLoad.front();
-//    m_chunkTerrainLoadInfoMap.at(pos)->generateTerrainData();
     auto it = m_chunkTerrainLoadInfoMap.find(pos);
     if (it != m_chunkTerrainLoadInfoMap.end()) it->second->generateTerrainData();
     batchToLoad.pop();
@@ -406,9 +382,9 @@ void World::processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStruct
       std::cout << "BROKEN HEIGHTMAP OR TREEMAP" << std::endl;
     } else {
       auto it = m_chunkStructuresInfoMap.find(pos);
-      if (it != m_chunkStructuresInfoMap.end())
-        it->second->generateStructureData(heightMapIt->second,
-                                          treeMapIt->second);
+      if (it != m_chunkStructuresInfoMap.end()) {
+        TerrainGenerator::generateStructures(it->second, heightMapIt->second, treeMapIt->second);
+      }
     }
 //    m_chunkStructuresInfoMap.at(pos)->generateStructureData(heightMapIt->second, treeMapIt->second);
     batchToGenStructures.pop();
@@ -549,10 +525,10 @@ void World::renderDebugGui() {
   ImGui::Text("ChunksInStructureGenRangeVectorXY: %d", static_cast<int>(m_chunksInStructureGenRangeVectorXY.size()));
   ImGui::Text("ChunkStructuresInfoMap: %d", static_cast<int>(m_chunkStructuresInfoMap.size()));
   ImGui::Text("ChunksReadyToGenStructuresList: %d", static_cast<int>(m_chunksReadyToGenStructuresList.size()));
-  ImGui::Text("ChunksInLightingRangeVectorXY: %d", static_cast<int>(m_chunkStacksEligibleForLighting.size()));
+  ImGui::Text("ChunksInLightingRangeVectorXY: %d", static_cast<int>(m_chunkStackPositionsEligibleForLighting.size()));
   ImGui::Text("ChunkLightInfoMap: %d", static_cast<int>(m_chunksToLightMap.size()));
   ImGui::Text("ChunksReadyForLightingList: %d", static_cast<int>(m_chunkPositionsToLightList.size()));
-  ImGui::Text("ChunksInMeshRangeVector: %d", static_cast<int>(m_chunksInMeshRangeVector.size()));
+  ImGui::Text("ChunksInMeshRangeVector: %d", static_cast<int>(m_chunkPositionsEligibleForMeshing.size()));
   ImGui::Text("ChunkMeshInfoMap: %d", static_cast<int>(m_chunkMeshInfoMap.size()));
   ImGui::Text("ChunksReadyToMeshList: %d", static_cast<int>(m_chunksReadyToMeshList.size()));
   ImGui::Text("ChunkUpdateVector: %d", static_cast<int>(m_chunkUpdateVector.size()));
