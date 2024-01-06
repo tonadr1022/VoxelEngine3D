@@ -12,24 +12,21 @@
 
 class TerrainGenerator {
  public:
-  explicit TerrainGenerator(Chunk *(chunks)[27], int seed);
-  void generateStructures(HeightMap &heightMap, TreeMap &treeMap);
+  explicit TerrainGenerator(int seed);
+  static void generateStructures(Chunk *chunk, HeightMap &heightMap, TreeMap &treeMap);
 
-  static void getHeightMap(const glm::ivec2 &startWorldPos, int seed, HeightMap &result);
-  static void getTreeMap(const glm::ivec2 &startWorldPos, int seed, TreeMap &result);
+  void getHeightMap(const glm::ivec2 &startWorldPos, HeightMap &result) const;
+  void getTreeMap(const glm::ivec2 &startWorldPos, TreeMap &result) const;
   static void generateTerrain(HeightMap &heightMap, Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK], int (&numBlocksPlaced)[CHUNKS_PER_STACK]);
 
-  void makeTree(const glm::ivec3 &pos);
+
+  static void makeTree(const glm::ivec3 &pos, Chunk* chunk);
 
   static inline int WORLD_HEIGHT_XYZ(int x, int y, int z) {
     return x + (y << 5) + (z << 10);
   }
 
  private:
-  void setBlock(int x, int y, int z, Block block);
-
-  Chunk *m_chunks[27]{};
-
   int m_seed;
 };
 

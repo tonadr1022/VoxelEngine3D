@@ -29,6 +29,11 @@ enum class ChunkState {
   CHANGED,
 };
 
+struct LightNode {
+  glm::ivec3 pos;
+  uint16_t lightLevel;
+};
+
 // Crashes when out of bounds
 static inline int XYZ(int x, int y, int z) {
   return (z << 10 | y << 5 | x);
@@ -133,13 +138,13 @@ class Chunk {
     return m_blocks[index];
   }
 
-  void setLightLevelIncludingNeighborsOptimized(glm::ivec3 pos, glm::ivec3 lightLevel, Chunk *(&chunks)[27]);
+  void setLightLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked);
 
-  void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block, Chunk *(&chunks)[27]);
+  void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block);
 
-  Block getBlockIncludingNeighborsOptimized(glm::ivec3 pos, Chunk *(&chunks)[27]) const;
+  [[nodiscard]] Block getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
-  glm::ivec3 getLightLevelIncludingNeighborsOptimized(glm::ivec3 pos, Chunk *(&chunks)[27]) const;
+  [[nodiscard]] glm::ivec3 getLightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
   ChunkMeshState chunkMeshState;
   ChunkState chunkState;

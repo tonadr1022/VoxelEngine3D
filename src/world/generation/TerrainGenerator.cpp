@@ -3,11 +3,9 @@
 //
 
 #include "TerrainGenerator.hpp"
-#include "../chunk/Chunk.hpp"
 
-void TerrainGenerator::generateStructures(HeightMap &heightMap, TreeMap &treeMap) {
-  auto chunkWorldPos = m_chunks[13]->m_worldPos;
-  int chunkBaseZ = chunkWorldPos.z;
+void TerrainGenerator::generateStructures(Chunk *chunk, HeightMap &heightMap, TreeMap &treeMap) {
+  int chunkBaseZ = chunk->m_worldPos.z;
 
   int heightMapIndex = 0;
   for (int x = 0; x < CHUNK_SIZE; x++) {
@@ -16,29 +14,29 @@ void TerrainGenerator::generateStructures(HeightMap &heightMap, TreeMap &treeMap
       if (height < 0 || height >= CHUNK_SIZE) continue;
       // + 1 since tree map vals are [-1,1]
       // 1 / 100 prob for now
-      if (m_chunks[13]->getBlock(x, y, height) != Block::GRASS) {
+      if (chunk->getBlock(x, y, height) != Block::GRASS) {
         heightMapIndex++;
         continue;
       }
       bool structureExists = static_cast<int>((treeMap[heightMapIndex] + 1) * 100.0f) == 0;
       if (structureExists) {
-        makeTree({x, y, height + 1});
+        makeTree({x, y, height + 1}, chunk);
       }
       heightMapIndex++;
     }
   }
-  m_chunks[13]->chunkState = ChunkState::STRUCTURES_GENERATED;
+  chunk->chunkState = ChunkState::STRUCTURES_GENERATED;
 }
 
-void TerrainGenerator::makeTree(const glm::ivec3 &pos) {
+void TerrainGenerator::makeTree(const glm::ivec3 &pos, Chunk *chunk) {
   for (int i = 0; i < 8; i++) {
-    setBlock(pos.x, pos.y, i + pos.z, Block::OAK_WOOD);
+    chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, i + pos.z}, Block::OAK_WOOD);
   }
   // leaves
   for (int x = -2; x <= 2; x++) {
     for (int y = -2; y <= 2; y++) {
       for (int z = 8; z <= 12; z++) {
-        setBlock(pos.x + x, pos.y + y, pos.z + z, Block::OAK_LEAVES);
+        chunk->setBlockIncludingNeighborsOptimized({pos.x + x, pos.y + y, pos.z + z}, Block::OAK_LEAVES);
       }
     }
   }
@@ -57,29 +55,16 @@ void TerrainGenerator::makeTree(const glm::ivec3 &pos) {
     default:
       glowstoneColor = Block::GLOWSTONE;
   }
-  setBlock(pos.x, pos.y, 8 + pos.z,glowstoneColor);
+  chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, 8 + pos.z},glowstoneColor);
 }
 
-TerrainGenerator::TerrainGenerator(Chunk *(chunks)[27], int seed)
-    : m_seed(seed) {
-  for (int i = 0; i < 27; i++) {
-    m_chunks[i] = chunks[i];
-  }
-}
+TerrainGenerator::TerrainGenerator(int seed) : m_seed(seed) {}
 
-void TerrainGenerator::setBlock(int x, int y, int z, Block block) {
-  int offsetX = Utils::chunkNeighborOffset(x);
-  int offsetY = Utils::chunkNeighborOffset(y);
-  int offsetZ = Utils::chunkNeighborOffset(z);
-  int localX = Utils::getLocalIndex(x);
-  int localY = Utils::getLocalIndex(y);
-  int localZ = Utils::getLocalIndex(z);
-  m_chunks[Utils::getNeighborArrayIndex(offsetX, offsetY, offsetZ)]->setBlock(localX, localY, localZ, block);
-}
 
-void TerrainGenerator::getHeightMap(const glm::ivec2 &startWorldPos, int seed, HeightMap &result) {
+
+void TerrainGenerator::getHeightMap(const glm::ivec2 &startWorldPos, HeightMap &result) const {
   FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
-  fastNoise->SetSeed(seed);
+  fastNoise->SetSeed(m_seed);
   fastNoise->SetFractalOctaves(4);
   fastNoise->SetFrequency(1.0f / 300.0f);
   float *heightMap = fastNoise->GetSimplexFractalSet(startWorldPos.x, startWorldPos.y, 0, CHUNK_SIZE,
@@ -93,18 +78,16 @@ void TerrainGenerator::getHeightMap(const glm::ivec2 &startWorldPos, int seed, H
   delete fastNoise;
 }
 
-void TerrainGenerator::generateTerrain(HeightMap &heightMap,
-                                       Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK],
-                                       int (&numBlocksPlaced)[CHUNKS_PER_STACK]) {
+void TerrainGenerator::generateTerrain(HeightMap &heightMap, Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK], int (&numBlocksPlaced)[CHUNKS_PER_STACK]) {
   auto setBlockTerrain = [&](int x, int y, int z, Block block) {
     blocks[WORLD_HEIGHT_XYZ(x, y, z)] = block;
     numBlocksPlaced[z / CHUNK_SIZE]++;
   };
 
   int heightMapIndex = 0;
-  int z;
-  for (int x = 0; x < CHUNK_SIZE; x++) {
-    for (int y = 0; y < CHUNK_SIZE; y++) {
+  int x,y,z;
+  for (x = 0; x < CHUNK_SIZE; x++) {
+    for (y = 0; y < CHUNK_SIZE; y++) {
       int maxBlockHeight = heightMap[heightMapIndex];
       for (z = 0; z < maxBlockHeight - 4; z++) {
         setBlockTerrain(x, y, z, Block::STONE);
@@ -126,13 +109,13 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap,
       heightMapIndex++;
     }
   }
-  for (int x = 0; x < CHUNK_SIZE; x++) {
-    for (int y = 0; y < CHUNK_SIZE; y++) {
-      for (int z = 0; z < 15; z++) {
-        setBlockTerrain(x, y, z, Block::STONE);
-      }
-    }
-  }
+//  for (x = 0; x < CHUNK_SIZE; x++) {
+//    for (y = 0; y < CHUNK_SIZE; y++) {
+//      for (z = 0; z < 15; z++) {
+//        setBlockTerrain(x, y, z, Block::STONE);
+//      }
+//    }
+//  }
 
 //  setBlockTerrain(0, 0, 15, Block::GLOWSTONE_GREEN);
 //  setBlockTerrain(15, 16, 15, Block::GLOWSTONE_RED);
@@ -148,9 +131,9 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap,
 //  setBlockTerrain(20, 20, maxBlockHeightAtx20y20, Block::GLOWSTONE_BLUE);
 }
 
-void TerrainGenerator::getTreeMap(const glm::ivec2 &startWorldPos, int seed, TreeMap &result) {
+void TerrainGenerator::getTreeMap(const glm::ivec2 &startWorldPos, TreeMap &result) const {
   FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
-  fastNoise->SetSeed(seed);
+  fastNoise->SetSeed(m_seed);
   fastNoise->SetFrequency(1.0f);
   // fastnoise vals are from -1 to 1
   float *treeMap = fastNoise->GetWhiteNoiseSet(startWorldPos.x, startWorldPos.y, 0, CHUNK_SIZE,

@@ -25,25 +25,23 @@ void Chunk::markDirty() {
   chunkState = ChunkState::CHANGED;
 }
 
-void Chunk::setLightLevelIncludingNeighborsOptimized(const glm::ivec3 pos,
-                                                     const glm::ivec3 lightLevel,
-                                                     Chunk *(&chunks)[27]) {
+void Chunk::setLightLevelIncludingNeighborsOptimized(const glm::ivec3 pos, uint16_t lightLevelPacked) {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
-    Chunk *neighborChunk = chunks[neighborArrayIndex];
+    Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
       glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
-      neighborChunk->setLightLevel(localPos, lightLevel);
+      neighborChunk->setLightLevel(localPos, lightLevelPacked);
     }
   } else {
-    setLightLevel(pos, lightLevel);
+    setLightLevel(pos, lightLevelPacked);
   }
 }
 
-void Chunk::setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block, Chunk *(&chunks)[27]) {
+void Chunk::setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block) {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
-    Chunk *neighborChunk = chunks[neighborArrayIndex];
+    Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
       glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
       neighborChunk->setBlock(localPos, block);
@@ -53,10 +51,10 @@ void Chunk::setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block, Chu
   }
 }
 
-Block Chunk::getBlockIncludingNeighborsOptimized(glm::ivec3 pos, Chunk *(&chunks)[27]) const {
+Block Chunk::getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
-    const Chunk *neighborChunk = chunks[neighborArrayIndex];
+    const Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
       glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
       return neighborChunk->getBlock(localPos);
@@ -66,10 +64,10 @@ Block Chunk::getBlockIncludingNeighborsOptimized(glm::ivec3 pos, Chunk *(&chunks
   }
 }
 
-glm::ivec3 Chunk::getLightLevelIncludingNeighborsOptimized(glm::ivec3 pos, Chunk *(&chunks)[27]) const {
+glm::ivec3 Chunk::getLightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
-    const Chunk *neighborChunk = chunks[neighborArrayIndex];
+    const Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
       glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
       return neighborChunk->getLightLevel(localPos);
