@@ -206,7 +206,6 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
 
       BlockData &blockData = BlockDB::getBlockData(block);
       const uint16_t faceLightLevel = m_lightLevels[MESH_XYZ(adjBlockX, adjBlockY, adjBlockZ)];
-
       setOcclusionLevels(blockPos, face, occlusionLevels);
       int texIndex = blockData.texIndex[faceIndex];
 

@@ -10,6 +10,8 @@
 namespace ChunkAlg {
   extern void generateTorchlightData(Chunk *chunk);
  extern void propagateTorchLight(std::queue<LightNode> &torchlightQueue, Chunk *chunk);
+ extern void unpropagateTorchLight(std::queue<LightNode> &torchLightPlacementQueue, std::queue<LightNode> &torchLightRemovalQueue, Chunk *chunk);
+
 
 };
 

@@ -13,8 +13,9 @@ void ChunkAlg::generateTorchlightData(Chunk *chunk) {
     Block block = chunk->getBlockFromIndex(blockIndex);
     if (BlockDB::isLightSource(block)) {
       glm::ivec3 pos = XYZ_FROM_INDEX(blockIndex);
-      glm::ivec3 lightLevel = BlockDB::getLightLevel(block);
-      torchlightQueue.push({pos, Utils::packLightLevel(lightLevel)});
+      uint16_t lightLevel = BlockDB::getpackedLightLevel(block);
+      torchlightQueue.emplace(pos, lightLevel);
+      chunk->setLightLevelIncludingNeighborsOptimized(pos, lightLevel);
     }
   }
 
@@ -22,12 +23,37 @@ void ChunkAlg::generateTorchlightData(Chunk *chunk) {
   chunk->chunkState = ChunkState::FULLY_GENERATED;
 }
 
+void ChunkAlg::unpropagateTorchLight(std::queue<LightNode> &torchLightPlacementQueue,
+                                     std::queue<LightNode> &torchLightRemovalQueue,
+                                     Chunk *chunk) {
+  while (!torchLightRemovalQueue.empty()) {
+    LightNode node = torchLightRemovalQueue.front();
+    torchLightRemovalQueue.pop();
+
+    for (short faceNum = 0; faceNum < 6; faceNum++) {
+      glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(node.pos, faceNum);
+      const uint16_t neighborLightLevel = chunk->getLightLevelPackedIncludingNeighborsOptimized(neighborPos);
+      if (neighborLightLevel == 0) continue;
+
+      glm::ivec3 unpackedNodeLightLevel = Utils::unpackLightLevel(node.lightLevel);
+      glm::ivec3 unpackedNeighborLightLevel = Utils::unpackLightLevel(neighborLightLevel);
+
+      if (((unpackedNeighborLightLevel.r != 0 && unpackedNodeLightLevel.r != 0) && unpackedNeighborLightLevel.r >= unpackedNodeLightLevel.r) ||
+          ((unpackedNeighborLightLevel.g != 0 && unpackedNodeLightLevel.g != 0) && unpackedNeighborLightLevel.g >= unpackedNodeLightLevel.g) ||
+          ((unpackedNeighborLightLevel.b != 0 && unpackedNodeLightLevel.b != 0) && unpackedNeighborLightLevel.b >= unpackedNodeLightLevel.b)) {
+        torchLightPlacementQueue.emplace(neighborPos, neighborLightLevel);
+      } else {
+        chunk->setLightLevelIncludingNeighborsOptimized(neighborPos, 0);
+        torchLightRemovalQueue.emplace(neighborPos, neighborLightLevel);
+      }
+    }
+  }
+}
 void ChunkAlg::propagateTorchLight(std::queue<LightNode> &torchlightQueue, Chunk *chunk) {
   // while the queue is not empty, pop the front element and add it to the light level array
   while (!torchlightQueue.empty()) {
     LightNode node = torchlightQueue.front();
     torchlightQueue.pop();
-    // set the value for the light source
 
     // For each adjacent neighbor for each face of the light source, check whether it has a lower light level
     // for any component. If so, replace the components that are lower in the neighbor with what is propagated
@@ -36,7 +62,7 @@ void ChunkAlg::propagateTorchLight(std::queue<LightNode> &torchlightQueue, Chunk
       glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(node.pos, faceNum);
       Block neighborBlock = chunk->getBlockIncludingNeighborsOptimized(neighborPos);
 
-      // if light cant pass dont add anything
+      // if light cant pass don't add anything
       if (!BlockDB::canLightPass(neighborBlock)) continue;
 
       const glm::ivec3 neighborLightLevel = chunk->getLightLevelIncludingNeighborsOptimized(neighborPos);
@@ -52,7 +78,7 @@ void ChunkAlg::propagateTorchLight(std::queue<LightNode> &torchlightQueue, Chunk
 
         // if there is still light to propagate add to queue
         if (newR > 1 || newG > 1 || newB > 1) {
-          torchlightQueue.push({neighborPos, newLightLevel});
+          torchlightQueue.emplace(neighborPos, newLightLevel);
         }
       }
     }

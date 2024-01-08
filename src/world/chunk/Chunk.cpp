@@ -83,4 +83,16 @@ void Chunk::allocateTorchLightLevels() {
     std::fill(m_torchLightLevelsPtr.get(), m_torchLightLevelsPtr.get() + CHUNK_VOLUME, 0);
   }
 }
+uint16_t Chunk::getLightLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) const {
+  if (isPosOutOfChunkBounds(pos)) {
+    int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
+    const Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
+    if (neighborChunk) {
+      glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
+      return neighborChunk->getLightLevelPacked(localPos);
+    }
+  } else {
+    return getLightLevelPacked(pos);
+  }
+}
 

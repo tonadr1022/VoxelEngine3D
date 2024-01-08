@@ -718,31 +718,45 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
 //  Chunk &chunk = *m_chunkMap.at(chunkPos).get();
   Chunk *chunk = getChunkRawPtr(chunkPos);
   Block oldBlock = chunk->getBlock(blockPosInChunk);
-  uint16_t oldTorchLightPacked = chunk->getLightLevelPacked(blockPosInChunk);
+  uint16_t oldTorchLightPacked = BlockDB::getpackedLightLevel(oldBlock);
   uint16_t newTorchLightPacked = BlockDB::getpackedLightLevel(block);
   glm::ivec3 oldTorchLight = Utils::unpackLightLevel(oldTorchLightPacked);
   // cases
   // 1) torch of any color to air.
-  if (!newTorchLightPacked && oldTorchLightPacked) {
-    m_torchlightRemovalQueue.push({blockPosInChunk, oldTorchLightPacked});
+  if (block == Block::AIR && BlockDB::isLightSource(oldBlock)) {
+    m_torchlightRemovalQueue.emplace(blockPosInChunk, oldTorchLightPacked);
     chunk->setLightLevel(blockPosInChunk, 0);
     lightChanged = true;
   }
     // 2) air to any color
-  else if (oldBlock == Block::AIR && newTorchLightPacked) {
-    m_torchLightPlacementQueue.push({blockPosInChunk, newTorchLightPacked});
+  else if (oldBlock == Block::AIR && newTorchLightPacked > 0) {
+    m_torchLightPlacementQueue.emplace(blockPosInChunk, newTorchLightPacked);
+    chunk->setLightLevel(blockPosInChunk, newTorchLightPacked);
     lightChanged = true;
+  } else {
+    for (short faceNum = 0; faceNum < 6; faceNum++) {
+      glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(blockPosInChunk, faceNum);
+      uint16_t neighborLightLevel = chunk->getLightLevelPackedIncludingNeighborsOptimized(neighborPos);
+      if (neighborLightLevel) {
+        m_torchLightPlacementQueue.emplace(neighborPos, neighborLightLevel);
+//      lightChanged = true;
+      }
+    }
   }
   // 3) air to not torch
   // 4) not torch to air
 
 
+  ChunkAlg::unpropagateTorchLight(m_torchLightPlacementQueue, m_torchlightRemovalQueue, chunk);
   chunk->setBlock(blockPosInChunk, block);
+  ChunkAlg::propagateTorchLight(m_torchLightPlacementQueue, chunk);
+
+
+
   if (lightChanged) {
-    ChunkAlg::propagateTorchLight(m_torchLightPlacementQueue, chunk);
     // if light changed add all the neighbor chunks.
     for (auto &c : chunk->m_neighborChunks) {
-      m_chunkDirectlyUpdateSet.insert(c->m_pos);
+      if (c) m_chunkDirectlyUpdateSet.insert(c->m_pos);
     }
   } else {
     // if light didnt change, calculate which chunks to add since high chance a block was changed not on the border
@@ -761,8 +775,8 @@ void World::processDirectChunkUpdates() {
     std::vector<ChunkVertex> opaqueVertices, transparentVertices;
     std::vector<unsigned int> opaqueIndices, transparentIndices;
 
-    Block blocks[CHUNK_MESH_INFO_SIZE];
-    uint16_t torchLightLevels[CHUNK_MESH_INFO_SIZE];
+    Block blocks[CHUNK_MESH_INFO_SIZE]{}; // NEED TO INITIALIZE
+    uint16_t torchLightLevels[CHUNK_MESH_INFO_SIZE]{}; // NEED TO INITIALIZE
     ChunkMeshInfo::populateMeshInfoForMeshing(blocks, torchLightLevels, chunk->m_neighborChunks);
     ChunkMeshBuilder builder(blocks, torchLightLevels, chunk->m_worldPos);
     builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);

@@ -31,9 +31,9 @@ class Player {
 
   void processKeyInput(float deltaTime);
 
-  glm::vec3 position = glm::vec3(0.0f, 0.0f, 70.0f);
+  glm::vec3 position = glm::vec3(0.0f, 0.0f, 33.0f);
 
-  float m_movementSpeed = 100.0f;
+  float m_movementSpeed = 10.0f;
 };
 
 #endif //VOXEL_ENGINE_PLAYER_HPP
