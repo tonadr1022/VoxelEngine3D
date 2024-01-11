@@ -20,11 +20,6 @@ Chunk::~Chunk() {
   m_opaqueMesh.clearData();
 }
 
-void Chunk::markDirty() {
-  chunkMeshState = ChunkMeshState::UNBUILT;
-  chunkState = ChunkState::CHANGED;
-}
-
 void Chunk::setLightLevelIncludingNeighborsOptimized(const glm::ivec3 pos, uint16_t lightLevelPacked) {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);

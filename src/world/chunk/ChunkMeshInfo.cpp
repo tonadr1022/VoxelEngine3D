@@ -7,43 +7,24 @@
 #include "ChunkMeshBuilder.hpp"
 
 
-ChunkMeshInfo::ChunkMeshInfo(Chunk *chunks[27]) {
-  //  structure of the neighbour arrays
-  // y
-  // |
-  // |  6   15  24
-  // |    7   16  25
-  // |      8   17  26
-  // |
-  // |  3   12  21
-  // |    4   13  22
-  // |      5   14  23
-  // \-------------------x
-  //  \ 0   9   18
-  //   \  1   10  19
-  //    \   2   11  20
-  //     z
-  for (int i = 0; i < 27; i++) {
-    m_chunks[i] = chunks[i];
-  }
+ChunkMeshInfo::ChunkMeshInfo(Chunk *chunk) : m_chunk(chunk) {
 }
 
 void ChunkMeshInfo::generateMeshData() {
   Block blocks[CHUNK_MESH_INFO_SIZE]{};
   uint16_t torchLightLevels[CHUNK_MESH_INFO_SIZE]{};
-  populateMeshInfoForMeshing(blocks, torchLightLevels, m_chunks);
-  Chunk *chunk = m_chunks[13];
-  ChunkMeshBuilder builder(blocks, torchLightLevels, chunk->m_worldPos);
+  populateMeshInfoForMeshing(blocks, torchLightLevels, m_chunk->m_neighborChunks);
+  ChunkMeshBuilder builder(blocks, torchLightLevels, m_chunk->m_worldPos);
   builder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
   m_done = true;
 }
 
-void ChunkMeshInfo::applyMeshDataToMesh(Chunk *chunk) {
-  chunk->m_opaqueMesh.vertices = std::move(m_opaqueVertices);
-  chunk->m_opaqueMesh.indices = std::move(m_opaqueIndices);
-  chunk->m_transparentMesh.vertices = std::move(m_transparentVertices);
-  chunk->m_transparentMesh.indices = std::move(m_transparentIndices);
-  chunk->chunkMeshState = ChunkMeshState::BUILT;
+void ChunkMeshInfo::applyMeshDataToMesh() {
+  m_chunk->m_opaqueMesh.vertices = std::move(m_opaqueVertices);
+  m_chunk->m_opaqueMesh.indices = std::move(m_opaqueIndices);
+  m_chunk->m_transparentMesh.vertices = std::move(m_transparentVertices);
+  m_chunk->m_transparentMesh.indices = std::move(m_transparentIndices);
+  m_chunk->chunkMeshState = ChunkMeshState::BUILT;
 }
 
 void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&blockResult)[CHUNK_MESH_INFO_SIZE],

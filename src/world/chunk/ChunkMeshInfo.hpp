@@ -14,13 +14,13 @@
 class Chunk;
 class ChunkMeshInfo : public ChunkInfo {
  public:
-  explicit ChunkMeshInfo(Chunk *chunks[27]);
+  explicit ChunkMeshInfo(Chunk *chunk);
   void generateMeshData();
-  void applyMeshDataToMesh(Chunk *chunk);
+  void applyMeshDataToMesh();
   static void populateMeshInfoForMeshing(Block (&blockResult)[CHUNK_MESH_INFO_SIZE], uint16_t (&torchResult)[CHUNK_MESH_INFO_SIZE], Chunk *(&chunks)[27]);
 
  private:
-  Chunk *m_chunks[27]{};
+  Chunk *m_chunk;
   std::vector<ChunkVertex> m_opaqueVertices;
   std::vector<ChunkVertex> m_transparentVertices;
   std::vector<unsigned int> m_opaqueIndices;

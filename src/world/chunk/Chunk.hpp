@@ -33,7 +33,8 @@ struct LightNode {
   glm::ivec3 pos;
   uint16_t lightLevel;
 
-  LightNode(glm::ivec3 pPos, uint16_t pLightLevel) : pos(pPos), lightLevel(pLightLevel) {}
+  LightNode(glm::ivec3 pPos, uint16_t pLightLevel)
+      : pos(pPos), lightLevel(pLightLevel) {}
 };
 
 // Crashes when out of bounds
@@ -149,7 +150,6 @@ class Chunk {
   [[nodiscard]] glm::ivec3 getLightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
   [[nodiscard]] uint16_t getLightLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) const;
-
 
   ChunkMeshState chunkMeshState;
   ChunkState chunkState;

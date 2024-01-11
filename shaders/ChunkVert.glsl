@@ -34,11 +34,13 @@ const float waveFrequency = 1.0;
 const float dist = 1.0;
 const float PI = 3.14285714286;
 
-// only applies for texIndex 127 (water)
+// only applies for texIndex 8 (water)
 vec3 applyWave(vec3 vertexPos, uint texIndex) {
-    if (texIndex != 127) {
+    if (texIndex != 8) {
         return vertexPos;
     }
+
+    if (vertexPos.z < 0.8) return vertexPos;
     vec2 vertexWorldPos = vertexPos.xy + vec2(u_ChunkWorldPos.x, u_ChunkWorldPos.y);
 
     vec2 origin1 = vertexWorldPos + vec2(dist, dist);
@@ -58,26 +60,6 @@ vec3 applyWave(vec3 vertexPos, uint texIndex) {
     sin(3.5 * PI * distance4 * 0.32 + u_Time) * 0.1 - 0.4;
     vertexPos.z += wave;
     return vertexPos;
-    //    vec2 vertexWorldPos = vertexPos.xy + vec2(u_ChunkWorldPos.x, u_ChunkWorldPos.y);
-    //
-    //    vec2 origin1 = vertexWorldPos + vec2(dist, dist);
-    //    vec2 origin2 = vertexWorldPos + vec2(dist, -dist);
-    //    vec2 origin3 = vertexWorldPos + vec2(-dist, dist);
-    //    vec2 origin4 = vertexWorldPos + vec2(-dist, -dist);
-    //
-    //    float distance1 = length(origin1);
-    //    float distance2 = length(origin2);
-    //    float distance3 = length(origin3);
-    //    float distance4 = length(origin4);
-    //
-    //
-    //    float wave = sin(3.3 * PI * distance1 * 0.13 + u_Time) * 0.1 +
-    //    sin(3.2 * PI * distance2 * 0.12 + u_Time) * 0.1 +
-    //    sin(3.1 * PI * distance3 * 0.24 + u_Time) * 0.1 +
-    //    sin(3.5 * PI * distance4 * 0.32 + u_Time) * 0.1 - 0.4;
-    //    float waveDist = mix(0.0, wave, (texIndex == 127));
-    //    vertexPos.z += waveDist;
-    //    return vertexPos;
 }
 
 

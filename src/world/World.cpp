@@ -146,8 +146,8 @@ void World::combinedUpdateListsTEST() {
           }
         } else if (chunkBottom->chunkState == ChunkState::TERRAIN_GENERATED) {
           if (pos.x >= structureBoundMinX && pos.x <= structureBoundMaxX
-          && pos.y >= structureBoundMinY && pos.y <= structureBoundMaxY &&
-          !m_chunkStructuresInfoMap.count({pos.x, pos.y, 0})) {
+              && pos.y >= structureBoundMinY && pos.y <= structureBoundMaxY &&
+              !m_chunkStructuresInfoMap.count({pos.x, pos.y, 0})) {
             m_chunksInStructureGenRangeVectorXY.emplace_back(pos);
           }
         }
@@ -271,20 +271,7 @@ void World::updateChunkStructureGenList() {
   for (auto posIt = m_chunksInStructureGenRangeVectorXY.begin(); posIt != m_chunksInStructureGenRangeVectorXY.end();) {
     for (int z = 0; z < CHUNKS_PER_STACK; z++) {
       auto pos = glm::ivec3(posIt->x, posIt->y, z);
-      // z
-      // |
-      // |  6   15  24
-      // |    7   16  25
-      // |      8   17  26
-      // |
-      // |  3   12  21
-      // |    4   13  22
-      // |      5   14  23
-      // \-------------------y
-      //  \ 0   9   18
-      //   \  1   10  19
-      //    \   2   11  20
-      //     x
+
       Chunk *chunks[27] = {nullptr};
       getNeighborChunks(chunks, pos);
 
@@ -379,7 +366,7 @@ void World::updateChunkMeshList() {
   for (auto posIt = m_chunkMeshInfoMap.begin(); posIt != m_chunkMeshInfoMap.end();) {
     if (posIt->second->m_done) {
       Chunk *chunk = getChunkRawPtr(posIt->first);
-      posIt->second->applyMeshDataToMesh(chunk);
+      posIt->second->applyMeshDataToMesh();
       if (!chunk->m_opaqueMesh.vertices.empty()) m_opaqueRenderSet.insert(posIt->first);
       if (!chunk->m_transparentMesh.vertices.empty()) m_transparentRenderSet.insert(posIt->first);
       // delete from map regardless of whether chunk exists
@@ -424,11 +411,9 @@ void World::updateChunkMeshList() {
     }
 
     if (canMesh) {
-      m_chunkMeshInfoMap.emplace(*posIt, std::make_unique<ChunkMeshInfo>(chunkToMesh->m_neighborChunks));
-      auto insertPos = std::lower_bound(m_chunksReadyToMeshList.begin(),
-                                        m_chunksReadyToMeshList.end(),
-                                        *posIt,
-                                        rcmpVec3);
+      m_chunkMeshInfoMap.emplace(*posIt, std::make_unique<ChunkMeshInfo>(chunkToMesh));
+      auto insertPos = std::lower_bound(m_chunksReadyToMeshList.begin(), m_chunksReadyToMeshList.end(),
+                                        *posIt, rcmpVec3);
       m_chunksReadyToMeshList.insert(insertPos, *posIt);
       posIt = m_chunkPositionsEligibleForMeshing.erase(posIt);
     } else {
@@ -750,8 +735,6 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   ChunkAlg::unpropagateTorchLight(m_torchLightPlacementQueue, m_torchlightRemovalQueue, chunk);
   chunk->setBlock(blockPosInChunk, block);
   ChunkAlg::propagateTorchLight(m_torchLightPlacementQueue, chunk);
-
-
 
   if (lightChanged) {
     // if light changed add all the neighbor chunks.

@@ -122,7 +122,7 @@ class World {
   void generateChunksWorker4();
   void processBatchToLoad(std::queue<glm::ivec2> &batchToLoad);
   void processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStructures);
-    void processBatchToLight(std::queue<glm::ivec3> &batchToLight);
+  void processBatchToLight(std::queue<glm::ivec3> &batchToLight);
   void processBatchToMesh(std::queue<glm::ivec3> &batchToMesh);
 
   int m_renderDistance = 8;

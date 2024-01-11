@@ -37,18 +37,32 @@ void ChunkAlg::unpropagateTorchLight(std::queue<LightNode> &torchLightPlacementQ
 
       glm::ivec3 unpackedNodeLightLevel = Utils::unpackLightLevel(node.lightLevel);
       glm::ivec3 unpackedNeighborLightLevel = Utils::unpackLightLevel(neighborLightLevel);
-
-      if (((unpackedNeighborLightLevel.r != 0 && unpackedNodeLightLevel.r != 0) && unpackedNeighborLightLevel.r >= unpackedNodeLightLevel.r) ||
-          ((unpackedNeighborLightLevel.g != 0 && unpackedNodeLightLevel.g != 0) && unpackedNeighborLightLevel.g >= unpackedNodeLightLevel.g) ||
-          ((unpackedNeighborLightLevel.b != 0 && unpackedNodeLightLevel.b != 0) && unpackedNeighborLightLevel.b >= unpackedNodeLightLevel.b)) {
-        torchLightPlacementQueue.emplace(neighborPos, neighborLightLevel);
-      } else {
-        chunk->setLightLevelIncludingNeighborsOptimized(neighborPos, 0);
-        torchLightRemovalQueue.emplace(neighborPos, neighborLightLevel);
+      glm::ivec3 newNeighborLightLevel = {0, 0, 0};
+      bool place = false;
+      if (unpackedNeighborLightLevel.r > 0 && unpackedNodeLightLevel.r > 0
+          && unpackedNeighborLightLevel.r >= unpackedNodeLightLevel.r) {
+        newNeighborLightLevel.r = unpackedNeighborLightLevel.r;
+        place = true;
       }
+      if (unpackedNeighborLightLevel.g > 0 && unpackedNodeLightLevel.g > 0
+          && unpackedNeighborLightLevel.g >= unpackedNodeLightLevel.g) {
+        newNeighborLightLevel.g = unpackedNeighborLightLevel.g;
+        place = true;
+      }
+      if (unpackedNeighborLightLevel.b > 0 && unpackedNodeLightLevel.b > 0
+          && unpackedNeighborLightLevel.b >= unpackedNodeLightLevel.b) {
+        newNeighborLightLevel.b = unpackedNeighborLightLevel.b;
+        place = true;
+      }
+      if (place) {
+        torchLightPlacementQueue.emplace(neighborPos, Utils::packLightLevel(newNeighborLightLevel));
+      }
+      chunk->setLightLevelIncludingNeighborsOptimized(neighborPos, 0);
+      torchLightRemovalQueue.emplace(neighborPos, neighborLightLevel);
     }
   }
 }
+
 void ChunkAlg::propagateTorchLight(std::queue<LightNode> &torchlightQueue, Chunk *chunk) {
   // while the queue is not empty, pop the front element and add it to the light level array
   while (!torchlightQueue.empty()) {

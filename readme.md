@@ -61,3 +61,16 @@ of data in memory was worth it, a concept I had never considered before this pro
 # Inspiration
 - Idea for packing colored lights into a 16-bit integer came from this video: https://www.youtube.com/watch?v=edaaFUflusk.
 - Ambient Occlusion for voxels concepts: https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
+
+
+# TODO
+- Separate water mesh for water shader, may require chunk mesh batching to reduce draw calls
+- Greedy meshing
+- Sunlight
+- Skybox/background
+- Day and night cycle
+- Shadow mapping
+- Physics for movement/AABB collision detection
+- More block types
+- Biomes system
+- Fix breaking/placing multicolored lights and increase speed to eliminate slight frame drops
