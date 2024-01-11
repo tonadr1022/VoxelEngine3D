@@ -710,18 +710,18 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   // 1) torch of any color to air.
   if (block == Block::AIR && BlockDB::isLightSource(oldBlock)) {
     m_torchlightRemovalQueue.emplace(blockPosInChunk, oldTorchLightPacked);
-    chunk->setLightLevel(blockPosInChunk, 0);
+    chunk->setTorchLevel(blockPosInChunk, 0);
     lightChanged = true;
   }
     // 2) air to any color
   else if (oldBlock == Block::AIR && newTorchLightPacked > 0) {
     m_torchLightPlacementQueue.emplace(blockPosInChunk, newTorchLightPacked);
-    chunk->setLightLevel(blockPosInChunk, newTorchLightPacked);
+    chunk->setTorchLevel(blockPosInChunk, newTorchLightPacked);
     lightChanged = true;
   } else {
     for (short faceNum = 0; faceNum < 6; faceNum++) {
       glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(blockPosInChunk, faceNum);
-      uint16_t neighborLightLevel = chunk->getLightLevelPackedIncludingNeighborsOptimized(neighborPos);
+      uint16_t neighborLightLevel = chunk->getTorchLevelPackedIncludingNeighborsOptimized(neighborPos);
       if (neighborLightLevel) {
         m_torchLightPlacementQueue.emplace(neighborPos, neighborLightLevel);
 //      lightChanged = true;

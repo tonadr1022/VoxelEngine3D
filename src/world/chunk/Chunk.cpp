@@ -20,16 +20,16 @@ Chunk::~Chunk() {
   m_opaqueMesh.clearData();
 }
 
-void Chunk::setLightLevelIncludingNeighborsOptimized(const glm::ivec3 pos, uint16_t lightLevelPacked) {
+void Chunk::setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked) {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
       glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
-      neighborChunk->setLightLevel(localPos, lightLevelPacked);
+      neighborChunk->setTorchLevel(localPos, lightLevelPacked);
     }
   } else {
-    setLightLevel(pos, lightLevelPacked);
+    setTorchLevel(pos, lightLevelPacked);
   }
 }
 
@@ -59,16 +59,16 @@ Block Chunk::getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const {
   }
 }
 
-glm::ivec3 Chunk::getLightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const {
+glm::ivec3 Chunk::getTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos) const {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     const Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
       glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
-      return neighborChunk->getLightLevel(localPos);
+      return neighborChunk->getTorchLevel(localPos);
     }
   } else {
-    return getLightLevel(pos);
+    return getTorchLevel(pos);
   }
 }
 
@@ -78,16 +78,38 @@ void Chunk::allocateTorchLightLevels() {
     std::fill(m_torchLightLevelsPtr.get(), m_torchLightLevelsPtr.get() + CHUNK_VOLUME, 0);
   }
 }
-uint16_t Chunk::getLightLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) const {
+uint16_t Chunk::getTorchLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) const {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     const Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
       glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
-      return neighborChunk->getLightLevelPacked(localPos);
+      return neighborChunk->getTorchLevelPacked(localPos);
     }
+    return 0;
   } else {
-    return getLightLevelPacked(pos);
+    return getTorchLevelPacked(pos);
+  }
+}
+
+uint8_t Chunk::getSunlightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const {
+  if (isPosOutOfChunkBounds(pos)) {
+    int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
+    const Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
+    if (neighborChunk) {
+      glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
+      return neighborChunk->getSunLightLevel(localPos);
+    }
+    return 0;
+  } else {
+    return getSunLightLevel(pos);
+  }
+}
+
+void Chunk::allocateSunLightLevels() {
+  if (!m_sunlightLevelsPtr) {
+    m_sunlightLevelsPtr = std::make_unique<uint8_t[]>(CHUNK_VOLUME);
+    std::fill(m_sunlightLevelsPtr.get(), m_sunlightLevelsPtr.get() + CHUNK_VOLUME, 0);
   }
 }
 

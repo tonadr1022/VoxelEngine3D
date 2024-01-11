@@ -37,6 +37,14 @@ struct LightNode {
       : pos(pPos), lightLevel(pLightLevel) {}
 };
 
+struct SunLightNode {
+  glm::ivec3 pos;
+  uint8_t lightLevel;
+
+  SunLightNode(glm::ivec3 pPos, uint8_t pLightLevel)
+  : pos(pPos), lightLevel(pLightLevel) {}
+};
+
 // Crashes when out of bounds
 static inline int XYZ(int x, int y, int z) {
   return (z << 10 | y << 5 | x);
@@ -61,10 +69,6 @@ static inline int XY(glm::ivec2 &pos) {
 static inline int MESH_XYZ(int x, int y, int z) {
   return (x + 1) + (y + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH
       + (z + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH;
-}
-
-static inline int LIGHT_XYZ(int x, int y, int z) {
-  return (x + 14) + (y + 14) * CHUNK_LIGHT_INFO_WIDTH + (z + 14) * CHUNK_LIGHT_INFO_WIDTH * CHUNK_LIGHT_INFO_WIDTH;
 }
 
 // return true if x, y, or z are not between 0-31 inclusive.
@@ -101,7 +105,6 @@ class Chunk {
     m_blocks[XYZ(pos)] = block;
   }
 
-  void markDirty();
 
   [[nodiscard]] inline Block getBlock(int x, int y, int z) const {
     return m_blocks[XYZ(x, y, z)];
@@ -111,18 +114,18 @@ class Chunk {
     return m_blocks[XYZ(pos)];
   }
 
-  [[nodiscard]] inline glm::ivec3 getLightLevel(const glm::ivec3 &pos) const {
+  [[nodiscard]] inline glm::ivec3 getTorchLevel(const glm::ivec3 &pos) const {
 //    return unpackLightLevel(m_lightLevels[XYZ(pos)]);
     if (!m_torchLightLevelsPtr) return {0, 0, 0};
     return Utils::unpackLightLevel(m_torchLightLevelsPtr.get()[XYZ(pos)]);
   }
 
-  [[nodiscard]] inline uint16_t getLightLevelPacked(const glm::ivec3 &pos) const {
+  [[nodiscard]] inline uint16_t getTorchLevelPacked(const glm::ivec3 &pos) const {
     if (!m_torchLightLevelsPtr) return 0;
     return m_torchLightLevelsPtr.get()[XYZ(pos)];
   }
 
-  inline void setLightLevel(const glm::ivec3 &pos, const glm::ivec3 lightLevel) {
+  inline void setTorchLevel(const glm::ivec3 &pos, const glm::ivec3 lightLevel) {
     if (!m_torchLightLevelsPtr) {
       allocateTorchLightLevels();
     }
@@ -130,26 +133,40 @@ class Chunk {
 //    m_lightLevels[XYZ(pos)] = Utils::packLightLevel(lightLevel);
   }
 
-  inline void setLightLevel(const glm::ivec3 &pos, uint16_t lightLevel) {
+  inline void setTorchLevel(const glm::ivec3 &pos, uint16_t lightLevel) {
     if (!m_torchLightLevelsPtr) {
       allocateTorchLightLevels();
     }
     m_torchLightLevelsPtr.get()[XYZ(pos)] = lightLevel;
   }
 
+  inline void setSunLightLevel(const glm::ivec3 &pos, uint8_t lightLevel) {
+    if (!m_sunlightLevelsPtr) {
+      allocateSunLightLevels();
+    }
+    m_sunlightLevelsPtr.get()[XYZ(pos)] = lightLevel;
+  }
+
+  [[nodiscard]] inline uint8_t getSunLightLevel(const glm::ivec3 &pos) const {
+    if (!m_sunlightLevelsPtr) return 0;
+    return m_sunlightLevelsPtr.get()[XYZ(pos)];
+  }
+
   [[nodiscard]] inline Block getBlockFromIndex(int index) const {
     return m_blocks[index];
   }
 
-  void setLightLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked);
+  void setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked);
 
   void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block);
 
   [[nodiscard]] Block getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
-  [[nodiscard]] glm::ivec3 getLightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
+  [[nodiscard]] glm::ivec3 getTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
-  [[nodiscard]] uint16_t getLightLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) const;
+  [[nodiscard]] uint16_t getTorchLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) const;
+
+  [[nodiscard]] uint8_t getSunlightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
   ChunkMeshState chunkMeshState;
   ChunkState chunkState;
@@ -159,8 +176,10 @@ class Chunk {
   Chunk *m_neighborChunks[27]{};
 
   std::unique_ptr<uint16_t[]> m_torchLightLevelsPtr = nullptr;
+  Scope<uint8_t[]> m_sunlightLevelsPtr = nullptr;
 
   void allocateTorchLightLevels();
+  void allocateSunLightLevels();
 
   glm::ivec3 m_pos;
   glm::ivec3 m_worldPos;

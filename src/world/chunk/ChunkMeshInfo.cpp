@@ -6,15 +6,15 @@
 #include "Chunk.hpp"
 #include "ChunkMeshBuilder.hpp"
 
-
 ChunkMeshInfo::ChunkMeshInfo(Chunk *chunk) : m_chunk(chunk) {
 }
 
 void ChunkMeshInfo::generateMeshData() {
   Block blocks[CHUNK_MESH_INFO_SIZE]{};
   uint16_t torchLightLevels[CHUNK_MESH_INFO_SIZE]{};
-  populateMeshInfoForMeshing(blocks, torchLightLevels, m_chunk->m_neighborChunks);
-  ChunkMeshBuilder builder(blocks, torchLightLevels, m_chunk->m_worldPos);
+  uint8_t sunlightLevels[CHUNK_MESH_INFO_SIZE]{};
+  populateMeshInfoForMeshing(blocks, torchLightLevels, sunlightLevels, m_chunk->m_neighborChunks);
+  ChunkMeshBuilder builder(blocks, torchLightLevels, sunlightLevels, m_chunk->m_worldPos);
   builder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
   m_done = true;
 }
@@ -29,6 +29,7 @@ void ChunkMeshInfo::applyMeshDataToMesh() {
 
 void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&blockResult)[CHUNK_MESH_INFO_SIZE],
                                                uint16_t (&torchResult)[CHUNK_MESH_INFO_SIZE],
+                                               uint8_t (&sunlightResult)[CHUNK_MESH_INFO_SIZE],
                                                Chunk *(&chunks)[27]) {
   const int chunkZIndex = chunks[13]->m_pos.z;
   constexpr int M1_CHUNK_SIZE = CHUNK_SIZE - 1;
@@ -52,11 +53,13 @@ void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&blockResult)[CHUNK_MESH_I
 
   int chunkNum, chunkInfoIndex, chunkInfoIndex2, resultInfoIndex, chunkY, chunkZ, meshZ;
 #define SET blockResult[resultInfoIndex] = chunks[chunkNum]->m_blocks[chunkInfoIndex]; \
-if (chunks[chunkNum]->m_torchLightLevelsPtr) {torchResult[resultInfoIndex] = chunks[chunkNum]->m_torchLightLevelsPtr.get()[chunkInfoIndex]; }
+if (chunks[chunkNum]->m_torchLightLevelsPtr) {torchResult[resultInfoIndex] = chunks[chunkNum]->m_torchLightLevelsPtr.get()[chunkInfoIndex]; }\
+if (chunks[chunkNum]->m_sunlightLevelsPtr) {sunlightResult[resultInfoIndex] = chunks[chunkNum]->m_sunlightLevelsPtr.get()[chunkInfoIndex]; }
 #define COPY std::copy(chunks[chunkNum]->m_blocks + chunkInfoIndex, chunks[chunkNum]->m_blocks + chunkInfoIndex2, blockResult + resultInfoIndex); \
 if (chunks[chunkNum]->m_torchLightLevelsPtr) { std::copy(chunks[chunkNum]->m_torchLightLevelsPtr.get() + chunkInfoIndex,\
-chunks[chunkNum]->m_torchLightLevelsPtr.get() + chunkInfoIndex2, torchResult + resultInfoIndex); }
-
+chunks[chunkNum]->m_torchLightLevelsPtr.get() + chunkInfoIndex2, torchResult + resultInfoIndex); }\
+if (chunks[chunkNum]->m_sunlightLevelsPtr) { std::copy(chunks[chunkNum]->m_sunlightLevelsPtr.get() + chunkInfoIndex,\
+chunks[chunkNum]->m_sunlightLevelsPtr.get() + chunkInfoIndex2, sunlightResult + resultInfoIndex); }
   // Chunks at same z level as middle chunk
   for (chunkZ = 0; chunkZ < CHUNK_SIZE; chunkZ++) {
     chunkNum = 3;

@@ -146,8 +146,9 @@ constexpr uint8_t LIGHTING_LOOKUP[6][4][3] = {
 
 ChunkMeshBuilder::ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE],
                                    uint16_t (&lightLevels)[CHUNK_MESH_INFO_SIZE],
+                                   uint8_t (&sunlightLevels)[CHUNK_MESH_INFO_SIZE],
                                    const glm::ivec3 &chunkWorldPos) : m_blocks(
-    blocks), m_chunkWorldPos(chunkWorldPos), m_lightLevels(lightLevels) {
+    blocks), m_chunkWorldPos(chunkWorldPos), m_lightLevels(lightLevels), m_sunlightLevels(sunlightLevels) {
 }
 
 void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
@@ -171,9 +172,8 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
     uint32_t meshBlockIndex = MESH_XYZ(x, y, z);
     Block block = m_blocks[meshBlockIndex];
     if (block == Block::AIR) continue;
-
-    glm::ivec3 blockPos = {x, y, z};
-    int blockPos2[3] = {x, y, z};
+//    int blockPos[3] = {x, y, z};
+    glm::ivec3 blockPos = {x,y,z};
 
     // 1, 0, 0
     // -1, 0, 0
@@ -182,20 +182,16 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
     // 0, 0, 1
     // 0, 0, -1
     for (faceIndex = 0; faceIndex < 6; faceIndex++) {
-      int adjBlockPos[3] = {blockPos2[0], blockPos2[1], blockPos2[2]};
+      // get adj block position
+      int adjBlockPos[3] = {blockPos.x, blockPos.y, blockPos.z};
       adjBlockPos[faceIndex >> 1] += 1 - ((faceIndex & 1) << 1);
-
-      int adjBlockX = adjBlockPos[0];
-      int adjBlockY = adjBlockPos[1];
-      int adjBlockZ = adjBlockPos[2];
 
 
       // skip faces adjacent to absolute borders
-      if (chunkBaseZIndex == 0 && adjBlockZ < 0) continue;
-      if (chunkBaseZIndex == CHUNKS_PER_STACK - 1 && adjBlockZ >= CHUNK_SIZE) continue;
-//      if (adjBlockZ + chunkBaseZ < 0 || adjBlockZ + chunkBaseZ >= WORLD_HEIGHT_BLOCKS) continue;
+      if (chunkBaseZIndex == 0 && adjBlockPos[2] < 0) continue;
+      if (chunkBaseZIndex == CHUNKS_PER_STACK - 1 && adjBlockPos[2] >= CHUNK_SIZE) continue;
 
-      uint32_t adjBlockIndex = MESH_XYZ(adjBlockX, adjBlockY, adjBlockZ);
+      uint32_t adjBlockIndex = MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2]);
       Block adjacentBlock = m_blocks[adjBlockIndex];
       if (adjacentBlock == block) continue;
 
@@ -205,7 +201,8 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
       auto face = static_cast<BlockFace>(faceIndex);
 
       BlockData &blockData = BlockDB::getBlockData(block);
-      const uint16_t faceLightLevel = m_lightLevels[MESH_XYZ(adjBlockX, adjBlockY, adjBlockZ)];
+      const uint16_t faceLightLevel = m_lightLevels[adjBlockIndex];
+      const uint8_t sunlightLevel = m_sunlightLevels[adjBlockIndex];
       setOcclusionLevels(blockPos, face, occlusionLevels);
       int texIndex = blockData.texIndex[faceIndex];
 
@@ -231,8 +228,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
                 ((texIndex & 0xFF) << 22);
         // blue light level [0, 15] == 4 bits, green light level [0, 15] == 4, red light level [0, 15] == 4 bits
         // intensity [0, 15] == 4 bits, total 16 bits
-        int intensity = 15;
-        uint32_t vertexData2 = faceLightLevel | ((intensity & 0xF) << 12);
+        uint32_t vertexData2 = faceLightLevel | ((sunlightLevel & 0xF) << 12);
         ChunkVertex vertex = {vertexData1, vertexData2};
         vertices->push_back(vertex);
       }
