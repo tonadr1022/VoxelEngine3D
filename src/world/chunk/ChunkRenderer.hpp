@@ -19,8 +19,8 @@ class ChunkRenderer {
   static void createGPUResources(ChunkMesh &mesh);
   static void updateGPUResources(ChunkMesh &mesh);
   void render(ChunkMesh &mesh, const glm::ivec3 &worldPos, float firstBufferTime);
-  void start(const Camera &camera);
-  void updateShaderUniforms(const Camera &camera);
+  void start(const Camera &camera, int worldLightLevel);
+  void updateShaderUniforms(const Camera &camera, int worldLightLevel);
 
  private:
   unsigned int textureAtlasID;

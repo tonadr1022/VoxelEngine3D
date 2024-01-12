@@ -21,10 +21,8 @@
 
 class Chunk;
 
-
 using ChunkMap = std::unordered_map<glm::ivec3, Scope<Chunk>>;
-using ChunkStackArray = std::array<Chunk*, CHUNKS_PER_STACK>;
-
+using ChunkStackArray = std::array<Chunk *, CHUNKS_PER_STACK>;
 
 // z
 // |
@@ -79,11 +77,12 @@ class World {
   }
   inline const glm::ivec3 &getLastRayCastBlockPos() const { return m_lastRayCastBlockPos; }
 
+  [[nodiscard]] inline int getWorldLightLevel() const { return m_worldLightLevel; }
+
  private:
   Block getBlockFromWorldPosition(const glm::ivec3 &position) const;
 
   void setRenderDistance(int renderDistance);
-
 
   static inline glm::ivec3 chunkPosFromWorldPos(int x, int y, int z) {
     return glm::ivec3{static_cast<int>(std::floor(static_cast<float>(x) / CHUNK_SIZE)),
@@ -119,7 +118,9 @@ class World {
   void processDirectChunkUpdates();
   void getNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const;
 
-  static void addRelatedChunks(const glm::ivec3 &blockPosInChunk, const glm::ivec3 &chunkPos, std::unordered_set<glm::ivec3> &chunkSet);
+  static void addRelatedChunks(const glm::ivec3 &blockPosInChunk,
+                               const glm::ivec3 &chunkPos,
+                               std::unordered_set<glm::ivec3> &chunkSet);
 
   void generateChunksWorker4();
   void processBatchToLoad(std::queue<glm::ivec2> &batchToLoad);
@@ -132,6 +133,7 @@ class World {
   int m_lightingLoadDistance = m_renderDistance + 2;
   int m_loadDistance = m_renderDistance + 3;
   int m_unloadDistance = m_renderDistance + 4;
+  int m_worldLightLevel = 15;
 
   glm::ivec3 m_center;
   glm::ivec2 m_xyCenter;
@@ -170,9 +172,8 @@ class World {
   std::vector<glm::ivec2> m_chunksToLoadVector;
   std::unordered_map<glm::ivec2, Scope<ChunkTerrainInfo>> m_chunkTerrainLoadInfoMap;
 
-
   std::vector<glm::ivec2> m_chunksInStructureGenRangeVectorXY;
-  std::unordered_map<glm::ivec3, Chunk*> m_chunkStructuresInfoMap;
+  std::unordered_map<glm::ivec3, Chunk *> m_chunkStructuresInfoMap;
   std::list<glm::ivec3> m_chunksReadyToGenStructuresList;
 
   std::vector<glm::ivec2> m_chunkStackPositionsEligibleForLighting;
@@ -195,6 +196,8 @@ class World {
 
   std::queue<LightNode> m_torchlightRemovalQueue;
   std::queue<LightNode> m_torchLightPlacementQueue;
+  std::queue<SunLightNode> m_sunlightRemovalQueue;
+  std::queue<SunLightNode> m_sunlightPlacementQueue;
 
   void sortTransparentRenderVector();
 

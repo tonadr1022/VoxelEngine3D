@@ -12,7 +12,7 @@
 World::World(Renderer &renderer, int seed, const std::string &savePath)
     : m_worldSave(savePath), m_renderer(renderer), m_center(INT_MAX), m_xyCenter(INT_MAX), m_numRunningThreads(0),
       m_numLoadingThreads(std::thread::hardware_concurrency()), m_seed(seed), m_terrainGenerator(seed) {
-  m_numLoadingThreads = 1;
+//  m_numLoadingThreads = 1;
   const size_t loadVectorSize = ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
   m_chunksToLoadVector.reserve(loadVectorSize);
   BlockDB::loadData("resources/blocks/");
@@ -68,7 +68,7 @@ void World::update() {
 
   // don't need to sort transparent render vector every frame.
   static unsigned long oldRenderSetSize = 0;
-  unsigned long newRenderSetSize = m_transparentRenderSet.size();
+  size_t newRenderSetSize = m_transparentRenderSet.size();
   if (newRenderSetSize != oldRenderSetSize) {
     sortTransparentRenderVector();
     oldRenderSetSize = newRenderSetSize;
@@ -592,6 +592,7 @@ void World::castPlayerAimRay(Ray ray) {
         continue;
       }
     } catch (std::exception &e) {
+      std::cout << e.what() << std::endl;
       return;
     }
 
@@ -676,6 +677,8 @@ void World::renderDebugGui() {
   ImGui::Text("lastRayCastBlockPos: %d, %d, %d", m_lastRayCastBlockPos.x,
               m_lastRayCastBlockPos.y, m_lastRayCastBlockPos.z);
 
+  ImGui::SliderInt("Light Level: %d", &m_worldLightLevel, 0, 15);
+
   ImGui::Text("Running Threads: %d", static_cast<int>(m_numRunningThreads));
 
   ImGui::Text("ChunksToLoadVector: %d", static_cast<int>(m_chunksToLoadVector.size()));
@@ -720,7 +723,6 @@ void World::setRenderDistance(int renderDistance) {
   m_structureLoadDistance = m_renderDistance + 1;
   m_lightingLoadDistance = m_renderDistance + 2;
   m_loadDistance = m_renderDistance + 3;
-
   m_unloadDistance = m_renderDistance + 4;
   m_renderDistanceChanged = true;
 }
@@ -730,15 +732,16 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
 
   auto chunkPos = chunkPosFromWorldPos(worldPos);
   auto blockPosInChunk = worldPos - chunkPos * CHUNK_SIZE;
-//  Chunk &chunk = *m_chunkMap.at(chunkPos).get();
   Chunk *chunk = getChunkRawPtr(chunkPos);
   Block oldBlock = chunk->getBlock(blockPosInChunk);
   uint16_t oldTorchLightPacked = BlockDB::getpackedLightLevel(oldBlock);
+  uint8_t oldSunlightLevel = chunk->getSunLightLevel(blockPosInChunk);
   uint16_t newTorchLightPacked = BlockDB::getpackedLightLevel(block);
   glm::ivec3 oldTorchLight = Utils::unpackLightLevel(oldTorchLightPacked);
+  bool oldBlockIsLightSource = BlockDB::isLightSource(oldBlock);
   // cases
   // 1) torch of any color to air.
-  if (block == Block::AIR && BlockDB::isLightSource(oldBlock)) {
+  if (block == Block::AIR && oldBlockIsLightSource) {
     m_torchlightRemovalQueue.emplace(blockPosInChunk, oldTorchLightPacked);
     chunk->setTorchLevel(blockPosInChunk, 0);
     lightChanged = true;
@@ -748,13 +751,30 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
     m_torchLightPlacementQueue.emplace(blockPosInChunk, newTorchLightPacked);
     chunk->setTorchLevel(blockPosInChunk, newTorchLightPacked);
     lightChanged = true;
-  } else {
+  }
+
+  // if placing a block where light can't pass, must remove sunlight
+  if (oldBlock == Block::AIR && !BlockDB::canLightPass(block)) {
+    m_sunlightRemovalQueue.emplace(blockPosInChunk.x, blockPosInChunk.y, blockPosInChunk.z, oldSunlightLevel);
+    chunk->setSunLightLevel(blockPosInChunk, 0);
+  }
+
+  // must propagate torchlight and sunlight if the new block is air/lets light and the old block didn't
+  else if (block == Block::AIR && !BlockDB::canLightPass(oldBlock)) {
     for (short faceNum = 0; faceNum < 6; faceNum++) {
       glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(blockPosInChunk, faceNum);
-      uint16_t neighborLightLevel = chunk->getTorchLevelPackedIncludingNeighborsOptimized(neighborPos, Chunk::isPosOutOfChunkBounds(neighborPos));
-      if (neighborLightLevel) {
-        m_torchLightPlacementQueue.emplace(neighborPos, neighborLightLevel);
-//      lightChanged = true;
+      if (!oldBlockIsLightSource) {
+        uint16_t neighborTorchlightLevel = chunk->getTorchLevelPackedIncludingNeighborsOptimized(neighborPos);
+        if (neighborTorchlightLevel) {
+          m_torchLightPlacementQueue.emplace(neighborPos, neighborTorchlightLevel);
+        }
+      }
+      if (oldSunlightLevel == 0) {
+        uint8_t neighborSunlightLevel = chunk->getSunlightLevelIncludingNeighborsOptimized(neighborPos);
+        if (neighborSunlightLevel) {
+          m_sunlightPlacementQueue.emplace(neighborPos.x, neighborPos.y, neighborPos.z, neighborSunlightLevel);
+          lightChanged = true;
+        }
       }
     }
   }
@@ -763,8 +783,10 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
 
 
   ChunkAlg::unpropagateTorchLight(m_torchLightPlacementQueue, m_torchlightRemovalQueue, chunk);
+  ChunkAlg::unpropagateSunLight(m_sunlightPlacementQueue, m_sunlightRemovalQueue, chunk);
   chunk->setBlock(blockPosInChunk, block);
   ChunkAlg::propagateTorchLight(m_torchLightPlacementQueue, chunk);
+  ChunkAlg::propagateSunLight(m_sunlightPlacementQueue, chunk);
 
   if (lightChanged) {
     // if light changed add all the neighbor chunks.

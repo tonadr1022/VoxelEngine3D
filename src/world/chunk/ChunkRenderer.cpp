@@ -70,15 +70,16 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
 
 }
 
-void ChunkRenderer::start(const Camera &camera) {
-  updateShaderUniforms(camera);
+void ChunkRenderer::start(const Camera &camera, int worldLightLevel) {
+  updateShaderUniforms(camera, worldLightLevel);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D_ARRAY, textureAtlasID);
   Config::useWireFrame ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void ChunkRenderer::updateShaderUniforms(const Camera &camera) {
+void ChunkRenderer::updateShaderUniforms(const Camera &camera, int worldLightLevel) {
   shader->use();
+  shader->setInt("u_WorldLightLevel", worldLightLevel);
   shader->setBool("u_UseAmbientOcclusion", Config::getUseAmbientOcclusion());
   shader->setInt("u_Texture", 0);
   shader->setMat4("u_Projection", camera.getProjectionMatrix());

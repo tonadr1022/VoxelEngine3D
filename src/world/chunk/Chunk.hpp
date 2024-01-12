@@ -162,19 +162,19 @@ class Chunk {
     return m_blocks[index];
   }
 
-  void setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked, bool outOfBounds);
+  void setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked);
 
-  void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block, bool outOfBounds);
+  void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block);
 
-  void setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel, bool outOfBounds);
+  void setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel);
 
-  [[nodiscard]] Block getBlockIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const;
+  [[nodiscard]] Block getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
-  [[nodiscard]] glm::ivec3 getTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const;
+  [[nodiscard]] glm::ivec3 getTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
-  [[nodiscard]] uint16_t getTorchLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const;
+  [[nodiscard]] uint16_t getTorchLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
-  [[nodiscard]] uint8_t getSunlightLevelIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const;
+  [[nodiscard]] uint8_t getSunlightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
 
 

@@ -23,7 +23,7 @@ void Renderer::renderCrossHair() const {
 
 void Renderer::renderWorld(const World &world) {
   m_viewFrustum.updatePlanes(world.player.camera.getProjectionMatrix(), world.player.camera.getViewMatrix());
-  m_chunkRenderer.start(world.player.camera);
+  m_chunkRenderer.start(world.player.camera, world.getWorldLightLevel());
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
 

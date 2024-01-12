@@ -10,6 +10,7 @@ out vec3 v_FragColor;
 flat out uint v_TexIndex;
 
 uniform ivec2 u_ChunkWorldPos;
+uniform int u_WorldLightLevel;
 uniform float u_Time;
 uniform mat4 u_Model;
 uniform mat4 u_View;
@@ -92,5 +93,5 @@ void main() {
     float baseLightLevel = mix(1.0, 0.4, float(u_UseAmbientOcclusion));
 
     float occlusion = 0.2 * occlusionLevel * occlusionFactor;
-    v_LightLevel = (baseLightLevel + occlusion) * float(intensity) / 15.0;
+    v_LightLevel = (baseLightLevel + occlusion) * float(intensity) * u_WorldLightLevel / 15.0 / 15.0;
 }
