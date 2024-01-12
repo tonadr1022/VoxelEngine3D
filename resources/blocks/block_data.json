@@ -6,7 +6,7 @@
         "isCollidable": false,
         "isLightSource": false,
         "lightLevels": [0,0,0],
-        "lightCanPass": false
+        "lightCanPass": true
     },
     "Stone": {
         "id": 3,

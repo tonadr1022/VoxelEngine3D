@@ -23,6 +23,8 @@ class Chunk;
 
 
 using ChunkMap = std::unordered_map<glm::ivec3, Scope<Chunk>>;
+using ChunkStackArray = std::array<Chunk*, CHUNKS_PER_STACK>;
+
 
 // z
 // |
@@ -122,7 +124,7 @@ class World {
   void generateChunksWorker4();
   void processBatchToLoad(std::queue<glm::ivec2> &batchToLoad);
   void processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStructures);
-  void processBatchToLight(std::queue<glm::ivec3> &batchToLight);
+  void processBatchToLight(std::queue<glm::ivec2> &batchToLight);
   void processBatchToMesh(std::queue<glm::ivec3> &batchToMesh);
 
   int m_renderDistance = 8;
@@ -173,9 +175,10 @@ class World {
   std::unordered_map<glm::ivec3, Chunk*> m_chunkStructuresInfoMap;
   std::list<glm::ivec3> m_chunksReadyToGenStructuresList;
 
-  std::vector<glm::ivec3> m_chunkStackPositionsEligibleForLighting;
-  std::unordered_map<glm::ivec3, Chunk*> m_chunksToLightMap;
-  std::list<glm::ivec3> m_chunkPositionsToLightList;
+  std::vector<glm::ivec2> m_chunkStackPositionsEligibleForLighting;
+//  std::unordered_map<glm::ivec3, Chunk*> m_chunksToLightMap;
+  std::unordered_map<glm::ivec2, ChunkStackArray> m_chunkStacksToLightMap;
+  std::list<glm::ivec2> m_chunkStackPositionsToLightList;
 
   std::vector<glm::ivec3> m_chunkPositionsEligibleForMeshing;
   std::unordered_map<glm::ivec3, Scope<ChunkMeshInfo>> m_chunkMeshInfoMap;

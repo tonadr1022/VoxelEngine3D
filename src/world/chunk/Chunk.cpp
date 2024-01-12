@@ -46,6 +46,19 @@ void Chunk::setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block) {
   }
 }
 
+void Chunk::setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel) {
+  if (isPosOutOfChunkBounds(pos)) {
+    int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
+    Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
+    if (neighborChunk) {
+      glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
+      neighborChunk->setSunLightLevel(localPos, lightLevel);
+    }
+  } else {
+    setSunLightLevel(pos, lightLevel);
+  }
+}
+
 Block Chunk::getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
@@ -110,6 +123,18 @@ void Chunk::allocateSunLightLevels() {
   if (!m_sunlightLevelsPtr) {
     m_sunlightLevelsPtr = std::make_unique<uint8_t[]>(CHUNK_VOLUME);
     std::fill(m_sunlightLevelsPtr.get(), m_sunlightLevelsPtr.get() + CHUNK_VOLUME, 0);
+  }
+}
+
+
+void Chunk::fillSunlightWithZ(int z, uint8_t lightLevel, bool atOrAbove) {
+  if (!m_sunlightLevelsPtr) {
+    m_sunlightLevelsPtr = std::make_unique<uint8_t[]>(CHUNK_VOLUME);
+    if (atOrAbove) {
+      std::fill(m_sunlightLevelsPtr.get() + CHUNK_AREA * z, m_sunlightLevelsPtr.get() + CHUNK_VOLUME, lightLevel);
+    } else {
+      std::fill(m_sunlightLevelsPtr.get(), m_sunlightLevelsPtr.get() + CHUNK_AREA * z, lightLevel);
+    }
   }
 }
 

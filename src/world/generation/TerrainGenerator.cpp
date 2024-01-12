@@ -29,33 +29,33 @@ void TerrainGenerator::generateStructures(Chunk *chunk, HeightMap &heightMap, Tr
 }
 
 void TerrainGenerator::makeTree(const glm::ivec3 &pos, Chunk *chunk) {
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 4; i++) {
     chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, i + pos.z}, Block::OAK_WOOD);
   }
   // leaves
   for (int x = -2; x <= 2; x++) {
     for (int y = -2; y <= 2; y++) {
-      for (int z = 8; z <= 12; z++) {
-        chunk->setBlockIncludingNeighborsOptimized({pos.x + x, pos.y + y, pos.z + z}, Block::OAK_LEAVES);
+      for (int z = 4; z <= 12; z++) {
+        chunk->setBlockIncludingNeighborsOptimized({pos.x + x, pos.y + y, pos.z + z}, Block::BEDROCK);
       }
     }
   }
-  int col = rand() % 4;
-  Block glowstoneColor;
-  switch(col) {
-    case 0:
-      glowstoneColor = Block::GLOWSTONE_GREEN;
-      break;
-    case 1:
-      glowstoneColor = Block::GLOWSTONE_RED;
-      break;
-    case 2:
-      glowstoneColor = Block::GLOWSTONE_BLUE;
-      break;
-    default:
-      glowstoneColor = Block::GLOWSTONE;
-  }
-  chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, 8 + pos.z},glowstoneColor);
+//  int col = rand() % 4;
+//  Block glowstoneColor;
+//  switch(col) {
+//    case 0:
+//      glowstoneColor = Block::GLOWSTONE_GREEN;
+//      break;
+//    case 1:
+//      glowstoneColor = Block::GLOWSTONE_RED;
+//      break;
+//    case 2:
+//      glowstoneColor = Block::GLOWSTONE_BLUE;
+//      break;
+//    default:
+//      glowstoneColor = Block::GLOWSTONE;
+//  }
+//  chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, 8 + pos.z},glowstoneColor);
 }
 
 TerrainGenerator::TerrainGenerator(int seed) : m_seed(seed) {}
@@ -115,6 +115,7 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap, Block (&blocks)[CHU
 //      for (z = 0; z < 32; z++) {
 //        setBlockTerrain(x, y, z, Block::STONE);
 //      }
+//      setBlockTerrain(x, y, 38, Block::BEDROCK);
 //    }
 //  }
 

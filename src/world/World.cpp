@@ -12,6 +12,7 @@
 World::World(Renderer &renderer, int seed, const std::string &savePath)
     : m_worldSave(savePath), m_renderer(renderer), m_center(INT_MAX), m_xyCenter(INT_MAX), m_numRunningThreads(0),
       m_numLoadingThreads(std::thread::hardware_concurrency()), m_seed(seed), m_terrainGenerator(seed) {
+//  m_numLoadingThreads = 1;
   const size_t loadVectorSize = ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
   m_chunksToLoadVector.reserve(loadVectorSize);
   BlockDB::loadData("resources/blocks/");
@@ -302,9 +303,16 @@ void World::updateChunkStructureGenList() {
 }
 
 void World::updateChunkLightingList() {
-  for (auto iter = m_chunksToLightMap.begin(); iter != m_chunksToLightMap.end();) {
-    if (iter->second->chunkState == ChunkState::FULLY_GENERATED) {
-      iter = m_chunksToLightMap.erase(iter);
+  for (auto iter = m_chunkStacksToLightMap.begin(); iter != m_chunkStacksToLightMap.end();) {
+    bool shouldErase = true;
+    for (int chunkIndex = 0; chunkIndex < CHUNKS_PER_STACK; chunkIndex++) {
+      if (iter->second[chunkIndex]->chunkState != ChunkState::FULLY_GENERATED) {
+        shouldErase = false;
+        break;
+      }
+    }
+    if (shouldErase) {
+      iter = m_chunkStacksToLightMap.erase(iter);
     } else {
       iter++;
     }
@@ -315,48 +323,58 @@ void World::updateChunkLightingList() {
     glm::ivec3 pos;
     for (pos.x = m_center.x - m_lightingLoadDistance; pos.x <= m_center.x + m_lightingLoadDistance; pos.x++) {
       for (pos.y = m_center.y - m_lightingLoadDistance; pos.y <= m_center.y + m_lightingLoadDistance; pos.y++) {
+        if (m_chunkStacksToLightMap.count({pos.x, pos.y})) continue;
+        bool canLight = true;
         for (pos.z = 0; pos.z < CHUNKS_PER_STACK; pos.z++) {
-          if (m_chunkMap.at(pos)->chunkState != ChunkState::STRUCTURES_GENERATED) continue;
-          if (m_chunksToLightMap.count(pos)) continue;
-          m_chunkStackPositionsEligibleForLighting.emplace_back(pos);
+          if (m_chunkMap.at(pos)->chunkState != ChunkState::STRUCTURES_GENERATED) {
+            canLight = false;
+            break;
+          }
         }
+        if (canLight) m_chunkStackPositionsEligibleForLighting.emplace_back(pos);
       }
     }
     std::sort(m_chunkStackPositionsEligibleForLighting.begin(),
               m_chunkStackPositionsEligibleForLighting.end(),
-              rcmpVec3);
+              rcmpVec2);
   }
 
   for (auto posIt = m_chunkStackPositionsEligibleForLighting.begin();
        posIt != m_chunkStackPositionsEligibleForLighting.end();) {
-    glm::ivec3 pos = *posIt;
-    Chunk *chunkToLight = getChunkRawPtr(pos);
-    // if the chunk is all air, there are no faces to reflect light, so skip lighting altogether
-    if (chunkToLight->m_numNonAirBlocks == 0) {
-      chunkToLight->chunkState = ChunkState::FULLY_GENERATED;
-      ++posIt;
-      continue;
-    }
+    glm::ivec2 pos2d = *posIt;
+    ChunkStackArray chunks = {nullptr};
+//    Chunk *chunks[CHUNKS_PER_STACK] = {nullptr};
+    bool canLight = true;
+    for (glm::ivec3 pos = {pos2d.x, pos2d.y, 0}; pos.z < CHUNKS_PER_STACK; pos.z++) {
+      Chunk *chunkToLight = getChunkRawPtr(pos);
+      // check horizontal neighbors
 
-    // should only calculate light when block placement is done for all neighbors, which includes
-    // neighbors that already have lighting completed
-    bool canGenLight = true;
-    for (auto &chunk : chunkToLight->m_neighborChunks) {
-      if (chunk && chunk->chunkState != ChunkState::STRUCTURES_GENERATED &&
-          chunk->chunkState != ChunkState::FULLY_GENERATED) {
-        canGenLight = false;
+      // should only calculate light when block placement is done for all neighbors, which includes
+      // neighbors that already have lighting completed
+      for (auto neighborIndex : Chunk::HORIZONTAL_NEIGHBOR_INDICES) {
+        ChunkState horizontalNeighborChunkState = chunkToLight->m_neighborChunks[neighborIndex]->chunkState;
+        if (horizontalNeighborChunkState != ChunkState::STRUCTURES_GENERATED
+            && horizontalNeighborChunkState != ChunkState::FULLY_GENERATED) {
+          canLight = false;
+          break;
+        }
+      }
+      if (!canLight) {
         break;
       }
+      chunks[pos.z] = chunkToLight;
     }
-
-    if (canGenLight) {
-      m_chunksToLightMap.emplace(pos, chunkToLight);
-      auto insertPos = std::lower_bound(m_chunkPositionsToLightList.begin(),
-                                        m_chunkPositionsToLightList.end(), pos, rcmpVec3);
-      m_chunkPositionsToLightList.insert(insertPos, pos);
+    if (canLight) {
+      m_chunkStacksToLightMap.emplace(pos2d, chunks);
+      auto insertPos = std::lower_bound(m_chunkStackPositionsToLightList.begin(),
+                                        m_chunkStackPositionsToLightList.end(),
+                                        pos2d,
+                                        rcmpVec2);
+      m_chunkStackPositionsToLightList.insert(insertPos, pos2d);
+//      std::cout << pos2d.x << " " << pos2d.y << std::endl;
       posIt = m_chunkStackPositionsEligibleForLighting.erase(posIt);
     } else {
-      ++posIt;
+      posIt++;
     }
   }
 }
@@ -444,14 +462,14 @@ void World::generateChunksWorker4() {
   while (true) {
     std::queue<glm::ivec2> batchToLoad;
     std::queue<glm::ivec3> batchToGenStructures;
-    std::queue<glm::ivec3> batchToLight;
+    std::queue<glm::ivec2> batchToLight;
     std::queue<glm::ivec3> batchToMesh;
 
     std::unique_lock<std::mutex> lock(m_mainMutex);
     m_conditionVariable.wait(lock, [this]() {
       return !m_isRunning || (m_numRunningThreads < m_numLoadingThreads
           && (!m_chunksToLoadVector.empty() || !m_chunksReadyToGenStructuresList.empty() ||
-              !m_chunkPositionsToLightList.empty() ||
+              !m_chunkStackPositionsToLightList.empty() ||
               !m_chunksReadyToMeshList.empty()));
     });
     if (!m_isRunning) return;
@@ -469,11 +487,11 @@ void World::generateChunksWorker4() {
       }
       lock.unlock();
       processBatchToGenStructures(batchToGenStructures);
-    } else if (!m_chunkPositionsToLightList.empty() && m_chunksReadyToGenStructuresList.empty() &&
+    } else if (!m_chunkStackPositionsToLightList.empty() && m_chunksReadyToGenStructuresList.empty() &&
         m_chunksToLoadVector.empty()) {
-      while (!m_chunkPositionsToLightList.empty() && batchToLight.size() < 10) {
-        batchToLight.push(m_chunkPositionsToLightList.back());
-        m_chunkPositionsToLightList.pop_back();
+      while (!m_chunkStackPositionsToLightList.empty() && batchToLight.size() < 10) {
+        batchToLight.push(m_chunkStackPositionsToLightList.back());
+        m_chunkStackPositionsToLightList.pop_back();
       }
       lock.unlock();
       processBatchToLight(batchToLight);
@@ -519,12 +537,24 @@ void World::processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStruct
   }
 }
 
-void World::processBatchToLight(std::queue<glm::ivec3> &batchToLight) {
+void World::processBatchToLight(std::queue<glm::ivec2> &batchToLight) {
   while (!batchToLight.empty()) {
     const auto pos = batchToLight.front();
-    auto it = m_chunksToLightMap.find(pos);
-    if (it != m_chunksToLightMap.end()) ChunkAlg::generateTorchlightData(it->second);
-//    m_chunkLightInfoMap.at(pos)->generateLightingData();
+    auto it = m_chunkStacksToLightMap.find(pos);
+    if (it != m_chunkStacksToLightMap.end()) {
+//      bool fl = true;
+//      for (int i = 0; i < 8; i++) {
+//        if (it->second[i]->chunkState != ChunkState::STRUCTURES_GENERATED) {
+//          fl = false;
+//          break;
+//        }
+//      }
+//      if (fl) {
+//        ChunkAlg::generateLightData(it->second);
+//      }
+        ChunkAlg::generateLightData(it->second);
+
+    }
     batchToLight.pop();
   }
 }
@@ -654,8 +684,8 @@ void World::renderDebugGui() {
   ImGui::Text("ChunkStructuresInfoMap: %d", static_cast<int>(m_chunkStructuresInfoMap.size()));
   ImGui::Text("ChunksReadyToGenStructuresList: %d", static_cast<int>(m_chunksReadyToGenStructuresList.size()));
   ImGui::Text("ChunksInLightingRangeVectorXY: %d", static_cast<int>(m_chunkStackPositionsEligibleForLighting.size()));
-  ImGui::Text("ChunkLightInfoMap: %d", static_cast<int>(m_chunksToLightMap.size()));
-  ImGui::Text("ChunksReadyForLightingList: %d", static_cast<int>(m_chunkPositionsToLightList.size()));
+  ImGui::Text("ChunkLightInfoMap: %d", static_cast<int>(m_chunkStacksToLightMap.size()));
+  ImGui::Text("ChunksReadyForLightingList: %d", static_cast<int>(m_chunkStackPositionsToLightList.size()));
   ImGui::Text("ChunksInMeshRangeVector: %d", static_cast<int>(m_chunkPositionsEligibleForMeshing.size()));
   ImGui::Text("ChunkMeshInfoMap: %d", static_cast<int>(m_chunkMeshInfoMap.size()));
   ImGui::Text("ChunksReadyToMeshList: %d", static_cast<int>(m_chunksReadyToMeshList.size()));
@@ -760,8 +790,9 @@ void World::processDirectChunkUpdates() {
 
     Block blocks[CHUNK_MESH_INFO_SIZE]{}; // NEED TO INITIALIZE
     uint16_t torchLightLevels[CHUNK_MESH_INFO_SIZE]{}; // NEED TO INITIALIZE
-    ChunkMeshInfo::populateMeshInfoForMeshing(blocks, torchLightLevels, chunk->m_neighborChunks);
-    ChunkMeshBuilder builder(blocks, torchLightLevels, chunk->m_worldPos);
+    uint8_t sunlightLevels[CHUNK_MESH_INFO_SIZE]{}; // NEED TO INITIALIZE
+    ChunkMeshInfo::populateMeshInfoForMeshing(blocks, torchLightLevels, sunlightLevels, chunk->m_neighborChunks);
+    ChunkMeshBuilder builder(blocks, torchLightLevels, sunlightLevels, chunk->m_worldPos);
     builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
 
     chunk->m_opaqueMesh.vertices = std::move(opaqueVertices);

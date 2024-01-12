@@ -42,7 +42,7 @@ struct SunLightNode {
   uint8_t lightLevel;
 
   SunLightNode(glm::ivec3 pPos, uint8_t pLightLevel)
-  : pos(pPos), lightLevel(pLightLevel) {}
+      : pos(pPos), lightLevel(pLightLevel) {}
 };
 
 // Crashes when out of bounds
@@ -105,7 +105,6 @@ class Chunk {
     m_blocks[XYZ(pos)] = block;
   }
 
-
   [[nodiscard]] inline Block getBlock(int x, int y, int z) const {
     return m_blocks[XYZ(x, y, z)];
   }
@@ -147,8 +146,10 @@ class Chunk {
     m_sunlightLevelsPtr.get()[XYZ(pos)] = lightLevel;
   }
 
+  void fillSunlightWithZ(int z, uint8_t lightLevel, bool AtOrAbove);
+
   [[nodiscard]] inline uint8_t getSunLightLevel(const glm::ivec3 &pos) const {
-    if (!m_sunlightLevelsPtr) return 0;
+    if (!m_sunlightLevelsPtr) return 15;
     return m_sunlightLevelsPtr.get()[XYZ(pos)];
   }
 
@@ -160,6 +161,8 @@ class Chunk {
 
   void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block);
 
+  void setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel);
+
   [[nodiscard]] Block getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
   [[nodiscard]] glm::ivec3 getTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
@@ -167,6 +170,8 @@ class Chunk {
   [[nodiscard]] uint16_t getTorchLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
   [[nodiscard]] uint8_t getSunlightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
+
+
 
   ChunkMeshState chunkMeshState;
   ChunkState chunkState;
@@ -189,6 +194,12 @@ class Chunk {
   ChunkMesh m_transparentMesh;
 
   AABB m_boundingBox;
+
+  // |  3   12  21
+  // |    4   13  22
+  // |      5   14  23
+  // \-------------------y
+  static constexpr const std::array<int, 9> HORIZONTAL_NEIGHBOR_INDICES = {3, 4, 5, 12, 13, 14, 21, 22, 23};
 
  private:
 };

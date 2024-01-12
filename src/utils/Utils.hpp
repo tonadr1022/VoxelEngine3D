@@ -67,9 +67,8 @@ static inline glm::ivec3 unpackLightLevel(uint16_t level) {
 }
 
 inline glm::ivec3 getNeighborPosFromFace(glm::ivec3 pos, short faceNum) {
-  glm::ivec3 neighborPos = pos;
-  neighborPos[faceNum >> 1] += 1 - ((faceNum & 1) << 1);
-  return neighborPos;
+  pos[faceNum >> 1] += 1 - ((faceNum & 1) << 1);
+  return pos;
 }
 
 
