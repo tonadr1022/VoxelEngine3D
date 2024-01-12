@@ -79,6 +79,11 @@ class World {
 
   [[nodiscard]] inline int getWorldLightLevel() const { return m_worldLightLevel; }
 
+  void setTorchLight(glm::ivec3 pos, uint16_t lightLevel, bool updateMesh);
+  void setSunlight(glm::ivec3 pos, uint16_t lightLevel, bool updateMesh);
+  Block getBlock(glm::ivec3 pos) const;
+  glm::ivec3 getTorchLevel(glm::ivec3 pos) const;
+
  private:
   Block getBlockFromWorldPosition(const glm::ivec3 &position) const;
 
@@ -102,6 +107,7 @@ class World {
 
   void castPlayerAimRay(Ray ray);
   void setBlockWithUpdate(const glm::ivec3 &worldPos, Block block);
+
 //  void setTorchLightWithUpdate(const glm::ivec3 &worldPos, Block block);
   void saveData();
 

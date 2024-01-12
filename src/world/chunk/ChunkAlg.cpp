@@ -30,6 +30,42 @@ void ChunkAlg::generateTorchlightData(Chunk *chunk) {
   chunk->chunkState = ChunkState::FULLY_GENERATED;
 }
 
+void ChunkAlg::propagateTorchLightDirect(std::queue<LightNode> &torchlightQueue, World *world) {
+  // while the queue is not empty, pop the front element and add it to the light level array
+  while (!torchlightQueue.empty()) {
+    LightNode node = torchlightQueue.front();
+    torchlightQueue.pop();
+
+    // For each adjacent neighbor for each face of the light source, check whether it has a lower light level
+    // for any component. If so, replace the components that are lower in the neighbor with what is propagated
+    // from the current light level
+    for (short faceNum = 0; faceNum < 6; faceNum++) {
+      glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(node.pos, faceNum);
+      Block neighborBlock = world->getBlock(neighborPos);
+
+      // if light cant pass don't add anything
+      if (!BlockDB::canLightPass(neighborBlock)) continue;
+
+      const glm::ivec3 neighborLightLevel =world->getTorchLevel(neighborPos);
+      glm::ivec3 unpackedNodeLightLevel = Utils::unpackLightLevel(node.lightLevel);
+      if (neighborLightLevel.r < unpackedNodeLightLevel.r - 1 ||
+          neighborLightLevel.g < unpackedNodeLightLevel.g - 1 ||
+          neighborLightLevel.b < unpackedNodeLightLevel.b - 1) {
+        const int newR = std::max(neighborLightLevel.r, unpackedNodeLightLevel.r - 1);
+        const int newG = std::max(neighborLightLevel.g, unpackedNodeLightLevel.g - 1);
+        const int newB = std::max(neighborLightLevel.b, unpackedNodeLightLevel.b - 1);
+        const uint16_t newLightLevel = Utils::packLightLevel(newR, newG, newB);
+        world->setTorchLight(neighborPos, newLightLevel, true);
+
+        // if there is still light to propagate add to queue
+        if (newR > 1 || newG > 1 || newB > 1) {
+          torchlightQueue.emplace(neighborPos, newLightLevel);
+        }
+      }
+    }
+  }
+}
+
 void ChunkAlg::unpropagateSunLight(std::queue<SunLightNode> &sunLightPlacementQueue,
                                    std::queue<SunLightNode> &sunlightRemovalQueue,
                                    Chunk *chunk) {
