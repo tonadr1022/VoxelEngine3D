@@ -20,8 +20,8 @@ Chunk::~Chunk() {
   m_opaqueMesh.clearData();
 }
 
-void Chunk::setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked) {
-  if (isPosOutOfChunkBounds(pos)) {
+void Chunk::setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked, bool outOfBounds) {
+  if (outOfBounds) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
@@ -33,8 +33,8 @@ void Chunk::setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t li
   }
 }
 
-void Chunk::setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block) {
-  if (isPosOutOfChunkBounds(pos)) {
+void Chunk::setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block, bool outOfBounds) {
+  if (outOfBounds) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
@@ -46,8 +46,8 @@ void Chunk::setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block) {
   }
 }
 
-void Chunk::setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel) {
-  if (isPosOutOfChunkBounds(pos)) {
+void Chunk::setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel, bool outOfBounds) {
+  if (outOfBounds) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
@@ -59,8 +59,8 @@ void Chunk::setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t light
   }
 }
 
-Block Chunk::getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const {
-  if (isPosOutOfChunkBounds(pos)) {
+Block Chunk::getBlockIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const {
+  if (outOfBounds) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     const Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
@@ -72,8 +72,8 @@ Block Chunk::getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const {
   }
 }
 
-glm::ivec3 Chunk::getTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos) const {
-  if (isPosOutOfChunkBounds(pos)) {
+glm::ivec3 Chunk::getTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const {
+  if (outOfBounds) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     const Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
@@ -91,8 +91,8 @@ void Chunk::allocateTorchLightLevels() {
     std::fill(m_torchLightLevelsPtr.get(), m_torchLightLevelsPtr.get() + CHUNK_VOLUME, 0);
   }
 }
-uint16_t Chunk::getTorchLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) const {
-  if (isPosOutOfChunkBounds(pos)) {
+uint16_t Chunk::getTorchLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const {
+  if (outOfBounds) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     const Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
@@ -105,8 +105,8 @@ uint16_t Chunk::getTorchLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) c
   }
 }
 
-uint8_t Chunk::getSunlightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const {
-  if (isPosOutOfChunkBounds(pos)) {
+uint8_t Chunk::getSunlightLevelIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const {
+  if (outOfBounds) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     const Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {

@@ -30,13 +30,14 @@ void TerrainGenerator::generateStructures(Chunk *chunk, HeightMap &heightMap, Tr
 
 void TerrainGenerator::makeTree(const glm::ivec3 &pos, Chunk *chunk) {
   for (int i = 0; i < 4; i++) {
-    chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, i + pos.z}, Block::OAK_WOOD);
+    chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, i + pos.z}, Block::OAK_WOOD, false);
   }
   // leaves
   for (int x = -2; x <= 2; x++) {
     for (int y = -2; y <= 2; y++) {
       for (int z = 4; z <= 12; z++) {
-        chunk->setBlockIncludingNeighborsOptimized({pos.x + x, pos.y + y, pos.z + z}, Block::BEDROCK);
+        glm::ivec3 blockPos = {pos.x + x, pos.y + y, pos.z + z};
+        chunk->setBlockIncludingNeighborsOptimized(blockPos, Block::BEDROCK, Chunk::isPosOutOfChunkBounds(blockPos));
       }
     }
   }

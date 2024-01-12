@@ -38,11 +38,14 @@ struct LightNode {
 };
 
 struct SunLightNode {
-  glm::ivec3 pos;
+//  glm::ivec3 pos;
+  uint8_t x;
+  uint8_t y;
+  uint16_t z;
   uint8_t lightLevel;
 
-  SunLightNode(glm::ivec3 pPos, uint8_t pLightLevel)
-      : pos(pPos), lightLevel(pLightLevel) {}
+  SunLightNode(uint8_t px, uint8_t py, uint8_t pz, uint8_t pLightLevel)
+      : x(px), y(py), z(pz), lightLevel(pLightLevel) {}
 };
 
 // Crashes when out of bounds
@@ -71,15 +74,6 @@ static inline int MESH_XYZ(int x, int y, int z) {
       + (z + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH;
 }
 
-// return true if x, y, or z are not between 0-31 inclusive.
-static inline bool isPosOutOfChunkBounds(int x, int y, int z) {
-  return (x & 0b1111100000) || (y & 0b1111100000) || (z & 0b1111100000);
-}
-
-// return true if x, y, or z are not between 0-31 inclusive.
-static inline bool isPosOutOfChunkBounds(const glm::ivec3 &pos) {
-  return (pos.x & 0b1111100000) || (pos.y & 0b1111100000) || (pos.z & 0b1111100000);
-}
 
 class Chunk {
  public:
@@ -90,6 +84,17 @@ class Chunk {
   ~Chunk();
 
   int m_numNonAirBlocks = 0;
+
+  // return true if x, y, or z are not between 0-31 inclusive.
+  static inline bool isPosOutOfChunkBounds(int x, int y, int z) {
+    return (x & 0b1111100000) || (y & 0b1111100000) || (z & 0b1111100000);
+  }
+
+// return true if x, y, or z are not between 0-31 inclusive.
+  static inline bool isPosOutOfChunkBounds(const glm::ivec3 &pos) {
+    return (pos.x & 0b1111100000) || (pos.y & 0b1111100000) || (pos.z & 0b1111100000);
+  }
+
 
   inline void setBlock(int x, int y, int z, Block block) {
     Block oldBlock = m_blocks[XYZ(x, y, z)];
@@ -157,19 +162,19 @@ class Chunk {
     return m_blocks[index];
   }
 
-  void setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked);
+  void setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked, bool outOfBounds);
 
-  void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block);
+  void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block, bool outOfBounds);
 
-  void setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel);
+  void setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel, bool outOfBounds);
 
-  [[nodiscard]] Block getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const;
+  [[nodiscard]] Block getBlockIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const;
 
-  [[nodiscard]] glm::ivec3 getTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
+  [[nodiscard]] glm::ivec3 getTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const;
 
-  [[nodiscard]] uint16_t getTorchLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) const;
+  [[nodiscard]] uint16_t getTorchLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const;
 
-  [[nodiscard]] uint8_t getSunlightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
+  [[nodiscard]] uint8_t getSunlightLevelIncludingNeighborsOptimized(glm::ivec3 pos, bool outOfBounds) const;
 
 
 

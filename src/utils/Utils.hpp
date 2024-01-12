@@ -28,7 +28,6 @@ inline int chunkNeighborOffset(int value) {
   return ((value & 0x80) != 0) ? -1 : ((value >> 5) & 1) ? 1 : 0;
 }
 
-
 // see neighbor array in world.hpp
 inline int getNeighborArrayIndex(int x, int y, int z) {
   return (x + 1) + 3 * ((z + 1) + 3 * (y + 1));
@@ -48,10 +47,10 @@ inline glm::ivec3 outOfBoundsPosToLocalPos(const glm::ivec3 outOfBoundsPos) {
 }
 
 static inline uint16_t packLightLevel(const glm::ivec3 &level) {
-  return static_cast<uint32_t>(level.r  << 8 | level.g << 4 | level.b);
+  return static_cast<uint32_t>(level.r << 8 | level.g << 4 | level.b);
 }
 static inline uint16_t packLightLevel(int r, int g, int b) {
-  return static_cast<uint32_t>(r  << 8 | g << 4 | b);
+  return static_cast<uint32_t>(r << 8 | g << 4 | b);
 }
 
 static constexpr uint16_t RED_MASK = 0xF00;
@@ -70,7 +69,6 @@ inline glm::ivec3 getNeighborPosFromFace(glm::ivec3 pos, short faceNum) {
   pos[faceNum >> 1] += 1 - ((faceNum & 1) << 1);
   return pos;
 }
-
 
 }
 #endif //VOXEL_ENGINE_UTILS_HPP
