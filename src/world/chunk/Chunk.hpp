@@ -189,7 +189,7 @@ class Chunk {
 
   Chunk *m_neighborChunks[27]{};
 
-  std::unique_ptr<uint16_t[]> m_torchLightLevelsPtr = nullptr;
+  Scope<uint16_t[]> m_torchLightLevelsPtr = nullptr;
   Scope<uint8_t[]> m_sunlightLevelsPtr = nullptr;
 
   void allocateTorchLightLevels();

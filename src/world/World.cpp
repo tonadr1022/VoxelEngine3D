@@ -413,18 +413,15 @@ void World::updateChunkMeshList() {
 
   for (auto posIt = m_chunkPositionsEligibleForMeshing.begin(); posIt != m_chunkPositionsEligibleForMeshing.end();) {
     Chunk *chunkToMesh = getChunkRawPtr(*posIt);
-
+    if (chunkToMesh->m_numNonAirBlocks == 0) {
+      chunkToMesh->chunkMeshState == ChunkMeshState::BUILT;
+      posIt++;
+      continue;
+    }
     bool canMesh = true;
     for (auto &chunk : chunkToMesh->m_neighborChunks) {
       if (chunk && chunk->chunkState != ChunkState::FULLY_GENERATED) {
         canMesh = false;
-//        if (chunk->m_pos.x < m_center.x + m_renderDistance && chunk->m_pos.x > m_center.x - m_renderDistance
-//            && chunk->m_pos.y < m_center.y + m_renderDistance && chunk->m_pos.y > m_center.y - m_renderDistance &&  m_chunksReadyToGenStructuresList.empty()) {
-//          std::cout << "cant mesh because: " << chunk->m_pos.x << " " << chunk->m_pos.y << " " << chunk->m_pos.z;
-//          if (chunk->chunkState == ChunkState::STRUCTURES_GENERATED) {
-//            std::cout << "  structs generated but not light\n\n";
-//          }
-//        }
         break;
       }
     }

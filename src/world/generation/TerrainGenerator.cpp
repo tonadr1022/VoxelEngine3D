@@ -29,18 +29,18 @@ void TerrainGenerator::generateStructures(Chunk *chunk, HeightMap &heightMap, Tr
 }
 
 void TerrainGenerator::makeTree(const glm::ivec3 &pos, Chunk *chunk) {
-//  for (int i = 1; i < 4; i++) {
-//    chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, i + pos.z}, Block::OAK_WOOD);
-//  }
-//  // leaves
-//  for (int x = -2; x <= 2; x++) {
-//    for (int y = -2; y <= 2; y++) {
-//      for (int z = 4; z <= 8; z++) {
-//        glm::ivec3 blockPos = {pos.x + x, pos.y + y, pos.z + z};
-//        chunk->setBlockIncludingNeighborsOptimized(blockPos, Block::OAK_LEAVES);
-//      }
-//    }
-//  }
+  for (int i = 1; i < 4; i++) {
+    chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, i + pos.z}, Block::OAK_WOOD);
+  }
+  // leaves
+  for (int x = -2; x <= 2; x++) {
+    for (int y = -2; y <= 2; y++) {
+      for (int z = 4; z <= 8; z++) {
+        glm::ivec3 blockPos = {pos.x + x, pos.y + y, pos.z + z};
+        chunk->setBlockIncludingNeighborsOptimized(blockPos, Block::OAK_LEAVES);
+      }
+    }
+  }
   int col = rand() % 4;
   Block glowstoneColor;
   switch(col) {
@@ -87,47 +87,47 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap, Block (&blocks)[CHU
 
   int heightMapIndex = 0;
   int x,y,z;
-//  for (x = 0; x < CHUNK_SIZE; x++) {
-//    for (y = 0; y < CHUNK_SIZE; y++) {
-//      int maxBlockHeight = heightMap[heightMapIndex];
-//      for (z = 0; z < maxBlockHeight - 4; z++) {
-//        setBlockTerrain(x, y, z, Block::STONE);
-//      }
-//      if (maxBlockHeight - 4 >= 0) {
-//        for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
-//          setBlockTerrain(x, y, z, Block::DIRT);
-//        }
-//      }
-//      if (maxBlockHeight <= 66) {
-//        setBlockTerrain(x, y, maxBlockHeight, Block::SAND);
-//      } else {
-//        setBlockTerrain(x, y, maxBlockHeight, Block::GRASS);
-//      }
-//
-//      for (z = maxBlockHeight + 1; z <= 64; z++) {
-//        setBlockTerrain(x, y, z, Block::WATER);
-//      }
-//      heightMapIndex++;
-//    }
-//  }
-
   for (x = 0; x < CHUNK_SIZE; x++) {
     for (y = 0; y < CHUNK_SIZE; y++) {
-      for (z = 0; z < 32; z++) {
+      int maxBlockHeight = heightMap[heightMapIndex];
+      for (z = 0; z < maxBlockHeight - 4; z++) {
         setBlockTerrain(x, y, z, Block::STONE);
       }
-//      setBlockTerrain(x, y, 38, Block::BEDROCK);
+      if (maxBlockHeight - 4 >= 0) {
+        for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
+          setBlockTerrain(x, y, z, Block::DIRT);
+        }
+      }
+      if (maxBlockHeight <= 66) {
+        setBlockTerrain(x, y, maxBlockHeight, Block::SAND);
+      } else {
+        setBlockTerrain(x, y, maxBlockHeight, Block::GRASS);
+      }
+
+      for (z = maxBlockHeight + 1; z <= 64; z++) {
+        setBlockTerrain(x, y, z, Block::WATER);
+      }
+      heightMapIndex++;
     }
   }
 
-  for (x = 2; x < CHUNK_SIZE-2; x++) {
-    for (y = 2; y < CHUNK_SIZE-2; y++) {
-
-      setBlockTerrain(x, y, 36, Block::BEDROCK);
-    }
-  }
-
-  setBlockTerrain(0, 0, 32, Block::GLOWSTONE_RED);
+//  for (x = 0; x < CHUNK_SIZE; x++) {
+//    for (y = 0; y < CHUNK_SIZE; y++) {
+//      for (z = 0; z < 32; z++) {
+//        setBlockTerrain(x, y, z, Block::STONE);
+//      }
+////      setBlockTerrain(x, y, 38, Block::BEDROCK);
+//    }
+//  }
+//
+//  for (x = 2; x < CHUNK_SIZE-2; x++) {
+//    for (y = 2; y < CHUNK_SIZE-2; y++) {
+//
+//      setBlockTerrain(x, y, 36, Block::BEDROCK);
+//    }
+//  }
+//
+//  setBlockTerrain(0, 0, 32, Block::GLOWSTONE_RED);
 //  setBlockTerrain(7,7, 32, Block::GLOWSTONE_RED);
 //  setBlockTerrain(15, 16, 15, Block::GLOWSTONE_RED);
 //  setBlockTerrain(16, 15, 15, Block::GLOWSTONE_BLUE);
