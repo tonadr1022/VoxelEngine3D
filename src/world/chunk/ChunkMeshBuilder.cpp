@@ -299,3 +299,31 @@ void ChunkMeshBuilder::setOcclusionLevels(const glm::ivec3 &blockPosInChunk,
     }
   }
 }
+//void ChunkMeshBuilder::constructMeshSemiGreedy(std::vector<ChunkVertex> &opaqueVertices,
+//                                               std::vector<unsigned int> &opaqueIndices,
+//                                               std::vector<ChunkVertex> &transparentVertices,
+//                                               std::vector<unsigned int> &transparentIndices) {
+//  auto opaqueVertices_ = new std::vector<ChunkVertex>();
+//  auto transparentVertices_ = new std::vector<ChunkVertex>();
+//  auto opaqueIndices_ = new std::vector<unsigned int>();
+//  auto transparentIndices_ = new std::vector<unsigned int>();
+//  int occlusionLevels[4];
+//
+//  int chunkBaseZ = m_chunkWorldPos.z;
+//  int chunkBaseZIndex = chunkBaseZ / CHUNK_SIZE;
+//  int x, y, z, faceIndex;
+//
+//  for (z = 0; z < CHUNK_SIZE; z++) {
+//    for (y = 0; y < CHUNK_SIZE; y++) {
+//
+//    }
+//  }
+//}
+//  for (int chunkBlockIndex = 0; chunkBlockIndex < CHUNK_VOLUME; chunkBlockIndex++) {
+//    x = chunkBlockIndex & 31;
+//    y = (chunkBlockIndex >> 5) & 31;
+//    z = chunkBlockIndex >> 10;
+//
+//
+//
+//}

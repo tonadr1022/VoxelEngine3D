@@ -48,6 +48,14 @@ struct SunLightNode {
       : x(px), y(py), z(pz), lightLevel(pLightLevel) {}
 };
 
+struct SunLightNodeWorld {
+  glm::ivec3 pos;
+  uint8_t lightLevel;
+
+  SunLightNodeWorld(glm::ivec3 pPos, uint8_t pLightLevel)
+      : pos(pPos), lightLevel(pLightLevel) {}
+};
+
 // Crashes when out of bounds
 static inline int XYZ(int x, int y, int z) {
   return (z << 10 | y << 5 | x);
@@ -74,7 +82,6 @@ static inline int MESH_XYZ(int x, int y, int z) {
       + (z + 1) * CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH;
 }
 
-
 class Chunk {
  public:
   Chunk() = delete;
@@ -94,7 +101,6 @@ class Chunk {
   static inline bool isPosOutOfChunkBounds(const glm::ivec3 &pos) {
     return (pos.x & 0b1111100000) || (pos.y & 0b1111100000) || (pos.z & 0b1111100000);
   }
-
 
   inline void setBlock(int x, int y, int z, Block block) {
     Block oldBlock = m_blocks[XYZ(x, y, z)];
@@ -175,8 +181,6 @@ class Chunk {
   [[nodiscard]] uint16_t getTorchLevelPackedIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
   [[nodiscard]] uint8_t getSunlightLevelIncludingNeighborsOptimized(glm::ivec3 pos) const;
-
-
 
   ChunkMeshState chunkMeshState;
   ChunkState chunkState;

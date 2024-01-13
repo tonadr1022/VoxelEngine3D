@@ -46,7 +46,7 @@ void ChunkAlg::propagateTorchLightDirect(std::queue<LightNode> &torchlightQueue,
       // if light cant pass don't add anything
       if (!BlockDB::canLightPass(neighborBlock)) continue;
 
-      const glm::ivec3 neighborLightLevel =world->getTorchLevel(neighborPos);
+      const glm::ivec3 neighborLightLevel = world->getTorchLevel(neighborPos);
       glm::ivec3 unpackedNodeLightLevel = Utils::unpackLightLevel(node.lightLevel);
       if (neighborLightLevel.r < unpackedNodeLightLevel.r - 1 ||
           neighborLightLevel.g < unpackedNodeLightLevel.g - 1 ||
@@ -60,6 +60,34 @@ void ChunkAlg::propagateTorchLightDirect(std::queue<LightNode> &torchlightQueue,
         // if there is still light to propagate add to queue
         if (newR > 1 || newG > 1 || newB > 1) {
           torchlightQueue.emplace(neighborPos, newLightLevel);
+        }
+      }
+    }
+  }
+}
+
+void ChunkAlg::unpropagateSunLightDirect(std::queue<SunLightNodeWorld> &sunLightPlacementQueue,
+                                         std::queue<SunLightNodeWorld> &sunlightRemovalQueue,
+                                         World *world) {
+  while (!sunlightRemovalQueue.empty()) {
+    SunLightNodeWorld &node = sunlightRemovalQueue.front();
+    sunlightRemovalQueue.pop();
+
+    for (short faceNum = 0; faceNum < 6; faceNum++) {
+      glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(node.pos, faceNum);
+      const uint8_t neighborLightLevel = world->getSunlightLevel(neighborPos);
+
+      if (neighborLightLevel == 0) continue;
+
+      if (faceNum == 5 && node.lightLevel == 15) {
+        world->setSunlight(neighborPos, 0, true);
+        sunlightRemovalQueue.emplace(neighborPos, MAX_LIGHT_LEVEL);
+      } else {
+        if (neighborLightLevel >= node.lightLevel) {
+          sunLightPlacementQueue.emplace(neighborPos, neighborLightLevel);
+        } else {
+          world->setSunlight(neighborPos, 0, true);
+          sunlightRemovalQueue.emplace(neighborPos, neighborLightLevel);
         }
       }
     }
@@ -90,6 +118,46 @@ void ChunkAlg::unpropagateSunLight(std::queue<SunLightNode> &sunLightPlacementQu
           sunlightRemovalQueue.emplace(neighborPos.x, neighborPos.y, neighborPos.z, neighborLightLevel);
         }
       }
+    }
+  }
+}
+
+void ChunkAlg::unpropagateTorchLightDirect(std::queue<LightNode> &torchLightPlacementQueue,
+                                           std::queue<LightNode> &torchLightRemovalQueue,
+                                           World *world) {
+  while (!torchLightRemovalQueue.empty()) {
+    LightNode node = torchLightRemovalQueue.front();
+    torchLightRemovalQueue.pop();
+
+    for (short faceNum = 0; faceNum < 6; faceNum++) {
+      glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(node.pos, faceNum);
+      const uint16_t neighborLightLevel = world->getTorchLevelPacked(neighborPos);
+      if (neighborLightLevel == 0) continue;
+
+      glm::ivec3 unpackedNodeLightLevel = Utils::unpackLightLevel(node.lightLevel);
+      glm::ivec3 unpackedNeighborLightLevel = Utils::unpackLightLevel(neighborLightLevel);
+      glm::ivec3 newNeighborLightLevel = {0, 0, 0};
+      bool place = false;
+      if (unpackedNeighborLightLevel.r > 0 && unpackedNodeLightLevel.r > 0
+          && unpackedNeighborLightLevel.r >= unpackedNodeLightLevel.r) {
+        newNeighborLightLevel.r = unpackedNeighborLightLevel.r;
+        place = true;
+      }
+      if (unpackedNeighborLightLevel.g > 0 && unpackedNodeLightLevel.g > 0
+          && unpackedNeighborLightLevel.g >= unpackedNodeLightLevel.g) {
+        newNeighborLightLevel.g = unpackedNeighborLightLevel.g;
+        place = true;
+      }
+      if (unpackedNeighborLightLevel.b > 0 && unpackedNodeLightLevel.b > 0
+          && unpackedNeighborLightLevel.b >= unpackedNodeLightLevel.b) {
+        newNeighborLightLevel.b = unpackedNeighborLightLevel.b;
+        place = true;
+      }
+      if (place) {
+        torchLightPlacementQueue.emplace(neighborPos, Utils::packLightLevel(newNeighborLightLevel));
+      }
+      world->setTorchLight(neighborPos, 0, true);
+      torchLightRemovalQueue.emplace(neighborPos, neighborLightLevel);
     }
   }
 }
@@ -296,6 +364,32 @@ void ChunkAlg::propagateSunLight(std::queue<SunLightNode> &sunLightQueue, ChunkS
         setLightLevelInChunkStackIncludingNeighbors(neighborPos, neighbor.lightLevel);
         if (neighbor.lightLevel > 1) {
           sunLightQueue.emplace(neighborPos.x, neighborPos.y, neighborPos.z, neighbor.lightLevel);
+        }
+      }
+    }
+  }
+}
+
+void ChunkAlg::propagateSunlightDirect(std::queue<SunLightNodeWorld> &sunlightQueue, World *world) {
+  while (!sunlightQueue.empty()) {
+    SunLightNodeWorld &node = sunlightQueue.front();
+    sunlightQueue.pop();
+    for (short faceNum = 0; faceNum < 6; faceNum++) {
+      glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(node.pos, faceNum);
+      if (neighborPos.z < 0 || neighborPos.z >= WORLD_HEIGHT_BLOCKS) continue;
+
+      Block neighborBlock = world->getBlock(neighborPos);
+      if (!BlockDB::canLightPass(neighborBlock)) continue;
+
+      SunLightNodeWorld neighbor = SunLightNodeWorld(neighborPos, node.lightLevel);
+      if (faceNum != 5 || node.lightLevel != MAX_LIGHT_LEVEL) {
+        neighbor.lightLevel--;
+      }
+      int currNeighborSunlightLevel = world->getSunlightLevel(neighborPos);
+      if (currNeighborSunlightLevel < neighbor.lightLevel) {
+        world->setSunlight(neighborPos, neighbor.lightLevel, true);
+        if (neighbor.lightLevel > 1) {
+          sunlightQueue.emplace(neighborPos, neighbor.lightLevel);
         }
       }
     }
