@@ -22,7 +22,7 @@ class ChunkMeshBuilder {
    void constructMeshSemiGreedy(std::vector<ChunkVertex> &opaqueVertices, std::vector<unsigned int> &opaqueIndices,
                                 std::vector<ChunkVertex> &transparentVertices, std::vector<unsigned int> &transparentIndices);
 
-   void setOcclusionLevels(const glm::ivec3 &blockPosInChunk, BlockFace face, int (&levels)[4]);
+   void setOcclusionLevels(const glm::ivec3 &blockPosInChunk, int faceIndex, int (&levels)[4]);
 //   static void setOcclusionLevels(bool (&solidNeighborBlocks)[27], int faceIndex, int (&levels)[4]);
 
  private:

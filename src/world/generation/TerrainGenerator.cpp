@@ -119,7 +119,7 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap, Block (&blocks)[CHU
 ////      setBlockTerrain(x, y, 38, Block::BEDROCK);
 //    }
 //  }
-//
+////
 //  for (x = 2; x < CHUNK_SIZE-2; x++) {
 //    for (y = 2; y < CHUNK_SIZE-2; y++) {
 //

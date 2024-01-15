@@ -77,7 +77,7 @@ class World {
   }
   inline const glm::ivec3 &getLastRayCastBlockPos() const { return m_lastRayCastBlockPos; }
 
-  [[nodiscard]] inline int getWorldLightLevel() const { return m_worldLightLevel; }
+  [[nodiscard]] inline float getWorldLightLevel() const { return m_worldLightLevel; }
 
   void setTorchLight(glm::ivec3 pos, uint16_t lightLevel, bool updateMesh);
   void setSunlight(glm::ivec3 pos, uint16_t lightLevel, bool updateMesh);
@@ -141,7 +141,7 @@ class World {
   int m_lightingLoadDistance = m_renderDistance + 2;
   int m_loadDistance = m_renderDistance + 3;
   int m_unloadDistance = m_renderDistance + 4;
-  int m_worldLightLevel = 15;
+  float m_worldLightLevel = 1.0;
 
   glm::ivec3 m_center;
   glm::ivec2 m_xyCenter;

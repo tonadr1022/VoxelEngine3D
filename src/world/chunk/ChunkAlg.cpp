@@ -9,8 +9,7 @@ void ChunkAlg::generateLightData(ChunkStackArray chunks) {
   for (auto &chunk : chunks) {
     generateTorchlightData(chunk);
   }
-//  generateSunLightData(chunks);
-  generateSunLightData2(chunks);
+  generateSunLightData(chunks);
 }
 
 void ChunkAlg::generateTorchlightData(Chunk *chunk) {
@@ -172,7 +171,7 @@ void ChunkAlg::propagateTorchLight(std::queue<LightNode> &torchlightQueue, Chunk
   }
 }
 
-void ChunkAlg::generateSunLightData2(ChunkStackArray &chunks) {
+void ChunkAlg::generateSunLightData(ChunkStackArray &chunks) {
   auto getBlockInChunkStack = [&chunks](int x, int y, int z) -> Block {
     int chunkIndex = z / CHUNK_SIZE;
     return chunks[chunkIndex]->getBlock(x, y, z - chunkIndex * CHUNK_SIZE);
@@ -183,29 +182,6 @@ void ChunkAlg::generateSunLightData2(ChunkStackArray &chunks) {
     chunks[chunkIndex]->setSunLightLevel({x, y, z - chunkIndex * CHUNK_SIZE}, lightLevel);
   };
 
-  for (auto &chunk : chunks) {
-    chunk->fillSunlightWithZ(0, MAX_LIGHT_LEVEL, true);
-  }
-
-  std::queue<SunLightNode> sunlightQueue;
-
-  for (int y = 0; y < CHUNK_SIZE; y++) {
-    for (int x = 0; x < CHUNK_SIZE; x++) {
-      for (int z = WORLD_HEIGHT_BLOCKS - 1; z >= 0; z--) {
-        Block block = getBlockInChunkStack(x, y, z);
-        if (BlockDB::canLightPass(block)) {
-          setSunlightInChunkStack(x, y, z, MAX_LIGHT_LEVEL);
-        } else {
-          sunlightQueue.emplace(x, y, z+1, MAX_LIGHT_LEVEL);
-          break;
-        }
-      }
-    }
-  }
-  propagateSunLight(sunlightQueue, chunks);
-}
-
-void ChunkAlg::generateSunLightData(ChunkStackArray &chunks) {
   int highestZ = 0;
 
   // find the highest z value of a block where light cannot pass
@@ -243,22 +219,23 @@ void ChunkAlg::generateSunLightData(ChunkStackArray &chunks) {
     chunks[chunkIndex]->fillSunlightWithZ(0, MAX_LIGHT_LEVEL, true);
   }
 
+  // fill in chunks below highest z chunk with 0 light level. sunlight may propagate to these chunks
   for (int chunkIndex = 0; chunkIndex < highestZChunkIndex; chunkIndex++) {
     chunks[chunkIndex]->fillSunlightWithZ(0, 0, true);
   }
-//  std::cout << highestZChunk->m_sunlightLevelsPtr.get()[0] << std::endl;
 
   std::queue<SunLightNode> sunlightQueue;
-  glm::ivec3 pos;
-  pos.z = highestZ; // chunk stack z since propagation function considers the whole stack
 
-  // iterate through the layer that has the highest block. if light can pass, set that light level to max and add
-  // it to the queue for propagation, otherwise, leave it since it's already 0
-  for (pos.x = 0; pos.x < CHUNK_SIZE; pos.x++) {
-    for (pos.y = 0; pos.y < CHUNK_SIZE; pos.y++) {
-      if (BlockDB::canLightPass(highestZChunk->getBlock(pos.x, pos.y, chunkZ))) {
-        sunlightQueue.emplace(pos.x, pos.y, pos.z, MAX_LIGHT_LEVEL);
-        highestZChunk->setSunLightLevel({pos.x, pos.y, chunkZ}, MAX_LIGHT_LEVEL);
+  for (int y = 0; y < CHUNK_SIZE; y++) {
+    for (int x = 0; x < CHUNK_SIZE; x++) {
+      for (int z = highestZ; z >= 0; z--) {
+        Block block = getBlockInChunkStack(x, y, z);
+        if (BlockDB::canLightPass(block)) {
+          setSunlightInChunkStack(x, y, z, MAX_LIGHT_LEVEL);
+        } else {
+          sunlightQueue.emplace(x, y, z+1, MAX_LIGHT_LEVEL);
+          break;
+        }
       }
     }
   }

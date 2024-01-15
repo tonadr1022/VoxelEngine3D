@@ -675,7 +675,7 @@ void World::renderDebugGui() {
   ImGui::Text("lastRayCastBlockPos: %d, %d, %d", m_lastRayCastBlockPos.x,
               m_lastRayCastBlockPos.y, m_lastRayCastBlockPos.z);
 
-  ImGui::SliderInt("Light Level: %d", &m_worldLightLevel, 0, 15);
+  ImGui::SliderFloat("Light Level: %.2f", &m_worldLightLevel, 0.0, 1.0);
 
   ImGui::Text("Running Threads: %d", static_cast<int>(m_numRunningThreads));
 

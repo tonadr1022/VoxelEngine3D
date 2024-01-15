@@ -10,7 +10,7 @@ out vec3 v_FragColor;
 flat out uint v_TexIndex;
 
 uniform ivec2 u_ChunkWorldPos;
-uniform int u_WorldLightLevel;
+uniform float u_WorldLightLevel;
 uniform float u_Time;
 uniform mat4 u_Model;
 uniform mat4 u_View;
@@ -34,6 +34,17 @@ const float waveAmplitude = 0.1;
 const float waveFrequency = 1.0;
 const float dist = 1.0;
 const float PI = 3.14285714286;
+const float AOcurve[4] = float[4](0.55, 0.75, 0.87, 1.0);
+const float SunLightCurve[16] = float[16](
+0.000000, 0.066667, 0.133333, 0.200000,
+0.266667, 0.333333, 0.400000, 0.466667,
+0.533333, 0.600000, 0.666667, 0.733333,
+0.800000, 0.866667, 0.933333, 1.000000);
+const float TorchLightCurve[16] = float[16](
+0.000000, 0.100000, 0.200000, 0.300000,
+0.400000, 0.500000, 0.600000, 0.700000,
+0.800000, 0.900000, 1.000000, 1.100000,
+1.200000, 1.300000, 1.400000, 1.500000);
 
 // only applies for texIndex 8 (water)
 vec3 applyWave(vec3 vertexPos, uint texIndex) {
@@ -77,9 +88,9 @@ void main() {
     uint blueLightLevel = bitfieldExtract(vertexData2, 0, 4);
     uint greenLightLevel = bitfieldExtract(vertexData2, 4, 4);
     uint redLightLevel = bitfieldExtract(vertexData2, 8, 4);
-    uint intensity = bitfieldExtract(vertexData2, 12, 4);
-
-    v_FragColor = vec3(float(redLightLevel) / 15.0, float(greenLightLevel) / 15.0, float(blueLightLevel) / 15.0);
+    uint intensityInt = bitfieldExtract(vertexData2, 12, 4);
+    float intensity = max(SunLightCurve[intensityInt] * u_WorldLightLevel, 0.1);
+    v_FragColor = vec3(max(TorchLightCurve[redLightLevel], intensity), max(TorchLightCurve[greenLightLevel], intensity), max(TorchLightCurve[blueLightLevel], intensity)) * AOcurve[occlusionLevel];
 
     vec3 vertexPos = vec3(posX, posY, posZ);
     vertexPos = applyWave(vertexPos, texIndex);
@@ -89,9 +100,9 @@ void main() {
     gl_Position = u_Projection * u_View * u_Model * vec4(vertexPos, 1.0);
     v_TexCoord = vec3(x, y, texIndex);
 
-    float occlusionFactor = mix(0.0, 1.0, float(u_UseAmbientOcclusion));
+    float shouldUseOcclusion = mix(0.0, 1.0, float(u_UseAmbientOcclusion));
     float baseLightLevel = mix(1.0, 0.4, float(u_UseAmbientOcclusion));
 
-    float occlusion = 0.2 * occlusionLevel * occlusionFactor;
-    v_LightLevel = (baseLightLevel + occlusion) * float(intensity) * u_WorldLightLevel / 15.0 / 15.0;
+    //    float occlusion = 0.1 * occlusionLevel * shouldUseOcclusion;
+    //    v_LightLevel = (baseLightLevel + occlusion);
 }
