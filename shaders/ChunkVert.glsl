@@ -5,7 +5,6 @@ layout (location = 1) in uint vertexData2;
 
 out vec3 v_FragPos;
 out vec3 v_TexCoord;
-out float v_LightLevel;
 out vec3 v_FragColor;
 flat out uint v_TexIndex;
 
@@ -103,6 +102,4 @@ void main() {
     float shouldUseOcclusion = mix(0.0, 1.0, float(u_UseAmbientOcclusion));
     float baseLightLevel = mix(1.0, 0.4, float(u_UseAmbientOcclusion));
 
-    //    float occlusion = 0.1 * occlusionLevel * shouldUseOcclusion;
-    //    v_LightLevel = (baseLightLevel + occlusion);
 }
