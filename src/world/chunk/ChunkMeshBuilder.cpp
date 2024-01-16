@@ -155,6 +155,11 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
                                      std::vector<unsigned int> &opaqueIndices,
                                      std::vector<ChunkVertex> &transparentVertices,
                                      std::vector<unsigned int> &transparentIndices) {
+  auto opaqueVertices_ = new std::vector<ChunkVertex>();
+  auto opaqueIndices_ = new std::vector<unsigned int>();
+  auto transparentVertices_ = new std::vector<ChunkVertex>();
+  auto transparentIndices_ = new std::vector<unsigned int>();
+
   int occlusionLevels[4];
 
   int chunkBaseZ = m_chunkWorldPos.z;
@@ -206,10 +211,10 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
       const int texIndex = blockData.texIndex[faceIndex];
       const int faceVerticesIndex = faceIndex * 20;
 
-      auto &vertices = blockData.isTransparent ? transparentVertices : opaqueVertices;
-      auto &indices = blockData.isTransparent ? transparentIndices : opaqueIndices;
+      auto &vertices = blockData.isTransparent ? transparentVertices_ : opaqueVertices_;
+      auto &indices = blockData.isTransparent ? transparentIndices_ : opaqueIndices_;
 
-      const auto baseVertexIndex = vertices.size();
+      const auto baseVertexIndex = vertices->size();
       uint32_t vertexData2 = faceLightLevel | ((sunlightLevel & 0xF) << 12);
 
       for (int i = 0, j = 0; i < 20; i += 5, j++) {
@@ -229,27 +234,35 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
         // blue light level [0, 15] == 4 bits, green light level [0, 15] == 4, red light level [0, 15] == 4 bits
         // intensity [0, 15] == 4 bits, total 16 bits
         ChunkVertex vertex = {vertexData1, vertexData2};
-        vertices.push_back(vertex);
+        vertices->push_back(vertex);
       }
       // check whether to flip quad based on AO
       if (occlusionLevels[0] + occlusionLevels[3] > occlusionLevels[1] + occlusionLevels[2]) {
-        indices.push_back(baseVertexIndex + 2);
-        indices.push_back(baseVertexIndex + 0);
-        indices.push_back(baseVertexIndex + 3);
-        indices.push_back(baseVertexIndex + 3);
-        indices.push_back(baseVertexIndex + 0);
-        indices.push_back(baseVertexIndex + 1);
+        indices->push_back(baseVertexIndex + 2);
+        indices->push_back(baseVertexIndex + 0);
+        indices->push_back(baseVertexIndex + 3);
+        indices->push_back(baseVertexIndex + 3);
+        indices->push_back(baseVertexIndex + 0);
+        indices->push_back(baseVertexIndex + 1);
 
       } else {
-        indices.push_back(baseVertexIndex);
-        indices.push_back(baseVertexIndex + 1);
-        indices.push_back(baseVertexIndex + 2);
-        indices.push_back(baseVertexIndex + 2);
-        indices.push_back(baseVertexIndex + 1);
-        indices.push_back(baseVertexIndex + 3);
+        indices->push_back(baseVertexIndex);
+        indices->push_back(baseVertexIndex + 1);
+        indices->push_back(baseVertexIndex + 2);
+        indices->push_back(baseVertexIndex + 2);
+        indices->push_back(baseVertexIndex + 1);
+        indices->push_back(baseVertexIndex + 3);
       }
     }
   }
+  opaqueVertices = *opaqueVertices_;
+  opaqueIndices = *opaqueIndices_;
+  transparentVertices = *transparentVertices_;
+  transparentIndices = *transparentIndices_;
+  delete opaqueVertices_;
+  delete transparentVertices_;
+  delete opaqueIndices_;
+  delete transparentIndices_;
 }
 
 void ChunkMeshBuilder::setOcclusionLevels(const glm::ivec3 &blockPosInChunk,
