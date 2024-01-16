@@ -32,7 +32,7 @@ World::~World() {
 }
 
 void World::update() {
-  Timer t("update", false);
+  m_viewFrustum.updatePlanes(player.camera.getProjectionMatrix(), player.camera.getViewMatrix());
   m_centerChanged = false;
   m_centerChangedXY = false;
 
@@ -414,7 +414,11 @@ void World::updateChunkMeshList() {
   for (auto posIt = m_chunkPositionsEligibleForMeshing.begin(); posIt != m_chunkPositionsEligibleForMeshing.end();) {
     Chunk *chunkToMesh = getChunkRawPtr(*posIt);
     if (chunkToMesh->m_numNonAirBlocks == 0) {
-      chunkToMesh->chunkMeshState == ChunkMeshState::BUILT;
+      chunkToMesh->chunkMeshState = ChunkMeshState::BUILT;
+      posIt++;
+      continue;
+    }
+    if (!m_viewFrustum.isBoxInFrustum(chunkToMesh->m_boundingBox)) {
       posIt++;
       continue;
     }
@@ -540,18 +544,7 @@ void World::processBatchToLight(std::queue<glm::ivec2> &batchToLight) {
     const auto pos = batchToLight.front();
     auto it = m_chunkStacksToLightMap.find(pos);
     if (it != m_chunkStacksToLightMap.end()) {
-//      bool fl = true;
-//      for (int i = 0; i < 8; i++) {
-//        if (it->second[i]->chunkState != ChunkState::STRUCTURES_GENERATED) {
-//          fl = false;
-//          break;
-//        }
-//      }
-//      if (fl) {
-//        ChunkAlg::generateLightData(it->second);
-//      }
       ChunkAlg::generateLightData(it->second);
-
     }
     batchToLight.pop();
   }

@@ -85,6 +85,7 @@ class World {
   glm::ivec3 getTorchLevel(glm::ivec3 pos) const;
   uint16_t getTorchLevelPacked(glm::ivec3 pos) const;
   uint8_t getSunlightLevel(glm::ivec3 pos) const;
+  ViewFrustum m_viewFrustum;
 
  private:
   Block getBlockFromWorldPosition(const glm::ivec3 &position) const;

@@ -31,7 +31,7 @@ class Renderer {
   BlockBreakRenderer m_blockBreakRenderer;
   ChunkRenderer m_chunkRenderer;
   CrossHair crossHair;
-  ViewFrustum m_viewFrustum;
+
 
 };
 
