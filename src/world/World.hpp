@@ -80,7 +80,7 @@ class World {
   [[nodiscard]] inline float getWorldLightLevel() const { return m_worldLightLevel; }
 
   void setTorchLight(glm::ivec3 pos, uint16_t lightLevel, bool updateMesh);
-  void setSunlight(glm::ivec3 pos, uint16_t lightLevel, bool updateMesh);
+  void setSunlight(glm::ivec3 pos, uint8_t lightLevel, bool updateMesh);
   Block getBlock(glm::ivec3 pos) const;
   glm::ivec3 getTorchLevel(glm::ivec3 pos) const;
   uint16_t getTorchLevelPacked(glm::ivec3 pos) const;
@@ -142,7 +142,7 @@ class World {
   int m_lightingLoadDistance = m_renderDistance + 2;
   int m_loadDistance = m_renderDistance + 3;
   int m_unloadDistance = m_renderDistance + 4;
-  float m_worldLightLevel = 1.0;
+  float m_worldLightLevel = 0.0;
 
   glm::ivec3 m_center;
   glm::ivec2 m_xyCenter;
@@ -205,8 +205,10 @@ class World {
 
   std::queue<LightNode> m_torchlightRemovalQueue;
   std::queue<LightNode> m_torchLightPlacementQueue;
-  std::queue<SunLightNodeWorld> m_sunlightRemovalQueue;
-  std::queue<SunLightNodeWorld> m_sunlightPlacementQueue;
+//  std::queue<SunLightNodeWorld> m_sunlightRemovalQueue;
+//  std::queue<SunLightNodeWorld> m_sunlightPlacementQueue;
+  std::queue<SunLightNode> m_sunlightRemovalQueue;
+  std::queue<SunLightNode> m_sunlightPlacementQueue;
 
   void sortTransparentRenderVector();
 

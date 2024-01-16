@@ -71,7 +71,7 @@ void World::update() {
   size_t newRenderSetSize = m_transparentRenderSet.size();
   if (newRenderSetSize != oldRenderSetSize) {
     sortTransparentRenderVector();
-    oldRenderSetSize = newRenderSetSize;
+    oldRenderSetSize = static_cast<unsigned long>(newRenderSetSize);
   }
 
 //  static int i = 0;
@@ -728,7 +728,7 @@ void World::setTorchLight(glm::ivec3 pos, uint16_t lightLevel, bool updateMesh) 
   }
 }
 
-void World::setSunlight(glm::ivec3 pos, uint16_t lightLevel, bool updateMesh) {
+void World::setSunlight(glm::ivec3 pos, uint8_t lightLevel, bool updateMesh) {
   auto chunkPos = chunkPosFromWorldPos(pos);
   pos -= chunkPos * CHUNK_SIZE;
   getChunkRawPtr(chunkPos)->setSunLightLevel(pos, lightLevel);
@@ -773,35 +773,35 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   // cases
   // 1) torch of any color to air.
   if (block == Block::AIR && oldBlockIsLightSource) {
-    m_torchlightRemovalQueue.emplace(worldPos, oldTorchLightPacked);
+    m_torchlightRemovalQueue.emplace(blockPosInChunk, oldTorchLightPacked);
     chunk->setTorchLevel(blockPosInChunk, 0);
   }
     // 2) air to any color
   else if (oldBlock == Block::AIR && newTorchLightPacked > 0) {
-    m_torchLightPlacementQueue.emplace(worldPos, newTorchLightPacked);
+    m_torchLightPlacementQueue.emplace(blockPosInChunk, newTorchLightPacked);
     chunk->setTorchLevel(blockPosInChunk, newTorchLightPacked);
   }
 
   // if placing a block where light can't pass, must remove sunlight
   if (oldBlock == Block::AIR && !BlockDB::canLightPass(block)) {
-    m_sunlightRemovalQueue.emplace(worldPos, oldSunlightLevel);
+    m_sunlightRemovalQueue.emplace(blockPosInChunk.x, blockPosInChunk.y, blockPosInChunk.z, oldSunlightLevel);
     chunk->setSunLightLevel(blockPosInChunk, 0);
   }
 
     // must propagate torchlight and sunlight if the new block is air/lets light and the old block didn't
   else if (block == Block::AIR && !BlockDB::canLightPass(oldBlock)) {
     for (short faceNum = 0; faceNum < 6; faceNum++) {
-      glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(worldPos, faceNum);
+      glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(blockPosInChunk, faceNum);
       if (!oldBlockIsLightSource) {
-        uint16_t neighborTorchlightLevel = getTorchLevelPacked(neighborPos);
+        uint16_t neighborTorchlightLevel = chunk->getTorchLevelPackedIncludingNeighborsOptimized(neighborPos);
         if (neighborTorchlightLevel) {
           m_torchLightPlacementQueue.emplace(neighborPos, neighborTorchlightLevel);
         }
       }
       if (oldSunlightLevel == 0) {
-        uint8_t neighborSunlightLevel = getSunlightLevel(neighborPos);
+        uint8_t neighborSunlightLevel = chunk->getSunlightLevelIncludingNeighborsOptimized(neighborPos);
         if (neighborSunlightLevel) {
-          m_sunlightPlacementQueue.emplace(neighborPos, neighborSunlightLevel);
+          m_sunlightPlacementQueue.emplace(neighborPos.x, neighborPos.y, neighborPos.z, neighborSunlightLevel);
         }
       }
     }
@@ -810,11 +810,16 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   // 4) not torch to air
 
 
-  ChunkAlg::unpropagateTorchLightDirect(m_torchLightPlacementQueue, m_torchlightRemovalQueue, this);
-  ChunkAlg::unpropagateSunLightDirect(m_sunlightPlacementQueue, m_sunlightRemovalQueue, this);
+//  ChunkAlg::unpropagateTorchLightDirect(m_torchLightPlacementQueue, m_torchlightRemovalQueue, this);
+//  ChunkAlg::unpropagateSunLightDirect(m_sunlightPlacementQueue, m_sunlightRemovalQueue, this);
+//  chunk->setBlock(blockPosInChunk, block);
+//  ChunkAlg::propagateTorchLightDirect(m_torchLightPlacementQueue, this);
+//  ChunkAlg::propagateSunlightDirect(m_sunlightPlacementQueue, this);
+  ChunkAlg::unpropagateTorchLight(m_torchLightPlacementQueue, m_torchlightRemovalQueue, chunk);
+  ChunkAlg::unpropagateSunLight(m_sunlightPlacementQueue, m_sunlightRemovalQueue, chunk);
   chunk->setBlock(blockPosInChunk, block);
-  ChunkAlg::propagateTorchLightDirect(m_torchLightPlacementQueue, this);
-  ChunkAlg::propagateSunlightDirect(m_sunlightPlacementQueue, this);
+  ChunkAlg::propagateTorchLight(m_torchLightPlacementQueue, chunk);
+  ChunkAlg::propagateSunLight(m_sunlightPlacementQueue, chunk);
 //
 //  if (lightChanged) {
 //    // if light changed add all the neighbor chunks.

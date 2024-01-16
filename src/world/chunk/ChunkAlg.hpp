@@ -25,6 +25,11 @@ namespace ChunkAlg {
  extern void unpropagateSunLightDirect(std::queue<SunLightNodeWorld> &sunLightPlacementQueue, std::queue<SunLightNodeWorld> &sunlightRemovalQueue, World *world);
 
 
+ extern void unpropagateTorchLight(std::queue<LightNode> &torchLightPlacementQueue,std::queue<LightNode> &torchLightRemovalQueue,
+                                   Chunk *chunk);
+ extern void unpropagateSunLight(std::queue<SunLightNode> &sunLightPlacementQueue,
+                                 std::queue<SunLightNode> &sunlightRemovalQueue,
+                                 Chunk *chunk);
 
 };
 
