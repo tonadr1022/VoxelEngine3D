@@ -43,8 +43,10 @@ enum class HorizontalDirection {
 
 
 using HeightMap = std::array<int, CHUNK_AREA>;
-using TreeMap = std::array<float, CHUNK_AREA>;
-using ChunkHeightMapMap = std::unordered_map<glm::ivec2, HeightMap>;
+using HeightMapFloats = std::array<float, CHUNK_AREA>;
+using TemperatureMap = std::array<float, CHUNK_AREA>;
+using PrecipitationMap = std::array<float, CHUNK_AREA>;
+using TreeMap = std::array<float, CHUNK_AREA>;using ChunkHeightMapMap = std::unordered_map<glm::ivec2, HeightMap>;
 using ChunkTreeMapMap = std::unordered_map<glm::ivec2, TreeMap>;
 
 

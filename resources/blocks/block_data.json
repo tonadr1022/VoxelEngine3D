@@ -334,7 +334,7 @@
     },
     "Jungle Planks": {
         "id": 33,
-        "texIndex": [79,79,79,79,79,79],
+        "texIndex": [72,72,72,72,72,72],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -344,6 +344,15 @@
     "Spruce Planks": {
         "id": 34,
         "texIndex": [79,79,79,79,79,79],
+        "isTransparent": false,
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
+    },
+    "Tundra Grass Block": {
+        "id": 38,
+        "texIndex": [32,2,33,33,33,33],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,

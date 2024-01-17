@@ -119,11 +119,8 @@ class World {
   void updateChunkLoadList();
   void updateChunkStructureGenList();
   void updateChunkLightingList();
-  void updateChunkMeshList();
-  void combinedUpdateListsTEST();
-  void combinedUpdateMapsTEST();
-  void combinedUpdateSortedTEST();
-//  void updateChunkUpdateList();
+  void updateChunkMeshList(bool updateEligibleVector);
+
   void processDirectChunkUpdates();
   void getNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const;
 
@@ -142,7 +139,7 @@ class World {
   int m_lightingLoadDistance = m_renderDistance + 2;
   int m_loadDistance = m_renderDistance + 3;
   int m_unloadDistance = m_renderDistance + 4;
-  float m_worldLightLevel = 0.0;
+  float m_worldLightLevel = 1.0;
 
   glm::ivec3 m_center;
   glm::ivec2 m_xyCenter;

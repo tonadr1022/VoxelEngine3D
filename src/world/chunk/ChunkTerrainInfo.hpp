@@ -22,6 +22,9 @@ class ChunkTerrainInfo : public ChunkInfo {
   void applyTerrainDataToChunks(Chunk *(&chunk)[CHUNKS_PER_STACK]);
 
   HeightMap m_heightMap;
+  TemperatureMap m_temperatureMap;
+  PrecipitationMap m_precipitationMap;
+  std::array<BiomeValue, CHUNK_AREA> m_biomeMap;
   TreeMap m_treeMap;
   int m_numBlocksPlaced[CHUNKS_PER_STACK]{};
 

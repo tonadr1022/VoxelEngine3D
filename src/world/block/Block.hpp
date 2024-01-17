@@ -46,6 +46,7 @@ enum class Block : uint8_t {
   GLOWSTONE_RED, // 35
     GLOWSTONE_GREEN, // 36
     GLOWSTONE_BLUE, // 37
+    TUNDRA_GRASS_BLOCK, // 38
   BLOCK_COUNT,
 };
 

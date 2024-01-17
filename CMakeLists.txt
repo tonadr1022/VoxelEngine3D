@@ -123,6 +123,8 @@ set(SOURCE_FILES
         src/world/chunk/ChunkTerrainInfo.hpp
         src/world/chunk/ChunkAlg.cpp
         src/world/chunk/ChunkAlg.hpp
+        src/world/generation/Biome.cpp
+        src/world/generation/Biome.hpp
 )
 
 add_executable(voxel_engine ${SOURCE_FILES})
