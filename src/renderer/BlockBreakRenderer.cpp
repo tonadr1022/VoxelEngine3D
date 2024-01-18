@@ -5,11 +5,14 @@
 #include "../shaders/ShaderManager.hpp"
 #include "BlockBreakRenderer.hpp"
 #include "../AppConstants.hpp"
+#include "../resources/ResourceManager.hpp"
 
 void BlockBreakRenderer::render(glm::vec3 blockPosition,
                                 const Camera &camera,
                                 int breakStage) const {
-  const int textureIndex = 224 + breakStage;
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayId);
+  const int textureIndex = breakStage;
 
   auto model = glm::mat4(1.0f);
   model = translate(model, blockPosition);
@@ -32,6 +35,8 @@ void BlockBreakRenderer::render(glm::vec3 blockPosition,
 }
 
 BlockBreakRenderer::BlockBreakRenderer() {
+  textureArrayId = ResourceManager::getTexture("block_break_array");
+
   const std::array<float, 120> vertices = {
       // front face
       1.0f, 0.0f, 0.0f, 0.0f, 0.0f,

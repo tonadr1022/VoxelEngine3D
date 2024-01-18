@@ -42,14 +42,8 @@ unsigned int ResourceManager::getTexture(const std::string &textureName) {
 
 std::unordered_map<std::string, int> ResourceManager::filenameToTexIndex;
 
-void
-ResourceManager::makeTexture2dArray(const std::string &texturePath,
-                                    const std::string &textureName,
-                                    bool flipVertically) {
-  int TEX_WIDTH = 16;
-  int TEX_HEIGHT = 16;
+std::vector<Image> ResourceManager::loadBlockImages() {
   std::vector<Image> images;
-
   int texIndex = 0;
   for (const auto &entry : std::filesystem::directory_iterator(BLOCK_DIR_PATH)) {
     if (std::filesystem::is_regular_file(entry.path()) && entry.path().extension() == ".png") {
@@ -59,13 +53,28 @@ ResourceManager::makeTexture2dArray(const std::string &texturePath,
       texIndex++;
     }
   }
+  return images;
+}
+
+std::vector<Image> ResourceManager::loadBlockBreakImages() {
+  std::vector<Image> subImages;
+  Image fullImage = loadImage(BLOCK_BREAK_PATH, true);
+  for (int i = 0; i < 11; i++) {
+    uint32_t offsetX = i * 32;
+    subImages.emplace_back(fullImage.subImage({offsetX, 0}, {32, 32}));
+  }
+  return subImages;
+}
+
+void ResourceManager::makeTexture2dArray(std::vector<Image> &images,
+                                         const std::string &textureName, int width, int height) {
 
   uint32_t texture;
   glActiveTexture(GL_TEXTURE0);
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
 
-  glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, TEX_WIDTH, TEX_HEIGHT,
+  glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, width, height,
                images.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
                nullptr);
   textures.emplace(textureName, texture);
@@ -80,8 +89,8 @@ ResourceManager::makeTexture2dArray(const std::string &texturePath,
 
   // create sub images on GPU
   for (int index = 0; index < images.size(); index++) {
-    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, static_cast<GLsizei>(TEX_WIDTH),
-                    static_cast<GLsizei>(TEX_HEIGHT), 1, GL_RGBA, GL_UNSIGNED_BYTE,
+    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, static_cast<GLsizei>(width),
+                    static_cast<GLsizei>(height), 1, GL_RGBA, GL_UNSIGNED_BYTE,
                     images[index].pixels.data());
   }
 
@@ -89,14 +98,14 @@ ResourceManager::makeTexture2dArray(const std::string &texturePath,
   glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }
 
-Image ResourceManager::loadImage(const std::string &imagePath,
+Image ResourceManager::loadImage(const std::filesystem::path &imagePath,
                                  bool flipVertically) {
   int width, height, nrChannels;
   if (!flipVertically)
     stbi_set_flip_vertically_on_load(true);
   unsigned char *data = stbi_load(imagePath.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
   if (!data) {
-    throw std::runtime_error("Failed to load texture: " + imagePath);
+    throw std::runtime_error("Failed to load texture: " + imagePath.string());
   }
 
   Image image{width, height, std::vector<uint8_t>(data, data + width * height * 4)};
@@ -106,7 +115,10 @@ Image ResourceManager::loadImage(const std::string &imagePath,
 
 void ResourceManager::loadTextures() {
   if (texturesLoaded) return;
-  makeTexture2dArray("resources/textures/default_pack_512.png", "texture_atlas", true);
+  std::vector<Image> blockImages = loadBlockImages();
+  makeTexture2dArray(blockImages, "texture_atlas", 16, 16);
+  std::vector<Image> blockBreakImages = loadBlockBreakImages();
+  makeTexture2dArray(blockBreakImages, "block_break_array", 16, 16);
   texturesLoaded = true;
 }
 
