@@ -180,7 +180,6 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
     glm::ivec3 blockPos = {x,y,z};
     BlockData &blockData = BlockDB::getBlockData(block);
 
-
     // 1, 0, 0
     // -1, 0, 0
     // 0, 1, 0
@@ -214,7 +213,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
       auto &indices = blockData.isTransparent ? transparentIndices_ : opaqueIndices_;
 
       const auto baseVertexIndex = vertices->size();
-      uint32_t vertexData2 = faceLightLevel | ((sunlightLevel) << 12) | ((texIndex) << 16);
+      uint32_t vertexData2 = faceLightLevel | ((sunlightLevel) << 12) | ((texIndex & 0xFFF) << 16);
       for (int i = 0, j = 0; i < 20; i += 5, j++) {
         // x between [0, 32] == 6 bits, y between [0, 32] == 6 bits, z
         // between [0, 32] == 6 bits occlusion level [0, 3] == 2 bits,

@@ -40,20 +40,21 @@ void ChunkTerrainInfo::generateTerrainData() {
   }
 
   m_heightMap = heightMap;
+
   m_precipitationMap = precipitation;
   m_temperatureMap = temperature;
 
-  float heightMapVal, precipMapVal, tempMapVal;
+  float precipMapVal, tempMapVal, continentalnessVal;
   int x, y;
   for (int i = 0; i < CHUNK_AREA; i++) {
     x = i & 31;
     y = (i >> 5) & 31;
-    heightMapVal = heightMap[i] + 1;
+    continentalnessVal = continentalness[i];
     precipMapVal = precipitation[i] + 1;
     tempMapVal = temperature[i] + 1;
-    if (heightMapVal < 0.5) {
+    if (continentalnessVal <= -0.4) {
       m_biomeMap[i] = BiomeValue::OCEAN;
-    } else if (heightMapVal < 0.7) {
+    } else if (continentalnessVal < -0.2) {
       m_biomeMap[i] = BiomeValue::BEACH;
     } else {
       if (precipMapVal < 1.0) {
@@ -73,6 +74,10 @@ void ChunkTerrainInfo::generateTerrainData() {
           m_biomeMap[i] = BiomeValue::JUNGLE;
         }
       }
+    }
+
+    if (m_biomeMap[i] >= BiomeValue::NUM_BIOMES) {
+      std::cout << "here, error\n";
     }
   }
 

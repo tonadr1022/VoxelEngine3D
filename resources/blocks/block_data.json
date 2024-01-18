@@ -1,6 +1,6 @@
 {
     "Water": {
-        "texFilenames": ["deepslate"],
+        "texFilenames": ["water"],
         "isTransparent": true,
         "isCollidable": false,
         "isLightSource": false,
@@ -189,7 +189,7 @@
         "isCollidable": true,
         "isLightSource": false,
         "lightLevels": [0,0,0],
-        "lightCanPass": false
+        "lightCanPass": true
     },
     "Spruce Wood": {
         "texFilenames": ["spruce_log_top", "spruce_log", "spruce_log_top"],
@@ -205,7 +205,7 @@
         "isCollidable": true,
         "isLightSource": false,
         "lightLevels": [0,0,0],
-        "lightCanPass": false
+        "lightCanPass": true
     },
     "Coal Ore": {
         "texFilenames": ["coal_ore"],

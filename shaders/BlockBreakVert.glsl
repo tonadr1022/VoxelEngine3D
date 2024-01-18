@@ -10,11 +10,6 @@ uniform mat4 u_View;
 uniform mat4 u_Projection;
 
 
-
-
-const int atlasWidth = 16;
-const float textureWidth = 1.0 / float(atlasWidth);
-
 void main() {
     gl_Position = u_Projection * u_View * u_Model * vec4(vertexPos, 1.0);
 

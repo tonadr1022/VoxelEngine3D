@@ -20,6 +20,7 @@ enum class BiomeValue {
   FOREST,
   SPRUCE_FOREST,
   JUNGLE,
+  NUM_BIOMES
 };
 
 using BiomeMap = std::array<BiomeValue, CHUNK_AREA>;
@@ -31,15 +32,7 @@ class TerrainGenerator {
 
   static void generateStructures(Chunk *chunk, HeightMap &heightMap, TreeMap &treeMap);
 
-  void fillHeightMap(const glm::ivec2 &startWorldPos, HeightMap &result) const;
   void fillTreeMap(const glm::ivec2 &startWorldPos, TreeMap &result) const;
-
-  void fillSimplexMaps(const glm::ivec2 &startWorldPos,
-                       HeightMap &heightMap,
-                       HeightMapFloats &heightMapFloats,
-                       PrecipitationMap &precipitationMap,
-                       TemperatureMap &temperatureMap) const;
-
   void fillTerrainMaps(glm::ivec2 startWorldPosRes, SimplexFloatArray &continentalnessRes,
                        SimplexFloatArray &erosionRes, SimplexFloatArray &peaksAndValleysRes,
                        SimplexFloatArray &temperatureRes, SimplexFloatArray &precipitationRes) const;
@@ -71,21 +64,17 @@ class TerrainGenerator {
 
  private:
   int m_seed;
-  void initializeSplines();
+  void loadSplineData();
 
   static inline float lerp(float x, glm::vec2 p1, glm::vec2 p2) {
     return p1.y + (x - p1.x) * (p2.y - p1.y) / (p2.x - p1.x);
   }
 
-  float OceanMax = -0.4;
-  float OceanToCoastMax = -0.3;
-  float CoastMax = -0.2;
-  float CoastHeight = 80;
-  float OceanHeight = 50.0;
-  std::vector<glm::vec2> m_continentalnessSplines;
-//  std::array<glm::vec2, 10> CONTINENTALNESS_SPLINES = {
-//      {{-1, OceanHeight}, {OceanMax, OceanHeight}, {OceanToCoastMax, CoastHeight}, {1.0, BaseTerrainHeight}}
-//  };
+  std::vector<double> m_continentalnessSplineX;
+  std::vector<double> m_continentalnessSplineY;
+  tk::spline m_continentalnessSpline;
+
+  std::vector<glm::vec2> m_peaksAndValleysSplines;
 
 
   static constexpr float CONTINENTALNESS_FREQ = 1.0f / 1200.0f;

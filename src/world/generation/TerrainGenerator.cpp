@@ -12,15 +12,15 @@ void TerrainGenerator::generateStructures(Chunk *chunk, HeightMap &heightMap, Tr
   int heightMapIndex = 0;
   for (int y = 0; y < CHUNK_SIZE; y++) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
-      int height = (int) floor((heightMap[heightMapIndex]) * 64) - chunkBaseZ;
+      int height = heightMap[heightMapIndex] - chunkBaseZ;
 //      int height = heightMap[heightMapIndex] - chunkBaseZ;
       if (height < 0 || height >= CHUNK_SIZE) continue;
       // + 1 since tree map vals are [-1,1]
       // 1 / 100 prob for now
-      if (chunk->getBlock(x, y, height) != Block::PLAINS_GRASS_BLOCK) {
-        heightMapIndex++;
-        continue;
-      }
+//      if (chunk->getBlock(x, y, height) != Block::PLAINS_GRASS_BLOCK) {
+//        heightMapIndex++;
+//        continue;
+//      }
       bool structureExists = static_cast<int>((treeMap[heightMapIndex] + 1) * 100.0f) == 0;
       if (structureExists) {
         makeTree({x, y, height + 1}, chunk);
@@ -61,21 +61,7 @@ void TerrainGenerator::makeTree(const glm::ivec3 &pos, Chunk *chunk) {
 TerrainGenerator::TerrainGenerator(int seed) : m_seed(seed) {}
 
 void TerrainGenerator::init() {
-  initializeSplines();
-}
-
-void TerrainGenerator::fillHeightMap(const glm::ivec2 &startWorldPos, HeightMap &result) const {
-  FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
-  fastNoise->SetSeed(m_seed);
-  fastNoise->SetFractalOctaves(4);
-  fastNoise->SetFrequency(1.0f / 300.0f);
-  float *heightMap = fastNoise->GetSimplexFractalSet(startWorldPos.x, startWorldPos.y, 0, CHUNK_SIZE,
-                                                     CHUNK_SIZE, 1);
-  for (int i = 0; i < CHUNK_AREA; i++) {
-    result[i] = (int) floor((heightMap[i] + 1) * 64) + 1;
-  }
-  FastNoiseSIMD::FreeNoiseSet(heightMap);
-  delete fastNoise;
+  loadSplineData();
 }
 
 void TerrainGenerator::generateTerrain(HeightMap &heightMap,
@@ -160,15 +146,17 @@ void TerrainGenerator::fillTreeMap(const glm::ivec2 &startWorldPos, TreeMap &res
 }
 
 float TerrainGenerator::heightFromContinentalness(float continentalness) const {
-  for (size_t i = 0; i < m_continentalnessSplines.size() - 1; i++) {
-    if (continentalness <= m_continentalnessSplines[i + 1].x) {
-      return lerp(continentalness, m_continentalnessSplines[i], m_continentalnessSplines[i + 1]);
-    }
+//  for (size_t i = 0; i < m_continentalnessSplinePoints.size() - 1; i++) {
+//    if (continentalness <= m_continentalnessSplinePoints[i + 1].x) {
+//      return lerp(continentalness, m_continentalnessSplinePoints[i], m_continentalnessSplinePoints[i + 1]);
+//    }
+//  }
+  double res = (m_continentalnessSpline(continentalness) + 1) * 50 + 20;
+  if (res < 0) {
+    std::cout << "err\n";
   }
-  return 0;
+  return res;
 }
-
-
 
 void TerrainGenerator::fillTerrainMaps(glm::ivec2 startWorldPos,
                                        SimplexFloatArray &continentalnessRes,
@@ -228,11 +216,15 @@ void TerrainGenerator::generateBiomeAndHeightMaps(HeightMap &heightMap,
 
 }
 
-void TerrainGenerator::initializeSplines() {
+void TerrainGenerator::loadSplineData() {
   nlohmann::json splineData = JsonUtils::openJson("resources/terrain/terrain.json");
   nlohmann::json continentalnessPoints = splineData["continentalness"]["points"];
 
-  for (const auto &point: continentalnessPoints) {
-    m_continentalnessSplines.emplace_back(point["location"].get<float>(), point["value"].get<float>());
+  for (const auto &point : continentalnessPoints) {
+    m_continentalnessSplineX.emplace_back(point["location"].get<float>());
+    m_continentalnessSplineY.emplace_back(point["value"].get<float>());
   }
+
+  m_continentalnessSpline.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0);
+  m_continentalnessSpline.set_points(m_continentalnessSplineX, m_continentalnessSplineY);
 }

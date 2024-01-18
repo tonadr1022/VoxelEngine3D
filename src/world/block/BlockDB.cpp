@@ -87,12 +87,12 @@ std::vector<BlockData> prelimData;
       blockDataEntry.texIndex[4] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[1]];
       blockDataEntry.texIndex[5] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[1]];
     } else if (filenamesSize == 3) {
-      blockDataEntry.texIndex[2] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[0]];
-      blockDataEntry.texIndex[3] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[2]];
       blockDataEntry.texIndex[0] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[1]];
       blockDataEntry.texIndex[1] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[1]];
-      blockDataEntry.texIndex[4] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[1]];
-      blockDataEntry.texIndex[5] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[1]];
+      blockDataEntry.texIndex[2] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[1]];
+      blockDataEntry.texIndex[3] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[1]];
+      blockDataEntry.texIndex[4] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[0]];
+      blockDataEntry.texIndex[5] = ResourceManager::filenameToTexIndex[blockDataEntry.texFilenames[2]];
     }
     blockDataEntry.isTransparent = blockData["isTransparent"].get<bool>();
     blockDataEntry.isCollidable = blockData["isCollidable"].get<bool>();

@@ -19,6 +19,7 @@
 
 #include <FastNoiseSIMD/FastNoiseSIMD.h>
 #include <stb_image/stb_image.h>
+#include <spline/spline.h>
 
 #include <utility>
 #include <memory>

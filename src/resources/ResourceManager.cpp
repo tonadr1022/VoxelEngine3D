@@ -47,12 +47,14 @@ std::vector<Image> ResourceManager::loadBlockImages() {
   int texIndex = 0;
   for (const auto &entry : std::filesystem::directory_iterator(BLOCK_DIR_PATH)) {
     if (std::filesystem::is_regular_file(entry.path()) && entry.path().extension() == ".png") {
-      Image image = loadImage(entry.path(), true);
+      Image image = loadImage(entry.path().string(), true);
       filenameToTexIndex[entry.path().stem().string()] = texIndex;
       images.push_back(image);
       texIndex++;
+      std::cout << entry.path().stem().string() << ", " << texIndex -1 << std::endl;
     }
   }
+
   return images;
 }
 
@@ -103,7 +105,7 @@ Image ResourceManager::loadImage(const std::filesystem::path &imagePath,
   int width, height, nrChannels;
   if (!flipVertically)
     stbi_set_flip_vertically_on_load(true);
-  unsigned char *data = stbi_load(imagePath.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
+  unsigned char *data = stbi_load(imagePath.string().c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
   if (!data) {
     throw std::runtime_error("Failed to load texture: " + imagePath.string());
   }
@@ -118,7 +120,7 @@ void ResourceManager::loadTextures() {
   std::vector<Image> blockImages = loadBlockImages();
   makeTexture2dArray(blockImages, "texture_atlas", 16, 16);
   std::vector<Image> blockBreakImages = loadBlockBreakImages();
-  makeTexture2dArray(blockBreakImages, "block_break_array", 16, 16);
+  makeTexture2dArray(blockBreakImages, "block_break_array", 32, 32);
   texturesLoaded = true;
 }
 
