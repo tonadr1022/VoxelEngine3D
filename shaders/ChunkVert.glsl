@@ -81,13 +81,12 @@ void main() {
     uint occlusionLevel = bitfieldExtract(vertexData1, 18, 2);
     int x = int(bitfieldExtract(vertexData1, 20, 1));
     int y = int(bitfieldExtract(vertexData1, 21, 1));
-    uint texIndex = bitfieldExtract(vertexData1, 22, 8);
-
     // extract lightlevels
     uint blueLightLevel = bitfieldExtract(vertexData2, 0, 4);
     uint greenLightLevel = bitfieldExtract(vertexData2, 4, 4);
     uint redLightLevel = bitfieldExtract(vertexData2, 8, 4);
     uint intensityInt = bitfieldExtract(vertexData2, 12, 4);
+    uint texIndex = bitfieldExtract(vertexData2, 16, 12);
     float intensity = max(SunLightCurve[intensityInt] * u_WorldLightLevel, 0.1);
     v_FragColor = vec3(max(TorchLightCurve[redLightLevel], intensity), max(TorchLightCurve[greenLightLevel], intensity), max(TorchLightCurve[blueLightLevel], intensity)) * AOcurve[occlusionLevel];
 

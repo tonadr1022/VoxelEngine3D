@@ -3,6 +3,8 @@
 //
 
 #include "TerrainGenerator.hpp"
+#include "json/json.hpp"
+#include "../../utils/JsonUtils.hpp"
 
 void TerrainGenerator::generateStructures(Chunk *chunk, HeightMap &heightMap, TreeMap &treeMap) {
   int chunkBaseZ = chunk->m_worldPos.z;
@@ -15,7 +17,7 @@ void TerrainGenerator::generateStructures(Chunk *chunk, HeightMap &heightMap, Tr
       if (height < 0 || height >= CHUNK_SIZE) continue;
       // + 1 since tree map vals are [-1,1]
       // 1 / 100 prob for now
-      if (chunk->getBlock(x, y, height) != Block::GRASS) {
+      if (chunk->getBlock(x, y, height) != Block::PLAINS_GRASS_BLOCK) {
         heightMapIndex++;
         continue;
       }
@@ -56,8 +58,10 @@ void TerrainGenerator::makeTree(const glm::ivec3 &pos, Chunk *chunk) {
   chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, pos.z}, glowstoneColor);
 }
 
-TerrainGenerator::TerrainGenerator(int seed) : m_seed(seed) {
+TerrainGenerator::TerrainGenerator(int seed) : m_seed(seed) {}
 
+void TerrainGenerator::init() {
+  initializeSplines();
 }
 
 void TerrainGenerator::fillHeightMap(const glm::ivec2 &startWorldPos, HeightMap &result) const {
@@ -75,8 +79,8 @@ void TerrainGenerator::fillHeightMap(const glm::ivec2 &startWorldPos, HeightMap 
 }
 
 void TerrainGenerator::generateTerrain(HeightMap &heightMap,
-                                      BiomeMap &biomeMap,
-                                      Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK],
+                                       BiomeMap &biomeMap,
+                                       Block (&blocks)[CHUNK_VOLUME * CHUNKS_PER_STACK],
                                        int (&numBlocksPlaced)[CHUNKS_PER_STACK]) const {
   auto setBlockTerrain = [&](int x, int y, int z, Block block) {
     blocks[WORLD_HEIGHT_XYZ(x, y, z)] = block;
@@ -85,8 +89,8 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap,
 
   int heightMapIndex = 0;
   int x, y, z;
-    for (y = 0; y < CHUNK_SIZE; y++) {
-      for (x = 0; x < CHUNK_SIZE; x++) {
+  for (y = 0; y < CHUNK_SIZE; y++) {
+    for (x = 0; x < CHUNK_SIZE; x++) {
       int maxBlockHeight = heightMap[heightMapIndex];
       for (z = 0; z < maxBlockHeight - 4; z++) {
         setBlockTerrain(x, y, z, Block::STONE);
@@ -114,7 +118,7 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap,
 //  for (x = 0; x < CHUNK_SIZE; x++) {
 //    for (y = 0; y < CHUNK_SIZE; y++) {
 //      for (z = 0; z < 32; z++) {
-//        setBlockTerrain(x, y, z, Block::STONE);
+//        setBlockTerrain(x, y, z, Block::BEDROCK);
 //      }
 ////      setBlockTerrain(x, y, 38, Block::BEDROCK);
 //    }
@@ -155,43 +159,80 @@ void TerrainGenerator::fillTreeMap(const glm::ivec2 &startWorldPos, TreeMap &res
   delete fastNoise;
 }
 
-void TerrainGenerator::fillSimplexMaps(const glm::ivec2 &startWorldPos, HeightMap &heightMap, HeightMapFloats &heightMapFloats,
-                                       PrecipitationMap &precipitationMap, TemperatureMap &temperatureMap) const {
+float TerrainGenerator::heightFromContinentalness(float continentalness) const {
+  for (size_t i = 0; i < m_continentalnessSplines.size() - 1; i++) {
+    if (continentalness <= m_continentalnessSplines[i + 1].x) {
+      return lerp(continentalness, m_continentalnessSplines[i], m_continentalnessSplines[i + 1]);
+    }
+  }
+  return 0;
+}
+
+
+
+void TerrainGenerator::fillTerrainMaps(glm::ivec2 startWorldPos,
+                                       SimplexFloatArray &continentalnessRes,
+                                       SimplexFloatArray &erosionRes,
+                                       SimplexFloatArray &peaksAndValleysRes,
+                                       SimplexFloatArray &temperatureRes,
+                                       SimplexFloatArray &precipitationRes) const {
   FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
   fastNoise->SetSeed(m_seed);
-  fastNoise->SetFractalOctaves(4);
-  fastNoise->SetFrequency(1.0f / 300.0f);
-  float *hmFloats = fastNoise->GetSimplexFractalSet(startWorldPos.y, startWorldPos.x, 0, CHUNK_SIZE,
+
+  fastNoise->SetFractalOctaves(CONTINENTALNESS_NUM_OCTAVES);
+  fastNoise->SetFrequency(CONTINENTALNESS_FREQ);
+  float *continentalness = fastNoise->GetSimplexFractalSet(startWorldPos.y, startWorldPos.x, 0, CHUNK_SIZE,
                                                            CHUNK_SIZE, 1);
-  for (int i = 0; i < CHUNK_AREA; i++) {
-    heightMap[i] = (int) floor((hmFloats[i] + 1) * 64) + 1;
-  }
+  std::copy(continentalness, continentalness + CHUNK_AREA, continentalnessRes.begin());
+  FastNoiseSIMD::FreeNoiseSet(continentalness);
 
-  std::copy(hmFloats, hmFloats + CHUNK_AREA, heightMapFloats.begin());
-  for (float &val : heightMapFloats) {
-    val++;
-  }
-  FastNoiseSIMD::FreeNoiseSet(hmFloats);
+  fastNoise->SetFractalOctaves(EROSION_NUM_OCTAVES);
+  fastNoise->SetFrequency(EROSION_FREQ);
+  float *erosion = fastNoise->GetSimplexFractalSet(startWorldPos.y, startWorldPos.x, 0, CHUNK_SIZE,
+                                                   CHUNK_SIZE, 1);
+  std::copy(erosion, erosion + CHUNK_AREA, erosionRes.begin());
+  FastNoiseSIMD::FreeNoiseSet(erosion);
 
-  fastNoise->SetFractalOctaves(2);
-  fastNoise->SetFrequency(1.0f / 1000.0f);
-  float *precipitationMapFloats = fastNoise->GetSimplexFractalSet(startWorldPos.y, startWorldPos.x, 0, CHUNK_SIZE,
-                                                                  CHUNK_SIZE, 1);
-  std::copy(precipitationMapFloats, precipitationMapFloats + CHUNK_AREA, precipitationMap.begin());
-  for (float &val : precipitationMap) {
-    val++;
-  }
-  FastNoiseSIMD::FreeNoiseSet(precipitationMapFloats);
+  fastNoise->SetFractalOctaves(PEAKS_AND_VALLEYS_NUM_OCTAVES);
+  fastNoise->SetFrequency(PEAKS_AND_VALLEYS_FREQ);
+  float *peaksAndValleys = fastNoise->GetSimplexFractalSet(startWorldPos.y, startWorldPos.x, 0, CHUNK_SIZE,
+                                                           CHUNK_SIZE, 1);
+  std::copy(peaksAndValleys, peaksAndValleys + CHUNK_AREA, peaksAndValleysRes.begin());
+  FastNoiseSIMD::FreeNoiseSet(peaksAndValleys);
 
-  fastNoise->SetFractalOctaves(1);
-  fastNoise->SetFrequency(1.0f / 1000.0f);
-  float *temperatureMapFloats = fastNoise->GetSimplexFractalSet(startWorldPos.y, startWorldPos.x, 0, CHUNK_SIZE,
-                                                                CHUNK_SIZE, 1);
-  std::copy(temperatureMapFloats, temperatureMapFloats + CHUNK_AREA, temperatureMap.begin());
-  for (float &val : temperatureMap) {
-    val++;
-  }
-  FastNoiseSIMD::FreeNoiseSet(temperatureMapFloats);
+  fastNoise->SetFractalOctaves(TEMPERATURE_NUM_OCTAVES);
+  fastNoise->SetFrequency(TEMPERATURE_FREQ);
+  float *precipitation = fastNoise->GetSimplexFractalSet(startWorldPos.y, startWorldPos.x, 0, CHUNK_SIZE,
+                                                         CHUNK_SIZE, 1);
+  std::copy(precipitation, precipitation + CHUNK_AREA, precipitationRes.begin());
+  FastNoiseSIMD::FreeNoiseSet(precipitation);
+
+  fastNoise->SetFractalOctaves(PRECIPITATION_NUM_OCTAVES);
+  fastNoise->SetFrequency(PRECIPITATION_FREQ);
+  float *temperature = fastNoise->GetSimplexFractalSet(startWorldPos.y, startWorldPos.x, 0, CHUNK_SIZE,
+                                                       CHUNK_SIZE, 1);
+  std::copy(temperature, temperature + CHUNK_AREA, temperatureRes.begin());
+  FastNoiseSIMD::FreeNoiseSet(temperature);
 
   delete fastNoise;
+
+}
+
+void TerrainGenerator::generateBiomeAndHeightMaps(HeightMap &heightMap,
+                                                  BiomeMap &biomeMap,
+                                                  SimplexFloatArray &continentalness,
+                                                  SimplexFloatArray &erosion,
+                                                  SimplexFloatArray &peaksAndValleys,
+                                                  SimplexFloatArray &temperature,
+                                                  SimplexFloatArray &precipitation) {
+
+}
+
+void TerrainGenerator::initializeSplines() {
+  nlohmann::json splineData = JsonUtils::openJson("resources/terrain/terrain.json");
+  nlohmann::json continentalnessPoints = splineData["continentalness"]["points"];
+
+  for (const auto &point: continentalnessPoints) {
+    m_continentalnessSplines.emplace_back(point["location"].get<float>(), point["value"].get<float>());
+  }
 }

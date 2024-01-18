@@ -10,7 +10,7 @@
 enum class Block : uint8_t {
   AIR = 0,
   DIRT, // 1
-  GRASS, // 2
+  PLAINS_GRASS_BLOCK, // 2
   STONE, // 3
   GRAVEL, // 4
   BEDROCK,   // 5
@@ -44,11 +44,25 @@ enum class Block : uint8_t {
   JUNGLE_PLANKS, // 33
   SPRUCE_PLANKS, // 34
   GLOWSTONE_RED, // 35
-    GLOWSTONE_GREEN, // 36
-    GLOWSTONE_BLUE, // 37
-    TUNDRA_GRASS_BLOCK, // 38
+  GLOWSTONE_GREEN, // 36
+  GLOWSTONE_BLUE, // 37
+  SNOWY_TAIGA_GRASS_BLOCK, // 38
+  DIRT_PATH, // 39
+  JUNGLE_GRASS_BLOCK,
+  DESERT_GRASS_BLOCK,
+
+  DIAMOND_BLOCK,
+
   BLOCK_COUNT,
 };
+
+struct BlockTextureData {
+  std::array<std::string, 6> sideFileNames{};
+  std::array<int, 6> sideTexArrayIndices{};
+};
+
+
+
 
 //typedef uint8_t Block;
 

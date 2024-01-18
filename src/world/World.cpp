@@ -16,7 +16,7 @@ World::World(Renderer &renderer, int seed, const std::string &savePath)
   const size_t loadVectorSize = ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
   m_chunksToLoadVector.reserve(loadVectorSize);
   BlockDB::loadData("resources/blocks/");
-
+  m_terrainGenerator.init();
   for (unsigned int i = 0; i < m_numLoadingThreads; i++) {
     m_chunkLoadThreads.emplace_back(&World::generateChunksWorker4, this);
   }

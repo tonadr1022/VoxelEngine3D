@@ -14,25 +14,43 @@ void ChunkTerrainInfo::generateTerrainData() {
   m_terrainGenerator.fillTreeMap(chunkWorldPos, treeMap);
   m_treeMap = treeMap;
 
-  HeightMap heightMap;
-  HeightMapFloats heightMapFloats;
-  PrecipitationMap precipitationMap;
-  TemperatureMap temperatureMap;
+  SimplexFloatArray continentalness;
+  SimplexFloatArray erosion;
+  SimplexFloatArray peaksAndValleys;
+  SimplexFloatArray temperature;
+  SimplexFloatArray precipitation;
 
-  m_terrainGenerator.fillSimplexMaps(chunkWorldPos, heightMap, heightMapFloats, precipitationMap, temperatureMap);
+  m_terrainGenerator.fillTerrainMaps(chunkWorldPos,
+                                     continentalness,
+                                     erosion,
+                                     peaksAndValleys,
+                                     temperature,
+                                     precipitation);
+  HeightMap heightMap;
+  m_terrainGenerator.generateBiomeAndHeightMaps(heightMap,
+                                                m_biomeMap,
+                                                continentalness,
+                                                erosion,
+                                                peaksAndValleys,
+                                                temperature,
+                                                precipitation);
+
+  for (int i = 0; i < CHUNK_AREA; i++) {
+    heightMap[i] = (int) m_terrainGenerator.heightFromContinentalness(continentalness[i]);
+  }
 
   m_heightMap = heightMap;
-  m_precipitationMap = precipitationMap;
-  m_temperatureMap = temperatureMap;
+  m_precipitationMap = precipitation;
+  m_temperatureMap = temperature;
 
-  int x, y;
   float heightMapVal, precipMapVal, tempMapVal;
+  int x, y;
   for (int i = 0; i < CHUNK_AREA; i++) {
     x = i & 31;
     y = (i >> 5) & 31;
-    heightMapVal = heightMapFloats[i];
-    precipMapVal = precipitationMap[i];
-    tempMapVal = temperatureMap[i];
+    heightMapVal = heightMap[i] + 1;
+    precipMapVal = precipitation[i] + 1;
+    tempMapVal = temperature[i] + 1;
     if (heightMapVal < 0.5) {
       m_biomeMap[i] = BiomeValue::OCEAN;
     } else if (heightMapVal < 0.7) {
@@ -48,7 +66,7 @@ void ChunkTerrainInfo::generateTerrainData() {
         }
       } else {
         if (tempMapVal < 0.8) {
-          m_biomeMap[i] = BiomeValue::BOREAL_FOREST;
+          m_biomeMap[i] = BiomeValue::SPRUCE_FOREST;
         } else if (tempMapVal < 1.4) {
           m_biomeMap[i] = BiomeValue::FOREST;
         } else {

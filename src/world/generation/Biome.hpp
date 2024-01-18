@@ -14,28 +14,28 @@ class Biome {
 class TundraBiome : public Biome {
  public:
   [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::TUNDRA_GRASS_BLOCK;
+    return Block::SNOWY_TAIGA_GRASS_BLOCK;
   }
 };
 
 class DesertBiome : public Biome {
  public:
   [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::SAND;
+    return Block::DESERT_GRASS_BLOCK;
   }
 };
 
 class JungleBiome : public Biome {
  public:
   [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::JUNGLE_PLANKS;
+    return Block::JUNGLE_GRASS_BLOCK;
   }
 };
 
 class ForestBiome : public Biome {
  public:
   [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::GRASS;
+    return Block::PLAINS_GRASS_BLOCK;
   }
 };
 
@@ -56,14 +56,14 @@ class OceanBiome : public Biome {
 class PlainsBiome : public Biome {
  public:
   [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::GRASS;
+    return Block::PLAINS_GRASS_BLOCK;
   }
 };
 
-class BorealForestBiome : public Biome {
+class SpruceForestBiome : public Biome {
  public:
   [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::TUNDRA_GRASS_BLOCK;
+    return Block::SNOWY_TAIGA_GRASS_BLOCK;
   }
 };
 

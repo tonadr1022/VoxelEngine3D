@@ -11,6 +11,7 @@
 struct BlockData {
   Block id;
   std::string name;
+  std::vector<std::string> texFilenames;
   std::array<int, 6> texIndex;
   bool isTransparent;
   bool isCollidable;
@@ -25,7 +26,8 @@ class BlockDB {
   static void loadData(const std::string &filePath);
 
   static inline BlockData &getBlockData(Block id) {
-    return data[static_cast<unsigned long>(id)];
+//    return data.find(id)->second;
+    return data[static_cast<int>(id)];
   }
 
   static inline int getTexIndex(Block id, int face) {
@@ -47,8 +49,10 @@ class BlockDB {
   static inline bool canLightPass(Block id) {
     return getBlockData(id).lightCanPass;
   }
+  static std::unordered_map<std::string, Block> blockNameToIdMap;
 
  private:
+//  static std::unordered_map<Block, BlockData> data;
   static std::vector<BlockData> data;
 };
 

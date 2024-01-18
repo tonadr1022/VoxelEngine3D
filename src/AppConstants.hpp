@@ -41,7 +41,7 @@ enum class HorizontalDirection {
 //typedef glm::ivec3 LightLevel;
 
 
-
+using SimplexFloatArray = std::array<float, CHUNK_AREA>;
 using HeightMap = std::array<int, CHUNK_AREA>;
 using HeightMapFloats = std::array<float, CHUNK_AREA>;
 using TemperatureMap = std::array<float, CHUNK_AREA>;

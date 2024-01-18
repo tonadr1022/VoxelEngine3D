@@ -125,6 +125,8 @@ set(SOURCE_FILES
         src/world/chunk/ChunkAlg.hpp
         src/world/generation/Biome.cpp
         src/world/generation/Biome.hpp
+        src/utils/JsonUtils.cpp
+        src/utils/JsonUtils.hpp
 )
 
 add_executable(voxel_engine ${SOURCE_FILES})
@@ -136,7 +138,6 @@ find_package(OpenGL REQUIRED)
 
 
 target_link_libraries(voxel_engine ${OPENGL_LIBRARIES} glfw glm)
-
 # get binary directory path and copy shaders and resource folders to it
 
 add_custom_command(TARGET voxel_engine POST_BUILD

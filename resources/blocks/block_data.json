@@ -1,7 +1,6 @@
 {
     "Water": {
-        "id": 12,
-        "texIndex": [8,8,8,8,8,8],
+        "texFilenames": ["deepslate"],
         "isTransparent": true,
         "isCollidable": false,
         "isLightSource": false,
@@ -9,8 +8,7 @@
         "lightCanPass": true
     },
     "Stone": {
-        "id": 3,
-        "texIndex": [3,3,3,3,3,3],
+        "texFilenames": ["stone"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -18,8 +16,15 @@
         "lightCanPass": false
     },
     "Snowy Grass Block": {
-        "id": 10,
-        "texIndex": [17,17,17,17,16,16],
+        "texFilenames": ["powder_snow", "grass_block_snow", "dirt"],
+        "isTransparent": false,
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
+    },
+    "Dirt Path": {
+        "texFilenames": ["dirt_path_top", "dirt_path_side", "dirt"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -27,8 +32,7 @@
         "lightCanPass": false
     },
     "Sand": {
-        "id": 6,
-        "texIndex": [7,7,7,7,7,7],
+        "texFilenames": ["sand"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -36,8 +40,7 @@
         "lightCanPass": false
     },
     "Oak Wood": {
-        "id": 7,
-        "texIndex": [10,10,10,10,11,11],
+        "texFilenames": ["oak_log_top", "oak_log", "oak_log_top"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -45,8 +48,7 @@
         "lightCanPass": false
     },
     "Oak Leaves": {
-        "id": 8,
-        "texIndex": [12,12,12,12,12,12],
+        "texFilenames": ["oak_leaves"],
         "isTransparent": true,
         "isCollidable": true,
         "isLightSource": false,
@@ -54,8 +56,7 @@
         "lightCanPass": true
     },
     "Jungle Wood": {
-        "id": 15,
-        "texIndex": [26,26,26,26,27,27],
+        "texFilenames": ["jungle_log_top", "jungle_log", "jungle_log_top"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -63,8 +64,7 @@
         "lightCanPass": false
     },
     "Gravel": {
-        "id": 4,
-        "texIndex": [34,34,34,34,34,34],
+        "texFilenames": ["gravel"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -72,35 +72,31 @@
         "lightCanPass": false
     },
     "Glowstone": {
-        "id": 14,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["glowstone"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": true,
         "lightLevels": [15,15,15],
         "lightCanPass": false
     },
-    "GlowstoneRed": {
-        "id": 35,
-      "texIndex": [79,79,79,79,79,79],
+    "Red Glowstone": {
+      "texFilenames": ["glowstone"],
       "isTransparent": false,
       "isCollidable": true,
       "isLightSource": true,
       "lightLevels": [15,0,0],
         "lightCanPass": false
     },
-    "GlowstoneGreen": {
-        "id": 36,
-      "texIndex": [79,79,79,79,79,79],
+    "Green Glowstone": {
+      "texFilenames": ["glowstone"],
       "isTransparent": false,
       "isCollidable": true,
       "isLightSource": true,
       "lightLevels": [0,15,0],
         "lightCanPass": false
     },
-    "GlowstoneBlue": {
-      "id": 37,
-      "texIndex": [79,79,79,79,79,79],
+    "Blue Glowstone": {
+      "texFilenames": ["glowstone"],
       "isTransparent": false,
       "isCollidable": true,
       "isLightSource": true,
@@ -108,17 +104,15 @@
         "lightCanPass": false
     },
     "Dirt": {
-        "id": 1,
-        "texIndex": [2,2,2,2,2,2],
+        "texFilenames": ["dirt"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
         "lightLevels": [0,0,0],
         "lightCanPass": false
     },
-    "Grass": {
-        "id": 2,
-        "texIndex": [1,1,1,1,0,0],
+    "Plains Grass Block": {
+        "texFilenames": ["grass_block_plains_top"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -126,8 +120,7 @@
         "lightCanPass": false
     },
     "Diamond Block": {
-        "id": 255,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["diamond_block"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -135,8 +128,7 @@
         "lightCanPass": false
     },
     "Crafting Table": {
-        "id": 13,
-        "texIndex": [74,74,74,74,75,75],
+        "texFilenames": ["glowstone"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -144,8 +136,7 @@
         "lightCanPass": false
     },
     "Cobblestone": {
-        "id": 9,
-        "texIndex": [78,78,78,78,78,78],
+        "texFilenames": ["cobblestone"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -153,8 +144,7 @@
         "lightCanPass": false
     },
     "Bedrock": {
-        "id": 5,
-        "texIndex": [19,19,19,19,19,19],
+        "texFilenames": ["bedrock"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -162,8 +152,7 @@
         "lightCanPass": false
     },
     "Ice Block": {
-        "id": 11,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["ice"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -171,8 +160,7 @@
         "lightCanPass": false
     },
     "Air": {
-        "id": 0,
-        "texIndex": [224,224,224,224,224,224],
+        "texFilenames": [],
         "isTransparent": true,
         "isCollidable": false,
         "isLightSource": false,
@@ -180,8 +168,7 @@
         "lightCanPass": true
     },
     "Jungle Leaves": {
-        "id": 16,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["jungle_leaves"],
         "isTransparent": true,
         "isCollidable": true,
         "isLightSource": false,
@@ -189,8 +176,7 @@
         "lightCanPass": false
     },
     "Birch Wood": {
-        "id": 17,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["birch_log_top", "birch_log", "birch_log_top"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -198,8 +184,7 @@
         "lightCanPass": false
     },
     "Birch Leaves": {
-        "id": 18,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["birch_leaves"],
         "isTransparent": true,
         "isCollidable": true,
         "isLightSource": false,
@@ -207,8 +192,7 @@
         "lightCanPass": false
     },
     "Spruce Wood": {
-        "id": 19,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["spruce_log_top", "spruce_log", "spruce_log_top"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -216,8 +200,7 @@
         "lightCanPass": false
     },
     "Spruce Leaves": {
-        "id": 20,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["spruce_leaves"],
         "isTransparent": true,
         "isCollidable": true,
         "isLightSource": false,
@@ -225,8 +208,7 @@
         "lightCanPass": false
     },
     "Coal Ore": {
-        "id": 21,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["coal_ore"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -234,8 +216,7 @@
         "lightCanPass": false
     },
     "Iron Ore": {
-        "id": 22,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["iron_ore"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -243,8 +224,7 @@
         "lightCanPass": false
     },
     "Redstone Ore": {
-        "id": 23,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["redstone_ore"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -252,8 +232,7 @@
         "lightCanPass": false
     },
     "Gold Ore": {
-        "id": 24,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["gold_ore"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -261,8 +240,7 @@
         "lightCanPass": false
     },
     "Diamond Ore": {
-        "id": 25,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["diamond_ore"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -270,8 +248,7 @@
         "lightCanPass": false
     },
     "Emerald Ore": {
-        "id": 26,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["emerald_ore"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -279,8 +256,7 @@
         "lightCanPass": false
     },
     "Lapis Lazuli Ore": {
-        "id": 27,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["lapis_ore"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -288,8 +264,7 @@
         "lightCanPass": false
     },
     "Clay": {
-        "id": 28,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["clay"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -297,8 +272,7 @@
         "lightCanPass": false
     },
     "Sugar Cane": {
-        "id": 29,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["sugar_cane"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -306,8 +280,7 @@
         "lightCanPass": false
     },
     "Cactus": {
-        "id": 30,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["cactus_top", "cactus_side", "cactus_bottom"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -315,8 +288,7 @@
         "lightCanPass": false
     },
     "Oak Planks": {
-        "id": 31,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["oak_planks"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -324,8 +296,7 @@
         "lightCanPass": false
     },
     "Birch Planks": {
-        "id": 32,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["birch_planks"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -333,8 +304,7 @@
         "lightCanPass": false
     },
     "Jungle Planks": {
-        "id": 33,
-        "texIndex": [72,72,72,72,72,72],
+        "texFilenames": ["jungle_planks"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
@@ -342,17 +312,31 @@
         "lightCanPass": false
     },
     "Spruce Planks": {
-        "id": 34,
-        "texIndex": [79,79,79,79,79,79],
+        "texFilenames": ["spruce_planks"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,
         "lightLevels": [0,0,0],
         "lightCanPass": false
     },
-    "Tundra Grass Block": {
-        "id": 38,
-        "texIndex": [32,2,33,33,33,33],
+    "Snowy Taiga Grass Block": {
+        "texFilenames": ["grass_block_snowy_taiga_top"],
+        "isTransparent": false,
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
+    },
+    "Desert Grass Block": {
+        "texFilenames": ["grass_block_desert_top"],
+        "isTransparent": false,
+        "isCollidable": true,
+        "isLightSource": false,
+        "lightLevels": [0,0,0],
+        "lightCanPass": false
+    },
+    "Jungle Grass Block": {
+        "texFilenames": ["grass_block_jungle_top"],
         "isTransparent": false,
         "isCollidable": true,
         "isLightSource": false,

@@ -40,24 +40,34 @@ unsigned int ResourceManager::getTexture(const std::string &textureName) {
   throw std::runtime_error("Texture not found: " + textureName);
 }
 
+std::unordered_map<std::string, int> ResourceManager::filenameToTexIndex;
+
 void
 ResourceManager::makeTexture2dArray(const std::string &texturePath,
                                     const std::string &textureName,
                                     bool flipVertically) {
-  Image image = loadImage(texturePath, flipVertically);
-  constexpr int tilesPerRow = 16;
-  constexpr int tilesPerColumn = 16;
-  const GLsizei tileWidth = image.width / tilesPerRow;
-  const GLsizei tileHeight = image.height / tilesPerColumn;
+  int TEX_WIDTH = 16;
+  int TEX_HEIGHT = 16;
+  std::vector<Image> images;
+
+  int texIndex = 0;
+  for (const auto &entry : std::filesystem::directory_iterator(BLOCK_DIR_PATH)) {
+    if (std::filesystem::is_regular_file(entry.path()) && entry.path().extension() == ".png") {
+      Image image = loadImage(entry.path(), true);
+      filenameToTexIndex[entry.path().stem().string()] = texIndex;
+      images.push_back(image);
+      texIndex++;
+    }
+  }
 
   uint32_t texture;
   glActiveTexture(GL_TEXTURE0);
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
 
-  glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, tileWidth, tileHeight,
-               tilesPerColumn * tilesPerRow, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-               image.pixels.data());
+  glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, TEX_WIDTH, TEX_HEIGHT,
+               images.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               nullptr);
   textures.emplace(textureName, texture);
 
   // configure sampler
@@ -67,23 +77,12 @@ ResourceManager::makeTexture2dArray(const std::string &texturePath,
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  std::vector<Image> subImages;
-
-  // create sub images on CPU
-  for (int tileY = 0; tileY < tilesPerColumn; tileY++) {
-    for (int tileX = 0; tileX < tilesPerRow; tileX++) {
-      uint32_t offsetX = tileX * tileWidth;
-      uint32_t offsetY = tileY * tileHeight;
-      subImages.emplace_back(image.subImage({offsetX, offsetY}, {tileWidth, tileHeight}));
-    }
-  }
 
   // create sub images on GPU
-  for (int subImageIndex = 0; subImageIndex < subImages.size();
-       subImageIndex++) {
-    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, subImageIndex, static_cast<GLsizei>(tileWidth),
-                    static_cast<GLsizei>(tileHeight), 1, GL_RGBA, GL_UNSIGNED_BYTE,
-                    subImages[subImageIndex].pixels.data());
+  for (int index = 0; index < images.size(); index++) {
+    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, static_cast<GLsizei>(TEX_WIDTH),
+                    static_cast<GLsizei>(TEX_HEIGHT), 1, GL_RGBA, GL_UNSIGNED_BYTE,
+                    images[index].pixels.data());
   }
 
   glGenerateMipmap(GL_TEXTURE_2D_ARRAY);

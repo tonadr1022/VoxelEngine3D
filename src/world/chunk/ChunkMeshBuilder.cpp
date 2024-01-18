@@ -203,7 +203,6 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
       const BlockData &adjBlockData = BlockDB::getBlockData(adjacentBlock);
       if (!adjBlockData.isTransparent) continue;
 
-
       const uint16_t faceLightLevel = m_lightLevels[adjBlockIndex];
       const uint8_t sunlightLevel = m_sunlightLevels[adjBlockIndex];
       setOcclusionLevels(blockPos, faceIndex, occlusionLevels);
@@ -215,8 +214,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
       auto &indices = blockData.isTransparent ? transparentIndices_ : opaqueIndices_;
 
       const auto baseVertexIndex = vertices->size();
-      uint32_t vertexData2 = faceLightLevel | ((sunlightLevel & 0xF) << 12);
-
+      uint32_t vertexData2 = faceLightLevel | ((sunlightLevel) << 12) | ((texIndex) << 16);
       for (int i = 0, j = 0; i < 20; i += 5, j++) {
         // x between [0, 32] == 6 bits, y between [0, 32] == 6 bits, z
         // between [0, 32] == 6 bits occlusion level [0, 3] == 2 bits,
@@ -229,8 +227,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
                 ((blockPos.z + ALL_FACES_LOOKUP[faceVerticesIndex + i + 2] & 0x3F) << 12) |
                 ((occlusionLevels[j] & 0x3) << 18) |
                 ((ALL_FACES_LOOKUP[faceVerticesIndex + i + 3] & 0x1) << 20) |
-                ((ALL_FACES_LOOKUP[faceVerticesIndex + i + 4] & 0x1) << 21) |
-                ((texIndex & 0xFF) << 22);
+                ((ALL_FACES_LOOKUP[faceVerticesIndex + i + 4] & 0x1) << 21);
         // blue light level [0, 15] == 4 bits, green light level [0, 15] == 4, red light level [0, 15] == 4 bits
         // intensity [0, 15] == 4 bits, total 16 bits
         ChunkVertex vertex = {vertexData1, vertexData2};
