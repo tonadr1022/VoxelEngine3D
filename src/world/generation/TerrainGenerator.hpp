@@ -31,7 +31,7 @@ class TerrainGenerator {
   explicit TerrainGenerator(int seed, nlohmann::json biomeData);
   void init();
 
-  static void generateStructures(Chunk *chunk, HeightMap &heightMap, TreeMap &treeMap);
+  static void generateStructures(std::array<Chunk *, CHUNKS_PER_STACK> &chunks, HeightMap &heightMap, TreeMap &treeMap);
 
   void fillTreeMap(const glm::ivec2 &startWorldPos, TreeMap &result) const;
   void fillTerrainMaps(glm::ivec2 startWorldPosRes, SimplexFloatArray &continentalnessRes,

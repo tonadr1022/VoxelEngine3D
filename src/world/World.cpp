@@ -137,58 +137,76 @@ void World::updateChunkLoadList() {
 }
 
 void World::updateChunkStructureGenList() {
+  // updating finished structure generation
   for (auto posIt = m_chunkStructuresInfoMap.begin(); posIt != m_chunkStructuresInfoMap.end();) {
-    if (posIt->second->chunkState == ChunkState::STRUCTURES_GENERATED) {
+    bool shouldErase = true;
+    for (int chunkIndex = 0; chunkIndex < CHUNKS_PER_STACK; chunkIndex++) {
+      if (posIt->second[chunkIndex]->chunkState != ChunkState::STRUCTURES_GENERATED) {
+        shouldErase = false;
+        break;
+      }
+    }
+    if (shouldErase) {
       posIt = m_chunkStructuresInfoMap.erase(posIt);
     } else {
       posIt++;
     }
   }
 
+  // adding possible chunks to generate structures for
   if (m_centerChangedXY || m_opaqueRenderSet.empty()) {
     m_chunksInStructureGenRangeVectorXY.clear();
-    glm::ivec2 pos;
+    glm::ivec3 pos;
     for (pos.x = m_center.x - m_structureLoadDistance; pos.x <= m_center.x + m_structureLoadDistance; pos.x++) {
       for (pos.y = m_center.y - m_structureLoadDistance; pos.y <= m_center.y + m_structureLoadDistance; pos.y++) {
-        if (m_chunkMap.at({pos.x, pos.y, 0})->chunkState == ChunkState::TERRAIN_GENERATED
-            && !m_chunkStructuresInfoMap.count({pos.x, pos.y, 0})) {
-          m_chunksInStructureGenRangeVectorXY.emplace_back(pos);
+        if (m_chunkStructuresInfoMap.count({pos.x, pos.y})) continue;
+        bool canGenStructures = true;
+        for (pos.z = 0; pos.z < CHUNKS_PER_STACK; pos.z++) {
+          if (m_chunkMap.at(pos)->chunkState != ChunkState::TERRAIN_GENERATED) {
+            canGenStructures = false;
+            break;
+          }
+          addNeighborChunksToChunk(pos);
         }
+        if (canGenStructures) m_chunksInStructureGenRangeVectorXY.emplace_back(pos);
+
       }
     }
     std::sort(m_chunksInStructureGenRangeVectorXY.begin(), m_chunksInStructureGenRangeVectorXY.end(), rcmpVec2);
   }
 
   for (auto posIt = m_chunksInStructureGenRangeVectorXY.begin(); posIt != m_chunksInStructureGenRangeVectorXY.end();) {
-    for (int z = 0; z < CHUNKS_PER_STACK; z++) {
-      auto pos = glm::ivec3(posIt->x, posIt->y, z);
+    bool canGenStructures = true;
+    glm::ivec2 pos2d = *posIt;
+    ChunkStackArray chunks = {nullptr};
 
-      Chunk *chunks[27] = {nullptr};
-      getNeighborChunks(chunks, pos);
-
-      bool canGenStructures = true;
-      for (auto &chunk : chunks) {
-        if (chunk && chunk->chunkState != ChunkState::TERRAIN_GENERATED
-            && chunk->chunkState != ChunkState::STRUCTURES_GENERATED &&
-            chunk->chunkState != ChunkState::FULLY_GENERATED) {
+    // check horizontal neighbors in valid state for every chunk in the stack
+    for (glm::ivec3 pos = {pos2d.x, pos2d.y, 0}; pos.z < CHUNKS_PER_STACK; pos.z++) {
+      Chunk *currChunk = getChunkRawPtr(pos);
+      for (auto neighborIndex : Chunk::HORIZONTAL_NEIGHBOR_INDICES) {
+        ChunkState horizontalNeighborChunkState = currChunk->m_neighborChunks[neighborIndex]->chunkState;
+        if (horizontalNeighborChunkState != ChunkState::TERRAIN_GENERATED
+            && horizontalNeighborChunkState != ChunkState::STRUCTURES_GENERATED
+            && horizontalNeighborChunkState != ChunkState::FULLY_GENERATED) {
           canGenStructures = false;
           break;
         }
       }
-
-      if (canGenStructures) {
-        // TODO move this logic of adding neighbor chunks to the chunk somewhere else? or at least a new function
-        Chunk *chunk = chunks[13];
-        for (int i = 0; i < 27; i++) {
-          chunk->m_neighborChunks[i] = chunks[i];
-        }
-        m_chunkStructuresInfoMap.emplace(pos, chunk);
-        auto insertPos = std::lower_bound(
-            m_chunksReadyToGenStructuresList.begin(), m_chunksReadyToGenStructuresList.end(), *posIt, rcmpVec2);
-        m_chunksReadyToGenStructuresList.insert(insertPos, pos);
+      if (!canGenStructures) {
+        break;
       }
+      chunks[pos.z] = currChunk;
     }
-    posIt = m_chunksInStructureGenRangeVectorXY.erase(posIt);
+
+    if (canGenStructures) {
+      m_chunkStructuresInfoMap.emplace(pos2d, chunks);
+      auto insertPos = std::lower_bound(
+          m_chunksReadyToGenStructuresList.begin(), m_chunksReadyToGenStructuresList.end(), *posIt, rcmpVec2);
+      m_chunksReadyToGenStructuresList.insert(insertPos, pos2d);
+      posIt = m_chunksInStructureGenRangeVectorXY.erase(posIt);
+    } else {
+      posIt++;
+    }
   }
 }
 
@@ -353,7 +371,7 @@ void World::unloadChunks() {
 void World::generateChunksWorker4() {
   while (true) {
     std::queue<glm::ivec2> batchToLoad;
-    std::queue<glm::ivec3> batchToGenStructures;
+    std::queue<glm::ivec2> batchToGenStructures;
     std::queue<glm::ivec2> batchToLight;
     std::queue<glm::ivec3> batchToMesh;
 
@@ -409,7 +427,7 @@ void World::processBatchToLoad(std::queue<glm::ivec2> &batchToLoad) {
   }
 }
 
-void World::processBatchToGenStructures(std::queue<glm::ivec3> &batchToGenStructures) {
+void World::processBatchToGenStructures(std::queue<glm::ivec2> &batchToGenStructures) {
   while (!batchToGenStructures.empty()) {
     const auto &pos = batchToGenStructures.front();
 
@@ -808,6 +826,16 @@ void World::addRelatedChunks(const glm::ivec3 &blockPosInChunk,
   // add the chunks to the set
   for (int i = 0; i < numChunksToAdd; i++) {
     chunkSet.insert(chunksToAdd[i]);
+  }
+}
+
+void World::addNeighborChunksToChunk(glm::ivec3 chunkPos) {
+  Chunk *chunks[27] = {nullptr};
+  getNeighborChunks(chunks, chunkPos);
+  Chunk *chunk = getChunkRawPtr(chunkPos);
+//  std::copy(std::begin(chunks), std::end(chunks), chunk->m_neighborChunks);
+  for (int i = 0; i < 27; i++) {
+    chunk->m_neighborChunks[i] = chunks[i];
   }
 }
 

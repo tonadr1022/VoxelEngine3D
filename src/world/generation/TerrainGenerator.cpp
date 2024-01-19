@@ -6,15 +6,15 @@
 #include "json/json.hpp"
 #include "../../utils/JsonUtils.hpp"
 
-void TerrainGenerator::generateStructures(Chunk *chunk, HeightMap &heightMap, TreeMap &treeMap) {
-  int chunkBaseZ = chunk->m_worldPos.z;
+void TerrainGenerator::generateStructures(std::array<Chunk *, CHUNKS_PER_STACK> &chunks, HeightMap &heightMap, TreeMap &treeMap) {
+//  int chunkBaseZ = chunk->m_worldPos.z;
 
   int heightMapIndex = 0;
   for (int y = 0; y < CHUNK_SIZE; y++) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
-      int height = heightMap[heightMapIndex] - chunkBaseZ;
-//      int height = heightMap[heightMapIndex] - chunkBaseZ;
-      if (height < 0 || height >= CHUNK_SIZE) continue;
+      int worldHeight = heightMap[heightMapIndex];
+      int localHeight = Utils::getLocalIndex(worldHeight);
+//      if (height < 0 || height >= CHUNK_SIZE) continue;
       // + 1 since tree map vals are [-1,1]
       // 1 / 100 prob for now
 //      if (chunk->getBlock(x, y, height) != Block::PLAINS_GRASS_BLOCK) {
@@ -23,12 +23,15 @@ void TerrainGenerator::generateStructures(Chunk *chunk, HeightMap &heightMap, Tr
 //      }
       bool structureExists = static_cast<int>((treeMap[heightMapIndex] + 1) * 100.0f) == 0;
       if (structureExists) {
-        makeTree({x, y, height + 1}, chunk);
+        makeTree({x, y, localHeight + 1}, chunks[worldHeight / CHUNK_SIZE]);
       }
       heightMapIndex++;
     }
   }
-  chunk->chunkState = ChunkState::STRUCTURES_GENERATED;
+
+  for (auto &chunk : chunks) {
+    chunk->chunkState = ChunkState::STRUCTURES_GENERATED;
+  }
 }
 
 void TerrainGenerator::makeTree(const glm::ivec3 &pos, Chunk *chunk) {
