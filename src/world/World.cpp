@@ -114,7 +114,7 @@ void World::updateChunkLoadList() {
       }
       posIt->second->applyTerrainDataToChunks(chunksInStack);
       m_chunkHeightMapMap.emplace(posIt->first, posIt->second->m_heightMap);
-      m_chunkTreeMapMap.emplace(posIt->first, posIt->second->m_treeMap);
+      m_biomeMapMap.emplace(posIt->first, posIt->second->m_biomeMap);
 
       // delete from map regardless of whether chunk exists
       posIt = m_chunkTerrainLoadInfoMap.erase(posIt);
@@ -360,7 +360,7 @@ void World::unloadChunks() {
       m_opaqueRenderSet.erase(pos);
       m_transparentRenderSet.erase(pos);
       m_chunkHeightMapMap.erase(pos);
-      m_chunkTreeMapMap.erase(pos);
+      m_biomeMapMap.erase(pos);
       it = m_chunkMap.erase(it);
     } else {
       ++it;
@@ -433,13 +433,13 @@ void World::processBatchToGenStructures(std::queue<glm::ivec2> &batchToGenStruct
 
     // find instead of at
     auto heightMapIt = m_chunkHeightMapMap.find(pos);
-    auto treeMapIt = m_chunkTreeMapMap.find(pos);
-    if (heightMapIt == m_chunkHeightMapMap.end() || treeMapIt == m_chunkTreeMapMap.end()) {
-      std::cout << "BROKEN HEIGHTMAP OR TREEMAP" << std::endl;
+    auto biomeMapIt = m_biomeMapMap.find(pos);
+    if (heightMapIt == m_chunkHeightMapMap.end() || biomeMapIt == m_biomeMapMap.end()) {
+      std::cout << "BROKEN HEIGHTMAP OR BIOME MAP" << std::endl;
     } else {
       auto it = m_chunkStructuresInfoMap.find(pos);
       if (it != m_chunkStructuresInfoMap.end()) {
-        TerrainGenerator::generateStructures(it->second, heightMapIt->second, treeMapIt->second);
+        m_terrainGenerator.generateStructures(it->second, heightMapIt->second, biomeMapIt->second);
       }
     }
 //    m_chunkStructuresInfoMap.at(pos)->generateStructureData(heightMapIt->second, treeMapIt->second);

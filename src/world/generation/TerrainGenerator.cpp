@@ -6,27 +6,24 @@
 #include "json/json.hpp"
 #include "../../utils/JsonUtils.hpp"
 
-void TerrainGenerator::generateStructures(std::array<Chunk *, CHUNKS_PER_STACK> &chunks, HeightMap &heightMap, TreeMap &treeMap) {
+void TerrainGenerator::generateStructures(std::array<Chunk *, CHUNKS_PER_STACK> &chunks,
+                                          HeightMap &heightMap,
+                                          BiomeMap &biomeMap) const {
 //  int chunkBaseZ = chunk->m_worldPos.z;
-
-  int heightMapIndex = 0;
-  for (int y = 0; y < CHUNK_SIZE; y++) {
-    for (int x = 0; x < CHUNK_SIZE; x++) {
-      int worldHeight = heightMap[heightMapIndex];
-      int localHeight = Utils::getLocalIndex(worldHeight);
-//      if (height < 0 || height >= CHUNK_SIZE) continue;
-      // + 1 since tree map vals are [-1,1]
-      // 1 / 100 prob for now
-//      if (chunk->getBlock(x, y, height) != Block::PLAINS_GRASS_BLOCK) {
-//        heightMapIndex++;
-//        continue;
-//      }
-      bool structureExists = static_cast<int>((treeMap[heightMapIndex] + 1) * 100.0f) == 0;
-      if (structureExists) {
-        makeTree({x, y, localHeight + 1}, chunks[worldHeight / CHUNK_SIZE]);
-      }
-      heightMapIndex++;
-    }
+  StructureFloatMap structureFloatMap;
+  fillTreeMap({chunks[0]->m_worldPos.x, chunks[0]->m_worldPos.y}, structureFloatMap);
+  int x, y, worldHeight, localHeight;
+  for (int i = 0; i < CHUNK_AREA; i++) {
+    x = i & 31;
+    y = (i >> 5) & 31;
+    worldHeight = heightMap[i];
+    localHeight = Utils::getLocalIndex(worldHeight);
+    const Biome &biome = getBiome(biomeMap[i]);
+    biome.buildStructure({x, y, localHeight + 1}, chunks[worldHeight / CHUNK_SIZE], structureFloatMap[i]);
+//    bool structureExists = static_cast<int>((structureFloatMap[i] + 1) * 100.0f) == 0;
+//    if (structureExists) {
+//      makeTree({x, y, localHeight + 1}, chunks[worldHeight / CHUNK_SIZE]);
+//    }
   }
 
   for (auto &chunk : chunks) {
@@ -62,16 +59,15 @@ void TerrainGenerator::makeTree(const glm::ivec3 &pos, Chunk *chunk) {
 }
 
 TerrainGenerator::TerrainGenerator(int seed, nlohmann::json biomeData)
-: m_seed(seed),
-m_plainsBiome(biomeData["plains"]),
-m_beachBiome(biomeData["beach"]),
-m_desertBiome(biomeData["desert"]),
-m_jungleBiome(biomeData["jungle"]),
-m_forestBiome(biomeData["forest"]),
-m_oceanBiome(biomeData["ocean"]),
-m_spruceForestBiome(biomeData["spruce_forest"]),
-m_tundraBiome(biomeData["tundra"])
-{}
+    : m_seed(seed),
+      m_plainsBiome(biomeData["plains"]),
+      m_beachBiome(biomeData["beach"]),
+      m_desertBiome(biomeData["desert"]),
+      m_jungleBiome(biomeData["jungle"]),
+      m_forestBiome(biomeData["forest"]),
+      m_oceanBiome(biomeData["ocean"]),
+      m_spruceForestBiome(biomeData["spruce_forest"]),
+      m_tundraBiome(biomeData["tundra"]) {}
 
 void TerrainGenerator::init() {
   loadSplineData();
@@ -145,7 +141,7 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap,
 //  setBlockTerrain(20, 20, maxBlockHeightAtx20y20, Block::GLOWSTONE_BLUE);
 }
 
-void TerrainGenerator::fillTreeMap(const glm::ivec2 &startWorldPos, TreeMap &result) const {
+void TerrainGenerator::fillTreeMap(const glm::ivec2 &startWorldPos, StructureFloatMap &result) const {
   FastNoiseSIMD *fastNoise = FastNoiseSIMD::NewFastNoiseSIMD();
   fastNoise->SetSeed(m_seed);
   fastNoise->SetFrequency(1.0f);
@@ -161,7 +157,7 @@ void TerrainGenerator::fillTreeMap(const glm::ivec2 &startWorldPos, TreeMap &res
 float TerrainGenerator::getContinentalnessValue(float continentalness) const {
   for (size_t i = 0; i < m_continentalnessSplinePoints.size() - 1; i++) {
     if (continentalness <= m_continentalnessSplinePoints[i + 1].x) {
-      return (lerp(continentalness, m_continentalnessSplinePoints[i], m_continentalnessSplinePoints[i + 1]) + 1) *50;
+      return (lerp(continentalness, m_continentalnessSplinePoints[i], m_continentalnessSplinePoints[i + 1]) + 1) * 50;
     }
   }
   throw std::runtime_error("spline error");

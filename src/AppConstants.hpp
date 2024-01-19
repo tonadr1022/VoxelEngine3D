@@ -21,7 +21,7 @@ constexpr glm::vec3 NULL_VECTOR = glm::vec3(-1, -1, -1);
 
 constexpr int CHUNK_MESH_INFO_CHUNK_WIDTH = CHUNK_SIZE + 2;
 constexpr int CHUNK_MESH_INFO_SIZE = CHUNK_MESH_INFO_CHUNK_WIDTH * CHUNK_MESH_INFO_CHUNK_WIDTH *
-                                             CHUNK_MESH_INFO_CHUNK_WIDTH;
+    CHUNK_MESH_INFO_CHUNK_WIDTH;
 
 constexpr int CHUNK_LIGHT_INFO_WIDTH = CHUNK_SIZE + 28;
 constexpr int CHUNK_LIGHT_INFO_AREA = CHUNK_LIGHT_INFO_WIDTH * CHUNK_LIGHT_INFO_WIDTH;
@@ -43,11 +43,7 @@ enum class HorizontalDirection {
 
 using SimplexFloatArray = std::array<float, CHUNK_AREA>;
 using HeightMap = std::array<int, CHUNK_AREA>;
-using HeightMapFloats = std::array<float, CHUNK_AREA>;
-using TemperatureMap = std::array<float, CHUNK_AREA>;
-using PrecipitationMap = std::array<float, CHUNK_AREA>;
-using TreeMap = std::array<float, CHUNK_AREA>;using ChunkHeightMapMap = std::unordered_map<glm::ivec2, HeightMap>;
-using ChunkTreeMapMap = std::unordered_map<glm::ivec2, TreeMap>;
-
+using StructureFloatMap = std::array<float, CHUNK_AREA>;
+using ChunkHeightMapMap = std::unordered_map<glm::ivec2, HeightMap>;
 
 #endif //VOXEL_ENGINE_APPCONSTANTS_HPP

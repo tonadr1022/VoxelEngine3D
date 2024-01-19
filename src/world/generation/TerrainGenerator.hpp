@@ -31,9 +31,11 @@ class TerrainGenerator {
   explicit TerrainGenerator(int seed, nlohmann::json biomeData);
   void init();
 
-  static void generateStructures(std::array<Chunk *, CHUNKS_PER_STACK> &chunks, HeightMap &heightMap, TreeMap &treeMap);
+  void generateStructures(std::array<Chunk *, CHUNKS_PER_STACK> &chunks,
+                          HeightMap &heightMap,
+                          BiomeMap &biomeMap) const;
 
-  void fillTreeMap(const glm::ivec2 &startWorldPos, TreeMap &result) const;
+  void fillTreeMap(const glm::ivec2 &startWorldPos, StructureFloatMap &result) const;
   void fillTerrainMaps(glm::ivec2 startWorldPosRes, SimplexFloatArray &continentalnessRes,
                        SimplexFloatArray &erosionRes, SimplexFloatArray &peaksAndValleysRes,
                        SimplexFloatArray &temperatureRes, SimplexFloatArray &precipitationRes) const;
@@ -73,7 +75,6 @@ class TerrainGenerator {
 
   std::vector<glm::vec2> m_continentalnessSplinePoints;
   std::vector<glm::vec2> m_peaksAndValleysSplines;
-
 
   static constexpr float CONTINENTALNESS_FREQ = 1.0f / 1200.0f;
   static constexpr int CONTINENTALNESS_NUM_OCTAVES = 4;

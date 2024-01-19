@@ -174,7 +174,7 @@ class World {
   static constexpr int MAX_BATCH_SIZE = 10;
 
   ChunkHeightMapMap m_chunkHeightMapMap;
-  ChunkTreeMapMap m_chunkTreeMapMap;
+  std::unordered_map<glm::ivec2, BiomeMap> m_biomeMapMap;
 
   std::vector<glm::ivec2> m_chunksToLoadVector;
   std::unordered_map<glm::ivec2, Scope<ChunkTerrainInfo>> m_chunkTerrainLoadInfoMap;

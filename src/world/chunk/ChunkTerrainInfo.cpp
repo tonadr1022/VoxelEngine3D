@@ -10,9 +10,7 @@ ChunkTerrainInfo::ChunkTerrainInfo(glm::ivec2 pos, TerrainGenerator &terrainGene
 
 void ChunkTerrainInfo::generateTerrainData() {
   auto chunkWorldPos = m_pos * CHUNK_SIZE;
-  TreeMap treeMap;
-  m_terrainGenerator.fillTreeMap(chunkWorldPos, treeMap);
-  m_treeMap = treeMap;
+
 
   SimplexFloatArray continentalness;
   SimplexFloatArray erosion;
@@ -41,8 +39,8 @@ void ChunkTerrainInfo::generateTerrainData() {
 
   m_heightMap = heightMap;
 
-  m_precipitationMap = precipitation;
-  m_temperatureMap = temperature;
+//  m_precipitationMap = precipitation;
+//  m_temperatureMap = temperature;
 
   float precipMapVal, tempMapVal, continentalnessVal;
   int x, y;

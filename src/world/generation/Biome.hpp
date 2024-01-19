@@ -13,7 +13,7 @@ class Biome {
  public:
   explicit Biome(nlohmann::json biomeData);
   [[nodiscard]] inline Block getSurfaceBlock() const {return m_surfaceBlock;}
-  void buildStructure(glm::ivec2 pos, Chunk *chunk, float noise);
+  void buildStructure(glm::ivec3 pos, Chunk *chunk, float noise) const;
 
  private:
   std::vector<float> m_structureFrequencies;
