@@ -23,6 +23,7 @@ struct BlockData {
 
 class BlockDB {
  public:
+  static Block blockIdFromName(const std::string &name);
   static void loadData(const std::string &filePath);
 
   static inline BlockData &getBlockData(Block id) {
@@ -42,18 +43,17 @@ class BlockDB {
     return getBlockData(id).lightLevel;
   }
 
-  static inline uint32_t getpackedLightLevel(Block id) {
+  static inline uint32_t getPackedLightLevel(Block id) {
     return getBlockData(id).packedLightLevel;
   }
 
   static inline bool canLightPass(Block id) {
     return getBlockData(id).lightCanPass;
   }
+ private:
+  static std::vector<BlockData> data;
   static std::unordered_map<std::string, Block> blockNameToIdMap;
 
- private:
-//  static std::unordered_map<Block, BlockData> data;
-  static std::vector<BlockData> data;
 };
 
 #endif //VOXEL_ENGINE_BLOCKDB_HPP

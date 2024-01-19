@@ -36,7 +36,7 @@ void ChunkTerrainInfo::generateTerrainData() {
                                                 precipitation);
 
   for (int i = 0; i < CHUNK_AREA; i++) {
-    heightMap[i] = (int) m_terrainGenerator.heightFromContinentalness(continentalness[i]);
+    heightMap[i] = (int) m_terrainGenerator.getContinentalnessValue(continentalness[i]);
   }
 
   m_heightMap = heightMap;

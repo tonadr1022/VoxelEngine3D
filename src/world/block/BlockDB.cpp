@@ -63,7 +63,7 @@ std::vector<BlockData> prelimData;
   for (const auto &[blockName, blockData] : blocks.items()) {
     BlockData blockDataEntry{};
     blockDataEntry.name = blockName;
-    blockDataEntry.id = blockNameToIdMap[blockName];
+    blockDataEntry.id = blockIdFromName(blockName);
     /* length    layout
  * 1          all
  * 2          top, rest
@@ -111,6 +111,9 @@ std::vector<BlockData> prelimData;
   for (const auto &blockDataEntry : prelimData) {
     data.push_back(blockDataEntry);
   }
+}
+Block BlockDB::blockIdFromName(const std::string &name) {
+  return blockNameToIdMap[name];
 }
 
 

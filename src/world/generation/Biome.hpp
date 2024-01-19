@@ -6,65 +6,18 @@
 #define VOXEL_ENGINE_SRC_WORLD_GENERATION_BIOME_HPP_
 
 #include "../block/Block.hpp"
+#include "json/json.hpp"
+
+class Chunk;
 class Biome {
  public:
-  [[nodiscard]] virtual Block getSurfaceBlock() const = 0;
-};
+  explicit Biome(nlohmann::json biomeData);
+  [[nodiscard]] inline Block getSurfaceBlock() const {return m_surfaceBlock;}
+  void buildStructure(glm::ivec2 pos, Chunk *chunk, float noise);
 
-class TundraBiome : public Biome {
- public:
-  [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::SNOWY_TAIGA_GRASS_BLOCK;
-  }
+ private:
+  std::vector<float> m_structureFrequencies;
+  int m_numStructureTypes;
+  Block m_surfaceBlock;
 };
-
-class DesertBiome : public Biome {
- public:
-  [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::DESERT_GRASS_BLOCK;
-  }
-};
-
-class JungleBiome : public Biome {
- public:
-  [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::JUNGLE_GRASS_BLOCK;
-  }
-};
-
-class ForestBiome : public Biome {
- public:
-  [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::PLAINS_GRASS_BLOCK;
-  }
-};
-
-class BeachBiome : public Biome {
- public:
-  [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::SAND;
-  }
-};
-
-class OceanBiome : public Biome {
- public:
-  [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::SAND;
-  }
-};
-
-class PlainsBiome : public Biome {
- public:
-  [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::PLAINS_GRASS_BLOCK;
-  }
-};
-
-class SpruceForestBiome : public Biome {
- public:
-  [[nodiscard]] Block getSurfaceBlock() const override {
-    return Block::SNOWY_TAIGA_GRASS_BLOCK;
-  }
-};
-
 #endif //VOXEL_ENGINE_SRC_WORLD_GENERATION_BIOME_HPP_

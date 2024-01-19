@@ -58,7 +58,17 @@ void TerrainGenerator::makeTree(const glm::ivec3 &pos, Chunk *chunk) {
   chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, pos.z}, glowstoneColor);
 }
 
-TerrainGenerator::TerrainGenerator(int seed) : m_seed(seed) {}
+TerrainGenerator::TerrainGenerator(int seed, nlohmann::json biomeData)
+: m_seed(seed),
+m_plainsBiome(biomeData["plains"]),
+m_beachBiome(biomeData["beach"]),
+m_desertBiome(biomeData["desert"]),
+m_jungleBiome(biomeData["jungle"]),
+m_forestBiome(biomeData["forest"]),
+m_oceanBiome(biomeData["ocean"]),
+m_spruceForestBiome(biomeData["spruce_forest"]),
+m_tundraBiome(biomeData["tundra"])
+{}
 
 void TerrainGenerator::init() {
   loadSplineData();
@@ -145,17 +155,13 @@ void TerrainGenerator::fillTreeMap(const glm::ivec2 &startWorldPos, TreeMap &res
   delete fastNoise;
 }
 
-float TerrainGenerator::heightFromContinentalness(float continentalness) const {
-//  for (size_t i = 0; i < m_continentalnessSplinePoints.size() - 1; i++) {
-//    if (continentalness <= m_continentalnessSplinePoints[i + 1].x) {
-//      return lerp(continentalness, m_continentalnessSplinePoints[i], m_continentalnessSplinePoints[i + 1]);
-//    }
-//  }
-  double res = (m_continentalnessSpline(continentalness) + 1) * 50 + 20;
-  if (res < 0) {
-    std::cout << "err\n";
+float TerrainGenerator::getContinentalnessValue(float continentalness) const {
+  for (size_t i = 0; i < m_continentalnessSplinePoints.size() - 1; i++) {
+    if (continentalness <= m_continentalnessSplinePoints[i + 1].x) {
+      return (lerp(continentalness, m_continentalnessSplinePoints[i], m_continentalnessSplinePoints[i + 1]) + 1) *50;
+    }
   }
-  return res;
+  throw std::runtime_error("spline error");
 }
 
 void TerrainGenerator::fillTerrainMaps(glm::ivec2 startWorldPos,
@@ -219,12 +225,14 @@ void TerrainGenerator::generateBiomeAndHeightMaps(HeightMap &heightMap,
 void TerrainGenerator::loadSplineData() {
   nlohmann::json splineData = JsonUtils::openJson("resources/terrain/terrain.json");
   nlohmann::json continentalnessPoints = splineData["continentalness"]["points"];
-
   for (const auto &point : continentalnessPoints) {
-    m_continentalnessSplineX.emplace_back(point["location"].get<float>());
-    m_continentalnessSplineY.emplace_back(point["value"].get<float>());
+    m_continentalnessSplinePoints.emplace_back(point["location"].get<float>(), point["value"].get<float>());
   }
-
-  m_continentalnessSpline.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0);
-  m_continentalnessSpline.set_points(m_continentalnessSplineX, m_continentalnessSplineY);
+//  for (const auto &point : continentalnessPoints) {
+//    m_continentalnessSplineX.emplace_back(point["location"].get<float>());
+//    m_continentalnessSplineY.emplace_back(point["value"].get<float>());
+//  }
+//
+//  m_continentalnessSpline.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0);
+//  m_continentalnessSpline.set_points(m_continentalnessSplineX, m_continentalnessSplineY, tk::spline::cspline_hermite);
 }

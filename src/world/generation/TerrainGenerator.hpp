@@ -10,6 +10,7 @@
 #include "../../AppConstants.hpp"
 #include "../chunk/Chunk.hpp"
 #include "Biome.hpp"
+#include "json/json.hpp"
 
 enum class BiomeValue {
   OCEAN,
@@ -27,7 +28,7 @@ using BiomeMap = std::array<BiomeValue, CHUNK_AREA>;
 
 class TerrainGenerator {
  public:
-  explicit TerrainGenerator(int seed);
+  explicit TerrainGenerator(int seed, nlohmann::json biomeData);
   void init();
 
   static void generateStructures(Chunk *chunk, HeightMap &heightMap, TreeMap &treeMap);
@@ -52,7 +53,7 @@ class TerrainGenerator {
     return *m_biomeFetchMap.at(biomeValue);
   };
 
-  [[nodiscard]] float heightFromContinentalness(float continentalness) const;
+  [[nodiscard]] float getContinentalnessValue(float continentalness) const;
 
   void generateBiomeAndHeightMaps(HeightMap &heightMap,
                                   BiomeMap &biomeMap,
@@ -70,10 +71,7 @@ class TerrainGenerator {
     return p1.y + (x - p1.x) * (p2.y - p1.y) / (p2.x - p1.x);
   }
 
-  std::vector<double> m_continentalnessSplineX;
-  std::vector<double> m_continentalnessSplineY;
-  tk::spline m_continentalnessSpline;
-
+  std::vector<glm::vec2> m_continentalnessSplinePoints;
   std::vector<glm::vec2> m_peaksAndValleysSplines;
 
 
@@ -88,14 +86,14 @@ class TerrainGenerator {
   static constexpr float PRECIPITATION_FREQ = 1.0f / 1000.0f;
   static constexpr int PRECIPITATION_NUM_OCTAVES = 1;
 
-  TundraBiome m_tundraBiome;
-  DesertBiome m_desertBiome;
-  JungleBiome m_jungleBiome;
-  ForestBiome m_forestBiome;
-  BeachBiome m_beachBiome;
-  OceanBiome m_oceanBiome;
-  PlainsBiome m_plainsBiome;
-  SpruceForestBiome m_spruceForestBiome;
+  Biome m_tundraBiome;
+  Biome m_desertBiome;
+  Biome m_jungleBiome;
+  Biome m_forestBiome;
+  Biome m_beachBiome;
+  Biome m_oceanBiome;
+  Biome m_plainsBiome;
+  Biome m_spruceForestBiome;
 
   std::unordered_map<BiomeValue, Biome *> m_biomeFetchMap = {
       {BiomeValue::TUNDRA, &m_tundraBiome},

@@ -20,7 +20,7 @@ void ChunkAlg::generateTorchlightData(Chunk *chunk) {
     Block block = chunk->getBlockFromIndex(blockIndex);
     if (BlockDB::isLightSource(block)) {
       glm::ivec3 pos = XYZ_FROM_INDEX(blockIndex);
-      uint16_t lightLevel = BlockDB::getpackedLightLevel(block);
+      uint16_t lightLevel = BlockDB::getPackedLightLevel(block);
       torchlightQueue.emplace(pos, lightLevel);
       chunk->setTorchLevelIncludingNeighborsOptimized(pos, lightLevel);
     }

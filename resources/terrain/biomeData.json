@@ -1,0 +1,34 @@
+{
+  "tundra": {
+    "frequencies": [0.002],
+    "surfaceBlock": "Snowy Taiga Grass Block"
+  },
+  "desert": {
+    "frequencies": [0.005],
+    "surfaceBlock": "Sand"
+  },
+  "jungle": {
+    "frequencies": [0.02, 0.01],
+    "surfaceBlock": "Jungle Grass Block"
+  },
+  "forest": {
+    "frequencies": [0.02],
+    "surfaceBlock": "Plains Grass Block"
+  },
+  "beach": {
+    "frequencies": [0.005],
+    "surfaceBlock": "Sand"
+  },
+  "ocean": {
+    "frequencies": [0.04],
+    "surfaceBlock": "Sand"
+  },
+  "plains": {
+    "frequencies": [0.002],
+    "surfaceBlock": "Plains Grass Block"
+  },
+  "spruce_forest": {
+    "frequencies": [0.02],
+    "surfaceBlock": "Snowy Taiga Grass Block"
+  }
+}

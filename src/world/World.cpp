@@ -8,10 +8,17 @@
 #include "../input/Mouse.hpp"
 #include "../utils/Timer.hpp"
 #include "chunk/ChunkAlg.hpp"
+#include "../utils/JsonUtils.hpp"
 
 World::World(Renderer &renderer, int seed, const std::string &savePath)
-    : m_worldSave(savePath), m_renderer(renderer), m_center(INT_MAX), m_xyCenter(INT_MAX), m_numRunningThreads(0),
-      m_numLoadingThreads(std::thread::hardware_concurrency()), m_seed(seed), m_terrainGenerator(seed) {
+    : m_worldSave(savePath),
+      m_renderer(renderer),
+      m_center(INT_MAX),
+      m_xyCenter(INT_MAX),
+      m_numRunningThreads(0),
+      m_numLoadingThreads(std::thread::hardware_concurrency()),
+      m_seed(seed),
+      m_terrainGenerator(seed, JsonUtils::openJson("resources/terrain/biomeData.json")) {
 //  m_numLoadingThreads = 1;
   const size_t loadVectorSize = ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
   m_chunksToLoadVector.reserve(loadVectorSize);
@@ -653,8 +660,8 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   Block oldBlock = chunk->getBlock(blockPosInChunk);
   uint8_t oldSunlightLevel = chunk->getSunLightLevel(blockPosInChunk);
 
-  uint16_t oldTorchLightPacked = BlockDB::getpackedLightLevel(oldBlock);
-  uint16_t newTorchLightPacked = BlockDB::getpackedLightLevel(block);
+  uint16_t oldTorchLightPacked = BlockDB::getPackedLightLevel(oldBlock);
+  uint16_t newTorchLightPacked = BlockDB::getPackedLightLevel(block);
   glm::ivec3 oldTorchLight = Utils::unpackLightLevel(oldTorchLightPacked);
   bool oldBlockIsLightSource = BlockDB::isLightSource(oldBlock);
   // cases
@@ -709,10 +716,10 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
     int maxY = worldPos.y + 16;
     int minZ = worldPos.z - 16;
     int maxZ = worldPos.z + 16;
-    for (int z = minZ; z <= maxZ; z+= 16) {
-      for (int y = minY; y <= maxY; y+=16) {
-        for (int x = minX; x <= maxX; x+=16) {
-          m_chunkDirectlyUpdateSet.insert(chunkPosFromWorldPos(x,y,z));
+    for (int z = minZ; z <= maxZ; z += 16) {
+      for (int y = minY; y <= maxY; y += 16) {
+        for (int x = minX; x <= maxX; x += 16) {
+          m_chunkDirectlyUpdateSet.insert(chunkPosFromWorldPos(x, y, z));
         }
       }
     }
@@ -720,7 +727,6 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
     addRelatedChunks(blockPosInChunk, chunkPos, m_chunkDirectlyUpdateSet);
   }
 }
-
 
 void World::processDirectChunkUpdates() {
   if (m_chunkDirectlyUpdateSet.empty()) return;
