@@ -48,7 +48,6 @@
 // header file and we don't want to export symbols to the obj files
 namespace
 {
-#define M_PI 3.14159265359
 namespace tk
 {
 

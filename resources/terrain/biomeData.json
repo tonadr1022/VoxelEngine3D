@@ -1,34 +1,79 @@
 {
   "tundra": {
-    "frequencies": [0.002],
+    "structures": {
+      "trees": [
+        { "id": 9, "frequency": 0.0001 },
+        { "id": 10, "frequency": 0.0001 },
+        { "id": 11, "frequency": 0.0001 },
+        { "id": 12, "frequency": 0.0001 }
+      ]
+    },
     "surfaceBlock": "Snowy Taiga Grass Block"
   },
   "desert": {
-    "frequencies": [0.005],
+    "structures": {
+      "trees": []
+    },
     "surfaceBlock": "Sand"
   },
   "jungle": {
-    "frequencies": [0.02, 0.01],
+    "structures": {
+      "trees": [
+        { "id": 13, "frequency": 0.0003 },
+        { "id": 14, "frequency": 0.0003 },
+        { "id": 16, "frequency": 0.001 }
+      ]
+    },
     "surfaceBlock": "Jungle Grass Block"
   },
   "forest": {
-    "frequencies": [0.02],
+    "structures": {
+      "trees": [
+        { "id": 1, "frequency": 0.005 },
+        { "id": 2, "frequency": 0.005 },
+        { "id": 5, "frequency": 0.0001 },
+        { "id": 6, "frequency": 0.0001 }
+      ]
+    },
     "surfaceBlock": "Plains Grass Block"
   },
   "beach": {
-    "frequencies": [0.005],
+    "structures": {
+      "trees": [
+        { "id": 17, "frequency": 0.003 },
+        { "id": 18, "frequency": 0.001 }
+      ]
+    },
     "surfaceBlock": "Sand"
   },
   "ocean": {
-    "frequencies": [0.04],
+    "structures": {
+      "trees": []
+    },
     "surfaceBlock": "Sand"
   },
   "plains": {
-    "frequencies": [0.002],
+    "structures": {
+      "trees": [
+        { "id": 1, "frequency": 0.0001 },
+        { "id": 2, "frequency": 0.0001 },
+        { "id": 5, "frequency": 0.0001 },
+        { "id": 6, "frequency": 0.0001 },
+        { "id": 3, "frequency": 0.0001 },
+        { "id": 4, "frequency": 0.0001 }
+      ]
+    },
     "surfaceBlock": "Plains Grass Block"
   },
   "spruce_forest": {
-    "frequencies": [0.02],
+    "structures": {
+      "trees": [
+        { "id": 9, "frequency": 0.001 },
+        { "id": 10, "frequency": 0.001 },
+        { "id": 11, "frequency": 0.001 },
+        { "id": 12, "frequency": 0.001 }
+      ]
+    },
     "surfaceBlock": "Snowy Taiga Grass Block"
   }
 }

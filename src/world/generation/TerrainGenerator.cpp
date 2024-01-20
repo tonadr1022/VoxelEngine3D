@@ -20,10 +20,6 @@ void TerrainGenerator::generateStructures(std::array<Chunk *, CHUNKS_PER_STACK> 
     localHeight = Utils::getLocalIndex(worldHeight);
     const Biome &biome = getBiome(biomeMap[i]);
     biome.buildStructure({x, y, localHeight + 1}, chunks[worldHeight / CHUNK_SIZE], structureFloatMap[i]);
-//    bool structureExists = static_cast<int>((structureFloatMap[i] + 1) * 100.0f) == 0;
-//    if (structureExists) {
-//      makeTree({x, y, localHeight + 1}, chunks[worldHeight / CHUNK_SIZE]);
-//    }
   }
 
   for (auto &chunk : chunks) {
@@ -60,17 +56,18 @@ void TerrainGenerator::makeTree(const glm::ivec3 &pos, Chunk *chunk) {
 
 TerrainGenerator::TerrainGenerator(int seed, nlohmann::json biomeData)
     : m_seed(seed),
-      m_plainsBiome(biomeData["plains"]),
-      m_beachBiome(biomeData["beach"]),
-      m_desertBiome(biomeData["desert"]),
-      m_jungleBiome(biomeData["jungle"]),
-      m_forestBiome(biomeData["forest"]),
-      m_oceanBiome(biomeData["ocean"]),
-      m_spruceForestBiome(biomeData["spruce_forest"]),
-      m_tundraBiome(biomeData["tundra"]) {}
+      m_plainsBiome(biomeData["plains"], m_structureManager),
+      m_beachBiome(biomeData["beach"], m_structureManager),
+      m_desertBiome(biomeData["desert"], m_structureManager),
+      m_jungleBiome(biomeData["jungle"], m_structureManager),
+      m_forestBiome(biomeData["forest"], m_structureManager),
+      m_oceanBiome(biomeData["ocean"], m_structureManager),
+      m_spruceForestBiome(biomeData["spruce_forest"], m_structureManager),
+      m_tundraBiome(biomeData["tundra"], m_structureManager) {}
 
 void TerrainGenerator::init() {
   loadSplineData();
+  m_structureManager.loadStructureData();
 }
 
 void TerrainGenerator::generateTerrain(HeightMap &heightMap,
@@ -150,6 +147,9 @@ void TerrainGenerator::fillTreeMap(const glm::ivec2 &startWorldPos, StructureFlo
                                                CHUNK_SIZE, 1);
 
   std::copy(treeMap, treeMap + CHUNK_AREA, result.begin());
+  for (auto &num : result) {
+    num = abs(num);
+  }
   FastNoiseSIMD::FreeNoiseSet(treeMap);
   delete fastNoise;
 }

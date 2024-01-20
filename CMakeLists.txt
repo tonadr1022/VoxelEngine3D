@@ -127,9 +127,11 @@ set(SOURCE_FILES
         src/world/generation/Biome.hpp
         src/utils/JsonUtils.cpp
         src/utils/JsonUtils.hpp
-        src/world/generation/StructureBuilder.cpp
-        src/world/generation/StructureBuilder.hpp
+        src/world/generation/StructureManager.cpp
+        src/world/generation/StructureManager.hpp
         src/world/generation/BlockAndPos.hpp
+        src/world/generation/Structure.cpp
+        src/world/generation/Structure.hpp
 )
 
 add_executable(voxel_engine ${SOURCE_FILES})

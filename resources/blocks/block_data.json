@@ -173,7 +173,7 @@
         "isCollidable": true,
         "isLightSource": false,
         "lightLevels": [0,0,0],
-        "lightCanPass": false
+        "lightCanPass": true
     },
     "Birch Wood": {
         "texFilenames": ["birch_log_top", "birch_log", "birch_log_top"],

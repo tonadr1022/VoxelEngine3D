@@ -11,6 +11,7 @@
 #include "../chunk/Chunk.hpp"
 #include "Biome.hpp"
 #include "json/json.hpp"
+#include "StructureManager.hpp"
 
 enum class BiomeValue {
   OCEAN,
@@ -106,6 +107,8 @@ class TerrainGenerator {
       {BiomeValue::PLAINS, &m_plainsBiome},
       {BiomeValue::SPRUCE_FOREST, &m_spruceForestBiome},
   };
+
+  StructureManager m_structureManager;
 };
 
 #endif //VOXEL_ENGINE_TERRAINGENERATOR_HPP

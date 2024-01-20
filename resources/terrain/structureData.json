@@ -1,0 +1,27 @@
+{
+  "trees": [
+    { "id": 1, "shape": "basic", "leaf_type": "Oak Leaves", "wood_type": "Oak Wood", "size": "normal" },
+    { "id": 2, "shape": "spherical", "leaf_type": "Oak Leaves", "wood_type": "Oak Wood", "size": "normal" },
+    { "id": 3, "shape": "basic", "leaf_type": "Oak Leaves", "wood_type": "Oak Wood", "size": "giant" },
+    { "id": 4, "shape": "spherical", "leaf_type": "Oak Leaves", "wood_type": "Oak Wood", "size": "giant" },
+
+    { "id": 5, "shape": "basic", "leaf_type": "Birch Leaves", "wood_type": "Birch Wood", "size": "normal" },
+    { "id": 6, "shape": "spherical", "leaf_type": "Birch Leaves", "wood_type": "Birch Wood", "size": "normal" },
+    { "id": 7, "shape": "basic", "leaf_type": "Birch Leaves", "wood_type": "Birch Wood", "size": "giant" },
+    { "id": 8, "shape": "spherical", "leaf_type": "Birch Leaves", "wood_type": "Birch Wood", "size": "giant" },
+
+    { "id": 9, "shape": "conical", "leaf_type": "Spruce Leaves", "wood_type": "Spruce Wood", "size": "normal" },
+    { "id": 10, "shape": "spherical", "leaf_type": "Spruce Leaves", "wood_type": "Spruce Wood", "size": "normal" },
+    { "id": 11, "shape": "conical", "leaf_type": "Spruce Leaves", "wood_type": "Spruce Wood", "size": "giant" },
+    { "id": 12, "shape": "spherical", "leaf_type": "Spruce Leaves", "wood_type": "Spruce Wood", "size": "giant" },
+
+    { "id": 13, "shape": "basic", "leaf_type": "Jungle Leaves", "wood_type": "Jungle Wood", "size": "normal" },
+    { "id": 14, "shape": "canopy", "leaf_type": "Jungle Leaves", "wood_type": "Jungle Wood", "size": "normal" },
+    { "id": 15, "shape": "basic", "leaf_type": "Jungle Leaves", "wood_type": "Jungle Wood", "size": "giant" },
+    { "id": 16, "shape": "canopy", "leaf_type": "Jungle Leaves", "wood_type": "Jungle Wood", "size": "giant" },
+
+    { "id": 17, "shape": "palm", "leaf_type": "Jungle Leaves", "wood_type": "Jungle Wood", "size": "normal" },
+    { "id": 18, "shape": "palm", "leaf_type": "Jungle Leaves", "wood_type": "Jungle Wood", "size": "giant" }
+
+  ]
+}

@@ -20,6 +20,7 @@
 #include <FastNoiseSIMD/FastNoiseSIMD.h>
 #include <stb_image/stb_image.h>
 #include <spline/spline.h>
+#include <json/json.hpp>
 
 #include <utility>
 #include <memory>
