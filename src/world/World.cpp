@@ -763,7 +763,7 @@ void World::processDirectChunkUpdates() {
     uint8_t sunlightLevels[CHUNK_MESH_INFO_SIZE]{}; // NEED TO INITIALIZE
     ChunkMeshInfo::populateMeshInfoForMeshing(blocks, torchLightLevels, sunlightLevels, chunk->m_neighborChunks);
     ChunkMeshBuilder builder(blocks, torchLightLevels, sunlightLevels, chunk->m_worldPos);
-    builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
+    builder.constructMeshGreedy(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
 
     chunk->m_opaqueMesh.vertices = std::move(opaqueVertices);
     chunk->m_opaqueMesh.indices = std::move(opaqueIndices);

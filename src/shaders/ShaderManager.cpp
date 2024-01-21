@@ -33,7 +33,7 @@ std::shared_ptr<Shader> ShaderManager::getShader(const std::string &name) {
 void ShaderManager::compileShaders() {
   if (shadersCompiled) return;
   std::shared_ptr<Shader>
-      chunkShader = std::make_shared<Shader>("shaders/ChunkVert.glsl", "shaders/ChunkFrag.glsl");
+      chunkShader = std::make_shared<Shader>("shaders/ChunkVertGreedy.glsl", "shaders/ChunkFragGreedy.glsl");
   std::shared_ptr<Shader>
       outlineShader =
       std::make_shared<Shader>("shaders/OutlineVert.glsl", "shaders/OutlineFrag.glsl", "shaders/OutlineGeom.glsl");

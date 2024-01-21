@@ -15,7 +15,7 @@ void ChunkMeshInfo::generateMeshData() {
   uint8_t sunlightLevels[CHUNK_MESH_INFO_SIZE]{};
   populateMeshInfoForMeshing(blocks, torchLightLevels, sunlightLevels, m_chunk->m_neighborChunks);
   ChunkMeshBuilder builder(blocks, torchLightLevels, sunlightLevels, m_chunk->m_worldPos);
-  builder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
+  builder.constructMeshGreedy(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
   m_done = true;
 }
 

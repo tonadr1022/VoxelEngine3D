@@ -50,6 +50,11 @@ class BlockDB {
   static inline bool canLightPass(Block id) {
     return getBlockData(id).lightCanPass;
   }
+
+  static inline bool isTransparent(Block id) {
+    return getBlockData(id).isTransparent;
+  }
+
  private:
   static std::vector<BlockData> data;
   static std::unordered_map<std::string, Block> blockNameToIdMap;

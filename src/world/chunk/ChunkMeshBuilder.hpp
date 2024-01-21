@@ -11,19 +11,52 @@
 #include "ChunkMesh.hpp"
 #include "../../utils/Utils.hpp"
 #include "ChunkVertex.hpp"
+#include "../block/BlockDB.hpp"
+struct FaceInfo {
+  uint8_t aoLevels[4];
+  uint16_t torchLightLevel;
+  uint8_t sunlightLevel;
+  bool flip;
+
+  void setValues(uint8_t faceNum, const Block (&blockNeighbors)[27], uint16_t torchlightLevel, uint8_t sunlightLevel);
+
+  bool operator==(const FaceInfo &other) const {
+    return torchLightLevel == other.torchLightLevel && sunlightLevel == other.sunlightLevel
+        && aoLevels[0] == other.aoLevels[0] && aoLevels[1] == other.aoLevels[1] && aoLevels[2] == other.aoLevels[2]
+        && aoLevels[3] == other.aoLevels[3];
+  }
+
+  bool operator!=(const FaceInfo &other) const {
+    return torchLightLevel != other.torchLightLevel || sunlightLevel != other.sunlightLevel
+        || aoLevels[0] != other.aoLevels[0] || aoLevels[1] != other.aoLevels[1] || aoLevels[2] != other.aoLevels[2]
+        || aoLevels[3] != other.aoLevels[3];
+  }
+};
 
 class ChunkMeshBuilder {
  public:
- explicit ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE], uint16_t (&lightLevels)[CHUNK_MESH_INFO_SIZE],
-                           uint8_t (&sunlightLevels)[CHUNK_MESH_INFO_SIZE], const glm::ivec3 &chunkWorldPos);
+  explicit ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE], uint16_t (&lightLevels)[CHUNK_MESH_INFO_SIZE],
+                            uint8_t (&sunlightLevels)[CHUNK_MESH_INFO_SIZE], const glm::ivec3 &chunkWorldPos);
 
-   void constructMesh(std::vector<ChunkVertex> &opaqueVertices, std::vector<unsigned int> &opaqueIndices,
+  void constructMesh(std::vector<ChunkVertex> &opaqueVertices, std::vector<unsigned int> &opaqueIndices,
                      std::vector<ChunkVertex> &transparentVertices, std::vector<unsigned int> &transparentIndices);
-   void constructMeshSemiGreedy(std::vector<ChunkVertex> &opaqueVertices, std::vector<unsigned int> &opaqueIndices,
-                                std::vector<ChunkVertex> &transparentVertices, std::vector<unsigned int> &transparentIndices);
+  void constructMeshGreedy(std::vector<ChunkVertex> &opaqueVertices,
+                           std::vector<unsigned int> &opaqueIndices,
+                           std::vector<ChunkVertex> &transparentVertices,
+                           std::vector<unsigned int> &transparentIndices);
 
-   void setOcclusionLevels(const glm::ivec3 &blockPosInChunk, int faceIndex, int (&levels)[4]);
+  void setOcclusionLevels(const glm::ivec3 &blockPosInChunk, int faceIndex, int (&levels)[4]);
 //   static void setOcclusionLevels(bool (&solidNeighborBlocks)[27], int faceIndex, int (&levels)[4]);
+
+// TODO: improve for other edge cases: glass, leaves, etc.
+  static inline bool shouldShowFace(Block block, Block neighborBlock) {
+    if (block == Block::AIR) return false; // if block to show face is air, dont show face
+    if (neighborBlock == Block::AIR) return true; // to avoid lookup??? profile
+    bool blockIsTrans = BlockDB::isTransparent(block);
+    bool neighborIsTrans = BlockDB::isTransparent(neighborBlock);
+    if (blockIsTrans || !neighborIsTrans) return false;
+    return true;
+  }
 
  private:
   Block (&m_blocks)[CHUNK_MESH_INFO_SIZE];

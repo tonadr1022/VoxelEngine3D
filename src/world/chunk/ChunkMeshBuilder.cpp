@@ -129,19 +129,34 @@ constexpr std::array<std::array<std::array<glm::ivec3, 3>, 4>, 6>
 //    \   2   11  20
 //     x
 // Bottom Left, Bottom right, Top Left, Top Right, corner is middle block in each 3 pairing
+//constexpr uint8_t LIGHTING_LOOKUP[6][4][3] = {
+//    // front face
+//    {{11, 2, 5}, {11, 20, 23}, {5, 8, 17}, {17, 26, 23}},
+//    // back face
+//    {{9, 18, 21}, {9, 0, 3}, {15, 6, 3}, {15, 24, 21}},
+//    // right face
+//    {{19, 20, 23}, {19, 18, 21}, {25, 26, 23}, {25, 24, 21}},
+//    // left face
+//    {{1, 0, 3}, {1, 2, 5}, {7, 6, 3}, {7, 8, 5}},
+//    // top face
+//    {{17, 8, 7}, {17, 26, 25}, {15, 6, 7}, {15, 24, 25}},
+//    // bottom face
+//    {{9, 0, 1}, {9, 18, 19}, {11, 2, 1}, {11, 20, 19}},
+//};
 constexpr uint8_t LIGHTING_LOOKUP[6][4][3] = {
     // front face
-    {{11, 2, 5}, {11, 20, 23}, {5, 8, 17}, {17, 26, 23}},
+    {{5, 8, 17}, {11, 2, 5}, {11, 20, 23}, {17, 26, 23}},
     // back face
-    {{9, 18, 21}, {9, 0, 3}, {15, 6, 3}, {15, 24, 21}},
+    {{15, 24, 21}, {9, 18, 21}, {9, 0, 3}, {15, 6, 3}},
     // right face
-    {{19, 20, 23}, {19, 18, 21}, {25, 26, 23}, {25, 24, 21}},
+    {{25, 26, 23}, {19, 20, 23}, {19, 18, 21}, {25, 24, 21}},
     // left face
-    {{1, 0, 3}, {1, 2, 5}, {7, 6, 3}, {7, 8, 5}},
+    {{7, 6, 3}, {1, 0, 3}, {1, 2, 5}, {7, 8, 5}},
+
     // top face
-    {{17, 8, 7}, {17, 26, 25}, {15, 6, 7}, {15, 24, 25}},
+    {{15, 6, 7}, {17, 8, 7}, {17, 26, 25}, {15, 24, 25}},
     // bottom face
-    {{9, 0, 1}, {9, 18, 19}, {11, 2, 1}, {11, 20, 19}},
+    {{11, 2, 1}, {9, 0, 1}, {9, 18, 19}, {11, 20, 19}},
 };
 
 ChunkMeshBuilder::ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE],
@@ -177,7 +192,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
     Block block = m_blocks[meshBlockIndex];
     if (block == Block::AIR) continue;
 //    int blockPos[3] = {x, y, z};
-    glm::ivec3 blockPos = {x,y,z};
+    glm::ivec3 blockPos = {x, y, z};
     BlockData &blockData = BlockDB::getBlockData(block);
 
     // 1, 0, 0
@@ -296,31 +311,399 @@ void ChunkMeshBuilder::setOcclusionLevels(const glm::ivec3 &blockPosInChunk,
     }
   }
 }
-//void ChunkMeshBuilder::constructMeshSemiGreedy(std::vector<ChunkVertex> &opaqueVertices,
-//                                               std::vector<unsigned int> &opaqueIndices,
-//                                               std::vector<ChunkVertex> &transparentVertices,
-//                                               std::vector<unsigned int> &transparentIndices) {
-//  auto opaqueVertices_ = new std::vector<ChunkVertex>();
-//  auto transparentVertices_ = new std::vector<ChunkVertex>();
-//  auto opaqueIndices_ = new std::vector<unsigned int>();
-//  auto transparentIndices_ = new std::vector<unsigned int>();
-//  int occlusionLevels[4];
-//
-//  int chunkBaseZ = m_chunkWorldPos.z;
-//  int chunkBaseZIndex = chunkBaseZ / CHUNK_SIZE;
-//  int x, y, z, faceIndex;
-//
-//  for (z = 0; z < CHUNK_SIZE; z++) {
-//    for (y = 0; y < CHUNK_SIZE; y++) {
-//
-//    }
-//  }
-//}
-//  for (int chunkBlockIndex = 0; chunkBlockIndex < CHUNK_VOLUME; chunkBlockIndex++) {
-//    x = chunkBlockIndex & 31;
-//    y = (chunkBlockIndex >> 5) & 31;
-//    z = chunkBlockIndex >> 10;
-//
-//
-//
-//}
+
+void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVertices,
+                                           std::vector<unsigned int> &opaqueIndices,
+                                           std::vector<ChunkVertex> &transparentVertices,
+                                           std::vector<unsigned int> &transparentIndices) {
+  static float maxTime = 0;
+  static int count = 0;
+  auto startTime = std::chrono::high_resolution_clock::now();
+
+  // get face data
+//  FaceInfo faceInfo[CHUNK_VOLUME][6] = {}; // need to initialize in case skip faces, which will be left as 0
+  auto faceInfo = new FaceInfo[CHUNK_VOLUME][6];
+
+  Block blockNeighbors[27];
+  uint8_t sunlightNeighbors[27];
+  uint16_t torchlightNeighbors[27];
+  for (int chunkBlockIndex = 0; chunkBlockIndex < CHUNK_VOLUME; chunkBlockIndex++) {
+
+    // derive block position from the index
+    int blockPos[3];
+    blockPos[0] = chunkBlockIndex & 31; // X (right most 5 bits in the index value
+    blockPos[1] = (chunkBlockIndex >> 5) & 31; // Y (middle 5 bits in the index value)
+    blockPos[2] = chunkBlockIndex >> 10; // Z (left most 5 bits in the index value)
+
+    // get block, if its air, none of the faces should be added
+    Block block = m_blocks[MESH_XYZ(blockPos[0], blockPos[1], blockPos[2])];
+    if (block == Block::AIR) continue; // air is 0
+
+    // front, back, right, left, top, bottom
+    bool neighborsInitializedForCurrentBlock = false;
+    for (uint8_t faceNum = 0; faceNum < 6; faceNum++) {
+
+      // calculate adjacent block position for current face based on current block position
+      // offset for any given adjacent block position is 1, so
+      //  5 >> 1 == 2, 4 >> 1 == 2, 3 >> 1 == 1, 2 >> 1 == 1, 1 >> 1 == 0, 0 >> 1 == 0
+      // add 1 or -1 to the corresponding position based on whether faceNum is odd. iff odd, subtract 2 from 1 to get
+      // overall offset of -1 for that axis.
+      int adjBlockPos[3] = {blockPos[0], blockPos[1], blockPos[2]};
+      adjBlockPos[faceNum >> 1] += 1 - ((faceNum & 1) << 1);
+
+      // since greedy meshing, no longer need to check whether neighbor is above or below absolute height borders
+      // this will also allow for infinite height impl in future.
+      Block neighborBlock = m_blocks[MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2])];
+      if (!shouldShowFace(block, neighborBlock)) continue;
+
+      uint16_t neighborTorchlightLevel = m_lightLevels[MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2])];
+      uint8_t neighborSunlightLevel = m_sunlightLevels[MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2])];
+
+      // fill neighbors for block if haven't. only do this on first iteration of face loop after at least one face should be shown.
+      if (!neighborsInitializedForCurrentBlock) {
+        int neighborIndex = 0;
+        int iterator[3];
+
+        // see neighbor array offsets in World.hpp
+        for (iterator[1] = blockPos[1] - 1; iterator[1] <= blockPos[1] + 1; ++iterator[1]) {
+          for (iterator[2] = blockPos[2] - 1; iterator[2] <= blockPos[2] + 1; ++iterator[2]) {
+            for (iterator[0] = blockPos[0] - 1; iterator[0] <= blockPos[0] + 1; ++iterator[0]) {
+              blockNeighbors[neighborIndex] = m_blocks[MESH_XYZ(iterator[0], iterator[1], iterator[2])];
+              torchlightNeighbors[neighborIndex] = m_lightLevels[MESH_XYZ(iterator[0], iterator[1], iterator[2])];
+              sunlightNeighbors[neighborIndex] = m_sunlightLevels[MESH_XYZ(iterator[0], iterator[1], iterator[2])];
+              neighborIndex++;
+            }
+          }
+        }
+        neighborsInitializedForCurrentBlock = true;
+      }
+
+      // with neighbors and knowledge that this face will be added to the mesh, add its face data to the array
+      faceInfo[chunkBlockIndex][faceNum].setValues(faceNum,
+                                                   blockNeighbors,
+                                                   neighborTorchlightLevel,
+                                                   neighborSunlightLevel);
+    }
+  }
+
+  int u, v, counter, j, i, k, l, height, width;
+  int faceNum;
+  int x[3]; // start point
+  int q[3]; // offset
+  int du[3];
+  int dv[3];
+  FaceInfo *infoMask[CHUNK_AREA]; // use pointers since data already exists in the faceInfo array above
+  int mask[CHUNK_AREA];
+
+  for (int axis = 0; axis < 3; axis++) {
+
+    u = (axis + 1) % 3;
+    v = (axis + 2) % 3;
+
+    x[0] = 0, x[1] = 0, x[2] = 0, x[axis] = -1;
+    q[0] = 0, q[1] = 0, q[2] = 0, q[axis] = 1;
+
+    // move through chunk from front to back
+    while (x[axis] < CHUNK_SIZE) {
+      counter = 0;
+      for (x[v] = 0; x[v] < CHUNK_SIZE; x[v]++) {
+        for (x[u] = 0; x[u] < CHUNK_SIZE; x[u]++, counter++) {
+          const Block block1 = m_blocks[MESH_XYZ(x[0], x[1], x[2])];
+          const Block block2 = m_blocks[MESH_XYZ(x[0] + q[0], x[1] + q[1], x[2] + q[2])];
+
+          bool block1OutsideBorder = x[axis] < 0;
+          bool block2OutsideBorder = CHUNK_SIZE - 1 <= x[axis];
+
+          if (!block1OutsideBorder && shouldShowFace(block1, block2)) {
+            mask[counter] = static_cast<int>(block1);
+            infoMask[counter] = &faceInfo[XYZ(x[0], x[1], x[2])][axis << 1];
+          } else if (!block2OutsideBorder && shouldShowFace(block2, block1)) {
+            mask[counter] = -static_cast<int>(block2);
+            infoMask[counter] = &faceInfo[XYZ(x[0] + q[0], x[1] + q[1], x[2] + q[2])][(axis << 1) | 1];
+          } else {
+            infoMask[counter] = nullptr;
+            mask[counter] = 0;
+          }
+        }
+      }
+
+      x[axis]++;
+
+      // generate mesh for the mask
+      counter = 0;
+
+      for (j = 0; j < CHUNK_SIZE; j++) {
+        for (i = 0; i < CHUNK_SIZE;) {
+          int blockType = mask[counter];
+          if (blockType) { // skip if air or zeroed
+            const FaceInfo &currFaceInfo = *infoMask[counter];
+            // compute width
+            for (width = 1; blockType == mask[counter + width]
+                && infoMask[counter + width]
+                && currFaceInfo == *infoMask[counter + width]
+                && i + width < CHUNK_SIZE;
+                 width++) {}
+
+            // compute height
+            bool done = false;
+            for (height = 1; j + height < CHUNK_SIZE; height++) {
+              for (k = 0; k < width; k++) {
+                int index = counter + k + height * CHUNK_SIZE;
+                if (blockType != mask[index] || !infoMask[index] || currFaceInfo != *infoMask[index]) {
+                  done = true;
+                  break;
+                }
+              }
+              if (done) break;
+            }
+
+            x[u] = i;
+            x[v] = j;
+
+            du[0] = 0;
+            du[1] = 0;
+            du[2] = 0;
+            dv[0] = 0;
+            dv[1] = 0;
+            dv[2] = 0;
+
+            faceNum = ((axis << 1) | (blockType <= 0));
+
+            if (blockType > 0) {
+              dv[v] = height;
+              du[u] = width;
+            } else {
+              blockType = -blockType;
+              du[v] = height;
+              dv[u] = width;
+            }
+            std::cout << height << std::endl;
+            // add the quad
+            int textureIndex = BlockDB::getTexIndex(static_cast<Block>(blockType), static_cast<BlockFace>(faceNum));
+
+            int vx = x[0];
+            int vy = x[1];
+            int vz = x[2];
+
+            // 01 ---- 11
+            //
+            //
+            //
+            // 00 ---- 10
+            int v00u = du[u] + dv[u];
+            int v00v = du[v] + dv[v];
+            int v01u = dv[u];
+            int v01v = dv[v];
+            int v10u = 0;
+            int v10v = 0;
+            int v11u = du[u];
+            int v11v = du[v];
+//mine
+//            int v11u = du[u] + dv[u];
+//            int v11v = du[v] + dv[v];
+//            int v01u = dv[u];
+//            int v01v = dv[v];
+//            int v00u = 0;
+//            int v00v = 0;
+//            int v10u = du[u];
+//            int v10v = du[v];
+
+            auto face = static_cast<BlockFace>(faceNum);
+            if (face == LEFT) {
+//              std::swap(v00u, v01v);
+//              std::swap(v00v, v01u);
+//              std::swap(v11u, v10v);
+//              std::swap(v11v, v10u);
+            } else if (face == RIGHT) {
+//              std::swap(v11u, v11v);
+//              std::swap(v01u, v01v);
+//              std::swap(v00u, v00v);
+            } else if (face == BACK) {
+
+              //01----------10
+              //            /
+              //          /
+              //        /
+              //      /
+              //    /
+              //  /
+              //00----------11
+
+//              std::swap(v00u, v01u);
+//              std::swap(v00v, v01v);
+//              std::swap(v11u, v10u);
+//              std::swap(v11v, v10v);
+//              std::swap(v00u, v11u);
+//              std::swap(v00v, v11v);
+//              std::swap(v10u, v01u);
+//              std::swap(v10v, v01v);
+
+
+            } else if (face == FRONT) {
+              // rotates texture clockwise
+//              std::swap(v00u, v11v);
+//              std::swap(v00v, v11u);
+//              std::swap(v01u, v10v);
+//              std::swap(v01v, v10u);
+
+              // rotates texture counter clockwise
+//              std::swap(v00u, v01v);
+//              std::swap(v00v, v01u);
+//              std::swap(v11u, v10v);
+//              std::swap(v11v, v10u);
+
+//              std::swap(v11u, v11v);
+//              std::swap(v01u, v01v);
+//              std::swap(v00u, v00v);
+
+//              std::swap(v00u, v01u);
+//              std::swap(v00v, v01v);
+//              std::swap(v11u, v10u);
+//              std::swap(v11v, v10v);
+            }
+
+            //
+            //
+            //
+            //
+            //
+            //
+            //
+            // TODO write func for this???
+            uint32_t vertexData2 = currFaceInfo.torchLightLevel | ((currFaceInfo.sunlightLevel) << 12) | ((textureIndex & 0xFFF) << 16);
+//            uint32_t vertexData2 = currFaceInfo.torchLightLevel | ((15) << 12) | ((textureIndex & 0xFFF) << 16);
+
+            ChunkVertex v00 = {static_cast<uint32_t>((vx & 0x3F) | ((vy & 0x3F) << 6) | ((vz & 0x3F) << 12) |
+                ((currFaceInfo.aoLevels[0] & 0x3) << 18) |
+                ((v00u & 0x3F) << 20) |
+                ((v00v & 0x3F) << 26)), vertexData2};
+
+            ChunkVertex v01 =
+                {static_cast<uint32_t>((vx + du[0] & 0x3F) | ((vy + du[1] & 0x3F) << 6) | ((vz + du[2] & 0x3F) << 12) |
+                    ((currFaceInfo.aoLevels[1] & 0x3) << 18) |
+                    ((v01u & 0x3F) << 20) |
+                    ((v01v & 0x3F) << 26)), vertexData2};
+
+            ChunkVertex v10 = {
+                static_cast<uint32_t>((vx + du[0] + dv[0] & 0x3F) | ((vy + du[1] + dv[1] & 0x3F) << 6)
+                    | ((vz + du[2] + dv[2] & 0x3F) << 12) |
+                    ((currFaceInfo.aoLevels[2] & 0x3) << 18) | ((v10u & 0x1) << 20) | ((v10v & 0x1) << 21)
+                    | ((v10u & 0x3F) << 20) |
+                    ((v10v & 0x3F) << 26)), vertexData2};
+
+            ChunkVertex v11 = {
+                static_cast<uint32_t>((vx + dv[0] & 0x3F) | ((vy + dv[1] & 0x3F) << 6) | ((vz + dv[2] & 0x3F) << 12) |
+                    ((currFaceInfo.aoLevels[3] & 0x3) << 18)
+                    | ((v11u & 0x3F) << 20) |
+                    ((v11v & 0x3F) << 26)), vertexData2};
+
+//            if (m_chunkWorldPos.x == 0 && m_chunkWorldPos.y == 0) {
+////              std::cout << vx << " " << vx + dv[0] << " " << vy << " " << vy + dv[1] << std::endl;
+//              std::cout << v00u << " " << v00v << " " << v11u << " " << v11v << std::endl;
+//            }
+
+            bool isTransparent = BlockDB::isTransparent(static_cast<Block>(blockType));
+            auto &vertices = isTransparent ? transparentVertices : opaqueVertices;
+            auto &indices = isTransparent ? transparentIndices : opaqueIndices;
+            unsigned long baseVertexIndex = vertices.size();
+//            if (face == FRONT) {
+            vertices.push_back(v00);
+            vertices.push_back(v01);
+            vertices.push_back(v10);
+            vertices.push_back(v11);
+
+            // check whether to flip quad based on AO
+            if (!currFaceInfo.flip) {
+              //01----------10
+              //            /
+              //          /
+              //        /
+              //      /
+              //    /
+              //  /
+              //00----------11
+
+              indices.push_back((baseVertexIndex + 0));
+              indices.push_back((baseVertexIndex + 1));
+              indices.push_back((baseVertexIndex + 2));
+              indices.push_back((baseVertexIndex + 2));
+              indices.push_back((baseVertexIndex + 3));
+              indices.push_back((baseVertexIndex + 0));
+            } else {
+              //01----------10
+              //  \
+              //    \
+              //      \
+              //        \
+              //          \
+              //            \
+              //00----------11
+              indices.push_back(baseVertexIndex + 0);
+              indices.push_back(baseVertexIndex + 1);
+              indices.push_back(baseVertexIndex + 3);
+              indices.push_back(baseVertexIndex + 1);
+              indices.push_back(baseVertexIndex + 2);
+              indices.push_back(baseVertexIndex + 3);
+            }
+
+//            }
+            // zero out the mask for what we just added
+            for (l = 0; l < height; l++) {
+              for (k = 0; k < width; k++) {
+                size_t index = counter + k + l * CHUNK_SIZE;
+                infoMask[index] = nullptr;
+                mask[index] = 0;
+              }
+            }
+
+            i += width;
+            counter += width;
+
+          } else {
+            i++;
+            counter++;
+          }
+        }
+      }
+    }
+  }
+  delete[] faceInfo;
+  static float totalTime = 0;
+  count++;
+  auto endTime = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000.0;
+  totalTime += duration;
+  if (duration > maxTime) {
+    maxTime = duration;
+  }
+  std::cout << duration << " ms, max:  " << maxTime << " ms, avg: " << totalTime / count << std::endl;
+}
+
+/**
+ * set the face info for this face. For now, includes whether to flip and the four ao values for each vertex
+ *
+ * @param faceNum (0-5: front, back, right, left, top, bottom)
+ * @param blockNeighbors
+ */
+void FaceInfo::setValues(uint8_t faceNum,
+                         const Block (&blockNeighbors)[27],
+                         const uint16_t pTorchlightLevel,
+                         const uint8_t pSunLightLevel) {
+  this->sunlightLevel = pSunLightLevel;
+  this->torchLightLevel = pTorchlightLevel;
+
+
+  bool aoAdjBlocksTransparent[3];
+  for (uint8_t vertexNum = 0; vertexNum < 4; vertexNum++) {
+    for (uint8_t adjBlockIndex = 0; adjBlockIndex < 3; adjBlockIndex++) {
+      Block block = blockNeighbors[LIGHTING_LOOKUP[faceNum][vertexNum][adjBlockIndex]];
+      aoAdjBlocksTransparent[adjBlockIndex] = BlockDB::isTransparent(block);
+    }
+    // source: https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
+    this->aoLevels[vertexNum] =
+        (!aoAdjBlocksTransparent[0] && !aoAdjBlocksTransparent[2] ? 0 : 3 - !aoAdjBlocksTransparent[0]
+            - !aoAdjBlocksTransparent[1] - !aoAdjBlocksTransparent[2]);
+  }
+
+  this->flip = this->aoLevels[1] + this->aoLevels[3] > this->aoLevels[0] + this->aoLevels[2];
+}
