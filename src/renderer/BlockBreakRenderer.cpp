@@ -19,7 +19,7 @@ void BlockBreakRenderer::render(glm::vec3 blockPosition,
   model = scale(model, glm::vec3(1.005f));
   model = translate(model, glm::vec3(-0.0025f));
 
-  const std::shared_ptr<Shader> blockBreakShader = ShaderManager::getShader("blockBreak");
+  const Shader *blockBreakShader = ShaderManager::getShader("blockBreak");
   blockBreakShader->use();
   blockBreakShader->setMat4("u_Model", model);
   blockBreakShader->setMat4("u_View", camera.getViewMatrix());

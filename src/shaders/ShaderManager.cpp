@@ -3,49 +3,50 @@
 //
 
 #include "ShaderManager.hpp"
+#include "../EngineConfig.hpp"
 
-std::unordered_map<std::string, std::shared_ptr<Shader>> ShaderManager::shaders;
+std::unordered_map<std::string, std::unique_ptr<Shader>> ShaderManager::m_shaders;
 
-void ShaderManager::addShader(std::shared_ptr<Shader> shader,
+void ShaderManager::addShader(std::unique_ptr<Shader> shader,
                               const std::string &name) {
-  shaders[name] = std::move(shader);
+  m_shaders[name] = std::move(shader);
 }
 
 void ShaderManager::useShader(const std::string &name) {
-  auto shader = shaders.find(name);
-  if (shader != shaders.end()) {
+  auto shader = m_shaders.find(name);
+  if (shader != m_shaders.end()) {
     shader->second->use();
   } else {
     throw std::runtime_error("Shader " + name + " not found");
   }
 }
 
-std::shared_ptr<Shader> ShaderManager::getShader(const std::string &name) {
-  if (!ShaderManager::shadersCompiled) ShaderManager::compileShaders();
-  auto shader = shaders.find(name);
-  if (shader != shaders.end()) {
-    return shader->second;
+Shader *ShaderManager::getShader(const std::string &name) {
+  if (!shadersCompiled) ShaderManager::compileShaders();
+  auto it = m_shaders.find(name);
+  if (it != m_shaders.end()) {
+    return it->second.get();
   } else {
     throw std::runtime_error("Shader " + name + " not found");
   }
 }
 
 void ShaderManager::compileShaders() {
-  if (shadersCompiled) return;
-  std::shared_ptr<Shader>
-      chunkShader = std::make_shared<Shader>("shaders/ChunkVertGreedy.glsl", "shaders/ChunkFragGreedy.glsl");
-  std::shared_ptr<Shader>
-      outlineShader =
-      std::make_shared<Shader>("shaders/OutlineVert.glsl", "shaders/OutlineFrag.glsl", "shaders/OutlineGeom.glsl");
-  std::shared_ptr<Shader> blockBreakShader = std::make_shared<Shader>(
-      "shaders/BlockBreakVert.glsl", "shaders/BlockBreakFrag.glsl");
-  std::shared_ptr<Shader> crossHairShader = std::make_shared<Shader>(
-      "shaders/CrossHairVert.glsl", "shaders/CrossHairFrag.glsl");
-  addShader(chunkShader, "chunk");
-  addShader(outlineShader, "outline");
-  addShader(blockBreakShader, "blockBreak");
-  addShader(crossHairShader, "crosshair");
-
+  m_shaders.clear();
+  std::unique_ptr<Shader>
+      chunkShader = std::make_unique<Shader>(SHADER_PATH(ChunkVertGreedy.glsl), SHADER_PATH(ChunkFragGreedy.glsl));
+  std::unique_ptr<Shader>
+      outlineShader = std::make_unique<Shader>(SHADER_PATH(OutlineVert.glsl),
+                                               SHADER_PATH(OutlineFrag.glsl),
+                                               SHADER_PATH(OutlineGeom.glsl));
+  std::unique_ptr<Shader> blockBreakShader = std::make_unique<Shader>(
+      SHADER_PATH(BlockBreakVert.glsl), SHADER_PATH(BlockBreakFrag.glsl));
+  std::unique_ptr<Shader> crossHairShader = std::make_unique<Shader>(
+      SHADER_PATH(CrossHairVert.glsl), SHADER_PATH(CrossHairFrag.glsl));
+  addShader(std::move(chunkShader), "chunk");
+  addShader(std::move(outlineShader), "outline");
+  addShader(std::move(blockBreakShader), "blockBreak");
+  addShader(std::move(crossHairShader), "crosshair");
   shadersCompiled = true;
 }
 

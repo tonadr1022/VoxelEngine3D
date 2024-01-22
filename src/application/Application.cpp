@@ -15,6 +15,7 @@ Application::Application() : m_window(DEFAULT_WINDOW_WIDTH,
   assert(instancePtr == nullptr && "Only one instance of Application allowed");
   instancePtr = this;
   m_window.lockCursor();
+  m_cursorLocked = true;
 
   ResourceManager::loadTextures();
   ShaderManager::compileShaders();
@@ -62,15 +63,22 @@ void Application::run() {
     debugGui.endFrame();
 
     m_window.swapBuffers();
+
+    if (Keyboard::isPressedThisFrame(GLFW_KEY_ESCAPE)) {
+      m_cursorLocked = !m_cursorLocked;
+      if (m_cursorLocked) {
+        m_window.lockCursor();
+      } else {
+        m_window.unlockCursor();
+      }
+    }
   }
 }
 
 void Application::onKeyEvent(int key, int scancode, int action, int mods) {
   bool isPressed = action == GLFW_PRESS;
   bool isReleased = action == GLFW_RELEASE;
-  if (isPressed && key == GLFW_KEY_ESCAPE) {
-    m_running = false;
-  }
+
   if (isPressed) {
     Keyboard::press(key);
   } else if (isReleased) {
@@ -103,17 +111,17 @@ void Application::onCursorPositionEvent(double xpos, double ypos) {
   lastX = xpos;
   lastY = ypos;
 
-  if (!Keyboard::isPressed(GLFW_KEY_B)) {
-    m_window.lockCursor();
+  if (m_cursorLocked) {
     m_world->player.onCursorUpdate(xOffset, yOffset);
-  } else {
-    m_window.unlockCursor();
   }
 }
 
 void Application::onResizeEvent(int width, int height) {
   float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
   m_world->player.camera.updateProjectionMatrix(aspectRatio);
+}
+void Application::onWindowCloseEvent() {
+  m_running = false;
 }
 
 

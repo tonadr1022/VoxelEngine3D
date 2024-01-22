@@ -49,6 +49,20 @@ class ChunkMeshBuilder {
 //   static void setOcclusionLevels(bool (&solidNeighborBlocks)[27], int faceIndex, int (&levels)[4]);
 
 // TODO: improve for other edge cases: glass, leaves, etc.
+
+//  static inline bool shouldShowFace(Block block, Block neighborBlock) {
+//    if (block == Block::AIR) return false; // if block to show face is air, dont show face
+//    if (neighborBlock == Block::AIR) return true; // to avoid lookup??? profile
+//    const BlockData &blockData = BlockDB::getBlockData(block);
+//    const BlockData &neighborData = BlockDB::getBlockData(neighborBlock);
+//    if (!blockData.isTransparent && neighborData.isTransparent) return true;
+//    if (!neighborData.isTransparent) return false;
+//    if (!blockData.cull && !neighborData.cull) return true;
+//    if (block == neighborBlock) return false;
+////    if (neighborData.isTransparent && block != Block::WATER) return true;
+//    return true;
+//  }
+
   static inline bool shouldShowFace(Block block, Block neighborBlock) {
     if (block == Block::AIR) return false; // if block to show face is air, dont show face
     if (neighborBlock == Block::AIR) return true; // to avoid lookup??? profile
@@ -59,10 +73,18 @@ class ChunkMeshBuilder {
     if (!blockData.cull && !neighborData.cull) return true;
     if (block == neighborBlock) return false;
 //    if (neighborData.isTransparent && block != Block::WATER) return true;
-    return true;
+return true;
   }
 
  private:
+  static inline uint32_t createVertexData2(uint16_t torchLight, uint8_t sunlight, uint16_t texIndex) {
+    return torchLight | ((sunlight) << 12) | (texIndex << 16);
+  }
+
+  static inline uint32_t createVertexData1(uint8_t x, uint8_t y, uint8_t z, uint8_t ao, uint8_t u, uint8_t v) {
+    return (x | y << 6 | z << 12 | ao << 18 | u << 20 | v << 26);
+  }
+
   Block (&m_blocks)[CHUNK_MESH_INFO_SIZE];
   uint16_t (&m_lightLevels)[CHUNK_MESH_INFO_SIZE];
   uint8_t (&m_sunlightLevels)[CHUNK_MESH_INFO_SIZE];

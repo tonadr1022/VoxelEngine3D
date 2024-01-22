@@ -4,6 +4,10 @@
 
 #include "Shader.hpp"
 
+Shader::~Shader() {
+  unbind();
+}
+
 GLint Shader::makeModule(const std::string &filepath, GLint module_type) {
   // open file and read contents into string stream (one big string)
   std::ifstream file;

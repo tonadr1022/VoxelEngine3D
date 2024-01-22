@@ -4,6 +4,7 @@ project(voxel_engine)
 set(CMAKE_CXX_STANDARD 17)
 
 set_property(TARGET PROPERTY CXX_STANDARD 17)
+set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 
 #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
@@ -16,7 +17,7 @@ if (MSVC)
 endif ()
 
 include_directories("dependencies")
-include_directories("shaders")
+include_directories("resources/shaders")
 include_directories("resources")
 
 set(SOURCE_FILES
@@ -145,10 +146,11 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(voxel_engine ${OPENGL_LIBRARIES} glfw glm)
 # get binary directory path and copy shaders and resource folders to it
 
-add_custom_command(TARGET voxel_engine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:voxel_engine>/shaders)
 
-add_custom_command(TARGET voxel_engine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:voxel_engine>/resources)
+# set a symlink to the assets dir
+add_custom_command(
+        TARGET voxel_engine PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+        ${CMAKE_SOURCE_DIR}/resources
+        $<TARGET_FILE_DIR:voxel_engine>/resources
+)

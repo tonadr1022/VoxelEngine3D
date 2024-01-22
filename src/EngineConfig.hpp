@@ -53,4 +53,9 @@ using Ref = std::shared_ptr<T>;
 template<typename T>
 using Scope = std::unique_ptr<T>;
 
+#define SHADER_PATH(str) "resources/shaders/"#str
+#define TERRAIN_PATH(str) "resources/terrain/"#str
+#define TEXTURE_PATH(str) "resources/textures/"#str
+#define BLOCKS_PATH(str) "resources/blocks/"#str
+
 #endif //VOXEL_ENGINE_ENGINECONFIG_HPP

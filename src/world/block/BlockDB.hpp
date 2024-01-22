@@ -25,7 +25,7 @@ struct BlockData {
 class BlockDB {
  public:
   static Block blockIdFromName(const std::string &name);
-  static void loadData(const std::string &filePath);
+  static void loadData();
 
   static inline BlockData &getBlockData(Block id) {
 //    return data.find(id)->second;

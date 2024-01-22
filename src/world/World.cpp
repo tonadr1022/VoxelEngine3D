@@ -9,6 +9,8 @@
 #include "../utils/Timer.hpp"
 #include "chunk/ChunkAlg.hpp"
 #include "../utils/JsonUtils.hpp"
+#include "../shaders/ShaderManager.hpp"
+#include "../input/Keyboard.hpp"
 
 World::World(Renderer &renderer, int seed, const std::string &savePath)
     : m_worldSave(savePath),
@@ -22,7 +24,7 @@ World::World(Renderer &renderer, int seed, const std::string &savePath)
 //  m_numLoadingThreads = 1;
   const size_t loadVectorSize = ((size_t) (m_renderDistance + 2) * 2 + 1) * ((size_t) (m_renderDistance + 2) * 2 + 1);
   m_chunksToLoadVector.reserve(loadVectorSize);
-  BlockDB::loadData("resources/blocks/");
+  BlockDB::loadData();
   m_terrainGenerator.init();
   for (unsigned int i = 0; i < m_numLoadingThreads; i++) {
     m_chunkLoadThreads.emplace_back(&World::generateChunksWorker4, this);
@@ -43,6 +45,10 @@ void World::update() {
   m_centerChanged = false;
   m_centerChangedXY = false;
 
+  if (Keyboard::isPressed(GLFW_KEY_M)) {
+    ShaderManager::compileShaders();
+  }
+
   auto playerChunkPos = player.getChunkPosition();
   if (playerChunkPos != m_center) {
     m_centerChanged = true;
@@ -53,7 +59,7 @@ void World::update() {
     m_center = playerChunkPos;
   }
 
-  if (m_centerChangedXY || m_renderDistanceChanged) {
+  if (m_centerChangedXY || m_loadFlag) {
     // create chunks in range (not terrain generated at this point)
     glm::ivec3 pos;
     for (pos.x = m_center.x - m_loadDistance; pos.x <= m_center.x + m_loadDistance; pos.x++) {
@@ -66,7 +72,7 @@ void World::update() {
     }
 
     unloadChunks();
-    m_renderDistanceChanged = false;
+    m_loadFlag = false;
   }
 
   castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
@@ -579,6 +585,10 @@ void World::renderDebugGui() {
   ImGui::SliderFloat("Light Level: %.2f", &m_worldLightLevel, 0.0, 1.0);
 
   ImGui::Text("Running Threads: %d", static_cast<int>(m_numRunningThreads));
+  if (ImGui::Button("Recompile Shaders")) {
+    ShaderManager::compileShaders();
+//    reload();
+  }
 
   ImGui::Text("ChunksToLoadVector: %d", static_cast<int>(m_chunksToLoadVector.size()));
   ImGui::Text("ChunkTerrainLoadInfoMap: %d", static_cast<int>(m_chunkTerrainLoadInfoMap.size()));
@@ -623,7 +633,7 @@ void World::setRenderDistance(int renderDistance) {
   m_lightingLoadDistance = m_renderDistance + 2;
   m_loadDistance = m_renderDistance + 3;
   m_unloadDistance = m_renderDistance + 4;
-  m_renderDistanceChanged = true;
+  m_loadFlag = true;
 }
 
 void World::setTorchLight(glm::ivec3 pos, uint16_t lightLevel, bool updateMesh) {
@@ -831,5 +841,29 @@ void World::addNeighborChunksToChunk(glm::ivec3 chunkPos) {
   }
 }
 
+
+void World::reload() {
+  Timer t("reload");
+  m_loadFlag = true;
+  m_chunkMap.clear();
+  m_chunkHeightMapMap.clear();
+  m_biomeMapMap.clear();
+  m_chunksToLoadVector.clear();
+  m_chunkTerrainLoadInfoMap.clear();
+  m_chunksInStructureGenRangeVectorXY.clear();
+  m_chunkStructuresInfoMap.clear();
+  m_chunksReadyToGenStructuresList.clear();
+  m_chunkStackPositionsEligibleForLighting.clear();
+  m_chunkStacksToLightMap.clear();
+  m_chunkPositionsEligibleForMeshing.clear();
+  m_chunkMeshInfoMap.clear();
+  m_chunksReadyToMeshList.clear();
+  m_chunkUpdateVector.clear();
+  m_chunkUpdateInfoMap.clear();
+  m_chunkDirectlyUpdateSet.clear();
+  m_opaqueRenderSet.clear();
+  m_transparentRenderSet.clear();
+  m_transparentRenderVector.clear();
+}
 
 

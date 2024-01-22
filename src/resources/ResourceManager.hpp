@@ -8,8 +8,6 @@
 #include "Image.hpp"
 #include "../EngineConfig.hpp"
 
-const std::string BLOCK_DIR_PATH = "resources/textures/block";
-const std::filesystem::path BLOCK_BREAK_PATH = "resources/textures/block_break.png";
 
 class ResourceManager {
  public:
@@ -23,9 +21,6 @@ class ResourceManager {
   static void loadTextures();
   static Image loadImage(const std::filesystem::path &imagePath,
                          bool flipVertically = false);
-
-
-
   static std::unordered_map<std::string, int> filenameToTexIndex;
 
  private:

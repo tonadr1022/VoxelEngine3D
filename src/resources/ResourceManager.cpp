@@ -45,7 +45,7 @@ std::unordered_map<std::string, int> ResourceManager::filenameToTexIndex;
 std::vector<Image> ResourceManager::loadBlockImages() {
   std::vector<Image> images;
   int texIndex = 0;
-  for (const auto &entry : std::filesystem::directory_iterator(BLOCK_DIR_PATH)) {
+  for (const auto &entry : std::filesystem::directory_iterator(TEXTURE_PATH(block))) {
     if (std::filesystem::is_regular_file(entry.path()) && entry.path().extension() == ".png") {
       Image image = loadImage(entry.path().string(), true);
       filenameToTexIndex[entry.path().stem().string()] = texIndex;
@@ -60,7 +60,7 @@ std::vector<Image> ResourceManager::loadBlockImages() {
 
 std::vector<Image> ResourceManager::loadBlockBreakImages() {
   std::vector<Image> subImages;
-  Image fullImage = loadImage(BLOCK_BREAK_PATH, true);
+  Image fullImage = loadImage(TEXTURE_PATH(block_break.png), true);
   for (int i = 0; i < 11; i++) {
     uint32_t offsetX = i * 32;
     subImages.emplace_back(fullImage.subImage({offsetX, 0}, {32, 32}));

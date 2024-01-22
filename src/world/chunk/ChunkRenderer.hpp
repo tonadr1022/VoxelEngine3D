@@ -24,8 +24,6 @@ class ChunkRenderer {
 
  private:
   unsigned int textureAtlasID;
-  std::shared_ptr<Shader> shader;
-
 };
 
 #endif //VOXEL_ENGINE_CHUNKRENDERER_HPP

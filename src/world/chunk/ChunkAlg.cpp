@@ -301,10 +301,7 @@ void ChunkAlg::propagateSunLight(std::queue<SunLightNode> &sunLightQueue, ChunkS
     pos.z -= chunkIndex * CHUNK_SIZE;
     return chunks[chunkIndex]->getSunlightLevelIncludingNeighborsOptimized(pos);
   };
-//  for (int z = 0; z < 14; z++) {
-//    std::cout << z << " " << static_cast<int>(chunks[0]->getSunLightLevel({0, 0, z})) << std::endl;
-//  }
-  std::cout << "\n\n\n";
+
   while (!sunLightQueue.empty()) {
     SunLightNode &node = sunLightQueue.front();
     sunLightQueue.pop();

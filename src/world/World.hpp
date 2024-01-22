@@ -63,6 +63,7 @@ class World {
 
   void update();
   void renderDebugGui();
+  void reload();
   inline const std::unordered_set<glm::ivec3> &getOpaqueRenderSet() const { return m_opaqueRenderSet; }
   inline const std::vector<glm::ivec3> &getTransparentRenderVector() const { return m_transparentRenderVector; }
   Player player;
@@ -146,7 +147,7 @@ class World {
   glm::ivec2 m_xyCenter;
   bool m_centerChanged = false;
   bool m_centerChangedXY = false;
-  bool m_renderDistanceChanged = false;
+  bool m_loadFlag = false;
   int m_seed;
   glm::ivec3 m_lastRayCastBlockPos = NULL_VECTOR;
   glm::ivec3 m_prevLastRayCastBlockPos = NULL_VECTOR;

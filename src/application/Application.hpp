@@ -25,13 +25,15 @@ class Application {
   void onCursorPositionEvent(double xpos, double ypos);
   void onScrollEvent(double xoffset, double yoffset);
   void onResizeEvent(int width, int height);
+  void onWindowCloseEvent();
 
  private:
+  bool m_cursorLocked = false;
   static Application *instancePtr;
   Window m_window;
   Renderer m_renderer;
   bool m_running = true;
-  Scope<World> m_world;
+  std::unique_ptr<World> m_world;
 
 };
 

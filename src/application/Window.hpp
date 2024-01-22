@@ -31,6 +31,8 @@ class Window {
 
   static void onResizeEvent(GLFWwindow *window, int width, int height);
 
+  static void onWindowCloseEvent(GLFWwindow *window);
+
   static void onMouseButtonEvent(GLFWwindow *window,
                                  int button,
                                  int action,

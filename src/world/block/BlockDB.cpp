@@ -57,8 +57,8 @@ std::unordered_map<std::string, Block> BlockDB::blockNameToIdMap = {
     {"Dirt Path", Block::DIRT_PATH}
 };
 
-void BlockDB::loadData(const std::string &filePath) {
-  nlohmann::json blocks = JsonUtils::openJson(filePath + "block_data.json");
+void BlockDB::loadData() {
+  nlohmann::json blocks = JsonUtils::openJson(BLOCKS_PATH(block_data.json));
 std::vector<BlockData> prelimData;
   for (const auto &[blockName, blockData] : blocks.items()) {
     BlockData blockDataEntry{};

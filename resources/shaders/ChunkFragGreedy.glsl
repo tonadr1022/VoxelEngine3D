@@ -17,6 +17,6 @@ void main() {
         discard;
     }
     float chunkLoadingAlphaFactor = clamp((u_Time - u_FirstBufferTime) * 3, 0.0, 1.0);
-    o_Color = vec4(texture.rgb * v_FragColor, chunkLoadingAlphaFactor * texture.a);
-    //        o_Color = vec4(v_LightLevel, v_LightLevel, v_LightLevel, 1.0);
+//    o_Color = vec4(texture.rgb * v_FragColor, chunkLoadingAlphaFactor * texture.a);
+    o_Color = vec4(v_FragColor, chunkLoadingAlphaFactor * texture.a);
 }

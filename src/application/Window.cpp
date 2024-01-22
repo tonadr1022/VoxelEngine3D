@@ -21,7 +21,7 @@ Window::~Window() {
   glfwTerminate();
 }
 
-void Window::onKeyEvent(GLFWwindow *window,
+void Window::onKeyEvent([[maybe_unused]] GLFWwindow *window,
                         int key,
                         int scancode,
                         int action,
@@ -29,24 +29,28 @@ void Window::onKeyEvent(GLFWwindow *window,
   Application::Instance().onKeyEvent(key, scancode, action, mods);
 }
 
-void Window::onMouseButtonEvent(GLFWwindow *window,
+void Window::onMouseButtonEvent([[maybe_unused]] GLFWwindow *window,
                                 int button,
                                 int action,
                                 int mods) {
   Application::Instance().onMouseButtonEvent(button, action, mods);
 }
 
-void Window::onCursorPositionEvent(GLFWwindow *window,
+void Window::onWindowCloseEvent([[maybe_unused]] GLFWwindow *window) {
+  Application::Instance().onWindowCloseEvent();
+}
+
+void Window::onCursorPositionEvent([[maybe_unused]] GLFWwindow *window,
                                    double xpos,
                                    double ypos) {
   Application::Instance().onCursorPositionEvent(xpos, ypos);
 }
 
-void Window::onScrollEvent(GLFWwindow *window, double xoffset, double yoffset) {
+void Window::onScrollEvent([[maybe_unused]] GLFWwindow *window, double xoffset, double yoffset) {
   Application::Instance().onScrollEvent(xoffset, yoffset);
 }
 
-void Window::onResizeEvent(GLFWwindow *window, int width, int height) {
+void Window::onResizeEvent([[maybe_unused]] GLFWwindow *window, int width, int height) {
   Application::Instance().onResizeEvent(width, height);
 }
 
@@ -63,6 +67,7 @@ void Window::initializeCallbacks() {
   glfwSetCursorPosCallback(window, onCursorPositionEvent);
   glfwSetScrollCallback(window, onScrollEvent);
   glfwSetWindowSizeCallback(window, onResizeEvent);
+  glfwSetWindowCloseCallback(window, onWindowCloseEvent);
 }
 
 void Window::lockCursor() {
@@ -171,4 +176,5 @@ void Window::initializeGlfw(int width, int height, const char *title) {
 
   glfwMakeContextCurrent(window);
 }
+
 

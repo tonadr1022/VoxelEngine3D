@@ -5,7 +5,7 @@
     "isCollidable": false,
     "isLightSource": false,
     "lightLevels": [0, 0, 0],
-    "lightAttenuation": 2,
+    "lightAttenuation": 1,
     "cull": true
   },
   "Stone": {
