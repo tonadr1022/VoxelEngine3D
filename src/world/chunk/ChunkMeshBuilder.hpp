@@ -52,9 +52,13 @@ class ChunkMeshBuilder {
   static inline bool shouldShowFace(Block block, Block neighborBlock) {
     if (block == Block::AIR) return false; // if block to show face is air, dont show face
     if (neighborBlock == Block::AIR) return true; // to avoid lookup??? profile
-    bool blockIsTrans = BlockDB::isTransparent(block);
-    bool neighborIsTrans = BlockDB::isTransparent(neighborBlock);
-    if (blockIsTrans || !neighborIsTrans) return false;
+    const BlockData &blockData = BlockDB::getBlockData(block);
+    const BlockData &neighborData = BlockDB::getBlockData(neighborBlock);
+    if (!blockData.isTransparent && neighborData.isTransparent) return true;
+    if (!neighborData.isTransparent) return false;
+    if (!blockData.cull && !neighborData.cull) return true;
+    if (block == neighborBlock) return false;
+//    if (neighborData.isTransparent && block != Block::WATER) return true;
     return true;
   }
 

@@ -50,7 +50,7 @@ class Tree : public Structure {
 
  private:
   static const int NORMAL_HEIGHT_MIN = 4;
-  static const int NORMAL_HEIGHT_MAX = 12;
+  static const int NORMAL_HEIGHT_MAX = 8;
   static const int GIANT_HEIGHT_MIN = 12;
   static const int GIANT_HEIGHT_MAX = 40;
   static const int GIANT_WIDTH = 2;

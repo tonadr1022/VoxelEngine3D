@@ -1,346 +1,389 @@
 {
-    "Water": {
-        "texFilenames": ["water"],
-        "isTransparent": true,
-        "isCollidable": false,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": true
-    },
-    "Stone": {
-        "texFilenames": ["stone"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Snowy Grass Block": {
-        "texFilenames": ["powder_snow", "grass_block_snow", "dirt"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Dirt Path": {
-        "texFilenames": ["dirt_path_top", "dirt_path_side", "dirt"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Sand": {
-        "texFilenames": ["sand"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Oak Wood": {
-        "texFilenames": ["oak_log_top", "oak_log", "oak_log_top"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Oak Leaves": {
-        "texFilenames": ["oak_leaves"],
-        "isTransparent": true,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": true
-    },
-    "Jungle Wood": {
-        "texFilenames": ["jungle_log_top", "jungle_log", "jungle_log_top"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Gravel": {
-        "texFilenames": ["gravel"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Glowstone": {
-        "texFilenames": ["glowstone"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": true,
-        "lightLevels": [15,15,15],
-        "lightCanPass": false
-    },
-    "Red Glowstone": {
-      "texFilenames": ["glowstone"],
-      "isTransparent": false,
-      "isCollidable": true,
-      "isLightSource": true,
-      "lightLevels": [15,0,0],
-        "lightCanPass": false
-    },
-    "Green Glowstone": {
-      "texFilenames": ["glowstone"],
-      "isTransparent": false,
-      "isCollidable": true,
-      "isLightSource": true,
-      "lightLevels": [0,15,0],
-        "lightCanPass": false
-    },
-    "Blue Glowstone": {
-      "texFilenames": ["glowstone"],
-      "isTransparent": false,
-      "isCollidable": true,
-      "isLightSource": true,
-      "lightLevels": [0,0,15],
-        "lightCanPass": false
-    },
-    "Dirt": {
-        "texFilenames": ["dirt"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Plains Grass Block": {
-        "texFilenames": ["grass_block_plains_top"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Diamond Block": {
-        "texFilenames": ["diamond_block"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Crafting Table": {
-        "texFilenames": ["glowstone"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Cobblestone": {
-        "texFilenames": ["cobblestone"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Bedrock": {
-        "texFilenames": ["bedrock"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Ice Block": {
-        "texFilenames": ["ice"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Air": {
-        "texFilenames": [],
-        "isTransparent": true,
-        "isCollidable": false,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": true
-    },
-    "Jungle Leaves": {
-        "texFilenames": ["jungle_leaves"],
-        "isTransparent": true,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": true
-    },
-    "Birch Wood": {
-        "texFilenames": ["birch_log_top", "birch_log", "birch_log_top"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Birch Leaves": {
-        "texFilenames": ["birch_leaves"],
-        "isTransparent": true,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": true
-    },
-    "Spruce Wood": {
-        "texFilenames": ["spruce_log_top", "spruce_log", "spruce_log_top"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Spruce Leaves": {
-        "texFilenames": ["spruce_leaves"],
-        "isTransparent": true,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": true
-    },
-    "Coal Ore": {
-        "texFilenames": ["coal_ore"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Iron Ore": {
-        "texFilenames": ["iron_ore"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Redstone Ore": {
-        "texFilenames": ["redstone_ore"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Gold Ore": {
-        "texFilenames": ["gold_ore"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Diamond Ore": {
-        "texFilenames": ["diamond_ore"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Emerald Ore": {
-        "texFilenames": ["emerald_ore"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Lapis Lazuli Ore": {
-        "texFilenames": ["lapis_ore"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Clay": {
-        "texFilenames": ["clay"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Sugar Cane": {
-        "texFilenames": ["sugar_cane"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Cactus": {
-        "texFilenames": ["cactus_top", "cactus_side", "cactus_bottom"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Oak Planks": {
-        "texFilenames": ["oak_planks"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Birch Planks": {
-        "texFilenames": ["birch_planks"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Jungle Planks": {
-        "texFilenames": ["jungle_planks"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Spruce Planks": {
-        "texFilenames": ["spruce_planks"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Snowy Taiga Grass Block": {
-        "texFilenames": ["grass_block_snowy_taiga_top"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Desert Grass Block": {
-        "texFilenames": ["grass_block_desert_top"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    },
-    "Jungle Grass Block": {
-        "texFilenames": ["grass_block_jungle_top"],
-        "isTransparent": false,
-        "isCollidable": true,
-        "isLightSource": false,
-        "lightLevels": [0,0,0],
-        "lightCanPass": false
-    }
+  "Water": {
+    "texFilenames": ["water"],
+    "isTransparent": true,
+    "isCollidable": false,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 2,
+    "cull": true
+  },
+  "Stone": {
+    "texFilenames": ["stone"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Snowy Grass Block": {
+    "texFilenames": ["powder_snow", "grass_block_snow", "dirt"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Dirt Path": {
+    "texFilenames": ["dirt_path_top", "dirt_path_side", "dirt"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Sand": {
+    "texFilenames": ["sand"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Oak Wood": {
+    "texFilenames": ["oak_log_top", "oak_log", "oak_log_top"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Oak Leaves": {
+    "texFilenames": ["oak_leaves"],
+    "isTransparent": true,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 1,
+    "cull": false
+  },
+  "Jungle Wood": {
+    "texFilenames": ["jungle_log_top", "jungle_log", "jungle_log_top"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Gravel": {
+    "texFilenames": ["gravel"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Glowstone": {
+    "texFilenames": ["glowstone"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": true,
+    "lightLevels": [15, 15, 15],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Red Glowstone": {
+    "texFilenames": ["glowstone"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": true,
+    "lightLevels": [15, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Green Glowstone": {
+    "texFilenames": ["glowstone"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": true,
+    "lightLevels": [0, 15, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Blue Glowstone": {
+    "texFilenames": ["glowstone"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": true,
+    "lightLevels": [0, 0, 15],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Dirt": {
+    "texFilenames": ["dirt"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Plains Grass Block": {
+    "texFilenames": ["grass_block_plains_top"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Diamond Block": {
+    "texFilenames": ["diamond_block"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Crafting Table": {
+    "texFilenames": ["glowstone"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Cobblestone": {
+    "texFilenames": ["cobblestone"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Bedrock": {
+    "texFilenames": ["bedrock"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Ice Block": {
+    "texFilenames": ["ice"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Air": {
+    "texFilenames": [],
+    "isTransparent": true,
+    "isCollidable": false,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 0,
+    "cull": true
+  },
+  "Jungle Leaves": {
+    "texFilenames": ["jungle_leaves"],
+    "isTransparent": true,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 1,
+    "cull": false
+  },
+  "Birch Wood": {
+    "texFilenames": ["birch_log_top", "birch_log", "birch_log_top"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Birch Leaves": {
+    "texFilenames": ["birch_leaves"],
+    "isTransparent": true,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 1,
+    "cull": false
+  },
+  "Spruce Wood": {
+    "texFilenames": ["spruce_log_top", "spruce_log", "spruce_log_top"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Spruce Leaves": {
+    "texFilenames": ["spruce_leaves"],
+    "isTransparent": true,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 1,
+    "cull": false
+  },
+  "Coal Ore": {
+    "texFilenames": ["coal_ore"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Iron Ore": {
+    "texFilenames": ["iron_ore"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Redstone Ore": {
+    "texFilenames": ["redstone_ore"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Gold Ore": {
+    "texFilenames": ["gold_ore"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Diamond Ore": {
+    "texFilenames": ["diamond_ore"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Emerald Ore": {
+    "texFilenames": ["emerald_ore"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Lapis Lazuli Ore": {
+    "texFilenames": ["lapis_ore"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Clay": {
+    "texFilenames": ["clay"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Sugar Cane": {
+    "texFilenames": ["sugar_cane"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Cactus": {
+    "texFilenames": ["cactus_top", "cactus_side", "cactus_bottom"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Oak Planks": {
+    "texFilenames": ["oak_planks"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Birch Planks": {
+    "texFilenames": ["birch_planks"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Jungle Planks": {
+    "texFilenames": ["jungle_planks"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Spruce Planks": {
+    "texFilenames": ["spruce_planks"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Snowy Taiga Grass Block": {
+    "texFilenames": ["grass_block_snowy_taiga_top"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Desert Grass Block": {
+    "texFilenames": ["grass_block_desert_top"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  },
+  "Jungle Grass Block": {
+    "texFilenames": ["grass_block_jungle_top"],
+    "isTransparent": false,
+    "isCollidable": true,
+    "isLightSource": false,
+    "lightLevels": [0, 0, 0],
+    "lightAttenuation": 15,
+    "cull": true
+  }
 }

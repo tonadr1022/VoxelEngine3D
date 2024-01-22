@@ -9,18 +9,17 @@
 void TerrainGenerator::generateStructures(std::array<Chunk *, CHUNKS_PER_STACK> &chunks,
                                           HeightMap &heightMap,
                                           BiomeMap &biomeMap) const {
-//  int chunkBaseZ = chunk->m_worldPos.z;
-//  StructureFloatMap structureFloatMap;
-//  fillTreeMap({chunks[0]->m_worldPos.x, chunks[0]->m_worldPos.y}, structureFloatMap);
-//  int x, y, worldHeight, localHeight;
-//  for (int i = 0; i < CHUNK_AREA; i++) {
-//    x = i & 31;
-//    y = (i >> 5) & 31;
-//    worldHeight = heightMap[i];
-//    localHeight = Utils::getLocalIndex(worldHeight);
-//    const Biome &biome = getBiome(biomeMap[i]);
-//    biome.buildStructure({x, y, localHeight + 1}, chunks[worldHeight / CHUNK_SIZE], structureFloatMap[i]);
-//  }
+  StructureFloatMap structureFloatMap;
+  fillTreeMap({chunks[0]->m_worldPos.x, chunks[0]->m_worldPos.y}, structureFloatMap);
+  int x, y, worldHeight, localHeight;
+  for (int i = 0; i < CHUNK_AREA; i++) {
+    x = i & 31;
+    y = (i >> 5) & 31;
+    worldHeight = heightMap[i];
+    localHeight = Utils::getLocalIndex(worldHeight);
+    const Biome &biome = getBiome(biomeMap[i]);
+    biome.buildStructure({x, y, localHeight + 1}, chunks[worldHeight / CHUNK_SIZE], structureFloatMap[i]);
+  }
 
   for (auto &chunk : chunks) {
     chunk->chunkState = ChunkState::STRUCTURES_GENERATED;
@@ -81,40 +80,51 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap,
 
   int heightMapIndex = 0;
   int x, y, z;
-//  for (y = 0; y < CHUNK_SIZE; y++) {
-//    for (x = 0; x < CHUNK_SIZE; x++) {
-//      int maxBlockHeight = heightMap[heightMapIndex];
-//      for (z = 0; z < maxBlockHeight - 4; z++) {
+  for (y = 0; y < CHUNK_SIZE; y++) {
+    for (x = 0; x < CHUNK_SIZE; x++) {
+      int maxBlockHeight = heightMap[heightMapIndex];
+      for (z = 0; z < maxBlockHeight - 4; z++) {
+        setBlockTerrain(x, y, z, Block::STONE);
+      }
+      if (maxBlockHeight - 4 >= 0) {
+        for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
+          setBlockTerrain(x, y, z, Block::DIRT);
+        }
+      }
+      // set surface block at max block height
+      // TODO: switch to biome specific like 3 layers sand, etc.
+      setBlockTerrain(x, y, maxBlockHeight, getBiome(biomeMap[heightMapIndex]).getSurfaceBlock());
+
+      for (z = maxBlockHeight + 1; z <= 64; z++) {
+        setBlockTerrain(x, y, z, Block::WATER);
+      }
+      heightMapIndex++;
+    }
+  }
+//
+//  for (x = 0; x < 32; x++) {
+//    for (y = 0; y < 32; y++) {
+//      for (z = 0; z < 2; z++) {
 //        setBlockTerrain(x, y, z, Block::STONE);
 //      }
-//      if (maxBlockHeight - 4 >= 0) {
-//        for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
-//          setBlockTerrain(x, y, z, Block::DIRT);
-//        }
-//      }
-//      // set surface block at max block height
-//      setBlockTerrain(x, y, maxBlockHeight, getBiome(biomeMap[heightMapIndex]).getSurfaceBlock());
-////      if (maxBlockHeight <= 66) {
-////        setBlockTerrain(x, y, maxBlockHeight, Block::SAND);
-////      } else {
-////        setBlockTerrain(x, y, maxBlockHeight, Block::GRASS);
-////      }
-//
-//      for (z = maxBlockHeight + 1; z <= 64; z++) {
-//        setBlockTerrain(x, y, z, Block::WATER);
-//      }
-//      heightMapIndex++;
+//      setBlockTerrain(x, y, 6, Block::OAK_LEAVES);
+//      setBlockTerrain(x, y, 7, Block::OAK_LEAVES);
+//      setBlockTerrain(x, y, 8, Block::OAK_LEAVES);
+//      setBlockTerrain(x, y, 9, Block::OAK_LEAVES);
+//      setBlockTerrain(x, y, 10, Block::OAK_LEAVES);
+//      setBlockTerrain(x, y, 11, Block::OAK_LEAVES);
+//      setBlockTerrain(x, y, 12, Block::OAK_LEAVES);
 //    }
 //  }
 
-  for (x = 4; x < 15; x++) {
-    for (y = 4; y < 15; y++) {
-      for (z = 0; z < 32; z++) {
-        setBlockTerrain(x, y, z, Block::STONE);
-      }
-//      setBlockTerrain(x, y, 38, Block::BEDROCK);
-    }
-  }
+//  setBlockTerrain(16,16, 6, Block::AIR);
+//  setBlockTerrain(16,16, 7, Block::AIR);
+//  setBlockTerrain(16,16, 8, Block::AIR);
+//  setBlockTerrain(16,16, 9, Block::AIR);
+//  setBlockTerrain(16,16, 10, Block::AIR);
+//  setBlockTerrain(16,16, 11, Block::AIR);
+//  setBlockTerrain(16,16, 12, Block::AIR);
+//  setBlockTerrain(1, 1, 70, Block::BIRCH_WOOD);
 ////
 //  for (x = 2; x < CHUNK_SIZE-2; x++) {
 //    for (y = 2; y < CHUNK_SIZE-2; y++) {

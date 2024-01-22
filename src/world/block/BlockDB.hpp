@@ -16,9 +16,10 @@ struct BlockData {
   bool isTransparent;
   bool isCollidable;
   bool isLightSource;
+  bool cull;
   uint32_t packedLightLevel;
   glm::ivec3 lightLevel;
-  bool lightCanPass;
+  uint8_t lightAttenuation;
 };
 
 class BlockDB {
@@ -47,12 +48,16 @@ class BlockDB {
     return getBlockData(id).packedLightLevel;
   }
 
-  static inline bool canLightPass(Block id) {
-    return getBlockData(id).lightCanPass;
+  static inline uint8_t lightAttenuation(Block id) {
+    return getBlockData(id).lightAttenuation;
   }
 
   static inline bool isTransparent(Block id) {
     return getBlockData(id).isTransparent;
+  }
+
+  static inline bool shouldCull(Block id) {
+    return getBlockData(id).cull;
   }
 
  private:

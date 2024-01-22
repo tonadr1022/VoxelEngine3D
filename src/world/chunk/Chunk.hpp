@@ -195,6 +195,7 @@ class Chunk {
   void allocateTorchLightLevels();
   void allocateSunLightLevels();
 
+  bool m_flagForRemesh = false;
   glm::ivec3 m_pos;
   glm::ivec3 m_worldPos;
   float m_firstBufferTime = 0;

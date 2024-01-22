@@ -32,5 +32,23 @@ std::vector<BlockAndPos> Tree::build() {
     }
   }
 
+//  for (int z = NORMAL_HEIGHT_MAX; z < NORMAL_HEIGHT_MAX + 3; z++) {
+//    for (int y = -2; y <= 2; y++) {
+//      for (int x = -2; x <= 2; x++) {
+//        blocks.push_back({{x, y, z}, leafType});
+//      }
+//    }
+//  }
+//
+//  for (int z = NORMAL_HEIGHT_MAX + 3; z < NORMAL_HEIGHT_MAX + 5; z++) {
+//        blocks.push_back({{0,0, z}, leafType});
+//        blocks.push_back({{-1,-1, z}, leafType});
+//        blocks.push_back({{1,1, z}, leafType});
+//        blocks.push_back({{-1,1, z}, leafType});
+//        blocks.push_back({{1,-1, z}, leafType});
+//  }
+
+
+
   return blocks;
 }

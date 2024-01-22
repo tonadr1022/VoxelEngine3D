@@ -697,13 +697,13 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   }
 
   // if placing a block where light can't pass, must remove sunlight
-  if (oldBlock == Block::AIR && !BlockDB::canLightPass(block)) {
+  if (oldBlock == Block::AIR && BlockDB::lightAttenuation(block) == MAX_LIGHT_ATTENUATION) {
     m_sunlightRemovalQueue.emplace(blockPosInChunk.x, blockPosInChunk.y, blockPosInChunk.z, oldSunlightLevel);
     chunk->setSunLightLevel(blockPosInChunk, 0);
   }
 
     // must propagate torchlight and sunlight if the new block is air/lets light and the old block didn't
-  else if (block == Block::AIR && !BlockDB::canLightPass(oldBlock)) {
+  else if (block == Block::AIR && BlockDB::lightAttenuation(oldBlock) != 0) {
     for (short faceNum = 0; faceNum < 6; faceNum++) {
       glm::ivec3 neighborPos = Utils::getNeighborPosFromFace(blockPosInChunk, faceNum);
       if (!oldBlockIsLightSource) {
@@ -712,7 +712,7 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
           m_torchLightPlacementQueue.emplace(neighborPos, neighborTorchlightLevel);
         }
       }
-      if (oldSunlightLevel == 0) {
+      if (oldSunlightLevel != MAX_LIGHT_LEVEL) {
         uint8_t neighborSunlightLevel = chunk->getSunlightLevelIncludingNeighborsOptimized(neighborPos);
         if (neighborSunlightLevel) {
           m_sunlightPlacementQueue.emplace(neighborPos.x, neighborPos.y, neighborPos.z, neighborSunlightLevel);
@@ -728,17 +728,9 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   ChunkAlg::propagateSunLight(m_sunlightPlacementQueue, chunk);
 
   if (lightChanged) {
-    int minX = worldPos.x - 16;
-    int maxX = worldPos.x + 16;
-    int minY = worldPos.y - 16;
-    int maxY = worldPos.y + 16;
-    int minZ = worldPos.z - 16;
-    int maxZ = worldPos.z + 16;
-    for (int z = minZ; z <= maxZ; z += 16) {
-      for (int y = minY; y <= maxY; y += 16) {
-        for (int x = minX; x <= maxX; x += 16) {
-          m_chunkDirectlyUpdateSet.insert(chunkPosFromWorldPos(x, y, z));
-        }
+    for (const auto& c : chunk->m_neighborChunks) {
+      if (c->m_flagForRemesh) {
+          m_chunkDirectlyUpdateSet.insert(c->m_pos);
       }
     }
   } else {

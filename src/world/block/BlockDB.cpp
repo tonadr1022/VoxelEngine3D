@@ -97,12 +97,13 @@ std::vector<BlockData> prelimData;
     blockDataEntry.isTransparent = blockData["isTransparent"].get<bool>();
     blockDataEntry.isCollidable = blockData["isCollidable"].get<bool>();
     blockDataEntry.isLightSource = blockData["isLightSource"].get<bool>();
+    blockDataEntry.cull = blockData["cull"].get<bool>();
 
     auto unpacked = blockData["lightLevels"].get<std::array<int, 3>>();
     blockDataEntry.lightLevel =
         {static_cast<int8_t>(unpacked[0]), static_cast<int8_t>(unpacked[1]), static_cast<int8_t>(unpacked[2])};
     blockDataEntry.packedLightLevel = Utils::packLightLevel(blockDataEntry.lightLevel);
-    blockDataEntry.lightCanPass = blockData["lightCanPass"].get<bool>();
+    blockDataEntry.lightAttenuation = blockData["lightAttenuation"].get<uint8_t>();
 
     prelimData.push_back(blockDataEntry);
   }
