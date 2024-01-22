@@ -168,11 +168,11 @@ class Chunk {
     return m_blocks[index];
   }
 
-  void setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked);
+  void setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked, bool setFlag = false);
 
-  void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block);
+  void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block, bool setFlag = false);
 
-  void setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel);
+  void setSunlightIncludingNeighborsOptimized(const glm::ivec3 &pos, uint8_t lightLevel, bool setFlag = false);
 
   [[nodiscard]] Block getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const;
 

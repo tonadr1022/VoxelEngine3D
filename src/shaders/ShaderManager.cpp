@@ -12,14 +12,6 @@ void ShaderManager::addShader(std::unique_ptr<Shader> shader,
   m_shaders[name] = std::move(shader);
 }
 
-void ShaderManager::useShader(const std::string &name) {
-  auto shader = m_shaders.find(name);
-  if (shader != m_shaders.end()) {
-    shader->second->use();
-  } else {
-    throw std::runtime_error("Shader " + name + " not found");
-  }
-}
 
 Shader *ShaderManager::getShader(const std::string &name) {
   if (!shadersCompiled) ShaderManager::compileShaders();
@@ -33,16 +25,15 @@ Shader *ShaderManager::getShader(const std::string &name) {
 
 void ShaderManager::compileShaders() {
   m_shaders.clear();
-  std::unique_ptr<Shader>
-      chunkShader = std::make_unique<Shader>(SHADER_PATH(ChunkVertGreedy.glsl), SHADER_PATH(ChunkFragGreedy.glsl));
-  std::unique_ptr<Shader>
-      outlineShader = std::make_unique<Shader>(SHADER_PATH(OutlineVert.glsl),
-                                               SHADER_PATH(OutlineFrag.glsl),
-                                               SHADER_PATH(OutlineGeom.glsl));
-  std::unique_ptr<Shader> blockBreakShader = std::make_unique<Shader>(
-      SHADER_PATH(BlockBreakVert.glsl), SHADER_PATH(BlockBreakFrag.glsl));
-  std::unique_ptr<Shader> crossHairShader = std::make_unique<Shader>(
-      SHADER_PATH(CrossHairVert.glsl), SHADER_PATH(CrossHairFrag.glsl));
+  std::unique_ptr<Shader> chunkShader = std::make_unique<Shader>(SHADER_PATH(ChunkVert.glsl),
+                                                                 SHADER_PATH(ChunkFrag.glsl));
+  std::unique_ptr<Shader> outlineShader = std::make_unique<Shader>(SHADER_PATH(OutlineVert.glsl),
+                                                                   SHADER_PATH(OutlineFrag.glsl),
+                                                                   SHADER_PATH(OutlineGeom.glsl));
+  std::unique_ptr<Shader> blockBreakShader = std::make_unique<Shader>(SHADER_PATH(BlockBreakVert.glsl),
+                                                                      SHADER_PATH(BlockBreakFrag.glsl));
+  std::unique_ptr<Shader> crossHairShader = std::make_unique<Shader>(SHADER_PATH(CrossHairVert.glsl),
+                                                                     SHADER_PATH(CrossHairFrag.glsl));
   addShader(std::move(chunkShader), "chunk");
   addShader(std::move(outlineShader), "outline");
   addShader(std::move(blockBreakShader), "blockBreak");

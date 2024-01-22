@@ -26,33 +26,6 @@ void TerrainGenerator::generateStructures(std::array<Chunk *, CHUNKS_PER_STACK> 
   }
 }
 
-void TerrainGenerator::makeTree(const glm::ivec3 &pos, Chunk *chunk) {
-  for (int i = 1; i < 4; i++) {
-    chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, i + pos.z}, Block::OAK_WOOD);
-  }
-  // leaves
-  for (int x = -2; x <= 2; x++) {
-    for (int y = -2; y <= 2; y++) {
-      for (int z = 4; z <= 8; z++) {
-        glm::ivec3 blockPos = {pos.x + x, pos.y + y, pos.z + z};
-        chunk->setBlockIncludingNeighborsOptimized(blockPos, Block::OAK_LEAVES);
-      }
-    }
-  }
-  int col = rand() % 4;
-  Block glowstoneColor;
-  switch (col) {
-    case 0:glowstoneColor = Block::GLOWSTONE_GREEN;
-      break;
-    case 1:glowstoneColor = Block::GLOWSTONE_RED;
-      break;
-    case 2:glowstoneColor = Block::GLOWSTONE_BLUE;
-      break;
-    default:glowstoneColor = Block::GLOWSTONE;
-  }
-  chunk->setBlockIncludingNeighborsOptimized({pos.x, pos.y, pos.z}, glowstoneColor);
-}
-
 TerrainGenerator::TerrainGenerator(int seed, nlohmann::json biomeData)
     : m_seed(seed),
       m_plainsBiome(biomeData["plains"], m_structureManager),
@@ -80,42 +53,42 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap,
 
   int heightMapIndex = 0;
   int x, y, z;
-  for (y = 0; y < CHUNK_SIZE; y++) {
-    for (x = 0; x < CHUNK_SIZE; x++) {
-      int maxBlockHeight = heightMap[heightMapIndex];
-      for (z = 0; z < maxBlockHeight - 4; z++) {
-        setBlock(x, y, z, Block::STONE);
-      }
-      if (maxBlockHeight - 4 >= 0) {
-        for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
-          setBlock(x, y, z, Block::DIRT);
-        }
-      }
-      // set surface block at max block height
-      // TODO: switch to biome specific like 3 layers sand, etc.
-      setBlock(x, y, maxBlockHeight, getBiome(biomeMap[heightMapIndex]).getSurfaceBlock());
-
-      for (z = maxBlockHeight + 1; z <= 64; z++) {
-        setBlock(x, y, z, Block::WATER);
-      }
-      heightMapIndex++;
-    }
-  }
-//
-//  for (x = 0; x < 32; x++) {
-//    for (y = 0; y < 32; y++) {
-//      for (z = 0; z < 2; z++) {
+//  for (y = 0; y < CHUNK_SIZE; y++) {
+//    for (x = 0; x < CHUNK_SIZE; x++) {
+//      int maxBlockHeight = heightMap[heightMapIndex];
+//      for (z = 0; z < maxBlockHeight - 4; z++) {
 //        setBlock(x, y, z, Block::STONE);
 //      }
-//      setBlock(x, y, 6, Block::OAK_LEAVES);
+//      if (maxBlockHeight - 4 >= 0) {
+//        for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
+//          setBlock(x, y, z, Block::DIRT);
+//        }
+//      }
+//      // set surface block at max block height
+//      // TODO: switch to biome specific like 3 layers sand, etc.
+//      setBlock(x, y, maxBlockHeight, getBiome(biomeMap[heightMapIndex]).getSurfaceBlock());
+//
+//      for (z = maxBlockHeight + 1; z <= 64; z++) {
+//        setBlock(x, y, z, Block::WATER);
+//      }
+//      heightMapIndex++;
+//    }
+//  }
+
+  for (x = 0; x < 32; x++) {
+    for (y = 0; y < 32; y++) {
+      for (z = 0; z < 2; z++) {
+        setBlock(x, y, z, Block::STONE);
+      }
+      setBlock(x, y, 6, Block::BEDROCK);
 //      setBlock(x, y, 7, Block::OAK_LEAVES);
 //      setBlock(x, y, 8, Block::OAK_LEAVES);
 //      setBlock(x, y, 9, Block::OAK_LEAVES);
 //      setBlock(x, y, 10, Block::OAK_LEAVES);
 //      setBlock(x, y, 11, Block::OAK_LEAVES);
 //      setBlock(x, y, 12, Block::OAK_LEAVES);
-//    }
-//  }
+    }
+  }
 
 //  setBlock(4, 4, 4, Block::OAK_LEAVES);
 //  setBlock(4, 5, 4, Block::BIRCH_LEAVES);

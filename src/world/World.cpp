@@ -48,6 +48,9 @@ void World::update() {
   if (Keyboard::isPressed(GLFW_KEY_M)) {
     ShaderManager::compileShaders();
   }
+  if (Keyboard::isPressed(GLFW_KEY_N)) {
+    reload();
+  }
 
   auto playerChunkPos = player.getChunkPosition();
   if (playerChunkPos != m_center) {
@@ -75,7 +78,10 @@ void World::update() {
     m_loadFlag = false;
   }
 
-  castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
+  // Don't ray cast if out of bounds (debug/creative mode)
+  if (m_center.z >= 0 && m_center.z < CHUNKS_PER_STACK) {
+    castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
+  }
 
 
   // don't need to sort transparent render vector every frame.
@@ -315,7 +321,7 @@ void World::updateChunkMeshList(bool updateEligibleVector) {
       for (pos.y = m_center.y - m_renderDistance; pos.y <= m_center.y + m_renderDistance; pos.y++) {
         for (pos.z = 0; pos.z < CHUNKS_PER_STACK; pos.z++) {
           Chunk *chunk = getChunkRawPtr(pos);
-          if (chunk->m_numNonAirBlocks != 0 && chunk->chunkMeshState != ChunkMeshState::BUILT
+          if (chunk->chunkMeshState != ChunkMeshState::BUILT
               && chunk->chunkState == ChunkState::FULLY_GENERATED && !m_chunkMeshInfoMap.count(pos)) {
             m_chunkPositionsEligibleForMeshing.emplace_back(pos);
           }
@@ -468,7 +474,7 @@ void World::processBatchToMesh(std::queue<glm::ivec3> &batchToMesh) {
   while (!batchToMesh.empty()) {
     const auto &pos = batchToMesh.front();
     auto it = m_chunkMeshInfoMap.find(pos);
-    if (it != m_chunkMeshInfoMap.end()) it->second->generateMeshData();
+    if (it != m_chunkMeshInfoMap.end()) it->second->generateMeshData(m_useGreedyMeshing);
 //    m_chunkMeshInfoMap.at(pos)->generateMeshData();
     batchToMesh.pop();
   }
@@ -574,6 +580,14 @@ void World::renderDebugGui() {
 //    m_renderer.updateShaderUniforms();
   }
 
+  ImGui::Checkbox("Greedy Meshing", &m_useGreedyMeshing);
+
+//  bool shouldb = m_shouldBreak;
+//  if (ImGui::Checkbox("should break", &shouldb)){
+//    m_shouldBreak = !m_shouldBreak;
+//  }
+ImGui::Checkbox("should break", &m_shouldBreak);
+
   bool useWireFrame = Config::useWireFrame;
   if (ImGui::Checkbox("WireFrame", &useWireFrame)) {
     Config::useWireFrame = useWireFrame;
@@ -636,49 +650,6 @@ void World::setRenderDistance(int renderDistance) {
   m_loadFlag = true;
 }
 
-void World::setTorchLight(glm::ivec3 pos, uint16_t lightLevel, bool updateMesh) {
-  auto chunkPos = chunkPosFromWorldPos(pos);
-  pos -= chunkPos * CHUNK_SIZE;
-  Chunk *chunk = getChunkRawPtr(chunkPos);
-  chunk->setTorchLevel(pos, lightLevel);
-  if (updateMesh) {
-    addRelatedChunks(pos, chunkPos, m_chunkDirectlyUpdateSet);
-  }
-}
-
-void World::setSunlight(glm::ivec3 pos, uint8_t lightLevel, bool updateMesh) {
-  auto chunkPos = chunkPosFromWorldPos(pos);
-  pos -= chunkPos * CHUNK_SIZE;
-  getChunkRawPtr(chunkPos)->setSunLightLevel(pos, lightLevel);
-  if (updateMesh) {
-    addRelatedChunks(pos, chunkPos, m_chunkDirectlyUpdateSet);
-  }
-}
-
-Block World::getBlock(glm::ivec3 pos) const {
-  auto chunkPos = chunkPosFromWorldPos(pos);
-  pos -= chunkPos * CHUNK_SIZE;
-  return getChunkRawPtr(chunkPos)->getBlock(pos);
-}
-
-glm::ivec3 World::getTorchLevel(glm::ivec3 pos) const {
-  auto chunkPos = chunkPosFromWorldPos(pos);
-  pos -= chunkPos * CHUNK_SIZE;
-  return getChunkRawPtr(chunkPos)->getTorchLevel(pos);
-}
-
-uint16_t World::getTorchLevelPacked(glm::ivec3 pos) const {
-  auto chunkPos = chunkPosFromWorldPos(pos);
-  pos -= chunkPos * CHUNK_SIZE;
-  return getChunkRawPtr(chunkPos)->getTorchLevelPacked(pos);
-}
-
-uint8_t World::getSunlightLevel(glm::ivec3 pos) const {
-  auto chunkPos = chunkPosFromWorldPos(pos);
-  pos -= chunkPos * CHUNK_SIZE;
-  return getChunkRawPtr(chunkPos)->getSunLightLevel(pos);
-}
-
 void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   bool lightChanged = false;
   auto chunkPos = chunkPosFromWorldPos(worldPos);
@@ -738,9 +709,9 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   ChunkAlg::propagateSunLight(m_sunlightPlacementQueue, chunk);
 
   if (lightChanged) {
-    for (const auto& c : chunk->m_neighborChunks) {
+    for (const auto &c : chunk->m_neighborChunks) {
       if (c->m_flagForRemesh) {
-          m_chunkDirectlyUpdateSet.insert(c->m_pos);
+        m_chunkDirectlyUpdateSet.insert(c->m_pos);
       }
     }
   } else {
@@ -765,7 +736,11 @@ void World::processDirectChunkUpdates() {
     uint8_t sunlightLevels[CHUNK_MESH_INFO_SIZE]{}; // NEED TO INITIALIZE
     ChunkMeshInfo::populateMeshInfoForMeshing(blocks, torchLightLevels, sunlightLevels, chunk->m_neighborChunks);
     ChunkMeshBuilder builder(blocks, torchLightLevels, sunlightLevels, chunk->m_worldPos);
-    builder.constructMeshGreedy(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
+    if (m_useGreedyMeshing) {
+      builder.constructMeshGreedy(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
+    } else {
+      builder.constructMesh(opaqueVertices, opaqueIndices, transparentVertices, transparentIndices);
+    }
 
     chunk->m_opaqueMesh.vertices = std::move(opaqueVertices);
     chunk->m_opaqueMesh.indices = std::move(opaqueIndices);
@@ -773,6 +748,7 @@ void World::processDirectChunkUpdates() {
     chunk->m_transparentMesh.indices = std::move(transparentIndices);
     chunk->m_opaqueMesh.needsUpdate = true;
     chunk->m_transparentMesh.needsUpdate = true;
+    chunk->m_flagForRemesh = false;
   }
   m_chunkDirectlyUpdateSet.clear();
 }
@@ -841,9 +817,8 @@ void World::addNeighborChunksToChunk(glm::ivec3 chunkPos) {
   }
 }
 
-
 void World::reload() {
-  Timer t("reload");
+  std::lock_guard<std::mutex> lock(m_mainMutex);
   m_loadFlag = true;
   m_chunkMap.clear();
   m_chunkHeightMapMap.clear();

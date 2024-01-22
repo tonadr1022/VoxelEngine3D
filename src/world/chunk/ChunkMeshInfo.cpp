@@ -9,14 +9,17 @@
 ChunkMeshInfo::ChunkMeshInfo(Chunk *chunk) : m_chunk(chunk) {
 }
 
-void ChunkMeshInfo::generateMeshData() {
+void ChunkMeshInfo::generateMeshData(bool greedy = true) {
   Block blocks[CHUNK_MESH_INFO_SIZE]{};
   uint16_t torchLightLevels[CHUNK_MESH_INFO_SIZE]{};
   uint8_t sunlightLevels[CHUNK_MESH_INFO_SIZE]{};
   populateMeshInfoForMeshing(blocks, torchLightLevels, sunlightLevels, m_chunk->m_neighborChunks);
   ChunkMeshBuilder builder(blocks, torchLightLevels, sunlightLevels, m_chunk->m_worldPos);
-//  builder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
-  builder.constructMeshGreedy(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
+  if (greedy) {
+    builder.constructMeshGreedy(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
+  } else {
+    builder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
+  }
   m_done = true;
 }
 
@@ -26,6 +29,7 @@ void ChunkMeshInfo::applyMeshDataToMesh() {
   m_chunk->m_transparentMesh.vertices = std::move(m_transparentVertices);
   m_chunk->m_transparentMesh.indices = std::move(m_transparentIndices);
   m_chunk->chunkMeshState = ChunkMeshState::BUILT;
+  m_chunk->m_flagForRemesh = false;
 }
 
 void ChunkMeshInfo::populateMeshInfoForMeshing(Block (&blockResult)[CHUNK_MESH_INFO_SIZE],

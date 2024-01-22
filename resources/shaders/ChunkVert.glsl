@@ -6,7 +6,6 @@ layout (location = 1) in uint vertexData2;
 out vec3 v_FragPos;
 out vec3 v_TexCoord;
 out vec3 v_FragColor;
-flat out uint v_TexIndex;
 
 uniform ivec2 u_ChunkWorldPos;
 uniform float u_WorldLightLevel;
@@ -24,6 +23,10 @@ vec3(0.0, 1.0, 0.0), // Right
 vec3(0.0, 0.0, 1.0), // Top
 vec3(0.0, 0.0, -1.0)// Bottom
 );
+
+const int atlasWidth = 16;
+const float textureWidth = 1.0 / float(atlasWidth);
+
 
 const float waveAmplitude = 0.1;
 const float waveFrequency = 1.0;
@@ -74,17 +77,21 @@ void main() {
     uint posX = bitfieldExtract(vertexData1, 0, 6);
     uint posY = bitfieldExtract(vertexData1, 6, 6);
     uint posZ = bitfieldExtract(vertexData1, 12, 6);
-    uint occlusionLevel = bitfieldExtract(vertexData1, 18, 2);
-    int x = int(bitfieldExtract(vertexData1, 20, 1));
-    int y = int(bitfieldExtract(vertexData1, 21, 1));
+    uint aoLevel = bitfieldExtract(vertexData1, 18, 2);
+    int x = int(bitfieldExtract(vertexData1, 20, 6));
+    int y = int(bitfieldExtract(vertexData1, 26, 6));
     // extract lightlevels
     uint blueLightLevel = bitfieldExtract(vertexData2, 0, 4);
     uint greenLightLevel = bitfieldExtract(vertexData2, 4, 4);
     uint redLightLevel = bitfieldExtract(vertexData2, 8, 4);
     uint intensityInt = bitfieldExtract(vertexData2, 12, 4);
     uint texIndex = bitfieldExtract(vertexData2, 16, 12);
+
     float intensity = max(SunLightCurve[intensityInt] * u_WorldLightLevel, 0.1);
-    v_FragColor = vec3(max(TorchLightCurve[redLightLevel], intensity), max(TorchLightCurve[greenLightLevel], intensity), max(TorchLightCurve[blueLightLevel], intensity)) * AOcurve[occlusionLevel];
+    float shouldUseOcclusion = mix(0.0, 1.0, float(u_UseAmbientOcclusion));
+    float aoModifier = AOcurve[aoLevel] * shouldUseOcclusion;
+
+    v_FragColor = vec3(max(TorchLightCurve[redLightLevel], intensity), max(TorchLightCurve[greenLightLevel], intensity), max(TorchLightCurve[blueLightLevel], intensity)) * aoModifier;
 
     vec3 vertexPos = vec3(posX, posY, posZ);
     vertexPos = applyWave(vertexPos, texIndex);
@@ -94,7 +101,5 @@ void main() {
     gl_Position = u_Projection * u_View * u_Model * vec4(vertexPos, 1.0);
     v_TexCoord = vec3(x, y, texIndex);
 
-    float shouldUseOcclusion = mix(0.0, 1.0, float(u_UseAmbientOcclusion));
-    float baseLightLevel = mix(1.0, 0.4, float(u_UseAmbientOcclusion));
 
 }

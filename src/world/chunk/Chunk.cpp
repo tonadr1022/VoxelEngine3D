@@ -20,42 +20,48 @@ Chunk::~Chunk() {
   m_opaqueMesh.clearData();
 }
 
-void Chunk::setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked) {
+void Chunk::setTorchLevelIncludingNeighborsOptimized(glm::ivec3 pos, uint16_t lightLevelPacked, bool setFlag) {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
       glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
       neighborChunk->setTorchLevel(localPos, lightLevelPacked);
+      if (setFlag) neighborChunk->m_flagForRemesh = true;
     }
   } else {
     setTorchLevel(pos, lightLevelPacked);
+    if (setFlag) m_flagForRemesh = true;
   }
 }
 
-void Chunk::setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block) {
+void Chunk::setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block, bool setFlag) {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
       glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
       neighborChunk->setBlock(localPos, block);
+      if (setFlag) neighborChunk->m_flagForRemesh = true;
     }
   } else {
     setBlock(pos, block);
+    if (setFlag) m_flagForRemesh = true;
   }
 }
 
-void Chunk::setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel) {
+void Chunk::setSunlightIncludingNeighborsOptimized(const glm::ivec3 &pos, uint8_t lightLevel, bool setFlag) {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];
     if (neighborChunk) {
       glm::ivec3 localPos = Utils::outOfBoundsPosToLocalPos(pos);
       neighborChunk->setSunLightLevel(localPos, lightLevel);
+      if (setFlag) neighborChunk->m_flagForRemesh = true;
     }
   } else {
     setSunLightLevel(pos, lightLevel);
+    if (setFlag) m_flagForRemesh = true;
   }
 }
 
@@ -125,7 +131,6 @@ void Chunk::allocateSunLightLevels() {
     std::fill(m_sunlightLevelsPtr.get(), m_sunlightLevelsPtr.get() + CHUNK_VOLUME, 0);
   }
 }
-
 
 void Chunk::fillSunlightWithZ(int z, uint8_t lightLevel, bool atOrAbove) {
   if (!m_sunlightLevelsPtr) {

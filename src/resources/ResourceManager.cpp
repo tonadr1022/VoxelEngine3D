@@ -51,7 +51,6 @@ std::vector<Image> ResourceManager::loadBlockImages() {
       filenameToTexIndex[entry.path().stem().string()] = texIndex;
       images.push_back(image);
       texIndex++;
-      std::cout << entry.path().stem().string() << ", " << texIndex -1 << std::endl;
     }
   }
 

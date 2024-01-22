@@ -15,7 +15,7 @@ class Chunk;
 class ChunkMeshInfo : public ChunkInfo {
  public:
   explicit ChunkMeshInfo(Chunk *chunk);
-  void generateMeshData();
+  void generateMeshData(bool greedy);
   void applyMeshDataToMesh();
   static void populateMeshInfoForMeshing(Block (&blockResult)[CHUNK_MESH_INFO_SIZE],
                                          uint16_t (&torchResult)[CHUNK_MESH_INFO_SIZE],

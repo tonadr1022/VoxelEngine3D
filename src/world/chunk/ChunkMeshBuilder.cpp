@@ -316,9 +316,9 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
                                            std::vector<unsigned int> &opaqueIndices,
                                            std::vector<ChunkVertex> &transparentVertices,
                                            std::vector<unsigned int> &transparentIndices) {
-  static float maxTime = 0;
-  static int count = 0;
-  auto startTime = std::chrono::high_resolution_clock::now();
+//  static float maxTime = 0;
+//  static int count = 0;
+//  auto startTime = std::chrono::high_resolution_clock::now();
 
   // get face data
 //  FaceInfo faceInfo[CHUNK_VOLUME][6] = {}; // need to initialize in case skip faces, which will be left as 0
@@ -625,15 +625,15 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
     }
   }
   delete[] faceInfo;
-  static float totalTime = 0;
-  count++;
-  auto endTime = std::chrono::high_resolution_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000.0;
-  totalTime += duration;
-  if (duration > maxTime) {
-    maxTime = duration;
-  }
-  std::cout << duration << " ms, max:  " << maxTime << " ms, avg: " << totalTime / count << std::endl;
+//  static float totalTime = 0;
+//  count++;
+//  auto endTime = std::chrono::high_resolution_clock::now();
+//  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000.0;
+//  totalTime += duration;
+//  if (duration > maxTime) {
+//    maxTime = duration;
+//  }
+//  std::cout << duration << " ms, max:  " << maxTime << " ms, avg: " << totalTime / count << std::endl;
 }
 
 /**

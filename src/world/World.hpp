@@ -80,12 +80,6 @@ class World {
 
   [[nodiscard]] inline float getWorldLightLevel() const { return m_worldLightLevel; }
 
-  void setTorchLight(glm::ivec3 pos, uint16_t lightLevel, bool updateMesh);
-  void setSunlight(glm::ivec3 pos, uint8_t lightLevel, bool updateMesh);
-  Block getBlock(glm::ivec3 pos) const;
-  glm::ivec3 getTorchLevel(glm::ivec3 pos) const;
-  uint16_t getTorchLevelPacked(glm::ivec3 pos) const;
-  uint8_t getSunlightLevel(glm::ivec3 pos) const;
   ViewFrustum m_viewFrustum;
 
  private:
@@ -149,6 +143,8 @@ class World {
   bool m_centerChangedXY = false;
   bool m_loadFlag = false;
   int m_seed;
+  bool m_useGreedyMeshing = true;
+  bool m_shouldBreak = false;
   glm::ivec3 m_lastRayCastBlockPos = NULL_VECTOR;
   glm::ivec3 m_prevLastRayCastBlockPos = NULL_VECTOR;
 

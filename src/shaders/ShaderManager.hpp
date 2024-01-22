@@ -10,10 +10,8 @@
 class ShaderManager {
  public:
   static bool shadersCompiled;
-
   static void addShader(std::unique_ptr<Shader> shader,
                         const std::string &name);
-  static void useShader(const std::string &name);
   static void compileShaders();
   static Shader * getShader(const std::string &name);
 

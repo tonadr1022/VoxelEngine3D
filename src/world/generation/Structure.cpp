@@ -31,6 +31,19 @@ std::vector<BlockAndPos> Tree::build() {
       }
     }
   }
+//
+//  int col = rand() % 4;
+//  Block glowstoneColor;
+//  switch (col) {
+//    case 0:glowstoneColor = Block::GLOWSTONE_GREEN;
+//      break;
+//    case 1:glowstoneColor = Block::GLOWSTONE_RED;
+//      break;
+//    case 2:glowstoneColor = Block::GLOWSTONE_BLUE;
+//      break;
+//    default:glowstoneColor = Block::GLOWSTONE;
+//  }
+//  blocks.emplace_back(pos, glowstoneColor);
 
 //  for (int z = NORMAL_HEIGHT_MAX; z < NORMAL_HEIGHT_MAX + 3; z++) {
 //    for (int y = -2; y <= 2; y++) {
