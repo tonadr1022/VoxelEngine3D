@@ -77,10 +77,10 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap,
 
   for (x = 0; x < 32; x++) {
     for (y = 0; y < 32; y++) {
-      for (z = 0; z < 2; z++) {
+      for (z = 0; z < 32; z++) {
         setBlock(x, y, z, Block::STONE);
       }
-      setBlock(x, y, 6, Block::BEDROCK);
+//      setBlock(x, y, 6, Block::BEDROCK);
 //      setBlock(x, y, 7, Block::OAK_LEAVES);
 //      setBlock(x, y, 8, Block::OAK_LEAVES);
 //      setBlock(x, y, 9, Block::OAK_LEAVES);

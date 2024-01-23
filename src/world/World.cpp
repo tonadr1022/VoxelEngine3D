@@ -678,7 +678,7 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
   }
 
   // if placing a block where light can't pass, must remove sunlight
-  if (oldBlock == Block::AIR && BlockDB::lightAttenuation(block) == MAX_LIGHT_ATTENUATION) {
+  if (oldBlock == Block::AIR && oldSunlightLevel > 0) {
     m_sunlightRemovalQueue.emplace(blockPosInChunk.x, blockPosInChunk.y, blockPosInChunk.z, oldSunlightLevel);
     chunk->setSunLightLevel(blockPosInChunk, 0);
   }
@@ -704,9 +704,19 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
 
   ChunkAlg::unpropagateTorchLight(m_torchLightPlacementQueue, m_torchlightRemovalQueue, chunk);
   ChunkAlg::unpropagateSunLight(m_sunlightPlacementQueue, m_sunlightRemovalQueue, chunk);
+  std::cout << "\nbefore\n";
+  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,24})) << ",  5 5 24"<< std::endl;
+  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,25})) << ",  5 5 25"<< std::endl;
+  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,26})) << ",  5 5 26"<< std::endl;
+  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,27})) << ",  5 5 27"<< std::endl;
   chunk->setBlock(blockPosInChunk, block);
-  ChunkAlg::propagateTorchLight(m_torchLightPlacementQueue, chunk);
   ChunkAlg::propagateSunLight(m_sunlightPlacementQueue, chunk);
+  std::cout << "\n\n";
+  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,24})) << ",  5 5 24"<< std::endl;
+  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,25})) << ",  5 5 25"<< std::endl;
+  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,26})) << ",  5 5 26"<< std::endl;
+  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,27})) << ",  5 5 27"<< std::endl;
+  ChunkAlg::propagateTorchLight(m_torchLightPlacementQueue, chunk);
 
   if (lightChanged) {
     for (const auto &c : chunk->m_neighborChunks) {
@@ -749,6 +759,9 @@ void World::processDirectChunkUpdates() {
     chunk->m_opaqueMesh.needsUpdate = true;
     chunk->m_transparentMesh.needsUpdate = true;
     chunk->m_flagForRemesh = false;
+    if (chunk->m_numNonAirBlocks > 0 ){
+      m_opaqueRenderSet.insert(chunk->m_pos);
+    }
   }
   m_chunkDirectlyUpdateSet.clear();
 }

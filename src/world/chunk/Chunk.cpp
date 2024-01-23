@@ -50,7 +50,7 @@ void Chunk::setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block, boo
   }
 }
 
-void Chunk::setSunlightIncludingNeighborsOptimized(const glm::ivec3 &pos, uint8_t lightLevel, bool setFlag) {
+void Chunk::setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel, bool setFlag) {
   if (isPosOutOfChunkBounds(pos)) {
     int neighborArrayIndex = Utils::getChunkNeighborArrayIndexFromOutOfBoundsPos(pos);
     Chunk *neighborChunk = m_neighborChunks[neighborArrayIndex];

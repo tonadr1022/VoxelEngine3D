@@ -231,7 +231,7 @@ void ChunkAlg::unpropagateSunLight(std::queue<SunLightNode> &sunLightPlacementQu
                                    std::queue<SunLightNode> &sunlightRemovalQueue,
                                    Chunk *chunk) {
   while (!sunlightRemovalQueue.empty()) {
-    SunLightNode &node = sunlightRemovalQueue.front();
+    SunLightNode node = sunlightRemovalQueue.front();
     sunlightRemovalQueue.pop();
 
     for (short faceNum = 0; faceNum < 6; faceNum++) {
@@ -240,7 +240,7 @@ void ChunkAlg::unpropagateSunLight(std::queue<SunLightNode> &sunLightPlacementQu
 
       if (neighborLightLevel == 0) continue;
 
-      if (faceNum == 5 && node.lightLevel == 15) {
+      if (faceNum == 5 && node.lightLevel == MAX_LIGHT_LEVEL) {
         chunk->setSunlightIncludingNeighborsOptimized(neighborPos, 0, true);
         sunlightRemovalQueue.emplace(neighborPos.x, neighborPos.y, neighborPos.z, MAX_LIGHT_LEVEL);
       } else {

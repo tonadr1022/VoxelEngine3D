@@ -472,18 +472,16 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
               du[0] = 0, du[1] = 0, du[2] = 0;
               dv[0] = 0, dv[1] = 0, dv[2] = 0;
 
-//              faceNum = ((axis << 1) | (blockType <= 0));
-
               if (!backFace) {
                 dv[v] = height;
                 du[u] = width;
               } else {
-//                blockType = -blockType;
                 du[v] = height;
                 dv[u] = width;
               }
 
-              int textureIndex = BlockDB::getTexIndex(block, static_cast<BlockFace>(faceNum));
+              int textureIndex = getTexIndexFromSunlightNumber(currFaceInfo.sunlightLevel);
+//              int textureIndex = BlockDB::getTexIndex(block, static_cast<BlockFace>(faceNum));
 
               int vx = x[0];
               int vy = x[1];
@@ -541,11 +539,13 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
                 std::swap(currFaceInfo.aoLevels[0], currFaceInfo.aoLevels[1]);
                 std::swap(currFaceInfo.aoLevels[1], currFaceInfo.aoLevels[2]);
                 std::swap(currFaceInfo.aoLevels[2], currFaceInfo.aoLevels[3]);
+              } else if (face == TOP) {
+                std::swap(v00u, v01u);
+                std::swap(v00v, v01v);
+                std::swap(v11u, v10u);
+                std::swap(v11v, v10v);
               }
 
-              // TODO write func for this???
-//              uint32_t vertexData2 =
-//                  currFaceInfo.torchLightLevel | ((currFaceInfo.sunlightLevel) << 12) | ((textureIndex & 0xFFF) << 16);
               uint32_t vData2 =
                   createVertexData2(currFaceInfo.torchLightLevel, currFaceInfo.sunlightLevel, textureIndex);
               uint32_t v00Data1 = createVertexData1(vx, vy, vz, currFaceInfo.aoLevels[0], v00u, v00v);

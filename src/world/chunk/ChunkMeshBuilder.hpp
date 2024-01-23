@@ -12,6 +12,7 @@
 #include "../../utils/Utils.hpp"
 #include "ChunkVertex.hpp"
 #include "../block/BlockDB.hpp"
+#include "../../resources/ResourceManager.hpp"
 struct FaceInfo {
   uint8_t aoLevels[4];
   uint16_t torchLightLevel;
@@ -83,6 +84,10 @@ return true;
 
   static inline uint32_t createVertexData1(uint8_t x, uint8_t y, uint8_t z, uint8_t ao, uint8_t u, uint8_t v) {
     return (x | y << 6 | z << 12 | ao << 18 | u << 20 | v << 26);
+  }
+
+  static inline int getTexIndexFromSunlightNumber(int sunlightNumber) {
+    return ResourceManager::filenameToTexIndex["number" + std::to_string(sunlightNumber)];
   }
 
   Block (&m_blocks)[CHUNK_MESH_INFO_SIZE];

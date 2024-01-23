@@ -172,7 +172,7 @@ class Chunk {
 
   void setBlockIncludingNeighborsOptimized(glm::ivec3 pos, Block block, bool setFlag = false);
 
-  void setSunlightIncludingNeighborsOptimized(const glm::ivec3 &pos, uint8_t lightLevel, bool setFlag = false);
+  void setSunlightIncludingNeighborsOptimized(glm::ivec3 pos, uint8_t lightLevel, bool setFlag = false);
 
   [[nodiscard]] Block getBlockIncludingNeighborsOptimized(glm::ivec3 pos) const;
 
