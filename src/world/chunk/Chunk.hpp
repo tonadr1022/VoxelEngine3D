@@ -22,10 +22,10 @@ enum class ChunkMeshState {
 };
 
 enum class ChunkState {
-  TERRAIN_GENERATED = 0,
+  UNGENERATED,
+  TERRAIN_GENERATED,
   STRUCTURES_GENERATED,
   FULLY_GENERATED,
-  UNGENERATED,
   CHANGED,
 };
 

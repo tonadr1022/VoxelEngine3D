@@ -91,7 +91,6 @@ class World {
 
   Block getBlockFromWorldPosition(const glm::ivec3 &position) const;
   void setBlockWithUpdate(const glm::ivec3 &worldPos, Block block);
-
  private:
 
   void setRenderDistance(int renderDistance);
@@ -135,7 +134,7 @@ class World {
   void processBatchToLight(std::queue<glm::ivec2> &batchToLight);
   void processBatchToMesh(std::queue<glm::ivec3> &batchToMesh);
 
-  int m_renderDistance = 2;
+  int m_renderDistance = 3;
   int m_structureLoadDistance = m_renderDistance + 1;
   int m_lightingLoadDistance = m_renderDistance + 2;
   int m_loadDistance = m_renderDistance + 3;
@@ -150,9 +149,11 @@ class World {
   int m_seed;
   bool m_useGreedyMeshing = true;
   bool m_shouldBreak = false;
+  float m_chunkMapDebugScale = 50.0f;
 
   ChunkMap m_chunkMap;
   Renderer m_renderer;
+  ChunkMapRenderer m_chunkMapRenderer;
   TerrainGenerator m_terrainGenerator;
   WorldSave m_worldSave;
 
@@ -163,6 +164,9 @@ class World {
   std::atomic_uint m_numRunningThreads;
   unsigned int m_numLoadingThreads;
   static constexpr int MAX_BATCH_SIZE = 10;
+
+  static constexpr int CHUNK_MAP_LENGTH = 33;
+  std::vector<int> m_chunkMapColors;
 
   ChunkHeightMapMap m_chunkHeightMapMap;
   std::unordered_map<glm::ivec2, BiomeMap> m_biomeMapMap;

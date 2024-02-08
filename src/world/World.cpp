@@ -15,6 +15,7 @@
 World::World(Renderer& renderer, Window& window, int seed, const std::string& savePath)
     : m_worldSave(savePath),
       m_renderer(renderer),
+      m_chunkMapRenderer(CHUNK_MAP_LENGTH),
       m_center(INT_MAX),
       m_xyCenter(INT_MAX),
       m_numRunningThreads(0),
@@ -28,6 +29,7 @@ World::World(Renderer& renderer, Window& window, int seed, const std::string& sa
   m_chunksToLoadVector.reserve(loadVectorSize);
   BlockDB::loadData();
   m_terrainGenerator.init();
+  m_chunkMapColors.resize(CHUNK_MAP_LENGTH * CHUNK_MAP_LENGTH);
   for (unsigned int i = 0; i < m_numLoadingThreads; i++) {
     m_chunkLoadThreads.emplace_back(&World::generateChunksWorker4, this);
   }
@@ -65,7 +67,7 @@ void World::update(double dt) {
   }
 
   if (m_centerChangedXY || m_loadFlag) {
-    // create chunks in range (not terrain generated at this point)
+    // create chunks in range (not terrain generated at this point) and determine colors
     glm::ivec3 pos;
     for (pos.x = m_center.x - m_loadDistance; pos.x <= m_center.x + m_loadDistance; pos.x++) {
       for (pos.y = m_center.y - m_loadDistance; pos.y <= m_center.y + m_loadDistance; pos.y++) {
@@ -75,12 +77,10 @@ void World::update(double dt) {
         }
       }
     }
-
     unloadChunks();
     m_loadFlag = false;
   }
 
-  Chunk* playerChunk = getChunkRawPtrOrNull(playerChunkPos);
   player.update(dt);
 
 
@@ -106,6 +106,8 @@ void World::update(double dt) {
   updateChunkLoadList();
   updateChunkStructureGenList();
   updateChunkLightingList();
+  m_chunkMapRenderer.genBuffer(m_chunkMapColors, m_loadDistance);
+
 
   if (i % 4 == 0) {
     updateChunkMeshList(true);
@@ -136,13 +138,21 @@ void World::updateChunkLoadList() {
     }
   }
 
-  glm::ivec2 pos;
+  glm::ivec3 pos;
+  pos.z = 0;
+  m_chunkMapColors.clear();
   for (pos.x = m_center.x - m_loadDistance; pos.x <= m_center.x + m_loadDistance; pos.x++) {
     for (pos.y = m_center.y - m_loadDistance; pos.y <= m_center.y + m_loadDistance; pos.y++) {
-      if (m_chunkMap.at({pos.x, pos.y, 0})->chunkState == ChunkState::UNGENERATED
-          && !m_chunkTerrainLoadInfoMap.count(pos)) {
+      Chunk *currChunk = getChunkRawPtr(pos);
+      if (currChunk->chunkState == ChunkState::UNGENERATED && !m_chunkTerrainLoadInfoMap.count(pos)) {
         m_chunksToLoadVector.emplace_back(pos);
         m_chunkTerrainLoadInfoMap.emplace(pos, std::make_unique<ChunkTerrainInfo>(pos, m_terrainGenerator));
+      }
+
+      if (pos.x == m_center.x && pos.y == m_center.y) {
+        m_chunkMapColors.push_back(5);
+      } else {
+        m_chunkMapColors.push_back(static_cast<int>(currChunk->chunkState));
       }
     }
     std::sort(m_chunksToLoadVector.begin(), m_chunksToLoadVector.end(), rcmpVec2);
@@ -485,83 +495,6 @@ bool compareVec3(glm::vec3 a, glm::vec3 b) {
   return a.x == b.x && a.y == b.y && a.z == b.z;
 }
 
-//void World::castPlayerAimRay(Ray ray) {
-//  glm::ivec3 lastAirBlockPos = NULL_VECTOR;
-//  glm::vec3 rayStart = ray.origin;
-//  glm::vec3 rayEnd = ray.origin;
-//  glm::vec3 directionIncrement = glm::normalize(ray.direction) * 0.05f;
-//  static std::chrono::steady_clock::time_point
-//      lastTime = std::chrono::steady_clock::now();
-//  static bool isFirstAction = true;
-//
-//  while (glm::distance(rayStart, rayEnd) < 10.0f) {
-//    glm::ivec3 blockPos = {floor(rayEnd.x), floor(rayEnd.y), floor(rayEnd.z)};
-//    try {
-//      Block block = getBlockFromWorldPosition(blockPos);
-//      if (block == Block::AIR) {
-//        lastAirBlockPos = blockPos;
-//        rayEnd += directionIncrement;
-//        continue;
-//      }
-//    } catch (std::exception& e) {
-//      std::cout << e.what() << std::endl;
-//      return;
-//    }
-//
-//    m_prevLastRayCastBlockPos = m_lastRayCastBlockPos;
-//    m_lastRayCastBlockPos = blockPos;
-//
-//    // calculate block break stage. 10 stages. 0 is no break, 10 is fully broken
-//    auto duration = std::chrono::steady_clock::now() - lastTime;
-//    auto durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(
-//        duration).count();
-//    int breakStage = static_cast<int>(durationMS / (MINING_DELAY_MS / 10));
-//    if (breakStage > 10) breakStage = 10;
-//
-//    // breaking block
-//    if (Mouse::isPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-//      // check if player switched block aimed at. if so, reset time and break stage and return
-//      if (!compareVec3(m_lastRayCastBlockPos, m_prevLastRayCastBlockPos)) {
-//        player.blockBreakStage = 0;
-//        lastTime = std::chrono::steady_clock::now();
-//        return;
-//      }
-//      if (std::chrono::steady_clock::now() - lastTime <
-//          std::chrono::milliseconds(MINING_DELAY_MS)) {
-//        player.blockBreakStage = breakStage;
-//        return;
-//      }
-//
-//      setBlockWithUpdate({blockPos.x, blockPos.y, blockPos.z},
-//                         Block::AIR);
-//      player.blockBreakStage = 0;
-//      m_lastRayCastBlockPos = NULL_VECTOR;
-//      isFirstAction = false;
-//    }
-//      // placing block
-//    else if (Mouse::isPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-//      if (!isFirstAction && std::chrono::steady_clock::now() - lastTime <
-//          std::chrono::milliseconds(PLACING_DELAY_MS)) {
-//        return;
-//      }
-//      setBlockWithUpdate(lastAirBlockPos,
-//                         Block(player.inventory.getHeldItem()));
-//      isFirstAction = false;
-//
-//      // not placing or breaking, reset
-//    } else {
-//      player.blockBreakStage = 0;
-//      isFirstAction = true;
-//    }
-//
-//    lastTime = std::chrono::steady_clock::now();
-//    return;
-//  }
-//  lastTime = std::chrono::steady_clock::now();
-//  player.blockBreakStage = 0;
-//  m_lastRayCastBlockPos = NULL_VECTOR;
-//}
-
 void World::renderDebugGui() {
   ImGuiIO& io = ImGui::GetIO();
 
@@ -577,6 +510,11 @@ void World::renderDebugGui() {
     setRenderDistance(renderDistance);
   }
 
+
+  float invertedValue = 100.0f / m_chunkMapDebugScale;
+  ImGui::SliderFloat("Chunk Debug Scale", &invertedValue, 1.3f, 6.0f);
+  m_chunkMapDebugScale = 100.0f / invertedValue;
+
   bool useAmbientOcclusion = Config::getUseAmbientOcclusion();
   if (ImGui::Checkbox("Ambient Occlusion", &useAmbientOcclusion)) {
     Config::setUseAmbientOcclusion(useAmbientOcclusion);
@@ -585,10 +523,6 @@ void World::renderDebugGui() {
 
   ImGui::Checkbox("Greedy Meshing", &m_useGreedyMeshing);
 
-//  bool shouldb = m_shouldBreak;
-//  if (ImGui::Checkbox("should break", &shouldb)){
-//    m_shouldBreak = !m_shouldBreak;
-//  }
   ImGui::Checkbox("should break", &m_shouldBreak);
 
   bool useWireFrame = Config::useWireFrame;
@@ -599,9 +533,9 @@ void World::renderDebugGui() {
   ImGui::SliderFloat("Light Level: %.2f", &m_worldLightLevel, 0.0, 1.0);
 
   ImGui::Text("Running Threads: %d", static_cast<int>(m_numRunningThreads));
+
   if (ImGui::Button("Recompile Shaders")) {
     ShaderManager::compileShaders();
-//    reload();
   }
 
   ImGui::Text("ChunksToLoadVector: %d", static_cast<int>(m_chunksToLoadVector.size()));
@@ -624,8 +558,9 @@ void World::renderDebugGui() {
   ImGui::Text("HeightMapMap: %d", static_cast<int>(m_chunkHeightMapMap.size()));
 
   player.renderDebugGui();
-
   ImGui::End();
+
+  m_chunkMapRenderer.draw(m_chunkMapDebugScale);
 }
 
 void World::saveData() {

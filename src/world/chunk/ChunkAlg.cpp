@@ -169,31 +169,7 @@ void ChunkAlg::generateSunLightData(ChunkStackArray& chunks) {
 
   std::queue<SunLightNode> sunlightQueue;
 
-//  for (int y = 0; y < CHUNK_SIZE; y++) {
-//    for (int x = 0; x < CHUNK_SIZE; x++) {
-//      for (int z = highestZ + 1; z >= 0; z--) {
-//        Block block = getBlockInChunkStack(x, y, z);
-//        if (BlockDB::lightAttenuation(block) == 0) {
-//          setSunlightInChunkStack(x, y, z, MAX_LIGHT_LEVEL);
-//          sunlightQueue.emplace(x, y, z, MAX_LIGHT_LEVEL);
-//        } else {
-//          break;
-//        }
-//      }
-//    }
-//  }
-//  for (int y = 0; y < CHUNK_SIZE; y++) {
-//    for (int x = 0; x < CHUNK_SIZE; x++) {
-////      for (int z = highestZ + 1; z >= 0; z--) {
-//      Block block = getBlockInChunkStack(x, y, highestZ);
-//      if (BlockDB::lightAttenuation(block) == 0) {
-//        setSunlightInChunkStack(x, y, highestZ, MAX_LIGHT_LEVEL);
-//        sunlightQueue.emplace(x, y, highestZ, MAX_LIGHT_LEVEL);
-////        } else {
-////          break;
-//      }
-//    }
-//  }
+
   for (int y = 0; y < CHUNK_SIZE; y++) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
 //      for (int z = highestZ+1; z >= 0; z--) {
@@ -207,6 +183,19 @@ void ChunkAlg::generateSunLightData(ChunkStackArray& chunks) {
 //      }
     }
   }
+//  for (int y = 0; y < CHUNK_SIZE; y++) {
+//    for (int x = 0; x < CHUNK_SIZE; x++) {
+//      for (int z = highestZ; z >= 0; z--) {
+//        Block block = getBlockInChunkStack(x, y, z);
+//        if (BlockDB::lightAttenuation(block) == 0) {
+//          setSunlightInChunkStack(x, y, z, MAX_LIGHT_LEVEL);
+//          sunlightQueue.emplace(x, y, z, MAX_LIGHT_LEVEL);
+//        } else {
+//          break;
+//        }
+//      }
+//    }
+//  }
   propagateSunLight(sunlightQueue, chunks);
 }
 

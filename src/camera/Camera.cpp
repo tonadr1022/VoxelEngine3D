@@ -8,15 +8,10 @@
 void Camera::onCursorUpdate(float xOffset, float yOffset) {
   xOffset *= m_mouseSensitivity;
   yOffset *= m_mouseSensitivity;
-//  m_yaw_deg += glm::mod(m_yaw_deg + static_cast<float>(-xOffset) * m_mouseSensitivity,
-//               360.0f);
   m_yaw_deg += xOffset;
   m_yaw_deg = glm::mod(m_yaw_deg, 360.0f);
   m_pitch_deg += yOffset;
-  m_pitch_deg = glm::clamp(m_pitch_deg, -90.0f, 90.0f);
-//  m_pitch_deg +=glm::clamp(m_pitch_deg + static_cast<float>(yOffset) * m_mouseSensitivity,
-//                 -89.0f,
-//                 89.0f);
+  m_pitch_deg = glm::clamp(m_pitch_deg, -89.0f, 89.0f);
   updateCameraVectors();
 }
 

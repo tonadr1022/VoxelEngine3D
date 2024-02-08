@@ -103,7 +103,7 @@ void ResourceManager::makeTexture2dArray(std::vector<Image> &images,
 Image ResourceManager::loadImage(const std::filesystem::path &imagePath,
                                  bool flipVertically) {
   int width, height, nrChannels;
-  if (!flipVertically)
+  if (flipVertically)
     stbi_set_flip_vertically_on_load(true);
   unsigned char *data = stbi_load(imagePath.string().c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
   if (!data) {

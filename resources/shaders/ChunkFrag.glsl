@@ -2,7 +2,6 @@
 
 in vec3 v_TexCoord;
 in vec3 v_FragColor;
-in vec3 v_FragPos;
 
 out vec4 o_Color;
 

@@ -133,6 +133,8 @@ set(SOURCE_FILES
         src/world/generation/BlockAndPos.hpp
         src/world/generation/Structure.cpp
         src/world/generation/Structure.hpp
+        src/debug_gui/ChunkMapRenderer.cpp
+        src/debug_gui/ChunkMapRenderer.hpp
 )
 
 add_executable(voxel_engine ${SOURCE_FILES})

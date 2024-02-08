@@ -53,4 +53,3 @@ void Renderer::renderWorld(const World &world) {
   glDisable(GL_BLEND);
 }
 
-

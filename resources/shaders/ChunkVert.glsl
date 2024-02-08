@@ -3,7 +3,7 @@
 layout (location = 0) in uint vertexData1;
 layout (location = 1) in uint vertexData2;
 
-out vec3 v_FragPos;
+//out vec3 v_FragPos;
 out vec3 v_TexCoord;
 out vec3 v_FragColor;
 
@@ -96,7 +96,7 @@ void main() {
     vec3 vertexPos = vec3(posX, posY, posZ);
     vertexPos = applyWave(vertexPos, texIndex);
 
-    v_FragPos = vec3(u_Model * vec4(vertexPos, 1.0));
+//    v_FragPos = vec3(u_Model * vec4(vertexPos, 1.0));
 
     gl_Position = u_Projection * u_View * u_Model * vec4(vertexPos, 1.0);
     v_TexCoord = vec3(x, y, texIndex);

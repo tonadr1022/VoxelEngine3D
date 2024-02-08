@@ -11,6 +11,7 @@
 #include "BlockBreakRenderer.hpp"
 #include "../world/chunk/ChunkRenderer.hpp"
 #include "ViewFrustum.hpp"
+#include "../debug_gui/ChunkMapRenderer.hpp"
 
 class World;
 
@@ -30,6 +31,7 @@ class Renderer {
   BlockOutlineRenderer m_blockOutlineRenderer;
   BlockBreakRenderer m_blockBreakRenderer;
   ChunkRenderer m_chunkRenderer;
+
   CrossHair crossHair;
 
 

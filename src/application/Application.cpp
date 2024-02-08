@@ -51,8 +51,11 @@ void Application::run() {
     m_world->update(frameTime);
 
     debugGui.beginFrame();
+
     m_renderer.renderWorld(*m_world);
+
     m_world->renderDebugGui();
+
     debugGui.endFrame();
 
     m_window.swapBuffers();
@@ -86,15 +89,6 @@ void Application::onMouseButtonEvent(int button, int action, int mods) {
 }
 
 void Application::onCursorPositionEvent(double xpos, double ypos) {
-//  static double lastX = xpos;
-//  static double lastY = ypos;
-//
-//  double xOffset = xpos - lastX;
-//  double yOffset = lastY - ypos;
-//
-//  lastX = xpos;
-//  lastY = ypos;
-
   m_world->player.onCursorUpdate(xpos, ypos);
 }
 

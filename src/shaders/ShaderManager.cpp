@@ -34,10 +34,13 @@ void ShaderManager::compileShaders() {
                                                                       SHADER_PATH(BlockBreakFrag.glsl));
   std::unique_ptr<Shader> crossHairShader = std::make_unique<Shader>(SHADER_PATH(CrossHairVert.glsl),
                                                                      SHADER_PATH(CrossHairFrag.glsl));
+  std::unique_ptr<Shader> quadShader = std::make_unique<Shader>(SHADER_PATH(QuadVert.glsl),
+                                                                SHADER_PATH(QuadFrag.glsl));
   addShader(std::move(chunkShader), "chunk");
   addShader(std::move(outlineShader), "outline");
   addShader(std::move(blockBreakShader), "blockBreak");
   addShader(std::move(crossHairShader), "crosshair");
+  addShader(std::move(quadShader), "quad");
   shadersCompiled = true;
 }
 
