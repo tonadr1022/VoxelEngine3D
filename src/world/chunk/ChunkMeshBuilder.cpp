@@ -480,8 +480,8 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
                 dv[u] = width;
               }
 
-              int textureIndex = getTexIndexFromSunlightNumber(currFaceInfo.sunlightLevel);
-//              int textureIndex = BlockDB::getTexIndex(block, static_cast<BlockFace>(faceNum));
+//              int textureIndex = getTexIndexFromSunlightNumber(currFaceInfo.sunlightLevel);
+              int textureIndex = BlockDB::getTexIndex(block, static_cast<BlockFace>(faceNum));
 
               int vx = x[0];
               int vy = x[1];

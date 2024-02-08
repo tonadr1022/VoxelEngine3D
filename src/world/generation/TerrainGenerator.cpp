@@ -53,42 +53,42 @@ void TerrainGenerator::generateTerrain(HeightMap &heightMap,
 
   int heightMapIndex = 0;
   int x, y, z;
-//  for (y = 0; y < CHUNK_SIZE; y++) {
-//    for (x = 0; x < CHUNK_SIZE; x++) {
-//      int maxBlockHeight = heightMap[heightMapIndex];
-//      for (z = 0; z < maxBlockHeight - 4; z++) {
-//        setBlock(x, y, z, Block::STONE);
-//      }
-//      if (maxBlockHeight - 4 >= 0) {
-//        for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
-//          setBlock(x, y, z, Block::DIRT);
-//        }
-//      }
-//      // set surface block at max block height
-//      // TODO: switch to biome specific like 3 layers sand, etc.
-//      setBlock(x, y, maxBlockHeight, getBiome(biomeMap[heightMapIndex]).getSurfaceBlock());
-//
-//      for (z = maxBlockHeight + 1; z <= 64; z++) {
-//        setBlock(x, y, z, Block::WATER);
-//      }
-//      heightMapIndex++;
-//    }
-//  }
-
-  for (x = 0; x < 32; x++) {
-    for (y = 0; y < 32; y++) {
-      for (z = 0; z < 32; z++) {
+  for (y = 0; y < CHUNK_SIZE; y++) {
+    for (x = 0; x < CHUNK_SIZE; x++) {
+      int maxBlockHeight = heightMap[heightMapIndex];
+      for (z = 0; z < maxBlockHeight - 4; z++) {
         setBlock(x, y, z, Block::STONE);
       }
-//      setBlock(x, y, 6, Block::BEDROCK);
-//      setBlock(x, y, 7, Block::OAK_LEAVES);
-//      setBlock(x, y, 8, Block::OAK_LEAVES);
-//      setBlock(x, y, 9, Block::OAK_LEAVES);
-//      setBlock(x, y, 10, Block::OAK_LEAVES);
-//      setBlock(x, y, 11, Block::OAK_LEAVES);
-//      setBlock(x, y, 12, Block::OAK_LEAVES);
+      if (maxBlockHeight - 4 >= 0) {
+        for (z = maxBlockHeight - 4; z < maxBlockHeight; z++) {
+          setBlock(x, y, z, Block::DIRT);
+        }
+      }
+      // set surface block at max block height
+      // TODO: switch to biome specific like 3 layers sand, etc.
+      setBlock(x, y, maxBlockHeight, getBiome(biomeMap[heightMapIndex]).getSurfaceBlock());
+
+      for (z = maxBlockHeight + 1; z <= 64; z++) {
+        setBlock(x, y, z, Block::WATER);
+      }
+      heightMapIndex++;
     }
   }
+
+//  for (x = 0; x < 32; x++) {
+//    for (y = 0; y < 32; y++) {
+//      for (z = 0; z < 32; z++) {
+//        setBlock(x, y, z, Block::STONE);
+//      }
+////      setBlock(x, y, 6, Block::BEDROCK);
+////      setBlock(x, y, 7, Block::OAK_LEAVES);
+////      setBlock(x, y, 8, Block::OAK_LEAVES);
+////      setBlock(x, y, 9, Block::OAK_LEAVES);
+////      setBlock(x, y, 10, Block::OAK_LEAVES);
+////      setBlock(x, y, 11, Block::OAK_LEAVES);
+////      setBlock(x, y, 12, Block::OAK_LEAVES);
+//    }
+//  }
 
 //  setBlock(4, 4, 4, Block::OAK_LEAVES);
 //  setBlock(4, 5, 4, Block::BIRCH_LEAVES);

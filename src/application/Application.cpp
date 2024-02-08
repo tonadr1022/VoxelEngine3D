@@ -7,20 +7,21 @@
 #include "../shaders/ShaderManager.hpp"
 #include "../resources/ResourceManager.hpp"
 
-Application *Application::instancePtr = nullptr;
+Application* Application::instancePtr = nullptr;
 
 Application::Application() : m_window(DEFAULT_WINDOW_WIDTH,
-                                    DEFAULT_WINDOW_HEIGHT,
-                                    "Voxel Engine") {
+                                      DEFAULT_WINDOW_HEIGHT,
+                                      "Voxel Engine") {
   assert(instancePtr == nullptr && "Only one instance of Application allowed");
   instancePtr = this;
-  m_window.lockCursor();
-  m_cursorLocked = true;
 
   ResourceManager::loadTextures();
   ShaderManager::compileShaders();
 
-  m_world = std::make_unique<World>(m_renderer, 2, "default.wld");
+  m_world = std::make_unique<World>(m_renderer, m_window, 2, "default.wld");
+  m_world->player.setFocus(true);
+  m_window.lockCursor();
+  m_window.centerCursor();
 }
 
 Application::~Application() {
@@ -43,19 +44,11 @@ void Application::run() {
 
     m_window.beginFrame();
 
-    m_world->update();
-
     double newTime = m_window.getTime();
     double frameTime = newTime - currentTime;
     currentTime = newTime;
 
-    m_world->player.perFrameUpdate();
-    while (frameTime > 0.0) {
-      auto deltaTime = static_cast<float>(std::min(frameTime, dt));
-      frameTime -= deltaTime;
-      time += deltaTime;
-      m_world->player.update(deltaTime);
-    }
+    m_world->update(frameTime);
 
     debugGui.beginFrame();
     m_renderer.renderWorld(*m_world);
@@ -63,15 +56,6 @@ void Application::run() {
     debugGui.endFrame();
 
     m_window.swapBuffers();
-
-    if (Keyboard::isPressedThisFrame(GLFW_KEY_ESCAPE)) {
-      m_cursorLocked = !m_cursorLocked;
-      if (m_cursorLocked) {
-        m_window.lockCursor();
-      } else {
-        m_window.unlockCursor();
-      }
-    }
   }
 }
 
@@ -102,18 +86,16 @@ void Application::onMouseButtonEvent(int button, int action, int mods) {
 }
 
 void Application::onCursorPositionEvent(double xpos, double ypos) {
-  static double lastX = xpos;
-  static double lastY = ypos;
+//  static double lastX = xpos;
+//  static double lastY = ypos;
+//
+//  double xOffset = xpos - lastX;
+//  double yOffset = lastY - ypos;
+//
+//  lastX = xpos;
+//  lastY = ypos;
 
-  double xOffset = xpos - lastX;
-  double yOffset = lastY - ypos;
-
-  lastX = xpos;
-  lastY = ypos;
-
-  if (m_cursorLocked) {
-    m_world->player.onCursorUpdate(xOffset, yOffset);
-  }
+  m_world->player.onCursorUpdate(xpos, ypos);
 }
 
 void Application::onResizeEvent(int width, int height) {

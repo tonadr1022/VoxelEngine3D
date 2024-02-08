@@ -11,18 +11,18 @@
 namespace ChunkAlg {
 extern void generateLightData(ChunkStackArray chunks);
 extern void generateSunLightData(ChunkStackArray &chunks);
-extern void generateTorchlightData(Chunk *chunk);
+extern void generateTorchlightDataThreaded(Chunk *chunk);
 
 extern void propagateSunLight(std::queue<SunLightNode> &sunLightQueue, ChunkStackArray &chunks);
-extern void propagateSunLight(std::queue<SunLightNode> &sunLightQueue, Chunk *chunk);
-extern void propagateTorchLight(std::queue<LightNode> &torchlightQueue, Chunk *chunk);
+extern void propagateSunLight(std::queue<SunLightNode> &sunLightQueue, Chunk *chunk, std::unordered_set<glm::ivec3> &chunkUpdateSet);
+extern void propagateTorchLight(std::queue<LightNode> &torchlightQueue, Chunk *chunk, std::unordered_set<glm::ivec3> &chunkUpdateSet);
 
 extern void unpropagateTorchLight(std::queue<LightNode> &torchLightPlacementQueue,
                                   std::queue<LightNode> &torchLightRemovalQueue,
-                                  Chunk *chunk);
+                                  Chunk *chunk, std::unordered_set<glm::ivec3> &chunkUpdateSet);
 extern void unpropagateSunLight(std::queue<SunLightNode> &sunLightPlacementQueue,
                                 std::queue<SunLightNode> &sunlightRemovalQueue,
-                                Chunk *chunk);
+                                Chunk *chunk, std::unordered_set<glm::ivec3> &chunkUpdateSet);
 
 };
 

@@ -44,7 +44,7 @@ void Renderer::renderWorld(const World &world) {
   }
 
   // render block break and outline if a block is being aimed at
-  if (static_cast<const glm::vec3>(world.getLastRayCastBlockPos()) != NULL_VECTOR) {
+  if (world.getLastRayCastBlockPos() != NULL_VECTOR) {
     renderBlockOutline(world.player.camera, world.getLastRayCastBlockPos());
     renderBlockBreak(world.player.camera, world.getLastRayCastBlockPos(), world.player.blockBreakStage);
   }

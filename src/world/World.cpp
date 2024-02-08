@@ -6,18 +6,20 @@
 #include "../Config.hpp"
 #include "block/BlockDB.hpp"
 #include "../input/Mouse.hpp"
-#include "../utils/Timer.hpp"
 #include "chunk/ChunkAlg.hpp"
 #include "../utils/JsonUtils.hpp"
 #include "../shaders/ShaderManager.hpp"
 #include "../input/Keyboard.hpp"
+#include "../application/Window.hpp"
 
-World::World(Renderer &renderer, int seed, const std::string &savePath)
+World::World(Renderer& renderer, Window& window, int seed, const std::string& savePath)
     : m_worldSave(savePath),
       m_renderer(renderer),
       m_center(INT_MAX),
       m_xyCenter(INT_MAX),
       m_numRunningThreads(0),
+      m_window(window),
+      player(this, window),
       m_numLoadingThreads(std::thread::hardware_concurrency()),
       m_seed(seed),
       m_terrainGenerator(seed, JsonUtils::openJson("resources/terrain/biomeData.json")) {
@@ -34,13 +36,13 @@ World::World(Renderer &renderer, int seed, const std::string &savePath)
 World::~World() {
   m_isRunning = false;
   m_conditionVariable.notify_all();
-  for (auto &thread : m_chunkLoadThreads) {
+  for (auto& thread : m_chunkLoadThreads) {
     thread.join();
   }
   saveData();
 }
 
-void World::update() {
+void World::update(double dt) {
   m_viewFrustum.updatePlanes(player.camera.getProjectionMatrix(), player.camera.getViewMatrix());
   m_centerChanged = false;
   m_centerChangedXY = false;
@@ -78,10 +80,9 @@ void World::update() {
     m_loadFlag = false;
   }
 
-  // Don't ray cast if out of bounds (debug/creative mode)
-  if (m_center.z >= 0 && m_center.z < CHUNKS_PER_STACK) {
-    castPlayerAimRay({player.camera.getPosition(), player.camera.getFront()});
-  }
+  Chunk* playerChunk = getChunkRawPtrOrNull(playerChunkPos);
+  player.update(dt);
+
 
 
   // don't need to sort transparent render vector every frame.
@@ -120,7 +121,7 @@ void World::updateChunkLoadList() {
   for (auto posIt = m_chunkTerrainLoadInfoMap.begin(); posIt != m_chunkTerrainLoadInfoMap.end();) {
     if (posIt->second->m_done) {
       // assume all exist in the chunk stack
-      Chunk *chunksInStack[CHUNKS_PER_STACK]{};
+      Chunk* chunksInStack[CHUNKS_PER_STACK]{};
       for (int z = 0; z < CHUNKS_PER_STACK; z++) {
         chunksInStack[z] = getChunkRawPtr({posIt->first.x, posIt->first.y, z});
       }
@@ -194,7 +195,7 @@ void World::updateChunkStructureGenList() {
 
     // check horizontal neighbors in valid state for every chunk in the stack
     for (glm::ivec3 pos = {pos2d.x, pos2d.y, 0}; pos.z < CHUNKS_PER_STACK; pos.z++) {
-      Chunk *currChunk = getChunkRawPtr(pos);
+      Chunk* currChunk = getChunkRawPtr(pos);
       for (auto neighborIndex : Chunk::HORIZONTAL_NEIGHBOR_INDICES) {
         ChunkState horizontalNeighborChunkState = currChunk->m_neighborChunks[neighborIndex]->chunkState;
         if (horizontalNeighborChunkState != ChunkState::TERRAIN_GENERATED
@@ -266,7 +267,7 @@ void World::updateChunkLightingList() {
 //    Chunk *chunks[CHUNKS_PER_STACK] = {nullptr};
     bool canLight = true;
     for (glm::ivec3 pos = {pos2d.x, pos2d.y, 0}; pos.z < CHUNKS_PER_STACK; pos.z++) {
-      Chunk *chunkToLight = getChunkRawPtr(pos);
+      Chunk* chunkToLight = getChunkRawPtr(pos);
       // check horizontal neighbors
 
       // should only calculate light when block placement is done for all neighbors, which includes
@@ -303,7 +304,7 @@ void World::updateChunkMeshList(bool updateEligibleVector) {
   // apply meshes and update map regardless of whether pos changed
   for (auto posIt = m_chunkMeshInfoMap.begin(); posIt != m_chunkMeshInfoMap.end();) {
     if (posIt->second->m_done) {
-      Chunk *chunk = getChunkRawPtr(posIt->first);
+      Chunk* chunk = getChunkRawPtr(posIt->first);
       posIt->second->applyMeshDataToMesh();
       if (!chunk->m_opaqueMesh.vertices.empty()) m_opaqueRenderSet.insert(posIt->first);
       if (!chunk->m_transparentMesh.vertices.empty()) m_transparentRenderSet.insert(posIt->first);
@@ -320,7 +321,7 @@ void World::updateChunkMeshList(bool updateEligibleVector) {
     for (pos.x = m_center.x - m_renderDistance; pos.x <= m_center.x + m_renderDistance; pos.x++) {
       for (pos.y = m_center.y - m_renderDistance; pos.y <= m_center.y + m_renderDistance; pos.y++) {
         for (pos.z = 0; pos.z < CHUNKS_PER_STACK; pos.z++) {
-          Chunk *chunk = getChunkRawPtr(pos);
+          Chunk* chunk = getChunkRawPtr(pos);
           if (chunk->chunkMeshState != ChunkMeshState::BUILT
               && chunk->chunkState == ChunkState::FULLY_GENERATED && !m_chunkMeshInfoMap.count(pos)) {
             m_chunkPositionsEligibleForMeshing.emplace_back(pos);
@@ -332,7 +333,7 @@ void World::updateChunkMeshList(bool updateEligibleVector) {
   }
 
   for (auto posIt = m_chunkPositionsEligibleForMeshing.begin(); posIt != m_chunkPositionsEligibleForMeshing.end();) {
-    Chunk *chunkToMesh = getChunkRawPtr(*posIt);
+    Chunk* chunkToMesh = getChunkRawPtr(*posIt);
     if (chunkToMesh->m_numNonAirBlocks == 0) {
       chunkToMesh->chunkMeshState = ChunkMeshState::BUILT;
       posIt++;
@@ -343,7 +344,7 @@ void World::updateChunkMeshList(bool updateEligibleVector) {
       continue;
     }
     bool canMesh = true;
-    for (auto &chunk : chunkToMesh->m_neighborChunks) {
+    for (auto& chunk : chunkToMesh->m_neighborChunks) {
       if (chunk && chunk->chunkState != ChunkState::FULLY_GENERATED) {
         canMesh = false;
         break;
@@ -430,18 +431,18 @@ void World::generateChunksWorker4() {
   }
 }
 
-void World::processBatchToLoad(std::queue<glm::ivec2> &batchToLoad) {
+void World::processBatchToLoad(std::queue<glm::ivec2>& batchToLoad) {
   while (!batchToLoad.empty()) {
-    const auto &pos = batchToLoad.front();
+    const auto& pos = batchToLoad.front();
     auto it = m_chunkTerrainLoadInfoMap.find(pos);
     if (it != m_chunkTerrainLoadInfoMap.end()) it->second->generateTerrainData();
     batchToLoad.pop();
   }
 }
 
-void World::processBatchToGenStructures(std::queue<glm::ivec2> &batchToGenStructures) {
+void World::processBatchToGenStructures(std::queue<glm::ivec2>& batchToGenStructures) {
   while (!batchToGenStructures.empty()) {
-    const auto &pos = batchToGenStructures.front();
+    const auto& pos = batchToGenStructures.front();
 
     // find instead of at
     auto heightMapIt = m_chunkHeightMapMap.find(pos);
@@ -459,7 +460,7 @@ void World::processBatchToGenStructures(std::queue<glm::ivec2> &batchToGenStruct
   }
 }
 
-void World::processBatchToLight(std::queue<glm::ivec2> &batchToLight) {
+void World::processBatchToLight(std::queue<glm::ivec2>& batchToLight) {
   while (!batchToLight.empty()) {
     const auto pos = batchToLight.front();
     auto it = m_chunkStacksToLightMap.find(pos);
@@ -470,9 +471,9 @@ void World::processBatchToLight(std::queue<glm::ivec2> &batchToLight) {
   }
 }
 
-void World::processBatchToMesh(std::queue<glm::ivec3> &batchToMesh) {
+void World::processBatchToMesh(std::queue<glm::ivec3>& batchToMesh) {
   while (!batchToMesh.empty()) {
-    const auto &pos = batchToMesh.front();
+    const auto& pos = batchToMesh.front();
     auto it = m_chunkMeshInfoMap.find(pos);
     if (it != m_chunkMeshInfoMap.end()) it->second->generateMeshData(m_useGreedyMeshing);
 //    m_chunkMeshInfoMap.at(pos)->generateMeshData();
@@ -484,90 +485,92 @@ bool compareVec3(glm::vec3 a, glm::vec3 b) {
   return a.x == b.x && a.y == b.y && a.z == b.z;
 }
 
-void World::castPlayerAimRay(Ray ray) {
-  glm::ivec3 lastAirBlockPos = NULL_VECTOR;
-  glm::vec3 rayStart = ray.origin;
-  glm::vec3 rayEnd = ray.origin;
-  glm::vec3 directionIncrement = glm::normalize(ray.direction) * 0.05f;
-  static std::chrono::steady_clock::time_point
-      lastTime = std::chrono::steady_clock::now();
-  static bool isFirstAction = true;
-
-  while (glm::distance(rayStart, rayEnd) < 10.0f) {
-    glm::ivec3 blockPos = {floor(rayEnd.x), floor(rayEnd.y), floor(rayEnd.z)};
-    try {
-      Block block = getBlockFromWorldPosition(blockPos);
-      if (block == Block::AIR) {
-        lastAirBlockPos = blockPos;
-        rayEnd += directionIncrement;
-        continue;
-      }
-    } catch (std::exception &e) {
-      std::cout << e.what() << std::endl;
-      return;
-    }
-
-    m_prevLastRayCastBlockPos = m_lastRayCastBlockPos;
-    m_lastRayCastBlockPos = blockPos;
-
-    // calculate block break stage. 10 stages. 0 is no break, 10 is fully broken
-    auto duration = std::chrono::steady_clock::now() - lastTime;
-    auto durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(
-        duration).count();
-    int breakStage = static_cast<int>(durationMS / (MINING_DELAY_MS / 10));
-    if (breakStage > 10) breakStage = 10;
-
-    // breaking block
-    if (Mouse::isPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-      // check if player switched block aimed at. if so, reset time and break stage and return
-      if (!compareVec3(m_lastRayCastBlockPos, m_prevLastRayCastBlockPos)) {
-        player.blockBreakStage = 0;
-        lastTime = std::chrono::steady_clock::now();
-        return;
-      }
-      if (std::chrono::steady_clock::now() - lastTime <
-          std::chrono::milliseconds(MINING_DELAY_MS)) {
-        player.blockBreakStage = breakStage;
-        return;
-      }
-
-      setBlockWithUpdate({blockPos.x, blockPos.y, blockPos.z},
-                         Block::AIR);
-      player.blockBreakStage = 0;
-      m_lastRayCastBlockPos = NULL_VECTOR;
-      isFirstAction = false;
-    }
-      // placing block
-    else if (Mouse::isPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-      if (!isFirstAction && std::chrono::steady_clock::now() - lastTime <
-          std::chrono::milliseconds(PLACING_DELAY_MS)) {
-        return;
-      }
-      setBlockWithUpdate(lastAirBlockPos,
-                         Block(player.inventory.getHeldItem()));
-      isFirstAction = false;
-
-      // not placing or breaking, reset
-    } else {
-      player.blockBreakStage = 0;
-      isFirstAction = true;
-    }
-
-    lastTime = std::chrono::steady_clock::now();
-    return;
-  }
-  lastTime = std::chrono::steady_clock::now();
-  player.blockBreakStage = 0;
-  m_lastRayCastBlockPos = NULL_VECTOR;
-}
+//void World::castPlayerAimRay(Ray ray) {
+//  glm::ivec3 lastAirBlockPos = NULL_VECTOR;
+//  glm::vec3 rayStart = ray.origin;
+//  glm::vec3 rayEnd = ray.origin;
+//  glm::vec3 directionIncrement = glm::normalize(ray.direction) * 0.05f;
+//  static std::chrono::steady_clock::time_point
+//      lastTime = std::chrono::steady_clock::now();
+//  static bool isFirstAction = true;
+//
+//  while (glm::distance(rayStart, rayEnd) < 10.0f) {
+//    glm::ivec3 blockPos = {floor(rayEnd.x), floor(rayEnd.y), floor(rayEnd.z)};
+//    try {
+//      Block block = getBlockFromWorldPosition(blockPos);
+//      if (block == Block::AIR) {
+//        lastAirBlockPos = blockPos;
+//        rayEnd += directionIncrement;
+//        continue;
+//      }
+//    } catch (std::exception& e) {
+//      std::cout << e.what() << std::endl;
+//      return;
+//    }
+//
+//    m_prevLastRayCastBlockPos = m_lastRayCastBlockPos;
+//    m_lastRayCastBlockPos = blockPos;
+//
+//    // calculate block break stage. 10 stages. 0 is no break, 10 is fully broken
+//    auto duration = std::chrono::steady_clock::now() - lastTime;
+//    auto durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(
+//        duration).count();
+//    int breakStage = static_cast<int>(durationMS / (MINING_DELAY_MS / 10));
+//    if (breakStage > 10) breakStage = 10;
+//
+//    // breaking block
+//    if (Mouse::isPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+//      // check if player switched block aimed at. if so, reset time and break stage and return
+//      if (!compareVec3(m_lastRayCastBlockPos, m_prevLastRayCastBlockPos)) {
+//        player.blockBreakStage = 0;
+//        lastTime = std::chrono::steady_clock::now();
+//        return;
+//      }
+//      if (std::chrono::steady_clock::now() - lastTime <
+//          std::chrono::milliseconds(MINING_DELAY_MS)) {
+//        player.blockBreakStage = breakStage;
+//        return;
+//      }
+//
+//      setBlockWithUpdate({blockPos.x, blockPos.y, blockPos.z},
+//                         Block::AIR);
+//      player.blockBreakStage = 0;
+//      m_lastRayCastBlockPos = NULL_VECTOR;
+//      isFirstAction = false;
+//    }
+//      // placing block
+//    else if (Mouse::isPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+//      if (!isFirstAction && std::chrono::steady_clock::now() - lastTime <
+//          std::chrono::milliseconds(PLACING_DELAY_MS)) {
+//        return;
+//      }
+//      setBlockWithUpdate(lastAirBlockPos,
+//                         Block(player.inventory.getHeldItem()));
+//      isFirstAction = false;
+//
+//      // not placing or breaking, reset
+//    } else {
+//      player.blockBreakStage = 0;
+//      isFirstAction = true;
+//    }
+//
+//    lastTime = std::chrono::steady_clock::now();
+//    return;
+//  }
+//  lastTime = std::chrono::steady_clock::now();
+//  player.blockBreakStage = 0;
+//  m_lastRayCastBlockPos = NULL_VECTOR;
+//}
 
 void World::renderDebugGui() {
-  ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO& io = ImGui::GetIO();
 
   ImGui::Begin("Debug");
 
   ImGui::Text("Framerate: %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate,
               io.Framerate);
+  auto cursorPos = m_window.getCursorPosition();
+  ImGui::Text("Cursor Pos: %.3f %.3f", cursorPos.x, cursorPos.y);
 
   int renderDistance = m_renderDistance;
   if (ImGui::SliderInt("Render Distance", &renderDistance, 1, 16)) {
@@ -586,15 +589,12 @@ void World::renderDebugGui() {
 //  if (ImGui::Checkbox("should break", &shouldb)){
 //    m_shouldBreak = !m_shouldBreak;
 //  }
-ImGui::Checkbox("should break", &m_shouldBreak);
+  ImGui::Checkbox("should break", &m_shouldBreak);
 
   bool useWireFrame = Config::useWireFrame;
   if (ImGui::Checkbox("WireFrame", &useWireFrame)) {
     Config::useWireFrame = useWireFrame;
   }
-
-  ImGui::Text("lastRayCastBlockPos: %d, %d, %d", m_lastRayCastBlockPos.x,
-              m_lastRayCastBlockPos.y, m_lastRayCastBlockPos.z);
 
   ImGui::SliderFloat("Light Level: %.2f", &m_worldLightLevel, 0.0, 1.0);
 
@@ -632,9 +632,9 @@ void World::saveData() {
   m_worldSave.saveData();
 }
 
-Block World::getBlockFromWorldPosition(const glm::ivec3 &position) const {
+Block World::getBlockFromWorldPosition(const glm::ivec3& position) const {
   auto chunkPos = chunkPosFromWorldPos(position.x, position.y, position.z);
-  Chunk *chunk = getChunkRawPtr(chunkPos);
+  Chunk* chunk = getChunkRawPtr(chunkPos);
   int chunkX = Utils::positiveModulo(position.x, CHUNK_SIZE);
   int chunkY = Utils::positiveModulo(position.y, CHUNK_SIZE);
   int chunkZ = Utils::positiveModulo(position.z, CHUNK_SIZE);
@@ -650,11 +650,12 @@ void World::setRenderDistance(int renderDistance) {
   m_loadFlag = true;
 }
 
-void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
+void World::setBlockWithUpdate(const glm::ivec3& worldPos, Block block) {
   bool lightChanged = false;
   auto chunkPos = chunkPosFromWorldPos(worldPos);
   auto blockPosInChunk = worldPos - chunkPos * CHUNK_SIZE;
-  Chunk *chunk = getChunkRawPtr(chunkPos);
+  Chunk* chunk = getChunkRawPtrOrNull(chunkPos);
+  if (!chunk) return;
 
   Block oldBlock = chunk->getBlock(blockPosInChunk);
   uint8_t oldSunlightLevel = chunk->getSunLightLevel(blockPosInChunk);
@@ -702,24 +703,17 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
     }
   }
 
-  ChunkAlg::unpropagateTorchLight(m_torchLightPlacementQueue, m_torchlightRemovalQueue, chunk);
-  ChunkAlg::unpropagateSunLight(m_sunlightPlacementQueue, m_sunlightRemovalQueue, chunk);
-  std::cout << "\nbefore\n";
-  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,24})) << ",  5 5 24"<< std::endl;
-  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,25})) << ",  5 5 25"<< std::endl;
-  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,26})) << ",  5 5 26"<< std::endl;
-  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,27})) << ",  5 5 27"<< std::endl;
+  ChunkAlg::unpropagateTorchLight(m_torchLightPlacementQueue,
+                                  m_torchlightRemovalQueue,
+                                  chunk,
+                                  m_chunkDirectlyUpdateSet);
+  ChunkAlg::unpropagateSunLight(m_sunlightPlacementQueue, m_sunlightRemovalQueue, chunk, m_chunkDirectlyUpdateSet);
   chunk->setBlock(blockPosInChunk, block);
-  ChunkAlg::propagateSunLight(m_sunlightPlacementQueue, chunk);
-  std::cout << "\n\n";
-  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,24})) << ",  5 5 24"<< std::endl;
-  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,25})) << ",  5 5 25"<< std::endl;
-  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,26})) << ",  5 5 26"<< std::endl;
-  std::cout << static_cast<int>(chunk->getSunLightLevel({5,5,27})) << ",  5 5 27"<< std::endl;
-  ChunkAlg::propagateTorchLight(m_torchLightPlacementQueue, chunk);
+  ChunkAlg::propagateSunLight(m_sunlightPlacementQueue, chunk, m_chunkDirectlyUpdateSet);
+  ChunkAlg::propagateTorchLight(m_torchLightPlacementQueue, chunk, m_chunkDirectlyUpdateSet);
 
   if (lightChanged) {
-    for (const auto &c : chunk->m_neighborChunks) {
+    for (const auto& c : chunk->m_neighborChunks) {
       if (c->m_flagForRemesh) {
         m_chunkDirectlyUpdateSet.insert(c->m_pos);
       }
@@ -732,8 +726,8 @@ void World::setBlockWithUpdate(const glm::ivec3 &worldPos, Block block) {
 void World::processDirectChunkUpdates() {
   if (m_chunkDirectlyUpdateSet.empty()) return;
 
-  for (const glm::ivec3 &pos : m_chunkDirectlyUpdateSet) {
-    Chunk *chunk = getChunkRawPtrOrNull(pos);
+  for (const glm::ivec3& pos : m_chunkDirectlyUpdateSet) {
+    Chunk* chunk = getChunkRawPtrOrNull(pos);
     if (!chunk || chunk->chunkMeshState != ChunkMeshState::BUILT) {
       m_chunkDirectlyUpdateSet.erase(pos);
       return;
@@ -759,7 +753,7 @@ void World::processDirectChunkUpdates() {
     chunk->m_opaqueMesh.needsUpdate = true;
     chunk->m_transparentMesh.needsUpdate = true;
     chunk->m_flagForRemesh = false;
-    if (chunk->m_numNonAirBlocks > 0 ){
+    if (chunk->m_numNonAirBlocks > 0) {
       m_opaqueRenderSet.insert(chunk->m_pos);
     }
   }
@@ -771,9 +765,9 @@ void World::sortTransparentRenderVector() {
   std::sort(m_transparentRenderVector.begin(), m_transparentRenderVector.end(), rcmpVec3);
 }
 
-void World::getNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const {
+void World::getNeighborChunks(Chunk* (& chunks)[27], const glm::ivec3& pos) const {
   int index = 0;
-  for (auto &neighborOffset : NEIGHBOR_ARRAY_OFFSETS) {
+  for (auto& neighborOffset : NEIGHBOR_ARRAY_OFFSETS) {
     auto neighborPos = pos + neighborOffset;
     if (neighborPos.z < 0 || neighborPos.z >= CHUNKS_PER_STACK) {
       chunks[index++] = nullptr;
@@ -783,9 +777,9 @@ void World::getNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const
   }
 }
 
-void World::addRelatedChunks(const glm::ivec3 &blockPosInChunk,
-                             const glm::ivec3 &chunkPos,
-                             std::unordered_set<glm::ivec3> &chunkSet) {
+void World::addRelatedChunks(const glm::ivec3& blockPosInChunk,
+                             const glm::ivec3& chunkPos,
+                             std::unordered_set<glm::ivec3>& chunkSet) {
   glm::ivec3 chunksToAdd[8]; // at most 8 chunks are related to a block
   glm::ivec3 temp; // temp variable to store the chunk to add (calculate offset from chunk pos)
   int numChunksToAdd = 1; // always add the chunk the block is in
@@ -821,9 +815,9 @@ void World::addRelatedChunks(const glm::ivec3 &blockPosInChunk,
 }
 
 void World::addNeighborChunksToChunk(glm::ivec3 chunkPos) {
-  Chunk *chunks[27] = {nullptr};
+  Chunk* chunks[27] = {nullptr};
   getNeighborChunks(chunks, chunkPos);
-  Chunk *chunk = getChunkRawPtr(chunkPos);
+  Chunk* chunk = getChunkRawPtr(chunkPos);
 //  std::copy(std::begin(chunks), std::end(chunks), chunk->m_neighborChunks);
   for (int i = 0; i < 27; i++) {
     chunk->m_neighborChunks[i] = chunks[i];

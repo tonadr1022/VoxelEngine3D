@@ -39,12 +39,12 @@ struct LightNode {
 
 struct SunLightNode {
 //  glm::ivec3 pos;
-  uint8_t x;
-  uint8_t y;
+  int16_t x;
+  int16_t y;
   uint16_t z;
   uint8_t lightLevel;
 
-  SunLightNode(uint8_t px, uint8_t py, uint8_t pz, uint8_t pLightLevel)
+  SunLightNode(int16_t px, int16_t py, uint8_t pz, uint8_t pLightLevel)
       : x(px), y(py), z(pz), lightLevel(pLightLevel) {}
 };
 
@@ -160,7 +160,9 @@ class Chunk {
   void fillSunlightWithZ(int z, uint8_t lightLevel, bool AtOrAbove);
 
   [[nodiscard]] inline uint8_t getSunLightLevel(const glm::ivec3 &pos) const {
-    if (!m_sunlightLevelsPtr) return 15;
+    if (!m_sunlightLevelsPtr) {
+      return 0;
+    }
     return m_sunlightLevelsPtr.get()[XYZ(pos)];
   }
 

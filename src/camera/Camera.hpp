@@ -13,7 +13,7 @@ class Camera {
  public:
   explicit Camera();
 
-  void onCursorUpdate(double xOffset, double yOffset);
+  void onCursorUpdate(float xOffset, float yOffset);
   void setPosition(glm::vec3 position);
   void updateViewMatrix();
   void updateProjectionMatrix(float aspectRatio);
@@ -33,7 +33,7 @@ class Camera {
   constexpr static float NEAR_PLANE = 0.1f;
   constexpr static glm::vec3 globalUp = glm::vec3(0.0f, 0.0f, 1.0f);
 
-  glm::vec3 m_position = glm::vec3(0.0f, 0.0f, 0.0f);
+  glm::vec3 m_position = glm::vec3(0.0f, 0.0f, 100.0f);
 
   float m_yaw_deg = -90.0f;
   float m_pitch_deg = 0.0f;

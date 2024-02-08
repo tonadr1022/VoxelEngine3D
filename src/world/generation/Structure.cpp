@@ -26,11 +26,12 @@ std::vector<BlockAndPos> Tree::build() {
     for (int y = -radius; y < radius; y++) {
       for (int x = -radius; x < radius; x++) {
         if (x * x + y * y + z * z < radius * radius) {
-          blocks.push_back({{x, y, z + NORMAL_HEIGHT_MAX}, leafType});
+          blocks.push_back({{x, y, z + NORMAL_HEIGHT_MAX}, Block::COAL_ORE});
         }
       }
     }
   }
+
 //
 //  int col = rand() % 4;
 //  Block glowstoneColor;

@@ -20,6 +20,7 @@
 #include "../AppConstants.hpp"
 
 class Chunk;
+class Window;
 
 using ChunkMap = std::unordered_map<glm::ivec3, Scope<Chunk>>;
 using ChunkStackArray = std::array<Chunk *, CHUNKS_PER_STACK>;
@@ -58,14 +59,15 @@ static constexpr std::array<glm::ivec3, 27> NEIGHBOR_ARRAY_OFFSETS =
 
 class World {
  public:
-  explicit World(Renderer &renderer, int seed, const std::string &savePath);
+  explicit World(Renderer &renderer, Window &window, int seed, const std::string &savePath);
   ~World();
 
-  void update();
+  void update(double dt);
   void renderDebugGui();
   void reload();
   inline const std::unordered_set<glm::ivec3> &getOpaqueRenderSet() const { return m_opaqueRenderSet; }
   inline const std::vector<glm::ivec3> &getTransparentRenderVector() const { return m_transparentRenderVector; }
+  Window &m_window;
   Player player;
 
   inline Chunk *getChunkRawPtr(const glm::ivec3 &pos) const {
@@ -76,14 +78,21 @@ class World {
     if (!chunkExists(pos)) return nullptr;
     return m_chunkMap.at(pos).get();
   }
-  inline const glm::ivec3 &getLastRayCastBlockPos() const { return m_lastRayCastBlockPos; }
+
+  inline const glm::ivec3 &getLastRayCastBlockPos() const { return player.m_blockAimPos; }
 
   [[nodiscard]] inline float getWorldLightLevel() const { return m_worldLightLevel; }
 
   ViewFrustum m_viewFrustum;
 
- private:
+  static void addRelatedChunks(const glm::ivec3 &blockPosInChunk,
+                               const glm::ivec3 &chunkPos,
+                               std::unordered_set<glm::ivec3> &chunkSet);
+
   Block getBlockFromWorldPosition(const glm::ivec3 &position) const;
+  void setBlockWithUpdate(const glm::ivec3 &worldPos, Block block);
+
+ private:
 
   void setRenderDistance(int renderDistance);
 
@@ -103,10 +112,9 @@ class World {
     return m_chunkMap.find(pos) != m_chunkMap.end();
   }
 
-  void castPlayerAimRay(Ray ray);
-  void setBlockWithUpdate(const glm::ivec3 &worldPos, Block block);
 
-//  void setTorchLightWithUpdate(const glm::ivec3 &worldPos, Block block);
+  void castPlayerAimRay(Ray ray);
+
   void saveData();
 
   void unloadChunks();
@@ -119,9 +127,6 @@ class World {
   void processDirectChunkUpdates();
   void getNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const;
 
-  static void addRelatedChunks(const glm::ivec3 &blockPosInChunk,
-                               const glm::ivec3 &chunkPos,
-                               std::unordered_set<glm::ivec3> &chunkSet);
   void addNeighborChunksToChunk(glm::ivec3 chunkPos);
 
   void generateChunksWorker4();
@@ -130,7 +135,7 @@ class World {
   void processBatchToLight(std::queue<glm::ivec2> &batchToLight);
   void processBatchToMesh(std::queue<glm::ivec3> &batchToMesh);
 
-  int m_renderDistance = 8;
+  int m_renderDistance = 2;
   int m_structureLoadDistance = m_renderDistance + 1;
   int m_lightingLoadDistance = m_renderDistance + 2;
   int m_loadDistance = m_renderDistance + 3;
@@ -145,17 +150,6 @@ class World {
   int m_seed;
   bool m_useGreedyMeshing = true;
   bool m_shouldBreak = false;
-  glm::ivec3 m_lastRayCastBlockPos = NULL_VECTOR;
-  glm::ivec3 m_prevLastRayCastBlockPos = NULL_VECTOR;
-
-  static inline bool checkIfAllAreFullyGenerated(Chunk *chunk) {
-    for (auto &c : chunk->m_neighborChunks) {
-      if (c && c->chunkState != ChunkState::FULLY_GENERATED) {
-        return false;
-      }
-    }
-    return true;
-  }
 
   ChunkMap m_chunkMap;
   Renderer m_renderer;
