@@ -55,6 +55,7 @@ class Player {
   float m_placingDelay = 0.1f;
   float m_rayCastRadius = 10.0f;
   float m_movementSpeed = 100.0f;
+  int m_placeRadius;
 };
 
 #endif //VOXEL_ENGINE_PLAYER_HPP

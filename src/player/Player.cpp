@@ -125,6 +125,7 @@ void Player::renderDebugGui() {
   ImGui::Text("Block ID: %d", static_cast<int>(inventory.getHeldItem()));
 
   ImGui::SliderFloat("Movement Speed", &m_movementSpeed, 1.0f, 300.0f);
+  ImGui::SliderInt("PlaceRadius %i", &m_placeRadius, 1, 20);
 }
 
 void Player::onCursorUpdate(double xOffset, double yOffset) {

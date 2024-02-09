@@ -55,6 +55,12 @@ void World::update(double dt) {
   if (Keyboard::isPressed(GLFW_KEY_N)) {
     reload();
   }
+  if (Keyboard::isPressedThisFrame(GLFW_KEY_Y)) {
+    m_chunkMapDebugZLevel = std::min(m_chunkMapDebugZLevel + 1, 7);
+  }
+  if (Keyboard::isPressedThisFrame(GLFW_KEY_T)) {
+    m_chunkMapDebugZLevel = std::max(m_chunkMapDebugZLevel - 1, 0);
+  }
 
   auto playerChunkPos = player.getChunkPosition();
   if (playerChunkPos != m_center) {
@@ -108,7 +114,6 @@ void World::update(double dt) {
   updateChunkLightingList();
   m_chunkMapRenderer.genBuffer(m_chunkMapColors, m_loadDistance);
 
-
   if (i % 4 == 0) {
     updateChunkMeshList(true);
     i = 0;
@@ -143,16 +148,17 @@ void World::updateChunkLoadList() {
   m_chunkMapColors.clear();
   for (pos.x = m_center.x - m_loadDistance; pos.x <= m_center.x + m_loadDistance; pos.x++) {
     for (pos.y = m_center.y - m_loadDistance; pos.y <= m_center.y + m_loadDistance; pos.y++) {
-      Chunk *currChunk = getChunkRawPtr(pos);
+      Chunk* currChunk = getChunkRawPtr(pos);
       if (currChunk->chunkState == ChunkState::UNGENERATED && !m_chunkTerrainLoadInfoMap.count(pos)) {
         m_chunksToLoadVector.emplace_back(pos);
         m_chunkTerrainLoadInfoMap.emplace(pos, std::make_unique<ChunkTerrainInfo>(pos, m_terrainGenerator));
       }
 
+      Chunk* debugChunk = getChunkRawPtrOrNull({pos.x, pos.y, m_chunkMapDebugZLevel});
       if (pos.x == m_center.x && pos.y == m_center.y) {
         m_chunkMapColors.push_back(5);
       } else {
-        m_chunkMapColors.push_back(static_cast<int>(currChunk->chunkState));
+        m_chunkMapColors.push_back(static_cast<int>(debugChunk->chunkState));
       }
     }
     std::sort(m_chunksToLoadVector.begin(), m_chunksToLoadVector.end(), rcmpVec2);
@@ -177,7 +183,7 @@ void World::updateChunkStructureGenList() {
   }
 
   // adding possible chunks to generate structures for
-  if (m_centerChangedXY || m_opaqueRenderSet.empty()) {
+//  if (m_centerChangedXY || m_opaqueRenderSet.empty()) {
     m_chunksInStructureGenRangeVectorXY.clear();
     glm::ivec3 pos;
     for (pos.x = m_center.x - m_structureLoadDistance; pos.x <= m_center.x + m_structureLoadDistance; pos.x++) {
@@ -196,7 +202,7 @@ void World::updateChunkStructureGenList() {
       }
     }
     std::sort(m_chunksInStructureGenRangeVectorXY.begin(), m_chunksInStructureGenRangeVectorXY.end(), rcmpVec2);
-  }
+//  }
 
   for (auto posIt = m_chunksInStructureGenRangeVectorXY.begin(); posIt != m_chunksInStructureGenRangeVectorXY.end();) {
     bool canGenStructures = true;
@@ -249,7 +255,7 @@ void World::updateChunkLightingList() {
     }
   }
 
-  if (m_centerChangedXY || m_opaqueRenderSet.empty()) {
+//  if (m_centerChangedXY || m_opaqueRenderSet.empty()) {
     m_chunkStackPositionsEligibleForLighting.clear();
     glm::ivec3 pos;
     for (pos.x = m_center.x - m_lightingLoadDistance; pos.x <= m_center.x + m_lightingLoadDistance; pos.x++) {
@@ -257,7 +263,10 @@ void World::updateChunkLightingList() {
         if (m_chunkStacksToLightMap.count({pos.x, pos.y})) continue;
         bool canLight = true;
         for (pos.z = 0; pos.z < CHUNKS_PER_STACK; pos.z++) {
-          if (m_chunkMap.at(pos)->chunkState != ChunkState::STRUCTURES_GENERATED) {
+          Chunk *chunk = getChunkRawPtr(pos);
+          if (chunk->chunkState != ChunkState::STRUCTURES_GENERATED) {
+            if (chunk->chunkState != ChunkState::FULLY_GENERATED && pos.x == m_center.x && pos.y == m_center.y) {
+            }
             canLight = false;
             break;
           }
@@ -268,7 +277,7 @@ void World::updateChunkLightingList() {
     std::sort(m_chunkStackPositionsEligibleForLighting.begin(),
               m_chunkStackPositionsEligibleForLighting.end(),
               rcmpVec2);
-  }
+//  }
 
   for (auto posIt = m_chunkStackPositionsEligibleForLighting.begin();
        posIt != m_chunkStackPositionsEligibleForLighting.end();) {
@@ -286,6 +295,9 @@ void World::updateChunkLightingList() {
         ChunkState horizontalNeighborChunkState = chunkToLight->m_neighborChunks[neighborIndex]->chunkState;
         if (horizontalNeighborChunkState != ChunkState::STRUCTURES_GENERATED
             && horizontalNeighborChunkState != ChunkState::FULLY_GENERATED) {
+          if (pos2d.x == m_center.x && pos2d.y == m_center.y) {
+            int asdf = 5;
+          }
           canLight = false;
           break;
         }
@@ -302,7 +314,6 @@ void World::updateChunkLightingList() {
                                         pos2d,
                                         rcmpVec2);
       m_chunkStackPositionsToLightList.insert(insertPos, pos2d);
-//      std::cout << pos2d.x << " " << pos2d.y << std::endl;
       posIt = m_chunkStackPositionsEligibleForLighting.erase(posIt);
     } else {
       posIt++;
@@ -510,15 +521,14 @@ void World::renderDebugGui() {
     setRenderDistance(renderDistance);
   }
 
-
   float invertedValue = 100.0f / m_chunkMapDebugScale;
   ImGui::SliderFloat("Chunk Debug Scale", &invertedValue, 1.3f, 6.0f);
   m_chunkMapDebugScale = 100.0f / invertedValue;
+  ImGui::Text("Debug Map Z Level: %i", m_chunkMapDebugZLevel);
 
   bool useAmbientOcclusion = Config::getUseAmbientOcclusion();
   if (ImGui::Checkbox("Ambient Occlusion", &useAmbientOcclusion)) {
     Config::setUseAmbientOcclusion(useAmbientOcclusion);
-//    m_renderer.updateShaderUniforms();
   }
 
   ImGui::Checkbox("Greedy Meshing", &m_useGreedyMeshing);

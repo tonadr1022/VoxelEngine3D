@@ -134,7 +134,7 @@ class World {
   void processBatchToLight(std::queue<glm::ivec2> &batchToLight);
   void processBatchToMesh(std::queue<glm::ivec3> &batchToMesh);
 
-  int m_renderDistance = 3;
+  int m_renderDistance = 8;
   int m_structureLoadDistance = m_renderDistance + 1;
   int m_lightingLoadDistance = m_renderDistance + 2;
   int m_loadDistance = m_renderDistance + 3;
@@ -150,6 +150,7 @@ class World {
   bool m_useGreedyMeshing = true;
   bool m_shouldBreak = false;
   float m_chunkMapDebugScale = 50.0f;
+  int m_chunkMapDebugZLevel = 0;
 
   ChunkMap m_chunkMap;
   Renderer m_renderer;
