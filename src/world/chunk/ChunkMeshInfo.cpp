@@ -5,6 +5,7 @@
 #include "ChunkMeshInfo.hpp"
 #include "Chunk.hpp"
 #include "ChunkMeshBuilder.hpp"
+#include "ChunkMeshBuilderLod.hpp"
 
 ChunkMeshInfo::ChunkMeshInfo(Chunk *chunk) : m_chunk(chunk) {
 }
@@ -20,6 +21,11 @@ void ChunkMeshInfo::generateMeshData(bool greedy = true) {
   } else {
     builder.constructMesh(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices);
   }
+  m_done = true;
+}
+
+void ChunkMeshInfo::generateLODMeshData(int lodScale) {
+  ChunkMeshBuilderLod::constructMeshGreedyLOD(m_opaqueVertices, m_opaqueIndices, m_transparentVertices, m_transparentIndices, m_chunk, lodScale);
   m_done = true;
 }
 

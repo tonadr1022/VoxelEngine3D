@@ -9,8 +9,8 @@
 
 std::unordered_map<std::string, unsigned int> ResourceManager::textures;
 
-void ResourceManager::makeTexture(const std::string &texturePath,
-                                  const std::string &textureName,
+void ResourceManager::makeTexture(const std::string& texturePath,
+                                  const std::string& textureName,
                                   bool flipVertically) {
   Image image = loadImage(texturePath, flipVertically);
   unsigned int texture;
@@ -31,7 +31,7 @@ void ResourceManager::makeTexture(const std::string &texturePath,
   glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-unsigned int ResourceManager::getTexture(const std::string &textureName) {
+unsigned int ResourceManager::getTexture(const std::string& textureName) {
   if (!ResourceManager::texturesLoaded) ResourceManager::loadTextures();
   auto it = textures.find(textureName);
   if (it != textures.end()) {
@@ -42,34 +42,31 @@ unsigned int ResourceManager::getTexture(const std::string &textureName) {
 
 std::unordered_map<std::string, int> ResourceManager::filenameToTexIndex;
 
-std::vector<Image> ResourceManager::loadBlockImages() {
-  std::vector<Image> images;
+void ResourceManager::loadBlockImages(std::vector<Image> &result) {
   int texIndex = 0;
-  for (const auto &entry : std::filesystem::directory_iterator(TEXTURE_PATH(block))) {
+  for (const auto& entry : std::filesystem::directory_iterator(TEXTURE_PATH(block))) {
     if (std::filesystem::is_regular_file(entry.path()) && entry.path().extension() == ".png") {
       Image image = loadImage(entry.path().string(), true);
       filenameToTexIndex[entry.path().stem().string()] = texIndex;
-      images.push_back(image);
-      std::cout << texIndex << " " << entry.path().stem().string() << std::endl;
+//      filenameToAvgColor[entry.path().stem().string()] = image.avgColor;
+      result.push_back(image);
+//      std::cout << texIndex << " " << entry.path().stem().string() << std::endl;
       texIndex++;
     }
   }
-
-  return images;
 }
 
-std::vector<Image> ResourceManager::loadBlockBreakImages() {
-  std::vector<Image> subImages;
+void ResourceManager::loadBlockBreakImages(std::vector<Image>& result) {
+
   Image fullImage = loadImage(TEXTURE_PATH(block_break.png), true);
   for (int i = 0; i < 11; i++) {
     uint32_t offsetX = i * 32;
-    subImages.emplace_back(fullImage.subImage({offsetX, 0}, {32, 32}));
+    result.emplace_back(fullImage.subImage({offsetX, 0}, {32, 32}));
   }
-  return subImages;
 }
 
-void ResourceManager::makeTexture2dArray(std::vector<Image> &images,
-                                         const std::string &textureName, int width, int height) {
+void ResourceManager::makeTexture2dArray(std::vector<Image>& images,
+                                         const std::string& textureName, int width, int height) {
 
   uint32_t texture;
   glActiveTexture(GL_TEXTURE0);
@@ -100,26 +97,47 @@ void ResourceManager::makeTexture2dArray(std::vector<Image> &images,
   glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }
 
-Image ResourceManager::loadImage(const std::filesystem::path &imagePath,
+Image ResourceManager::loadImage(const std::filesystem::path& imagePath,
                                  bool flipVertically) {
   int width, height, nrChannels;
   if (flipVertically)
     stbi_set_flip_vertically_on_load(true);
-  unsigned char *data = stbi_load(imagePath.string().c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
+  unsigned char* data = stbi_load(imagePath.string().c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
   if (!data) {
     throw std::runtime_error("Failed to load texture: " + imagePath.string());
   }
 
-  Image image{width, height, std::vector<uint8_t>(data, data + width * height * 4)};
+  // AVG COLOR OF IMAGE
+  int numPixels = width * height;
+  int totalR = 0, totalG = 0, totalB = 0;
+  int noAlphaCount = 0;
+  int sampleCount = 0;
+  for (int i = 0; i < numPixels; i += 4) {
+    if (data[i * 4 + 3] == 0) {
+      noAlphaCount++;
+      continue;
+    }
+    sampleCount++;
+    totalR += data[i * 4];
+    totalG += data[i * 4 + 1];
+    totalB += data[i * 4 + 2];
+  }
+  uint8_t avgR = totalR / sampleCount;
+  uint8_t avgG = totalG / sampleCount;
+  uint8_t avgB = totalB / sampleCount;
+
+  Image image{width, height, glm::ivec3(avgR, avgG, avgB), std::vector<uint8_t>(data, data + width * height * 4)};
   stbi_image_free(data);
   return image;
 }
 
 void ResourceManager::loadTextures() {
   if (texturesLoaded) return;
-  std::vector<Image> blockImages = loadBlockImages();
+  std::vector<Image> blockImages;
+  loadBlockImages(blockImages);
   makeTexture2dArray(blockImages, "texture_atlas", 16, 16);
-  std::vector<Image> blockBreakImages = loadBlockBreakImages();
+  std::vector<Image> blockBreakImages;
+  loadBlockBreakImages(blockBreakImages);
   makeTexture2dArray(blockBreakImages, "block_break_array", 32, 32);
   texturesLoaded = true;
 }

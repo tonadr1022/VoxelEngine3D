@@ -5,6 +5,7 @@
 #include "ChunkMeshBuilder.hpp"
 #include "../block/BlockDB.hpp"
 #include "Chunk.hpp"
+#include "ChunkAlg.hpp"
 
 namespace {
 
@@ -159,17 +160,17 @@ constexpr uint8_t LIGHTING_LOOKUP[6][4][3] = {
     {{11, 2, 1}, {9, 0, 1}, {9, 18, 19}, {11, 20, 19}},
 };
 
-ChunkMeshBuilder::ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE],
-                                   uint16_t (&lightLevels)[CHUNK_MESH_INFO_SIZE],
-                                   uint8_t (&sunlightLevels)[CHUNK_MESH_INFO_SIZE],
-                                   const glm::ivec3 &chunkWorldPos) : m_blocks(
+ChunkMeshBuilder::ChunkMeshBuilder(Block (& blocks)[CHUNK_MESH_INFO_SIZE],
+                                   uint16_t (& lightLevels)[CHUNK_MESH_INFO_SIZE],
+                                   uint8_t (& sunlightLevels)[CHUNK_MESH_INFO_SIZE],
+                                   const glm::ivec3& chunkWorldPos) : m_blocks(
     blocks), m_chunkWorldPos(chunkWorldPos), m_lightLevels(lightLevels), m_sunlightLevels(sunlightLevels) {
 }
 
-void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
-                                     std::vector<unsigned int> &opaqueIndices,
-                                     std::vector<ChunkVertex> &transparentVertices,
-                                     std::vector<unsigned int> &transparentIndices) {
+void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex>& opaqueVertices,
+                                     std::vector<unsigned int>& opaqueIndices,
+                                     std::vector<ChunkVertex>& transparentVertices,
+                                     std::vector<unsigned int>& transparentIndices) {
   auto opaqueVertices_ = new std::vector<ChunkVertex>();
   auto opaqueIndices_ = new std::vector<unsigned int>();
   auto transparentVertices_ = new std::vector<ChunkVertex>();
@@ -193,7 +194,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
     if (block == Block::AIR) continue;
 //    int blockPos[3] = {x, y, z};
     glm::ivec3 blockPos = {x, y, z};
-    BlockData &blockData = BlockDB::getBlockData(block);
+    BlockData& blockData = BlockDB::getBlockData(block);
 
     // 1, 0, 0
     // -1, 0, 0
@@ -214,7 +215,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
       const Block adjacentBlock = m_blocks[adjBlockIndex];
       if (adjacentBlock == block) continue;
 
-      const BlockData &adjBlockData = BlockDB::getBlockData(adjacentBlock);
+      const BlockData& adjBlockData = BlockDB::getBlockData(adjacentBlock);
       if (!adjBlockData.isTransparent) continue;
 
       const uint16_t faceLightLevel = m_lightLevels[adjBlockIndex];
@@ -224,8 +225,8 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
       const int texIndex = blockData.texIndex[faceIndex];
       const int faceVerticesIndex = faceIndex * 20;
 
-      auto &vertices = blockData.isTransparent ? transparentVertices_ : opaqueVertices_;
-      auto &indices = blockData.isTransparent ? transparentIndices_ : opaqueIndices_;
+      auto& vertices = blockData.isTransparent ? transparentVertices_ : opaqueVertices_;
+      auto& indices = blockData.isTransparent ? transparentIndices_ : opaqueIndices_;
 
       const auto baseVertexIndex = vertices->size();
       uint32_t vertexData2 = faceLightLevel | ((sunlightLevel) << 12) | ((texIndex & 0xFFF) << 16);
@@ -276,15 +277,15 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
   delete transparentIndices_;
 }
 
-void ChunkMeshBuilder::setOcclusionLevels(const glm::ivec3 &blockPosInChunk,
-                                          int faceIndex, int (&levels)[4]) {
+void ChunkMeshBuilder::setOcclusionLevels(const glm::ivec3& blockPosInChunk,
+                                          int faceIndex, int (& levels)[4]) {
   // source:
   // https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
 
 
-  auto &faceLightingAdjacencies = lightingAdjacencies[static_cast<int>(faceIndex)];
+  auto& faceLightingAdjacencies = lightingAdjacencies[static_cast<int>(faceIndex)];
   for (int faceVertexIndex = 0; faceVertexIndex < 4; faceVertexIndex++) {
-    auto &faceLightingAdjacency = faceLightingAdjacencies[faceVertexIndex];
+    auto& faceLightingAdjacency = faceLightingAdjacencies[faceVertexIndex];
     bool side1IsSolid = false;
     bool side2IsSolid = false;
     bool cornerIsSolid = false;
@@ -312,23 +313,22 @@ void ChunkMeshBuilder::setOcclusionLevels(const glm::ivec3 &blockPosInChunk,
   }
 }
 
-void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVertices,
-                                           std::vector<unsigned int> &opaqueIndices,
-                                           std::vector<ChunkVertex> &transparentVertices,
-                                           std::vector<unsigned int> &transparentIndices) {
+
+void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex>& opaqueVertices,
+                                           std::vector<unsigned int>& opaqueIndices,
+                                           std::vector<ChunkVertex>& transparentVertices,
+                                           std::vector<unsigned int>& transparentIndices) {
 //  static float maxTime = 0;
 //  static int count = 0;
 //  auto startTime = std::chrono::high_resolution_clock::now();
 
   // get face data
-//  FaceInfo faceInfo[CHUNK_VOLUME][6] = {}; // need to initialize in case skip faces, which will be left as 0
   auto faceInfo = new FaceInfo[CHUNK_VOLUME][6];
 
   Block blockNeighbors[27];
   uint8_t sunlightNeighbors[27];
   uint16_t torchlightNeighbors[27];
   for (int chunkBlockIndex = 0; chunkBlockIndex < CHUNK_VOLUME; chunkBlockIndex++) {
-
     // derive block position from the index
     int blockPos[3];
     blockPos[0] = chunkBlockIndex & 31; // X (right most 5 bits in the index value
@@ -354,13 +354,9 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
       // since greedy meshing, no longer need to check whether neighbor is above or below absolute height borders
       // this will also allow for infinite height impl in future.
       Block neighborBlock = m_blocks[MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2])];
-      if (!shouldShowFace(block, neighborBlock)) {
-        if (((block == Block::OAK_LEAVES && neighborBlock == Block::BIRCH_LEAVES)
-            || (block == Block::BIRCH_LEAVES && neighborBlock == Block::OAK_LEAVES))) {
-          int sdf = 5;
-        }
+      if (!ChunkAlg::shouldShowFace(block, neighborBlock)) {
         continue;
-      };
+      }
 
       uint16_t neighborTorchlightLevel = m_lightLevels[MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2])];
       uint8_t neighborSunlightLevel = m_sunlightLevels[MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2])];
@@ -391,13 +387,14 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
                                                    neighborSunlightLevel);
     }
   }
+
   int u, v, counter, j, i, k, l, height, width;
   int faceNum;
   int x[3]; // start point
   int q[3]; // offset
   int du[3];
   int dv[3];
-  FaceInfo *infoMask[CHUNK_AREA]; // use pointers since data already exists in the faceInfo array above
+  FaceInfo* infoMask[CHUNK_AREA]; // use pointers since data already exists in the faceInfo array above
   Block mask[CHUNK_AREA];
 
   for (bool backFace = true, b = false; b != backFace; backFace = backFace && b, b = !b) {
@@ -420,7 +417,7 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
 
             if (!backFace) {
               bool block1OutsideBorder = x[axis] < 0;
-              if (!block1OutsideBorder && shouldShowFace(block1, block2)) {
+              if (!block1OutsideBorder && ChunkAlg::shouldShowFace(block1, block2)) {
                 mask[counter] = block1;
                 infoMask[counter] = &faceInfo[XYZ(x[0], x[1], x[2])][axis << 1];
               } else {
@@ -429,7 +426,7 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
               }
             } else {
               bool block2OutsideBorder = CHUNK_SIZE - 1 <= x[axis];
-              if (!block2OutsideBorder && shouldShowFace(block2, block1)) {
+              if (!block2OutsideBorder && ChunkAlg::shouldShowFace(block2, block1)) {
                 mask[counter] = block2;
                 infoMask[counter] = &faceInfo[XYZ(x[0] + q[0], x[1] + q[1], x[2] + q[2])][(axis << 1) | 1];
               } else {
@@ -448,7 +445,7 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
           for (i = 0; i < CHUNK_SIZE;) {
             Block block = mask[counter];
             if (block != Block::AIR) { // skip if air or zeroed
-              FaceInfo &currFaceInfo = *infoMask[counter];
+              FaceInfo& currFaceInfo = *infoMask[counter];
               // compute width
               for (width = 1; block == mask[counter + width] && infoMask[counter + width]
                   && currFaceInfo == *infoMask[counter + width] && i + width < CHUNK_SIZE; width++) {}
@@ -561,8 +558,8 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
                   createVertexData1(vx + dv[0], vy + dv[1], vz + dv[2], currFaceInfo.aoLevels[3], v11u, v11v);
 
               bool isTransparent = BlockDB::isTransparent(block);
-              auto &vertices = isTransparent ? transparentVertices : opaqueVertices;
-              auto &indices = isTransparent ? transparentIndices : opaqueIndices;
+              auto& vertices = isTransparent ? transparentVertices : opaqueVertices;
+              auto& indices = isTransparent ? transparentIndices : opaqueIndices;
               unsigned long baseVertexIndex = vertices.size();
               vertices.push_back({v00Data1, vData2});
               vertices.push_back({v01Data1, vData2});
@@ -643,7 +640,7 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
  * @param blockNeighbors
  */
 void FaceInfo::setValues(uint8_t faceNum,
-                         const Block (&blockNeighbors)[27],
+                         const Block (& blockNeighbors)[27],
                          const uint16_t pTorchlightLevel,
                          const uint8_t pSunLightLevel) {
   this->sunlightLevel = pSunLightLevel;

@@ -135,6 +135,8 @@ set(SOURCE_FILES
         src/world/generation/Structure.hpp
         src/debug_gui/ChunkMapRenderer.cpp
         src/debug_gui/ChunkMapRenderer.hpp
+        src/world/chunk/ChunkMeshBuilderLod.cpp
+        src/world/chunk/ChunkMeshBuilderLod.hpp
 )
 
 add_executable(voxel_engine ${SOURCE_FILES})

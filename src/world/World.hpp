@@ -71,7 +71,7 @@ class World {
   Player player;
 
   inline Chunk *getChunkRawPtr(const glm::ivec3 &pos) const {
-    return m_chunkMap.at(pos).get();
+  return m_chunkMap.at(pos).get();
   }
 
   inline Chunk *getChunkRawPtrOrNull(const glm::ivec3 &pos) const {
@@ -134,7 +134,7 @@ class World {
   void processBatchToLight(std::queue<glm::ivec2> &batchToLight);
   void processBatchToMesh(std::queue<glm::ivec3> &batchToMesh);
 
-  int m_renderDistance = 8;
+  int m_renderDistance = 3;
   int m_structureLoadDistance = m_renderDistance + 1;
   int m_lightingLoadDistance = m_renderDistance + 2;
   int m_loadDistance = m_renderDistance + 3;

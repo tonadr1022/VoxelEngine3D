@@ -14,13 +14,14 @@ ChunkRenderer::ChunkRenderer() {
 
 ChunkRenderer::~ChunkRenderer() = default;
 
-void ChunkRenderer::render(ChunkMesh &mesh, const glm::ivec3 &worldPos, float firstBufferTime) {
+void ChunkRenderer::render(ChunkMesh& mesh, const Camera& camera, const glm::ivec3& worldPos, float firstBufferTime) {
   glm::mat4 model = glm::translate(glm::mat4(1.0f), (glm::vec3) worldPos);
-  const Shader *shader = ShaderManager::getShader("chunk");
-  shader->setMat4("u_Model", model);
-  shader->setIVec2("u_ChunkWorldPos", worldPos);
-  shader->setFloat("u_FirstBufferTime", firstBufferTime);
-  shader->setFloat("u_Time", static_cast<float>(glfwGetTime()));
+  const Shader* shader = ShaderManager::getShader("chunk");
+  shader->setMat4("u_MVP", camera.getVPMatrix() * model);
+//  shader->setIVec2("u_ChunkWorldPos", worldPos);
+//  shader->setFloat("u_FirstBufferTime", firstBufferTime);
+//  shader->setFloat("u_Time", static_cast<float>(glfwGetTime()));
+
 //  std::cout << "first buffer time: " << firstBufferTime << ", time: " << static_cast<float>(glfwGetTime()) << ", diff: " <<
 //  static_cast<float>(glfwGetTime()) - firstBufferTime << std::endl;
   if (mesh.needsUpdate) {
@@ -43,7 +44,7 @@ void ChunkRenderer::render(ChunkMesh &mesh, const glm::ivec3 &worldPos, float fi
   //}
 }
 
-void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
+void ChunkRenderer::createGPUResources(ChunkMesh& mesh) {
   if (mesh.vertices.empty()) return;
   glGenVertexArrays(1, &mesh.VAO);
   glBindVertexArray(mesh.VAO);
@@ -60,9 +61,9 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
                GL_STATIC_DRAW);
 
   //  must be IPointer
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData1));
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void*) offsetof(ChunkVertex, vertexData1));
   glEnableVertexAttribArray(0);
-  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData2));
+  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void*) offsetof(ChunkVertex, vertexData2));
   glEnableVertexAttribArray(1);
 
   glBindVertexArray(0);
@@ -70,24 +71,22 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
 
 }
 
-void ChunkRenderer::start(const Camera &camera, float worldLightLevel) {
+void ChunkRenderer::start(const Camera& camera, float worldLightLevel) {
   updateShaderUniforms(camera, worldLightLevel);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D_ARRAY, textureAtlasID);
   Config::useWireFrame ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void ChunkRenderer::updateShaderUniforms(const Camera &camera, float worldLightLevel) {
-  const Shader *shader = ShaderManager::getShader("chunk");
+void ChunkRenderer::updateShaderUniforms(const Camera& camera, float worldLightLevel) {
+  const Shader* shader = ShaderManager::getShader("chunk");
   shader->use();
-  shader->setFloat("u_WorldLightLevel", worldLightLevel);
-  shader->setBool("u_UseAmbientOcclusion", Config::getUseAmbientOcclusion());
+//  shader->setFloat("u_WorldLightLevel", worldLightLevel);
+//  shader->setBool("u_UseAmbientOcclusion", Config::getUseAmbientOcclusion());
   shader->setInt("u_Texture", 0);
-  shader->setMat4("u_Projection", camera.getProjectionMatrix());
-  shader->setMat4("u_View", camera.getViewMatrix());
 }
 
-void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
+void ChunkRenderer::updateGPUResources(ChunkMesh& mesh) {
   if (mesh.vertices.empty()) return;
   glBindVertexArray(mesh.VAO);
 
@@ -108,9 +107,9 @@ void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
   mesh.EBO = nEBO;
 
   //  must be IPointer
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData1));
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void*) offsetof(ChunkVertex, vertexData1));
   glEnableVertexAttribArray(0);
-  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData2));
+  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void*) offsetof(ChunkVertex, vertexData2));
   glEnableVertexAttribArray(1);
 
   glBindVertexArray(0);

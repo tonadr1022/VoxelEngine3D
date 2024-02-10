@@ -169,33 +169,20 @@ void ChunkAlg::generateSunLightData(ChunkStackArray& chunks) {
 
   std::queue<SunLightNode> sunlightQueue;
 
-
   for (int y = 0; y < CHUNK_SIZE; y++) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
 //      for (int z = highestZ+1; z >= 0; z--) {
 //        Block block = getBlockInChunkStack(x, y, z);
 //        if (BlockDB::lightAttenuation(block) == 0) {
-          setSunlightInChunkStack(x, y, highestZ+1, MAX_LIGHT_LEVEL);
-          sunlightQueue.emplace(x, y, highestZ+1, MAX_LIGHT_LEVEL);
+      setSunlightInChunkStack(x, y, highestZ + 1, MAX_LIGHT_LEVEL);
+      sunlightQueue.emplace(x, y, highestZ + 1, MAX_LIGHT_LEVEL);
 //        } else {
 //          break;
 //        }
 //      }
     }
   }
-//  for (int y = 0; y < CHUNK_SIZE; y++) {
-//    for (int x = 0; x < CHUNK_SIZE; x++) {
-//      for (int z = highestZ; z >= 0; z--) {
-//        Block block = getBlockInChunkStack(x, y, z);
-//        if (BlockDB::lightAttenuation(block) == 0) {
-//          setSunlightInChunkStack(x, y, z, MAX_LIGHT_LEVEL);
-//          sunlightQueue.emplace(x, y, z, MAX_LIGHT_LEVEL);
-//        } else {
-//          break;
-//        }
-//      }
-//    }
-//  }
+  return;
   propagateSunLight(sunlightQueue, chunks);
 }
 void setLightLevelInChunkStackIncludingNeighbors(glm::ivec3 pos, uint8_t lightLevel, ChunkStackArray& chunks) {
@@ -254,7 +241,6 @@ void ChunkAlg::propagateSunLight(std::queue<SunLightNode>& sunLightQueue,
     sunLightQueue.pop();
     for (short faceNum = 0; faceNum < 6; faceNum++) {
       glm::ivec3 neighborPos = Utils::getNeighborPosFromFace({node.x, node.y, node.z}, faceNum);
-
       Block neighborBlock = chunk->getBlockIncludingNeighborsOptimized(neighborPos);
       int neighborLightAttenuation = BlockDB::lightAttenuation(neighborBlock);
       if (neighborLightAttenuation == MAX_LIGHT_ATTENUATION) continue;
@@ -366,4 +352,42 @@ void ChunkAlg::unpropagateTorchLight(std::queue<LightNode>& torchLightPlacementQ
   for (const auto& pos : setPositions) {
     World::addRelatedChunks(pos, chunk->m_pos, chunkUpdateSet);
   }
+}
+
+Block ChunkAlg::getCommonBlockAt(int startX, int startY, int startZ,int numX, int numY, int numZ, Block (& blocks)[CHUNK_VOLUME], int lodScale) {
+  std::vector<int> blockCounter(static_cast<int>(Block::BLOCK_COUNT), 0); // Initialize a counter for each block type
+
+  for (int z = 0; z < numZ; z++) {
+    for (int y = 0; y < numY; y++) {
+      for (int x = 0; x < numX; x++) {
+        Block currBlock = blocks[XYZ(x + startX, y + startY, z + startZ)];
+        if (currBlock != Block::AIR) {
+          blockCounter[(int)currBlock]++;
+        }
+      }
+    }
+  }
+  // Find the most common block
+  int mostCommonBlock = 0;
+  int maxCount = 0;
+  for (int i = 0; i < static_cast<int>(Block::BLOCK_COUNT); i++) {
+    if (blockCounter[i] > maxCount) {
+      mostCommonBlock = i;
+      maxCount = blockCounter[i];
+    }
+  }
+  return static_cast<Block>(mostCommonBlock);
+}
+
+bool ChunkAlg::shouldShowFace(Block block, Block neighborBlock) {
+  if (block == Block::AIR) return false; // if block to show face is air, dont show face
+  if (neighborBlock == Block::AIR) return true; // to avoid lookup??? profile
+  const BlockData& blockData = BlockDB::getBlockData(block);
+  const BlockData& neighborData = BlockDB::getBlockData(neighborBlock);
+  if (!blockData.isTransparent && neighborData.isTransparent) return true;
+  if (!neighborData.isTransparent) return false;
+  if (!blockData.cull && !neighborData.cull) return true;
+  if (block == neighborBlock) return false;
+//    if (neighborData.isTransparent && block != Block::WATER) return true;
+  return true;
 }

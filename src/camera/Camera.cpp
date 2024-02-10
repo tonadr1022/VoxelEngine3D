@@ -24,6 +24,7 @@ void Camera::updateProjectionMatrix(float aspectRatio) {
   m_projectionMatrix = glm::perspective(glm::radians(90.0f),
                                         aspectRatio,
                                         NEAR_PLANE, FAR_PLANE);
+  updateVPMatrix();
 }
 
 void Camera::updateCameraVectors() {
@@ -39,6 +40,11 @@ void Camera::updateCameraVectors() {
 
 void Camera::updateViewMatrix() {
   m_viewMatrix = glm::lookAt(m_position, m_position + m_front, m_up);
+  updateVPMatrix();
+}
+
+void Camera::updateVPMatrix() {
+  m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
 }
 
 Camera::Camera() = default;

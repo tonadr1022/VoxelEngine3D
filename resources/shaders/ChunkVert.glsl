@@ -3,7 +3,6 @@
 layout (location = 0) in uint vertexData1;
 layout (location = 1) in uint vertexData2;
 
-//out vec3 v_FragPos;
 out vec3 v_TexCoord;
 out vec3 v_FragColor;
 
@@ -23,10 +22,6 @@ vec3(0.0, 1.0, 0.0), // Right
 vec3(0.0, 0.0, 1.0), // Top
 vec3(0.0, 0.0, -1.0)// Bottom
 );
-
-const int atlasWidth = 16;
-const float textureWidth = 1.0 / float(atlasWidth);
-
 
 const float waveAmplitude = 0.1;
 const float waveFrequency = 1.0;

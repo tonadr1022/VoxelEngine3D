@@ -20,11 +20,13 @@ class Camera {
   [[nodiscard]] inline const glm::vec3 &getPosition() const { return m_position; }
   [[nodiscard]] inline const glm::mat4 &getViewMatrix() const { return m_viewMatrix; }
   [[nodiscard]] inline const glm::mat4 &getProjectionMatrix() const { return m_projectionMatrix; }
+  [[nodiscard]] inline const glm::mat4 &getVPMatrix() const { return m_viewProjectionMatrix; }
   [[nodiscard]] inline const glm::vec3 &getFront() const { return m_front; }
   static const inline glm::vec3 &getGlobalUp() { return const_cast<glm::vec3 &>(globalUp); }
 
  private:
   void updateCameraVectors();
+  void updateVPMatrix();
 
   float m_fov = 70.0f;
   float m_mouseSensitivity = 0.1f;
@@ -48,6 +50,8 @@ class Camera {
       static_cast<float>(DEFAULT_WINDOW_WIDTH)
           / static_cast<float>(DEFAULT_WINDOW_HEIGHT),
       NEAR_PLANE, FAR_PLANE);
+
+  glm::mat4 m_viewProjectionMatrix = glm::mat4(1.0f);
 };
 
 #endif //VOXEL_ENGINE_CAMERA_HPP

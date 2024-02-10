@@ -25,8 +25,10 @@ Shader *ShaderManager::getShader(const std::string &name) {
 
 void ShaderManager::compileShaders() {
   m_shaders.clear();
-  std::unique_ptr<Shader> chunkShader = std::make_unique<Shader>(SHADER_PATH(ChunkVert.glsl),
-                                                                 SHADER_PATH(ChunkFrag.glsl));
+//  std::unique_ptr<Shader> chunkShader = std::make_unique<Shader>(SHADER_PATH(ChunkVert.glsl),
+//                                                                 SHADER_PATH(ChunkFrag.glsl));
+  std::unique_ptr<Shader> chunkShader = std::make_unique<Shader>(SHADER_PATH(ChunkLODVert.glsl),
+                                                                 SHADER_PATH(ChunkLODFrag.glsl));
   std::unique_ptr<Shader> outlineShader = std::make_unique<Shader>(SHADER_PATH(OutlineVert.glsl),
                                                                    SHADER_PATH(OutlineFrag.glsl),
                                                                    SHADER_PATH(OutlineGeom.glsl));

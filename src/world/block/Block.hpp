@@ -50,9 +50,7 @@ enum class Block : uint8_t {
   DIRT_PATH, // 39
   JUNGLE_GRASS_BLOCK,
   DESERT_GRASS_BLOCK,
-
   DIAMOND_BLOCK,
-
   BLOCK_COUNT,
 };
 

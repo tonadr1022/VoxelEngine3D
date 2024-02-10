@@ -496,7 +496,8 @@ void World::processBatchToMesh(std::queue<glm::ivec3>& batchToMesh) {
   while (!batchToMesh.empty()) {
     const auto& pos = batchToMesh.front();
     auto it = m_chunkMeshInfoMap.find(pos);
-    if (it != m_chunkMeshInfoMap.end()) it->second->generateMeshData(m_useGreedyMeshing);
+//    if (it != m_chunkMeshInfoMap.end()) it->second->generateMeshData(m_useGreedyMeshing);
+    if (it != m_chunkMeshInfoMap.end()) it->second->generateLODMeshData(2);
 //    m_chunkMeshInfoMap.at(pos)->generateMeshData();
     batchToMesh.pop();
   }
@@ -517,7 +518,7 @@ void World::renderDebugGui() {
   ImGui::Text("Cursor Pos: %.3f %.3f", cursorPos.x, cursorPos.y);
 
   int renderDistance = m_renderDistance;
-  if (ImGui::SliderInt("Render Distance", &renderDistance, 1, 16)) {
+  if (ImGui::SliderInt("Render Distance", &renderDistance, 1, 32)) {
     setRenderDistance(renderDistance);
   }
 
