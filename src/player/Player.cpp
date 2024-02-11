@@ -200,7 +200,6 @@ void Player::rayCast() {
     if (m_world->getBlockFromWorldPosition(blockPos) != Block::AIR) {
       return;
     }
-
   }
 
   m_blockAimPos = NULL_VECTOR;

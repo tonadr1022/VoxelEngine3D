@@ -23,7 +23,7 @@ class Chunk;
 class Window;
 
 using ChunkMap = std::unordered_map<glm::ivec3, Scope<Chunk>>;
-using ChunkStackArray = std::array<Chunk *, CHUNKS_PER_STACK>;
+using ChunkStackArray = std::array<Chunk*, CHUNKS_PER_STACK>;
 
 // z
 // |
@@ -59,38 +59,38 @@ static constexpr std::array<glm::ivec3, 27> NEIGHBOR_ARRAY_OFFSETS =
 
 class World {
  public:
-  explicit World(Renderer &renderer, Window &window, int seed, const std::string &savePath);
+  explicit World(Renderer& renderer, Window& window, int seed, const std::string& savePath);
   ~World();
 
   void update(double dt);
   void renderDebugGui();
   void reload();
-  inline const std::unordered_set<glm::ivec3> &getOpaqueRenderSet() const { return m_opaqueRenderSet; }
-  inline const std::vector<glm::ivec3> &getTransparentRenderVector() const { return m_transparentRenderVector; }
-  Window &m_window;
+  inline const std::unordered_set<glm::ivec3>& getOpaqueRenderSet() const { return m_opaqueRenderSet; }
+  inline const std::vector<glm::ivec3>& getTransparentRenderVector() const { return m_transparentRenderVector; }
+  Window& m_window;
   Player player;
 
-  inline Chunk *getChunkRawPtr(const glm::ivec3 &pos) const {
+  inline Chunk* getChunkRawPtr(const glm::ivec3& pos) const {
     return m_chunkMap.at(pos).get();
   }
 
-  inline Chunk *getChunkRawPtrOrNull(const glm::ivec3 &pos) const {
+  inline Chunk* getChunkRawPtrOrNull(const glm::ivec3& pos) const {
     if (!chunkExists(pos)) return nullptr;
     return m_chunkMap.at(pos).get();
   }
 
-  inline const glm::ivec3 &getLastRayCastBlockPos() const { return player.m_blockAimPos; }
+  inline const glm::ivec3& getLastRayCastBlockPos() const { return player.m_blockAimPos; }
 
   [[nodiscard]] inline float getWorldLightLevel() const { return m_worldLightLevel; }
 
   ViewFrustum m_viewFrustum;
 
-  static void addRelatedChunks(const glm::ivec3 &blockPosInChunk,
-                               const glm::ivec3 &chunkPos,
-                               std::unordered_set<glm::ivec3> &chunkSet);
+  static void addRelatedChunks(const glm::ivec3& blockPosInChunk,
+                               const glm::ivec3& chunkPos,
+                               std::unordered_set<glm::ivec3>& chunkSet);
 
-  Block getBlockFromWorldPosition(const glm::ivec3 &position) const;
-  void setBlockWithUpdate(const glm::ivec3 &worldPos, Block block);
+  Block getBlockFromWorldPosition(const glm::ivec3& position) const;
+  void setBlockWithUpdate(const glm::ivec3& worldPos, Block block);
  private:
 
   void setRenderDistance(int renderDistance);
@@ -107,10 +107,9 @@ class World {
                       static_cast<int>(std::floor(static_cast<float>(pos.z) / CHUNK_SIZE))};
   }
 
-  inline bool chunkExists(const glm::ivec3 &pos) const {
+  inline bool chunkExists(const glm::ivec3& pos) const {
     return m_chunkMap.find(pos) != m_chunkMap.end();
   }
-
 
   void castPlayerAimRay(Ray ray);
 
@@ -124,15 +123,15 @@ class World {
   void updateChunkMeshList(bool updateEligibleVector);
 
   void processDirectChunkUpdates();
-  void getNeighborChunks(Chunk *(&chunks)[27], const glm::ivec3 &pos) const;
+  void getNeighborChunks(Chunk* (& chunks)[27], const glm::ivec3& pos) const;
 
   void addNeighborChunksToChunk(glm::ivec3 chunkPos);
 
   void generateChunksWorker4();
-  void processBatchToLoad(std::queue<glm::ivec2> &batchToLoad);
-  void processBatchToGenStructures(std::queue<glm::ivec2> &batchToGenStructures);
-  void processBatchToLight(std::queue<glm::ivec2> &batchToLight);
-  void processBatchToMesh(std::queue<glm::ivec3> &batchToMesh);
+  void processBatchToLoad(std::queue<glm::ivec2>& batchToLoad);
+  void processBatchToGenStructures(std::queue<glm::ivec2>& batchToGenStructures);
+  void processBatchToLight(std::queue<glm::ivec2>& batchToLight);
+  void processBatchToMesh(std::queue<glm::ivec3>& batchToMesh);
 
   int m_renderDistance = 8;
   int m_structureLoadDistance = m_renderDistance + 1;
@@ -153,7 +152,7 @@ class World {
   int m_chunkMapDebugZLevel = 0;
 
   ChunkMap m_chunkMap;
-  Renderer m_renderer;
+  Renderer& m_renderer;
   ChunkMapRenderer m_chunkMapRenderer;
   TerrainGenerator m_terrainGenerator;
   WorldSave m_worldSave;
@@ -205,34 +204,34 @@ class World {
 
   void sortTransparentRenderVector();
 
-  inline bool cmpVec2_impl(const glm::ivec2 &l, const glm::ivec2 &r) const {
+  inline bool cmpVec2_impl(const glm::ivec2& l, const glm::ivec2& r) const {
     return glm::length(glm::vec2(l) - (glm::vec2) m_center) <
         glm::length(glm::vec2(r) - (glm::vec2) m_center);
   }
 
-  inline bool rcmpVec2_impl(const glm::ivec2 &l, const glm::ivec2 &r) const {
+  inline bool rcmpVec2_impl(const glm::ivec2& l, const glm::ivec2& r) const {
     return glm::length(glm::vec2(l) - (glm::vec2) m_center) >
         glm::length(glm::vec2(r) - (glm::vec2) m_center);
   }
 
-  inline bool rcmpVec3_impl(const glm::ivec3 &l, const glm::ivec3 &r) const {
+  inline bool rcmpVec3_impl(const glm::ivec3& l, const glm::ivec3& r) const {
     return glm::length(glm::vec3(l) - (glm::vec3) m_center) >
         glm::length(glm::vec3(r) - (glm::vec3) m_center);
   }
 
-  std::function<bool(const glm::ivec2 &, const glm::ivec2 &)> cmpVec2 =
-      [this](auto &&PH1, auto &&PH2) {
+  std::function<bool(const glm::ivec2&, const glm::ivec2&)> cmpVec2 =
+      [this](auto&& PH1, auto&& PH2) {
         return cmpVec2_impl(std::forward<decltype(PH1)>(PH1),
                             std::forward<decltype(PH2)>(PH2));
       };
-  std::function<bool(const glm::ivec2 &, const glm::ivec2 &)> rcmpVec2 =
-      [this](auto &&PH1, auto &&PH2) {
+  std::function<bool(const glm::ivec2&, const glm::ivec2&)> rcmpVec2 =
+      [this](auto&& PH1, auto&& PH2) {
         return rcmpVec2_impl(std::forward<decltype(PH1)>(PH1),
                              std::forward<decltype(PH2)>(PH2));
       };
 
-  std::function<bool(const glm::ivec3 &, const glm::ivec3 &)> rcmpVec3 =
-      [this](auto &&PH1, auto &&PH2) {
+  std::function<bool(const glm::ivec3&, const glm::ivec3&)> rcmpVec3 =
+      [this](auto&& PH1, auto&& PH2) {
         return rcmpVec3_impl(std::forward<decltype(PH1)>(PH1),
                              std::forward<decltype(PH2)>(PH2));
       };

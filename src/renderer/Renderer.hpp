@@ -9,7 +9,7 @@
 #include "../gui/CrossHair.hpp"
 #include "BlockOutlineRenderer.hpp"
 #include "BlockBreakRenderer.hpp"
-#include "../world/chunk/ChunkRenderer.hpp"
+#include "ChunkRenderer.hpp"
 #include "ViewFrustum.hpp"
 #include "../debug_gui/ChunkMapRenderer.hpp"
 
@@ -19,6 +19,7 @@ class World;
 class Renderer {
  public:
   explicit Renderer();
+  void init();
 
   void renderCrossHair() const;
   void renderBlockOutline(const Camera &camera, glm::ivec3 blockPosition) const;
@@ -31,7 +32,6 @@ class Renderer {
   BlockOutlineRenderer m_blockOutlineRenderer;
   BlockBreakRenderer m_blockBreakRenderer;
   ChunkRenderer m_chunkRenderer;
-
   CrossHair crossHair;
 
 

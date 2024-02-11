@@ -18,7 +18,9 @@ Application::Application() : m_window(DEFAULT_WINDOW_WIDTH,
   ResourceManager::loadTextures();
   ShaderManager::compileShaders();
 
+
   m_world = std::make_unique<World>(m_renderer, m_window, 2, "default.wld");
+  m_renderer.init();
   m_world->player.setFocus(true);
   m_window.lockCursor();
   m_window.centerCursor();

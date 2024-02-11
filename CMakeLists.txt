@@ -63,8 +63,8 @@ set(SOURCE_FILES
         src/world/chunk/ChunkMesh.hpp
         src/world/generation/TerrainGenerator.cpp
         src/world/generation/TerrainGenerator.hpp
-        src/world/chunk/ChunkRenderer.cpp
-        src/world/chunk/ChunkRenderer.hpp
+        src/renderer/ChunkRenderer.cpp
+        src/renderer/ChunkRenderer.hpp
         src/resources/ResourceManager.cpp
         src/resources/ResourceManager.hpp
         src/world/block/BlockDB.cpp
@@ -85,8 +85,6 @@ set(SOURCE_FILES
         src/player/Inventory.hpp
         src/input/Keyboard.cpp
         src/input/Keyboard.hpp
-        src/renderer/Renderer2D.cpp
-        src/renderer/Renderer2D.hpp
         src/debug_gui/DebugGui.cpp
         src/debug_gui/DebugGui.hpp
         src/gui/Hotbar.cpp
@@ -146,8 +144,6 @@ find_package(OpenGL REQUIRED)
 
 
 target_link_libraries(voxel_engine ${OPENGL_LIBRARIES} glfw glm)
-# get binary directory path and copy shaders and resource folders to it
-
 
 # set a symlink to the assets dir
 add_custom_command(

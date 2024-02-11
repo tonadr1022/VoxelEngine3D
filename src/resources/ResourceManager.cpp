@@ -50,7 +50,7 @@ std::vector<Image> ResourceManager::loadBlockImages() {
       Image image = loadImage(entry.path().string(), true);
       filenameToTexIndex[entry.path().stem().string()] = texIndex;
       images.push_back(image);
-      std::cout << texIndex << " " << entry.path().stem().string() << std::endl;
+//      std::cout << texIndex << " " << entry.path().stem().string() << std::endl;
       texIndex++;
     }
   }

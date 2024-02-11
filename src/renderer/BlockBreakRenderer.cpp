@@ -21,9 +21,7 @@ void BlockBreakRenderer::render(glm::vec3 blockPosition,
 
   const Shader *blockBreakShader = ShaderManager::getShader("blockBreak");
   blockBreakShader->use();
-  blockBreakShader->setMat4("u_Model", model);
-  blockBreakShader->setMat4("u_View", camera.getViewMatrix());
-  blockBreakShader->setMat4("u_Projection", camera.getProjectionMatrix());
+  blockBreakShader->setMat4("u_MVP", camera.getVPMatrix() * model);
   blockBreakShader->setInt("u_Texture", 0);
   glBindVertexArray(VAO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

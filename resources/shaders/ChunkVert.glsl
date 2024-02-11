@@ -10,10 +10,9 @@ out vec3 v_FragColor;
 uniform ivec2 u_ChunkWorldPos;
 uniform float u_WorldLightLevel;
 uniform float u_Time;
-uniform mat4 u_Model;
-uniform mat4 u_View;
-uniform mat4 u_Projection;
+uniform mat4 u_MVP;
 uniform bool u_UseAmbientOcclusion;
+uniform uint u_WaterTexIndex;
 
 uniform vec3 normals[6] = vec3[6](
 vec3(1.0, 0.0, 0.0), // Front
@@ -46,10 +45,6 @@ const float TorchLightCurve[16] = float[16](
 
 // only applies for texIndex 8 (water)
 vec3 applyWave(vec3 vertexPos, uint texIndex) {
-    if (texIndex != 8) {
-        return vertexPos;
-    }
-
     if (vertexPos.z < 0.8) return vertexPos;
     vec2 vertexWorldPos = vertexPos.xy + vec2(u_ChunkWorldPos.x, u_ChunkWorldPos.y);
 
@@ -94,11 +89,11 @@ void main() {
     v_FragColor = vec3(max(TorchLightCurve[redLightLevel], intensity), max(TorchLightCurve[greenLightLevel], intensity), max(TorchLightCurve[blueLightLevel], intensity)) * aoModifier;
 
     vec3 vertexPos = vec3(posX, posY, posZ);
-    vertexPos = applyWave(vertexPos, texIndex);
+    if (texIndex == u_WaterTexIndex) {
+        vertexPos = applyWave(vertexPos, texIndex);
+    }
 
-//    v_FragPos = vec3(u_Model * vec4(vertexPos, 1.0));
-
-    gl_Position = u_Projection * u_View * u_Model * vec4(vertexPos, 1.0);
+    gl_Position = u_MVP * vec4(vertexPos, 1.0);
     v_TexCoord = vec3(x, y, texIndex);
 
 

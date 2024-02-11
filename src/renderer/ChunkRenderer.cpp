@@ -4,23 +4,57 @@
 
 #include "ChunkRenderer.hpp"
 
-#include "../../Config.hpp"
-#include "../../resources/ResourceManager.hpp"
-#include "../../shaders/ShaderManager.hpp"
+#include "../Config.hpp"
+#include "../resources/ResourceManager.hpp"
+#include "../shaders/ShaderManager.hpp"
+#include "../world/World.hpp"
 
-ChunkRenderer::ChunkRenderer() {
+ChunkRenderer::ChunkRenderer() = default;
+
+void ChunkRenderer::init() {
   textureAtlasID = ResourceManager::getTexture("texture_atlas");
+  m_waterTexIndex = BlockDB::getTexIndex(Block::WATER, TOP);
 }
+
 
 ChunkRenderer::~ChunkRenderer() = default;
 
-void ChunkRenderer::render(ChunkMesh &mesh, const glm::ivec3 &worldPos, float firstBufferTime) {
+void ChunkRenderer::render(const World& world) const {
+  const Camera& camera = world.player.camera;
+  startFrame(camera, world.getWorldLightLevel());
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
+
+  for (auto& pos : world.getOpaqueRenderSet()) {
+    Chunk* chunk = world.getChunkRawPtrOrNull(pos);
+    if (!chunk) continue;
+    if (!world.m_viewFrustum.isBoxInFrustum(chunk->m_boundingBox)) continue;
+    if (chunk->m_firstBufferTime == 0) chunk->m_firstBufferTime = static_cast<float>(glfwGetTime());
+    renderChunk(chunk->m_opaqueMesh, camera, chunk->m_worldPos, chunk->m_firstBufferTime);
+  }
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  for (auto& pos : world.getTransparentRenderVector()) {
+    Chunk* chunk = world.getChunkRawPtrOrNull(pos);
+    if (!chunk) continue;
+    if (!world.m_viewFrustum.isBoxInFrustum(chunk->m_boundingBox)) continue;
+    renderChunk(chunk->m_transparentMesh, camera, chunk->m_worldPos, chunk->m_firstBufferTime);
+  }
+
+}
+
+void ChunkRenderer::renderChunk(ChunkMesh& mesh,
+                                const Camera& camera,
+                                const glm::ivec3& worldPos,
+                                float firstBufferTime) const {
   glm::mat4 model = glm::translate(glm::mat4(1.0f), (glm::vec3) worldPos);
-  const Shader *shader = ShaderManager::getShader("chunk");
-  shader->setMat4("u_Model", model);
+  const Shader* shader = ShaderManager::getShader("chunk");
+  shader->setMat4("u_MVP", camera.getVPMatrix() * model);
   shader->setIVec2("u_ChunkWorldPos", worldPos);
   shader->setFloat("u_FirstBufferTime", firstBufferTime);
   shader->setFloat("u_Time", static_cast<float>(glfwGetTime()));
+  shader->setInt("u_WaterTexIndex", m_waterTexIndex);
 //  std::cout << "first buffer time: " << firstBufferTime << ", time: " << static_cast<float>(glfwGetTime()) << ", diff: " <<
 //  static_cast<float>(glfwGetTime()) - firstBufferTime << std::endl;
   if (mesh.needsUpdate) {
@@ -36,14 +70,9 @@ void ChunkRenderer::render(ChunkMesh &mesh, const glm::ivec3 &worldPos, float fi
                  GL_UNSIGNED_INT, nullptr);
   glBindVertexArray(0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  //GLenum error = glGetError();
-  //if (error != GL_NO_ERROR) {
-  //  std::cerr << "OpenGL Error: " << error << std::endl;
-  //}
 }
 
-void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
+void ChunkRenderer::createGPUResources(ChunkMesh& mesh) {
   if (mesh.vertices.empty()) return;
   glGenVertexArrays(1, &mesh.VAO);
   glBindVertexArray(mesh.VAO);
@@ -60,9 +89,9 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
                GL_STATIC_DRAW);
 
   //  must be IPointer
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData1));
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void*) offsetof(ChunkVertex, vertexData1));
   glEnableVertexAttribArray(0);
-  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData2));
+  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void*) offsetof(ChunkVertex, vertexData2));
   glEnableVertexAttribArray(1);
 
   glBindVertexArray(0);
@@ -70,24 +99,20 @@ void ChunkRenderer::createGPUResources(ChunkMesh &mesh) {
 
 }
 
-void ChunkRenderer::start(const Camera &camera, float worldLightLevel) {
-  updateShaderUniforms(camera, worldLightLevel);
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D_ARRAY, textureAtlasID);
-  Config::useWireFrame ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-}
-
-void ChunkRenderer::updateShaderUniforms(const Camera &camera, float worldLightLevel) {
-  const Shader *shader = ShaderManager::getShader("chunk");
+void ChunkRenderer::startFrame(const Camera& camera, float worldLightLevel) const {
+  const Shader* shader = ShaderManager::getShader("chunk");
   shader->use();
   shader->setFloat("u_WorldLightLevel", worldLightLevel);
   shader->setBool("u_UseAmbientOcclusion", Config::getUseAmbientOcclusion());
   shader->setInt("u_Texture", 0);
   shader->setMat4("u_Projection", camera.getProjectionMatrix());
   shader->setMat4("u_View", camera.getViewMatrix());
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, textureAtlasID);
+  Config::useWireFrame ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
+void ChunkRenderer::updateGPUResources(ChunkMesh& mesh) {
   if (mesh.vertices.empty()) return;
   glBindVertexArray(mesh.VAO);
 
@@ -108,9 +133,9 @@ void ChunkRenderer::updateGPUResources(ChunkMesh &mesh) {
   mesh.EBO = nEBO;
 
   //  must be IPointer
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData1));
+  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void*) offsetof(ChunkVertex, vertexData1));
   glEnableVertexAttribArray(0);
-  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void *) offsetof(ChunkVertex, vertexData2));
+  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(ChunkVertex), (void*) offsetof(ChunkVertex, vertexData2));
   glEnableVertexAttribArray(1);
 
   glBindVertexArray(0);
