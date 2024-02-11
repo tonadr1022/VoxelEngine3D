@@ -47,7 +47,7 @@ std::vector<Image> ResourceManager::loadBlockImages() {
   int texIndex = 0;
   for (const auto &entry : std::filesystem::directory_iterator(TEXTURE_PATH(block))) {
     if (std::filesystem::is_regular_file(entry.path()) && entry.path().extension() == ".png") {
-      Image image = loadImage(entry.path().string(), true);
+      Image image = loadImage(entry.path().string(), false);
       filenameToTexIndex[entry.path().stem().string()] = texIndex;
       images.push_back(image);
 //      std::cout << texIndex << " " << entry.path().stem().string() << std::endl;
