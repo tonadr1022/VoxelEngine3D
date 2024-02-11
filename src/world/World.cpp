@@ -433,7 +433,7 @@ void World::generateChunksWorker4() {
       processBatchToGenStructures(batchToGenStructures);
     } else if (!m_chunkStackPositionsToLightList.empty() && m_chunksReadyToGenStructuresList.empty() &&
         m_chunksToLoadVector.empty()) {
-      while (!m_chunkStackPositionsToLightList.empty() && batchToLight.size() < 10) {
+      while (!m_chunkStackPositionsToLightList.empty() && batchToLight.size() < 2) {
         batchToLight.push(m_chunkStackPositionsToLightList.back());
         m_chunkStackPositionsToLightList.pop_back();
       }

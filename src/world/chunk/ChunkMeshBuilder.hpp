@@ -15,11 +15,14 @@
 #include "../../resources/ResourceManager.hpp"
 struct FaceInfo {
   uint8_t aoLevels[4];
-  uint16_t torchLightLevel;
-  uint8_t sunlightLevel;
+  uint16_t torchLightLevel[4];
+  uint8_t sunlightLevel[4];
   bool flip;
 
-  void setValues(uint8_t faceNum, const Block (&blockNeighbors)[27], uint16_t torchlightLevel, uint8_t sunlightLevel);
+  void setValues(uint8_t faceNum,
+                 const Block (& blockNeighbors)[27],
+                 const uint8_t (&sunlightNeighbors)[27],
+                 const uint16_t (&torchlightNeighbors)[27]);
 
   bool operator==(const FaceInfo &other) const {
     return torchLightLevel == other.torchLightLevel && sunlightLevel == other.sunlightLevel
@@ -78,11 +81,11 @@ return true;
   }
 
  private:
-  static inline uint32_t createVertexData2(uint16_t torchLight, uint8_t sunlight, uint16_t texIndex) {
+  static inline uint32_t packVertexData2(uint16_t torchLight, uint8_t sunlight, uint16_t texIndex) {
     return torchLight | ((sunlight) << 12) | (texIndex << 16);
   }
 
-  static inline uint32_t createVertexData1(uint8_t x, uint8_t y, uint8_t z, uint8_t ao, uint8_t u, uint8_t v) {
+  static inline uint32_t packVertexData2(uint8_t x, uint8_t y, uint8_t z, uint8_t ao, uint8_t u, uint8_t v) {
     return (x | y << 6 | z << 12 | ao << 18 | u << 20 | v << 26);
   }
 

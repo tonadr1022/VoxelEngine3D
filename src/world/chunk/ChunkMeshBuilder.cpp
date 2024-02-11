@@ -159,17 +159,17 @@ constexpr uint8_t LIGHTING_LOOKUP[6][4][3] = {
     {{11, 2, 1}, {9, 0, 1}, {9, 18, 19}, {11, 20, 19}},
 };
 
-ChunkMeshBuilder::ChunkMeshBuilder(Block (&blocks)[CHUNK_MESH_INFO_SIZE],
-                                   uint16_t (&lightLevels)[CHUNK_MESH_INFO_SIZE],
-                                   uint8_t (&sunlightLevels)[CHUNK_MESH_INFO_SIZE],
-                                   const glm::ivec3 &chunkWorldPos) : m_blocks(
+ChunkMeshBuilder::ChunkMeshBuilder(Block (& blocks)[CHUNK_MESH_INFO_SIZE],
+                                   uint16_t (& lightLevels)[CHUNK_MESH_INFO_SIZE],
+                                   uint8_t (& sunlightLevels)[CHUNK_MESH_INFO_SIZE],
+                                   const glm::ivec3& chunkWorldPos) : m_blocks(
     blocks), m_chunkWorldPos(chunkWorldPos), m_lightLevels(lightLevels), m_sunlightLevels(sunlightLevels) {
 }
 
-void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
-                                     std::vector<unsigned int> &opaqueIndices,
-                                     std::vector<ChunkVertex> &transparentVertices,
-                                     std::vector<unsigned int> &transparentIndices) {
+void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex>& opaqueVertices,
+                                     std::vector<unsigned int>& opaqueIndices,
+                                     std::vector<ChunkVertex>& transparentVertices,
+                                     std::vector<unsigned int>& transparentIndices) {
   auto opaqueVertices_ = new std::vector<ChunkVertex>();
   auto opaqueIndices_ = new std::vector<unsigned int>();
   auto transparentVertices_ = new std::vector<ChunkVertex>();
@@ -193,7 +193,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
     if (block == Block::AIR) continue;
 //    int blockPos[3] = {x, y, z};
     glm::ivec3 blockPos = {x, y, z};
-    BlockData &blockData = BlockDB::getBlockData(block);
+    BlockData& blockData = BlockDB::getBlockData(block);
 
     // 1, 0, 0
     // -1, 0, 0
@@ -214,7 +214,7 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
       const Block adjacentBlock = m_blocks[adjBlockIndex];
       if (adjacentBlock == block) continue;
 
-      const BlockData &adjBlockData = BlockDB::getBlockData(adjacentBlock);
+      const BlockData& adjBlockData = BlockDB::getBlockData(adjacentBlock);
       if (!adjBlockData.isTransparent) continue;
 
       const uint16_t faceLightLevel = m_lightLevels[adjBlockIndex];
@@ -224,8 +224,8 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
       const int texIndex = blockData.texIndex[faceIndex];
       const int faceVerticesIndex = faceIndex * 20;
 
-      auto &vertices = blockData.isTransparent ? transparentVertices_ : opaqueVertices_;
-      auto &indices = blockData.isTransparent ? transparentIndices_ : opaqueIndices_;
+      auto& vertices = blockData.isTransparent ? transparentVertices_ : opaqueVertices_;
+      auto& indices = blockData.isTransparent ? transparentIndices_ : opaqueIndices_;
 
       const auto baseVertexIndex = vertices->size();
       uint32_t vertexData2 = faceLightLevel | ((sunlightLevel) << 12) | ((texIndex & 0xFFF) << 16);
@@ -276,15 +276,15 @@ void ChunkMeshBuilder::constructMesh(std::vector<ChunkVertex> &opaqueVertices,
   delete transparentIndices_;
 }
 
-void ChunkMeshBuilder::setOcclusionLevels(const glm::ivec3 &blockPosInChunk,
-                                          int faceIndex, int (&levels)[4]) {
+void ChunkMeshBuilder::setOcclusionLevels(const glm::ivec3& blockPosInChunk,
+                                          int faceIndex, int (& levels)[4]) {
   // source:
   // https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
 
 
-  auto &faceLightingAdjacencies = lightingAdjacencies[static_cast<int>(faceIndex)];
+  auto& faceLightingAdjacencies = lightingAdjacencies[static_cast<int>(faceIndex)];
   for (int faceVertexIndex = 0; faceVertexIndex < 4; faceVertexIndex++) {
-    auto &faceLightingAdjacency = faceLightingAdjacencies[faceVertexIndex];
+    auto& faceLightingAdjacency = faceLightingAdjacencies[faceVertexIndex];
     bool side1IsSolid = false;
     bool side2IsSolid = false;
     bool cornerIsSolid = false;
@@ -312,10 +312,10 @@ void ChunkMeshBuilder::setOcclusionLevels(const glm::ivec3 &blockPosInChunk,
   }
 }
 
-void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVertices,
-                                           std::vector<unsigned int> &opaqueIndices,
-                                           std::vector<ChunkVertex> &transparentVertices,
-                                           std::vector<unsigned int> &transparentIndices) {
+void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex>& opaqueVertices,
+                                           std::vector<unsigned int>& opaqueIndices,
+                                           std::vector<ChunkVertex>& transparentVertices,
+                                           std::vector<unsigned int>& transparentIndices) {
 //  static float maxTime = 0;
 //  static int count = 0;
 //  auto startTime = std::chrono::high_resolution_clock::now();
@@ -355,15 +355,8 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
       // this will also allow for infinite height impl in future.
       Block neighborBlock = m_blocks[MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2])];
       if (!shouldShowFace(block, neighborBlock)) {
-        if (((block == Block::OAK_LEAVES && neighborBlock == Block::BIRCH_LEAVES)
-            || (block == Block::BIRCH_LEAVES && neighborBlock == Block::OAK_LEAVES))) {
-          int sdf = 5;
-        }
         continue;
-      };
-
-      uint16_t neighborTorchlightLevel = m_lightLevels[MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2])];
-      uint8_t neighborSunlightLevel = m_sunlightLevels[MESH_XYZ(adjBlockPos[0], adjBlockPos[1], adjBlockPos[2])];
+      }
 
       // fill neighbors for block if haven't. only do this on first iteration of face loop after at least one face should be shown.
       if (!neighborsInitializedForCurrentBlock) {
@@ -387,8 +380,8 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
       // with neighbors and knowledge that this face will be added to the mesh, add its face data to the array
       faceInfo[chunkBlockIndex][faceNum].setValues(faceNum,
                                                    blockNeighbors,
-                                                   neighborTorchlightLevel,
-                                                   neighborSunlightLevel);
+                                                   sunlightNeighbors,
+                                                   torchlightNeighbors);
     }
   }
   int u, v, counter, j, i, k, l, height, width;
@@ -397,7 +390,7 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
   int q[3]; // offset
   int du[3];
   int dv[3];
-  FaceInfo *infoMask[CHUNK_AREA]; // use pointers since data already exists in the faceInfo array above
+  FaceInfo* infoMask[CHUNK_AREA]; // use pointers since data already exists in the faceInfo array above
   Block mask[CHUNK_AREA];
 
   for (bool backFace = true, b = false; b != backFace; backFace = backFace && b, b = !b) {
@@ -448,7 +441,7 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
           for (i = 0; i < CHUNK_SIZE;) {
             Block block = mask[counter];
             if (block != Block::AIR) { // skip if air or zeroed
-              FaceInfo &currFaceInfo = *infoMask[counter];
+              FaceInfo& currFaceInfo = *infoMask[counter];
               // compute width
               for (width = 1; block == mask[counter + width] && infoMask[counter + width]
                   && currFaceInfo == *infoMask[counter + width] && i + width < CHUNK_SIZE; width++) {}
@@ -509,8 +502,14 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
                 std::swap(v11v, v10u);
                 // rotate AO values
                 std::swap(currFaceInfo.aoLevels[0], currFaceInfo.aoLevels[1]);
+                std::swap(currFaceInfo.sunlightLevel[0], currFaceInfo.sunlightLevel[1]);
+                std::swap(currFaceInfo.torchLightLevel[0], currFaceInfo.torchLightLevel[1]);
                 std::swap(currFaceInfo.aoLevels[1], currFaceInfo.aoLevels[2]);
+                std::swap(currFaceInfo.sunlightLevel[1], currFaceInfo.sunlightLevel[2]);
+                std::swap(currFaceInfo.torchLightLevel[1], currFaceInfo.torchLightLevel[2]);
                 std::swap(currFaceInfo.aoLevels[2], currFaceInfo.aoLevels[3]);
+                std::swap(currFaceInfo.sunlightLevel[2], currFaceInfo.sunlightLevel[3]);
+                std::swap(currFaceInfo.torchLightLevel[2], currFaceInfo.torchLightLevel[3]);
               } else if (face == RIGHT) {
                 std::swap(v11u, v11v);
                 std::swap(v01u, v01v);
@@ -518,10 +517,14 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
                 // rotate AO values
                 for (int index = 0; index < 2; ++index) {
                   std::swap(currFaceInfo.aoLevels[index], currFaceInfo.aoLevels[index + 2]);
+                  std::swap(currFaceInfo.sunlightLevel[index], currFaceInfo.sunlightLevel[index + 2]);
+                  std::swap(currFaceInfo.torchLightLevel[index], currFaceInfo.torchLightLevel[index + 2]);
                 }
               } else if (face == BACK) {
                 for (int index = 0; index < 2; ++index) {
                   std::swap(currFaceInfo.aoLevels[index], currFaceInfo.aoLevels[index + 2]);
+                  std::swap(currFaceInfo.sunlightLevel[index], currFaceInfo.sunlightLevel[index + 2]);
+                  std::swap(currFaceInfo.torchLightLevel[index], currFaceInfo.torchLightLevel[index + 2]);
                 }
 
               } else if (face == FRONT) {
@@ -532,13 +535,25 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
 
                 // rotate AO values
                 std::swap(currFaceInfo.aoLevels[0], currFaceInfo.aoLevels[1]);
+                std::swap(currFaceInfo.torchLightLevel[0], currFaceInfo.torchLightLevel[1]);
+                std::swap(currFaceInfo.sunlightLevel[0], currFaceInfo.sunlightLevel[1]);
                 std::swap(currFaceInfo.aoLevels[1], currFaceInfo.aoLevels[2]);
+                std::swap(currFaceInfo.torchLightLevel[1], currFaceInfo.torchLightLevel[2]);
+                std::swap(currFaceInfo.sunlightLevel[1], currFaceInfo.sunlightLevel[2]);
                 std::swap(currFaceInfo.aoLevels[2], currFaceInfo.aoLevels[3]);
+                std::swap(currFaceInfo.torchLightLevel[2], currFaceInfo.torchLightLevel[3]);
+                std::swap(currFaceInfo.sunlightLevel[2], currFaceInfo.sunlightLevel[3]);
               } else if (face == BOTTOM) {
                 // rotate AO values
                 std::swap(currFaceInfo.aoLevels[0], currFaceInfo.aoLevels[1]);
+                std::swap(currFaceInfo.torchLightLevel[0], currFaceInfo.torchLightLevel[1]);
                 std::swap(currFaceInfo.aoLevels[1], currFaceInfo.aoLevels[2]);
+                std::swap(currFaceInfo.torchLightLevel[1], currFaceInfo.torchLightLevel[1]);
+                std::swap(currFaceInfo.sunlightLevel[1], currFaceInfo.sunlightLevel[1]);
                 std::swap(currFaceInfo.aoLevels[2], currFaceInfo.aoLevels[3]);
+                std::swap(currFaceInfo.torchLightLevel[2], currFaceInfo.torchLightLevel[2]);
+                std::swap(currFaceInfo.sunlightLevel[2], currFaceInfo.sunlightLevel[2]);
+
               } else if (face == TOP) {
                 std::swap(v00u, v01u);
                 std::swap(v00v, v01v);
@@ -546,28 +561,33 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
                 std::swap(v11v, v10v);
               }
 
-              uint32_t vData2 =
-                  createVertexData2(currFaceInfo.torchLightLevel, currFaceInfo.sunlightLevel, textureIndex);
-              uint32_t v00Data1 = createVertexData1(vx, vy, vz, currFaceInfo.aoLevels[0], v00u, v00v);
-              uint32_t v01Data1 =
-                  createVertexData1(vx + du[0], vy + du[1], vz + du[2], currFaceInfo.aoLevels[1], v01u, v01v);
-              uint32_t v10Data1 = createVertexData1(vx + du[0] + dv[0],
-                                                    vy + du[1] + dv[1],
-                                                    vz + du[2] + dv[2],
-                                                    currFaceInfo.aoLevels[2],
-                                                    v10u,
-                                                    v10v);
-              uint32_t v11Data1 =
-                  createVertexData1(vx + dv[0], vy + dv[1], vz + dv[2], currFaceInfo.aoLevels[3], v11u, v11v);
+              uint32_t v00Data1 = packVertexData2(vx, vy, vz, currFaceInfo.aoLevels[0], v00u, v00v);
+              uint32_t v00Data2 = packVertexData2(currFaceInfo.torchLightLevel[0],
+                                                  currFaceInfo.sunlightLevel[0], textureIndex);
+
+              uint32_t v01Data1 = packVertexData2(vx + du[0], vy + du[1], vz + du[2],
+                                                  currFaceInfo.aoLevels[1], v01u, v01v);
+              uint32_t v01Data2 = packVertexData2(currFaceInfo.torchLightLevel[1],
+                                                  currFaceInfo.sunlightLevel[1], textureIndex);
+
+              uint32_t v10Data1 = packVertexData2(vx + du[0] + dv[0], vy + du[1] + dv[1],
+                                                  vz + du[2] + dv[2], currFaceInfo.aoLevels[2], v10u, v10v);
+              uint32_t v10Data2 = packVertexData2(currFaceInfo.torchLightLevel[2],
+                                                  currFaceInfo.sunlightLevel[2], textureIndex);
+
+              uint32_t v11Data1 = packVertexData2(vx + dv[0], vy + dv[1], vz + dv[2],
+                                                  currFaceInfo.aoLevels[3], v11u, v11v);
+              uint32_t v11Data2 = packVertexData2(currFaceInfo.torchLightLevel[2],
+                                                  currFaceInfo.sunlightLevel[2], textureIndex);
 
               bool isTransparent = BlockDB::isTransparent(block);
-              auto &vertices = isTransparent ? transparentVertices : opaqueVertices;
-              auto &indices = isTransparent ? transparentIndices : opaqueIndices;
+              auto& vertices = isTransparent ? transparentVertices : opaqueVertices;
+              auto& indices = isTransparent ? transparentIndices : opaqueIndices;
               unsigned long baseVertexIndex = vertices.size();
-              vertices.push_back({v00Data1, vData2});
-              vertices.push_back({v01Data1, vData2});
-              vertices.push_back({v10Data1, vData2});
-              vertices.push_back({v11Data1, vData2});
+              vertices.push_back({v00Data1, v00Data2});
+              vertices.push_back({v01Data1, v01Data2});
+              vertices.push_back({v10Data1, v10Data2});
+              vertices.push_back({v11Data1, v11Data2});
 
               // check whether to flip quad based on AO
               if (!currFaceInfo.flip) {
@@ -643,22 +663,55 @@ void ChunkMeshBuilder::constructMeshGreedy(std::vector<ChunkVertex> &opaqueVerti
  * @param blockNeighbors
  */
 void FaceInfo::setValues(uint8_t faceNum,
-                         const Block (&blockNeighbors)[27],
-                         const uint16_t pTorchlightLevel,
-                         const uint8_t pSunLightLevel) {
-  this->sunlightLevel = pSunLightLevel;
-  this->torchLightLevel = pTorchlightLevel;
+                         const Block (& blockNeighbors)[27],
+                         const uint8_t (& sunlightNeighbors)[27],
+                         const uint16_t (& torchlightNeighbors)[27]) {
+// z
+// |
+// |  6   15  24
+// |    7   16  25
+// |      8   17  26
+// |
+// |  3   12  21
+// |    4   13  22
+// |      5   14  23
+// \-------------------y
+//  \ 0   9   18
+//   \  1   10  19
+//    \   2   11  20
+//     x
+  const int lookup1[6] = {14, 12, 22, 4, 16, 10};
 
-  bool aoAdjBlocksTransparent[3];
+  bool aoAdjBlocksTransparent[3], lightCanPass[3];
+  Block neighborBlocks[3];
   for (uint8_t vertexNum = 0; vertexNum < 4; vertexNum++) {
     for (uint8_t adjBlockIndex = 0; adjBlockIndex < 3; adjBlockIndex++) {
-      Block block = blockNeighbors[LIGHTING_LOOKUP[faceNum][vertexNum][adjBlockIndex]];
-      aoAdjBlocksTransparent[adjBlockIndex] = BlockDB::isTransparent(block);
+      neighborBlocks[adjBlockIndex] = blockNeighbors[LIGHTING_LOOKUP[faceNum][vertexNum][adjBlockIndex]];
+      aoAdjBlocksTransparent[adjBlockIndex] = BlockDB::isTransparent(neighborBlocks[adjBlockIndex]);
+      lightCanPass[adjBlockIndex] = BlockDB::lightAttenuation(neighborBlocks[adjBlockIndex]) <= MAX_LIGHT_ATTENUATION;
     }
+
     // source: https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
     this->aoLevels[vertexNum] =
         (!aoAdjBlocksTransparent[0] && !aoAdjBlocksTransparent[2] ? 0 : 3 - !aoAdjBlocksTransparent[0]
             - !aoAdjBlocksTransparent[1] - !aoAdjBlocksTransparent[2]);
+
+    // avg value for smooth lighting
+    uint8_t total = 1;
+    uint8_t sunlightSum = sunlightNeighbors[lookup1[faceNum]];
+    uint16_t torchLightSum = torchlightNeighbors[lookup1[faceNum]];
+    if (lightCanPass[0] || lightCanPass[2]) {
+      for (int i = 0; i < 3; i++) {
+        if (!lightCanPass[i]) continue;
+        total++;
+        sunlightSum += sunlightNeighbors[LIGHTING_LOOKUP[faceNum][vertexNum][i]];
+        torchLightSum += torchlightNeighbors[LIGHTING_LOOKUP[faceNum][vertexNum][i]];
+      }
+    }
+
+    this->sunlightLevel[vertexNum] = sunlightSum / total;
+    this->torchLightLevel[vertexNum] = torchLightSum / total;
+
   }
 
   this->flip = this->aoLevels[1] + this->aoLevels[3] > this->aoLevels[0] + this->aoLevels[2];

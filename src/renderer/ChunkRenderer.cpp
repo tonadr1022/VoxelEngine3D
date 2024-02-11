@@ -53,8 +53,6 @@ void ChunkRenderer::renderChunk(ChunkMesh& mesh,
   shader->setMat4("u_MVP", camera.getVPMatrix() * model);
   shader->setIVec2("u_ChunkWorldPos", worldPos);
   shader->setFloat("u_FirstBufferTime", firstBufferTime);
-  shader->setFloat("u_Time", static_cast<float>(glfwGetTime()));
-  shader->setInt("u_WaterTexIndex", m_waterTexIndex);
 //  std::cout << "first buffer time: " << firstBufferTime << ", time: " << static_cast<float>(glfwGetTime()) << ", diff: " <<
 //  static_cast<float>(glfwGetTime()) - firstBufferTime << std::endl;
   if (mesh.needsUpdate) {
@@ -105,8 +103,9 @@ void ChunkRenderer::startFrame(const Camera& camera, float worldLightLevel) cons
   shader->setFloat("u_WorldLightLevel", worldLightLevel);
   shader->setBool("u_UseAmbientOcclusion", Config::getUseAmbientOcclusion());
   shader->setInt("u_Texture", 0);
-  shader->setMat4("u_Projection", camera.getProjectionMatrix());
-  shader->setMat4("u_View", camera.getViewMatrix());
+  shader->setInt("u_WaterTexIndex", m_waterTexIndex);
+  shader->setFloat("u_Time", static_cast<float>(glfwGetTime()));
+
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D_ARRAY, textureAtlasID);
   Config::useWireFrame ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
