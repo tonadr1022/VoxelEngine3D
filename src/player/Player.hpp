@@ -5,9 +5,9 @@
 #ifndef VOXEL_ENGINE_PLAYER_HPP
 #define VOXEL_ENGINE_PLAYER_HPP
 
+#include "../EngineConfig.hpp"
 #include "../camera/Camera.hpp"
 #include "Inventory.hpp"
-#include "../EngineConfig.hpp"
 
 class World;
 class Window;
@@ -16,9 +16,10 @@ class Player {
   Player(World *world, Window &window);
 
   glm::vec3 &getPosition();
-  [[nodiscard]] inline glm::ivec3 getChunkPosition() const { return {static_cast<int>(position.x / CHUNK_SIZE),
-                                                 static_cast<int>(position.y / CHUNK_SIZE),
-                                                 static_cast<int>(position.z / CHUNK_SIZE)};}
+  [[nodiscard]] inline glm::ivec3 getChunkPosition() const {
+    return {static_cast<int>(position.x / CHUNK_SIZE), static_cast<int>(position.y / CHUNK_SIZE),
+            static_cast<int>(position.z / CHUNK_SIZE)};
+  }
   void update(double deltaTime);
   void perFrameUpdate();
   void processScrollInput(double yoffset);
@@ -27,11 +28,9 @@ class Player {
 
   void rayCast();
 
-  inline float intBound(float s, float ds)
-  {
+  inline float intBound(float s, float ds) {
     bool sIsInteger = glm::round(s) == s;
-    if (ds < 0 && sIsInteger)
-      return 0;
+    if (ds < 0 && sIsInteger) return 0;
     return (ds > 0 ? (s == 0.0f ? 1.0f : glm::ceil(s)) - s : s - glm::floor(s)) / glm::abs(ds);
   }
 
@@ -49,7 +48,7 @@ class Player {
 
   void processKeyInput(double deltaTime);
 
-  bool m_focus = true;
+  bool m_focus = false;
   glm::vec3 position = glm::vec3(0.0f, 0.0f, 100.0f);
   float m_miningDelay = 0.3f;
   float m_placingDelay = 0.1f;
@@ -58,4 +57,4 @@ class Player {
   int m_placeRadius;
 };
 
-#endif //VOXEL_ENGINE_PLAYER_HPP
+#endif  // VOXEL_ENGINE_PLAYER_HPP
